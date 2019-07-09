@@ -9,20 +9,29 @@ namespace GameFramePro
     /// <summary>
     /// 原生对象(非继承自Unity.Object 对象)对象池
     /// </summary>
-    public class NativeObjectPool<T> : INativeObjectPool<T> where T :  new()
+    public class NativeObjectPool<T> : INativeObjectPool<T> where T : new()
     {
         public System.Action<T> BeforGetAction { get; protected set; } = null;
         public System.Action<T> BeforeRecycleAction { get; protected set; } = null;
         public Stack<T> PoolContainer { get; protected set; } = null;
 
-        
-        public void InitialedPool(int capacity, System.Action<T> beforGetAction, System.Action<T> beforeRecycleAction)
+
+        public NativeObjectPool(int capacity, System.Action<T> beforGetAction, System.Action<T> beforeRecycleAction)
         {
             BeforGetAction = beforGetAction;
             BeforeRecycleAction = beforeRecycleAction;
             PoolContainer = new Stack<T>(capacity);
             PoolObjectManager.TrackPoolManager(typeof(T), this);
         }
+        //public void InitialedPool(int capacity, System.Action<T> beforGetAction, System.Action<T> beforeRecycleAction)
+        //{
+        //    BeforGetAction = beforGetAction;
+        //    BeforeRecycleAction = beforeRecycleAction;
+        //    PoolContainer = new Stack<T>(capacity);
+        //    PoolObjectManager.TrackPoolManager(typeof(T), this);
+        //}
+
+
         public void ReleasPool()
         {
             if (PoolContainer.Count > 0)
