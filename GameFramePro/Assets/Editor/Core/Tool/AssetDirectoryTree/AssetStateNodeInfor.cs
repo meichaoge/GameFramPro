@@ -17,7 +17,7 @@ namespace GameFramePro.EditorEx
         protected ITreeNodeDraw mTargetNode = null;  //==null 时候表示操作的是根节点
         protected bool mIsExpand = true;
 
-    
+
 
         //TODO  后面需要处理层级管理
         public override void DrawTreeNode(float deepOffset, int maxExpandDeep = -1)
@@ -30,7 +30,12 @@ namespace GameFramePro.EditorEx
 
             GUILayout.BeginHorizontal();
             GUILayout.Label(string.Empty, GUILayout.Width(deepOffset * TreeNodeDeep));
-            GUILayout.Toggle(IsShowSelectedState(), string.Empty, GUILayout.Width(15));
+            bool isSelected = IsTreeNodeSelected;
+            isSelected = GUILayout.Toggle(isSelected, string.Empty, GUILayout.Width(15));
+            if(IsTreeNodeSelected!= isSelected)
+            {
+                SetTreeNodeSelected(isSelected);
+            }
             GUILayout.Label(ViewShowStr, GUILayout.ExpandWidth(true));
             GUILayout.EndHorizontal();
 
@@ -49,7 +54,6 @@ namespace GameFramePro.EditorEx
         {
             //if (mMaxExpandDeep == -1)
             //    return true;  //全部展开
-
 
             //int deep = GetDeepToTargetNode(mTargetNode as BaseTreeNodeInfor);
             //if (deep == int.MaxValue)

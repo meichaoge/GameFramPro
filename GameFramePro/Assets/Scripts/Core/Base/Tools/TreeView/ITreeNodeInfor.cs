@@ -5,25 +5,6 @@ using System;
 
 namespace GameFramePro
 {
-    ///// <summary>
-    ///// 当前节点的选择状态
-    ///// </summary>
-    //public enum TreeNodeStateEnum
-    //{
-    //    None = 0,  //初始状态 不可用
-
-    //    //**当时叶子节点时候的状态
-    //    LeafNodeSelected = 1,
-    //    LeafNodeUnSelected = 2,
-
-    //    //**当是非叶子节点时候的状态
-
-    //    AllSubTreeUnSelected = 10,  //子节点都没有被选择
-    //    AllSubTreeSelected, //子节点全部选择
-    //                        //  OnlySelfSelected, //只有自己被选择 无意义的状态 需要过滤
-    //    AnySubTreeNodeSelected, //子节点部分选择
-    //}
-
 
     /// <summary>
     /// 树形结构节点信息
@@ -98,11 +79,11 @@ namespace GameFramePro
 
         #region 节点通知消息
 
-        /// <summary>
-        /// 通知父节点 自身 状态改变, 父节点需要刷新状态
-        /// </summary>
-        /// <param name="eventNode">触发这个消息的节点 (避免自身处理这个消息)</param>
-        void NotifyParentStateChange(ITreeNodeInfor eventNode);
+        ///// <summary>
+        ///// 通知父节点 自身 状态改变, 父节点需要刷新状态
+        ///// </summary>
+        ///// <param name="eventNode">触发这个消息的节点 (避免自身处理这个消息)</param>
+        //void NotifyParentStateChange(ITreeNodeInfor eventNode);
         /// <summary>
         /// 通知父节点 自身 树形结构改变(通常由于增加或者删除节点引起) 父节点需要刷新状态
         /// </summary>

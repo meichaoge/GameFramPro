@@ -13,7 +13,8 @@ namespace GameFramePro
     {
         Android,
         IOS,
-        Windows64
+        Windows64,
+        Mac
     }
 
     /// <summary>
@@ -40,9 +41,30 @@ namespace GameFramePro
                     return UnityEditor.BuildTarget.iOS;
                 case AppPlatformEnum.Windows64:
                     return UnityEditor.BuildTarget.StandaloneWindows64;
+                case AppPlatformEnum.Mac:
+                    return UnityEditor.BuildTarget.StandaloneOSX;
                 default:
                     Debug.LogError(string.Format("GetBuildTargetFromAppPlatformEnum Fail,Not Support Platform={0}", platform));
                     return UnityEditor.BuildTarget.StandaloneWindows64;
+            }
+        }
+
+
+        public static UnityEditor.BuildTargetGroup GetBuildTargetGroupFromAppPlatformEnum(AppPlatformEnum platform)
+        {
+            switch (platform)
+            {
+                case AppPlatformEnum.Android:
+                    return UnityEditor.BuildTargetGroup.Android;
+                case AppPlatformEnum.IOS:
+                    return UnityEditor.BuildTargetGroup.iOS;
+                case AppPlatformEnum.Windows64:
+                    return UnityEditor.BuildTargetGroup.Standalone;
+                case AppPlatformEnum.Mac:
+                    return UnityEditor.BuildTargetGroup.Standalone;
+                default:
+                    Debug.LogError(string.Format("GetBuildTargetFromAppPlatformEnum Fail,Not Support Platform={0}", platform));
+                    return UnityEditor.BuildTargetGroup.Standalone;
             }
         }
 #endif

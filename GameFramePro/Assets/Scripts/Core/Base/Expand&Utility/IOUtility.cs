@@ -8,6 +8,9 @@ using System.Linq;
 
 public static class IOUtility
 {
+
+    #region 文件创建、追加
+
     /// <summary>
     /// 创建或者追加内容
     /// </summary>
@@ -70,37 +73,9 @@ public static class IOUtility
 
     }
 
-    /// <summary>
-    /// byte 单位转换成B/KB/MB/GB单位
-    /// </summary>
-    /// <param name="byteSize"></param>
-    /// <param name="isUptoConvert">=true  标示向上取整，=false 则四舍五入</param>
-    /// <returns></returns>
-    public static string ByteConversionOthers(int byteSize, bool isUptoConvert = false)
-    {
-        //转成Byte
-        if (isUptoConvert)
-            byteSize = Mathf.CeilToInt(byteSize / 8f);
-        else
-            byteSize = Mathf.FloorToInt(byteSize / 8f);
+    #endregion
 
-        string[] units = new string[] { "B", "KB", "MB", "GB", "TB" };
-        int count = 0;
-        while (byteSize >= 1024)
-        {
-            if (isUptoConvert)
-            {
-                byteSize = Mathf.CeilToInt(byteSize / 1024f);
-            }
-            else
-            {
-                byteSize = Mathf.FloorToInt(byteSize / 1024f);
-            }
-            count++;
-        }
-        return string.Format("{0}{1}", byteSize, units[count]);
-    }
-
+    #region 目录操作 (获取父目录、判断是否包含子目录、)
     /// <summary>
     /// 获取指定目录下的第N级别的父目录
     /// </summary>
@@ -151,6 +126,29 @@ public static class IOUtility
     }
 
     /// <summary>
+    /// 判断指定目录是否存在 如果不存在则创建
+    /// </summary>
+    /// <param name="directoryPath"></param>
+    /// <returns></returns>
+    public static bool CheckOrCreateDirectory(string directoryPath)
+    {
+        if (string.IsNullOrEmpty(directoryPath))
+        {
+            Debug.LogError("CheckOrCreateDirectory Fail,Parameter directoryPath is null or empty ");
+            return false;
+        }
+
+        bool isDirectoryExit = System.IO.Directory.Exists(directoryPath);
+        if (isDirectoryExit == false)
+            Directory.CreateDirectory(directoryPath);
+
+        return true;
+    }
+
+    #endregion
+
+    #region 获取目录下的文件和子目录(可以过滤部分扩展名)
+    /// <summary>
     /// 获取指定目录下的文件 不包含指定类型的扩展名
     /// </summary>
     /// <param name="path"></param>
@@ -172,7 +170,6 @@ public static class IOUtility
         return allFilesList.ToArray();
     }
 
-
     /// <summary>
     ///  获取指定目录下所有的文件和文件夹目录
     /// </summary>
@@ -191,7 +188,7 @@ public static class IOUtility
             Debug.LogErrorFormat("GetFilesExculde Fail,Not Exit Directory :{0}", path);
             return null;
         }
-      //  Debug.LogEditorInfor("GetFiles_DirectoryExculde  path=" + path);
+        //  Debug.LogEditorInfor("GetFiles_DirectoryExculde  path=" + path);
 
         string[] allFiles = Directory.GetFiles(path, searchPattern, searchOption);
         string[] allDirectorys = Directory.GetDirectories(path, searchPattern, searchOption);
@@ -256,6 +253,24 @@ public static class IOUtility
         #endregion
 
     }
+
+
+    /// <summary>
+    ///  获取指定目录下所有的文件和文件夹目录
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="searchPattern"></param>
+    /// <param name="searchOption"></param>
+    /// <param name="exculdeExtension">需要过滤掉那些文件扩展名</param>
+    /// <param name="isRelativePath">返回结果中是否是相对于path 的相对路径</param>
+    /// <returns></returns>
+    public static string[] GetFiles_DirectoryExculde(this string path, string searchPattern, SearchOption searchOption, string[] exculdeExtension, bool isRelativePath = false)
+    {
+        int directoryIndex = -1;
+        return GetFiles_DirectoryExculde(path, searchPattern, searchOption, exculdeExtension, out directoryIndex, isRelativePath);
+    }
+
+
     /// <summary>
     /// 指定目录下目录结构个数
     /// </summary>
@@ -285,13 +300,45 @@ public static class IOUtility
         return directoryCount;
     }
 
+    #endregion
 
 
-    public static string[] GetFiles_DirectoryExculde(this string path, string searchPattern, SearchOption searchOption, string[] exculdeExtension, bool isRelativePath = false)
+
+
+
+
+    /// <summary>
+    /// byte 单位转换成B/KB/MB/GB单位
+    /// </summary>
+    /// <param name="byteSize"></param>
+    /// <param name="isUptoConvert">=true  标示向上取整，=false 则四舍五入</param>
+    /// <returns></returns>
+    public static string ByteConversionOthers(int byteSize, bool isUptoConvert = false)
     {
-        int directoryIndex = -1;
-        return GetFiles_DirectoryExculde(path, searchPattern, searchOption, exculdeExtension, out directoryIndex, isRelativePath);
+        //转成Byte
+        if (isUptoConvert)
+            byteSize = Mathf.CeilToInt(byteSize / 8f);
+        else
+            byteSize = Mathf.FloorToInt(byteSize / 8f);
+
+        string[] units = new string[] { "B", "KB", "MB", "GB", "TB" };
+        int count = 0;
+        while (byteSize >= 1024)
+        {
+            if (isUptoConvert)
+            {
+                byteSize = Mathf.CeilToInt(byteSize / 1024f);
+            }
+            else
+            {
+                byteSize = Mathf.FloorToInt(byteSize / 1024f);
+            }
+            count++;
+        }
+        return string.Format("{0}{1}", byteSize, units[count]);
     }
+
+
 
 
 

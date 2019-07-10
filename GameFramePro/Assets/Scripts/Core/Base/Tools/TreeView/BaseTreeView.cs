@@ -19,7 +19,7 @@ namespace GameFramePro
         protected NativeObjectPool<T> mTreeViewPoolManager = null;
 
 
-        public virtual void InitialTreeView(IEnumerable<ITreeNodeInfor> rootTreeNodes)
+        public virtual void InitialTreeView(IEnumerable<BaseTreeNodeInfor> rootTreeNodes)
         {
             mTreeViewPoolManager = new NativeObjectPool<T>(10, null, null);
 
@@ -34,7 +34,7 @@ namespace GameFramePro
 
         }
 
-        public virtual void AddRootTreeNode(ITreeNodeInfor rootTreeNode, int index = -1)
+        public virtual void AddRootTreeNode(BaseTreeNodeInfor rootTreeNode, int index = -1)
         {
             rootTreeNode.SetParent(null, true);
 
@@ -45,7 +45,7 @@ namespace GameFramePro
                 AllRootTreeNodes.Insert(index, rootTreeNode as T);
         }
 
-        public virtual IEnumerable<ITreeNodeInfor> GetRootTreeNodes()
+        public virtual IEnumerable<BaseTreeNodeInfor> GetRootTreeNodes()
         {
             return AllRootTreeNodes;
         }
@@ -53,12 +53,12 @@ namespace GameFramePro
         /// <summary>
         /// 需要自行实现绘制
         /// </summary>
-        public abstract void DrawTreeView(Rect viewRect, bool isExpand = false);
+        public abstract void DrawTreeView( bool isExpand = false);
 
 
         #region 获取和删除节点
 
-        public virtual ITreeNodeInfor GetTreeNode(string showStr, string treeNodePath, ITreeNodeInfor parent, bool isDefaultSelected)
+        public virtual BaseTreeNodeInfor GetTreeNode(string showStr, string treeNodePath, BaseTreeNodeInfor parent, bool isDefaultSelected)
         {
             T treeNode = mTreeViewPoolManager.GetItemFromPool();
             treeNode.InitialedTreeNode(this, showStr, treeNodePath, parent, isDefaultSelected);

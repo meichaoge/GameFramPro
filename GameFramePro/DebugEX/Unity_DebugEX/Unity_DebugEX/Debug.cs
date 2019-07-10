@@ -36,15 +36,26 @@ public static class Debug
         Debug,  //测试版本
         Release, //正式版本
     }
-
+    [System.Serializable]
+    public class LogColorDefine
+    {
+        /// <summary>
+        /// Infor 级别的日志颜色
+        /// </summary>
+        public string mInforLevelColor = "#5EAB15FF";
+        /// <summary>
+        /// 只在UnityEditor下的 Infor 日志颜色
+        /// </summary>
+        public string mEditorInforLevelColor = "#37D1D8F8";
+        /// <summary>
+        ///  只在 UnityEditor下的 Error 日志颜色
+        /// </summary>
+        public string mEditorErroColor = "#FF2D00";
+    }
 
     public static LogLevel S_LogLevel = LogLevel.EditorLog;  //当前使用的日记级别
     public static DebugVersionEnum S_DebugVersion = DebugVersionEnum.Debug;  //当前日志输出级别
-
-
-    public static string m_InforColor = "#5EAB15FF"; //Infor 级别的日志颜色
-    public static string m_EditorOnlyColor = "#37D1D8F8";  //只在UnityEditor 下的日志颜色
-
+    public static LogColorDefine S_LogColorDefine = new LogColorDefine(); //日志颜色配置
 
 
     //****下面四个方式只在编辑器下有输出日志
@@ -58,7 +69,7 @@ public static class Debug
         if (args != null && message != null)
             message = string.Format(message.ToString(), args);
 
-        message = string.Format("[EditorOnly] <color={0}> {1}</color>", m_EditorOnlyColor, message);
+        message = string.Format("[EditorOnly] <color={0}> {1}</color>", S_LogColorDefine.mEditorInforLevelColor, message);
         UnityEngine.Debug.Log(message);
 #endif
     }
@@ -73,7 +84,7 @@ public static class Debug
         if (args != null && message != null)
             message = string.Format(message.ToString(), args);
 
-        message = string.Format("[EditorOnly] <color={0}> {1}</color>", m_EditorOnlyColor, message);
+        message = string.Format("[EditorOnly] <color={0}> {1}</color>", S_LogColorDefine.mEditorErroColor, message);
         UnityEngine.Debug.Log(message, context);
 #endif
     }
@@ -89,7 +100,7 @@ public static class Debug
         if (args != null && message != null)
             message = string.Format(message.ToString(), args);
 
-        message = string.Format("[EditorOnly] <color={0}> {1}</color>", m_EditorOnlyColor, message);
+        message = string.Format("[EditorOnly] <color={0}> {1}</color>", S_LogColorDefine.mEditorErroColor, message);
         UnityEngine.Debug.LogError(message);
 #endif
     }
@@ -105,7 +116,7 @@ public static class Debug
         if (args != null && message != null)
             message = string.Format(message.ToString(), args);
 
-        message = string.Format("[EditorOnly] <color={0}> {1}</color>", m_EditorOnlyColor, message);
+        message = string.Format("[EditorOnly] <color={0}> {1}</color>", S_LogColorDefine.mEditorErroColor, message);
         UnityEngine.Debug.LogError(message, context);
 #endif
     }
@@ -183,7 +194,7 @@ public static class Debug
         if (S_LogLevel > LogLevel.Infor) return;
         if (args != null && message != null)
             message = string.Format(message.ToString(), args);
-        message = string.Format("<color={0}> {1}</color>", m_InforColor, message);
+        message = string.Format("<color={0}> {1}</color>", S_LogColorDefine.mEditorInforLevelColor, message);
         UnityEngine.Debug.Log(message);
     }
     /// <summary>
@@ -197,7 +208,7 @@ public static class Debug
         if (S_LogLevel > LogLevel.Infor) return;
         if (args != null && message != null)
             message = string.Format(message.ToString(), args);
-        message = string.Format("<color={0}> {1}</color>", m_InforColor, message);
+        message = string.Format("<color={0}> {1}</color>", S_LogColorDefine.mEditorInforLevelColor, message);
         UnityEngine.Debug.Log(message, context);
     }
 

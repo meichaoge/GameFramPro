@@ -11,10 +11,6 @@ namespace GameFramePro
     /// </summary>
     public interface ITreeNodeDraw 
     {
-        ///// <summary>
-        ///// 为了方便搜索节点 定义绘制深度 ，值与ITreeNodeInfor 中TreeNodeDeep相等
-        ///// </summary>
-        //int DrawNodeDeep { get; }
 
         /// <summary>
         /// 绘制这个子节点 

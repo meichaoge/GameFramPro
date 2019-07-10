@@ -14,12 +14,12 @@ namespace GameFramePro
     /// <param name="treeNode"></param>
     /// <param name="allSubTreeNode">返回包含的子节点</param>
     /// <param name="recursiveCount">需要递归多少个子节点</param>
-    public delegate void TreeNodePathRecursiveHandler<T>(in T treeNode, out IEnumerable<string> allSubTreeNode, out int recursiveCount) where T : ITreeNodeInfor;
+    public delegate void TreeNodePathRecursiveHandler<T>(in T treeNode, out IEnumerable<string> allSubTreeNode, out int recursiveCount) where T : BaseTreeNodeInfor;
 
     /// <summary>
     /// 协助生成树结构
     /// </summary>
-    public static class TreeViewUtility<T> where T : ITreeNodeInfor
+    public static class TreeViewUtility<T> where T : BaseTreeNodeInfor
     {
 
         //根据指定的路径和解析路径方式，递归创建从startTreeNode开始的子树
@@ -47,7 +47,7 @@ namespace GameFramePro
         /// <param name="treeNodeFrom"></param>
         /// <param name="treeNodeTo"></param>
         /// <returns></returns>
-        public static string GetTreeNodePathToOtherTreeNode(ITreeNodeInfor treeNodeFrom, ITreeNodeInfor treeNodeTo)
+        public static string GetTreeNodePathToOtherTreeNode(BaseTreeNodeInfor treeNodeFrom, BaseTreeNodeInfor treeNodeTo)
         {
             int relationShip = GetTreeNodeRelationShip(treeNodeFrom, treeNodeTo);
             if (relationShip == int.MaxValue)
@@ -103,7 +103,7 @@ namespace GameFramePro
         /// <param name="treeNodeFrom"></param>
         /// <param name="treeNodeTo"></param>
         /// <returns>返回值为 int.MaxValue 则表明没有父子关系！返回大于0 则表明 treeNodeTo 是 treeNodeFrom的父节点；小于0 则标示 treeNodeTo 是 treeNodeFrom的子节点</returns>
-        public static int GetTreeNodeRelationShip(ITreeNodeInfor treeNodeFrom, ITreeNodeInfor treeNodeTo)
+        public static int GetTreeNodeRelationShip(BaseTreeNodeInfor treeNodeFrom, BaseTreeNodeInfor treeNodeTo)
         {
             if (treeNodeFrom == treeNodeTo)
                 return 0;

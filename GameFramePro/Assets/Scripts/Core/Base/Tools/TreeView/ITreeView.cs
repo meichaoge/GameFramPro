@@ -12,23 +12,22 @@ namespace GameFramePro
     public interface ITreeView
     {
 
-        void InitialTreeView(IEnumerable<ITreeNodeInfor> rootTreeNodes);
+        void InitialTreeView(IEnumerable<BaseTreeNodeInfor> rootTreeNodes);
 
         /// <summary>
         /// 添加根节点
         /// </summary>
         /// <param name="rootTreeNode"></param>
         /// <param name="index"></param>
-        void AddRootTreeNode(ITreeNodeInfor rootTreeNode, int index=-1);
+        void AddRootTreeNode(BaseTreeNodeInfor rootTreeNode, int index=-1);
 
-        IEnumerable<ITreeNodeInfor> GetRootTreeNodes();
+        IEnumerable<BaseTreeNodeInfor> GetRootTreeNodes();
 
         /// <summary>
         /// 绘制树结构
         /// </summary>
-        /// <param name="viewRect">显示区域</param>
         /// <param name="isExpand">是否展开全部 默认false(只显示根节点)</param>
-        void DrawTreeView(Rect viewRect, bool isExpand=false);
+        void DrawTreeView(bool isExpand=false);
 
         /// <summary>
         /// 获取一个节点
@@ -37,7 +36,7 @@ namespace GameFramePro
         /// <param name="parent"></param>
         /// <param name="isDefaultSelected"></param>
         /// <returns></returns>
-        ITreeNodeInfor GetTreeNode(string showStr, string treeNodePath, ITreeNodeInfor parent, bool isDefaultSelected);
+        BaseTreeNodeInfor GetTreeNode(string showStr, string treeNodePath, BaseTreeNodeInfor parent, bool isDefaultSelected);
 
         /// <summary>
         /// 删除一个节点

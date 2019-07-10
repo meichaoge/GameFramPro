@@ -42,50 +42,73 @@ namespace GameFramePro.EditorEx
 
         private void OnGUI()
         {
-            GUILayout.BeginVertical("box");
-
-            #region 打包设置
-            GUILayout.Space(10);
-
-            #region 打包平台设置
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("选择需要生成AssetBundel 的平台:", GUILayout.Width(200));
-            mSelectAppPlatform = (AppPlatformEnum)EditorGUILayout.EnumPopup(mSelectAppPlatform, GUILayout.ExpandWidth(true));
-            GUILayout.EndHorizontal();
-            #endregion
-
-            #region 打包AssetBundle 参数配置
-            GUILayout.Space(5);
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("生成AssetBundel 的配置:", GUILayout.Width(200));
-            mSelectBuildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumPopup(mSelectBuildAssetBundleOptions, GUILayout.ExpandWidth(true));
-            GUILayout.EndHorizontal();
-            #endregion
-
-            #region 打包AssetBundle 参数配置
-            GUILayout.Space(5);
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("保存生成的AssetBundel 的路径:", GUILayout.Width(200));
-            mSelectAssetBundleSavePath = EditorGUILayout.TextField(mSelectAssetBundleSavePath, GUILayout.ExpandWidth(true));
-            if (GUILayout.Button("选择目录", GUILayout.Width(50)))
+            try
             {
-                string savePath = EditorUtility.SaveFolderPanel("选择保存生成AssetBundle 的路径", mSelectAssetBundleSavePath, string.Empty);
-                if (string.IsNullOrEmpty(savePath) == false)
+                GUILayout.BeginVertical("box");
+
+                #region 打包设置
+                GUILayout.Space(10);
+
+                #region 打包平台设置
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("选择需要生成AssetBundel 的平台:", GUILayout.Width(200));
+                mSelectAppPlatform = (AppPlatformEnum)EditorGUILayout.EnumPopup(mSelectAppPlatform, GUILayout.ExpandWidth(true));
+                GUILayout.EndHorizontal();
+                #endregion
+
+                #region 打包AssetBundle 参数配置
+                GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("生成AssetBundel 的配置:", GUILayout.Width(200));
+                mSelectBuildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumPopup(mSelectBuildAssetBundleOptions, GUILayout.ExpandWidth(true));
+                GUILayout.EndHorizontal();
+                #endregion
+
+                #region 打包AssetBundle 参数配置
+                GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("保存生成的AssetBundel 的路径:", GUILayout.Width(200));
+                mSelectAssetBundleSavePath = EditorGUILayout.TextField(mSelectAssetBundleSavePath, GUILayout.ExpandWidth(true));
+                if (GUILayout.Button("选择目录", GUILayout.Width(50)))
                 {
-                    mSelectAssetBundleSavePath = savePath;
-                    Debug.LogEditorInfor(string.Format("选择保存生成AssetBundel 路径为 {0}", mSelectAssetBundleSavePath));
+                    string savePath = EditorUtility.SaveFolderPanel("选择保存生成AssetBundle 的路径", mSelectAssetBundleSavePath, string.Empty);
+                    if (string.IsNullOrEmpty(savePath) == false)
+                    {
+                        mSelectAssetBundleSavePath = savePath;
+                        Debug.LogEditorInfor(string.Format("选择保存生成AssetBundel 路径为 {0}", mSelectAssetBundleSavePath));
+                    }
                 }
+                GUILayout.EndHorizontal();
+                #endregion
+
+                #endregion
+
+                #region 显示Resources 树形目录
+                mResourcesTreeViewScrollPos = GUILayout.BeginScrollView(mResourcesTreeViewScrollPos);
+
+                mAssetDirectoryTreeView.DrawTreeView(-1, true);
+                GUILayout.EndScrollView();
+                #endregion
+
+                #region 操作
+                GUILayout.Space(10);
+                GUILayout.BeginVertical("box");
+                if (GUILayout.Button("生成AssetBundle", GUILayout.Width(150)))
+                {
+                    BuildAssetBundleTool.BeginBuildAssetBundle(mSelectAssetBundleSavePath, mSelectBuildAssetBundleOptions,new List<AppPlatformEnum> { mSelectAppPlatform });
+                }
+                GUILayout.EndVertical();
+                #endregion
+
+                GUILayout.EndVertical();
             }
-            GUILayout.EndHorizontal();
-            #endregion
-
-            #endregion
-
-            #region 显示Resources 树形目录
-            mAssetDirectoryTreeView.DrawTreeView(new Rect(0, 200, Screen.width, Screen.height-200), -1, true);
-            #endregion
-
-            GUILayout.EndVertical();
+            catch (Exception e)
+            {
+                Debug.LogEditorError("BuildAssetBundle_Win OnGUI" + e.ToString());
+                Close();
+                throw;
+            }
+          
         }
 
 
@@ -124,16 +147,9 @@ namespace GameFramePro.EditorEx
                 }
             }
 
-            mAssetDirectoryTreeView.ShowTreeViewNodes();
+     //       mAssetDirectoryTreeView.ShowTreeViewNodes();
 
         }
-
-
-       
-
-     
-
-
         #endregion
 
     }

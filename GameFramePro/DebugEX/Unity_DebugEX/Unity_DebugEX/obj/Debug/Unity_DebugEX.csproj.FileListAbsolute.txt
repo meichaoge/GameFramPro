@@ -33,3 +33,4 @@ E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug
 E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csproj.CopyComplete
 E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.dll
 E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.pdb
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csprojAssemblyReference.cache
