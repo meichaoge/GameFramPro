@@ -20,8 +20,31 @@ namespace GameFramePro
     /// <summary>
     /// 管理平台相关
     /// </summary>
-    public class AppPlatformManager : Single<AppPlatformManager>
+    public static class AppPlatformManager
     {
+        /// <summary>
+        /// 获取各个平台对应的目录
+        /// </summary>
+        /// <param name="platform"></param>
+        /// <returns></returns>
+        public static string GetPlatformFolderName(AppPlatformEnum platform)
+        {
+            switch (platform)
+            {
+                case AppPlatformEnum.Android:
+                    return "Android";
+                case AppPlatformEnum.IOS:
+                    return "Android";
+                case AppPlatformEnum.Windows64:
+                    return "Windows64";
+                case AppPlatformEnum.Mac:
+                    return "Mac";
+                default:
+                    Debug.LogError("没有定义的类型 " + platform);
+                    return "UnKnow";
+            }
+        }
+
 
 
         #region 平台转换相关

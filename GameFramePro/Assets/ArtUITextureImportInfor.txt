@@ -1,0 +1,1 @@
+Assets/Art/UI/Common/event_button_jin.png 	  Error TextureType: DefaultAssets/Art/UI/Common 1/event_button_hui.png  	 Error PackingName: SpriteAssets/Art/UI/Common 1/event_button_jin.png  	 Error PackingName: SpriteAssets/Art/UI/Common 1/event_button_zi.png  	 Error PackingName: Sprite

@@ -4,7 +4,6 @@ using UnityEngine;
 using System;
 using System.Text;
 
-
 namespace GameFramePro
 {
     /// <summary>

@@ -1,7 +1,6 @@
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Assembly-CSharp.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Assembly-CSharp.pdb
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Boo.Lang.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Microsoft.CSharp.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Microsoft.Win32.Primitives.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\mscorlib.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\netstandard.dll
@@ -11,7 +10,6 @@ E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Collections.Concurrent.
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Collections.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Collections.NonGeneric.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Collections.Specialized.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ComponentModel.Annotations.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ComponentModel.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ComponentModel.EventBasedAsync.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ComponentModel.Primitives.dll
@@ -49,7 +47,6 @@ E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Linq.Expressions.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Linq.Parallel.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Linq.Queryable.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Net.Http.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Net.Http.Rtc.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Net.NameResolution.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Net.NetworkInformation.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Net.Ping.dll
@@ -64,9 +61,6 @@ E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Numerics.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Numerics.Vectors.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ObjectModel.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Reflection.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Reflection.Emit.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Reflection.Emit.ILGeneration.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Reflection.Emit.Lightweight.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Reflection.Extensions.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Reflection.Primitives.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Resources.Reader.dll
@@ -93,11 +87,6 @@ E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Security.Cryptography.P
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Security.Cryptography.X509Certificates.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Security.Principal.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Security.SecureString.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ServiceModel.Duplex.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ServiceModel.Http.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ServiceModel.NetTcp.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ServiceModel.Primitives.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ServiceModel.Security.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Text.Encoding.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Text.Encoding.Extensions.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Text.RegularExpressions.dll
@@ -180,8 +169,6 @@ E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityEngine.VideoModule.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityEngine.VRModule.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityEngine.WindModule.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityEngine.XRModule.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityScript.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityScript.Lang.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Unity_DebugEX.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Unity.Cecil.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Unity.SerializationLogic.dll
@@ -189,10 +176,6 @@ E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Unity.DataContract.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\ExCSS.Unity.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Unity.Legacy.NRefactory.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Unity.IvyParser.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Boo.Lang.Compiler.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Boo.Lang.PatternMatching.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Boo.Lang.Parser.dll
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Boo.Lang.Useful.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Unity.CecilTools.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityEngine.xml
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\UnityEditor.xml
@@ -262,3 +245,14 @@ E:\GameFraneWorkSpace\GameFramePro\obj\Debug\Assembly-CSharp.csproj.CoreCompileI
 E:\GameFraneWorkSpace\GameFramePro\obj\Debug\Assembly-CSharp.csproj.CopyComplete
 E:\GameFraneWorkSpace\GameFramePro\obj\Debug\Assembly-CSharp.dll
 E:\GameFraneWorkSpace\GameFramePro\obj\Debug\Assembly-CSharp.pdb
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ComponentModel.Composition.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Diagnostics.Tracing.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Drawing.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.IO.Compression.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.IO.Compression.FileSystem.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Net.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.ServiceModel.Web.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Transactions.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Web.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Windows.dll
+E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\System.Xml.Serialization.dll

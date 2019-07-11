@@ -90,7 +90,7 @@ namespace GameFramePro
                 relativePathBuilder.Append(item.ToString());
                 StringUtility.ReleaseStringBuilder(item);
                 if (dex != builderList.Count - 1)
-                    relativePathBuilder.Append(@"/");
+                    relativePathBuilder.Append(System.IO.Path.AltDirectorySeparatorChar); //手动增加路径分隔符
             }
             string relativePath = relativePathBuilder.ToString();
             StringUtility.ReleaseStringBuilder(relativePathBuilder);

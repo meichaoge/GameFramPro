@@ -39,7 +39,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool RegistTraceNativeobject(object obj, TraceNativeobjectStateEnum stateEnum)
         {
-              if (Application.isPlaying == false&&AppSetting.S_Instance.IsTraceResourceCreate==false)
+              if (Application.isPlaying == false||AppSetting.S_Instance.IsTraceResourceCreate==false)
                 return false;
             if (obj == null)
             {
@@ -79,7 +79,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool RegistTraceNativeobject(object obj)
         {
-              if (Application.isPlaying == false&&AppSetting.S_Instance.IsTraceResourceCreate==false)
+              if (Application.isPlaying == false||AppSetting.S_Instance.IsTraceResourceCreate==false)
                 return false;
             if (obj == null)
             {
@@ -114,7 +114,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool UnRegistTraceNativeobject(object obj, TraceNativeobjectStateEnum stateEnum)
         {
-              if (Application.isPlaying == false&&AppSetting.S_Instance.IsTraceResourceCreate==false)
+              if (Application.isPlaying == false||AppSetting.S_Instance.IsTraceResourceCreate==false)
                 return false;
             if (obj == null)
             {
@@ -157,7 +157,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool UnRegistTraceNativeobject(object obj)
         {
-              if (Application.isPlaying == false&&AppSetting.S_Instance.IsTraceResourceCreate==false)
+              if (Application.isPlaying == false||AppSetting.S_Instance.IsTraceResourceCreate==false)
                 return false;
             if (obj == null)
             {

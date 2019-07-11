@@ -33,7 +33,8 @@ namespace GameFramePro.EditorEx
         //初始化
         private void Initialed()
         {
-            mSelectAssetBundleSavePath = IOUtility.GetFilePathParentDirectory(Application.dataPath, 1);
+            mSelectAssetBundleSavePath = IOUtility.GetFilePathParentDirectory(Application.dataPath, 1).CombinePathEx(ConstDefine.S_ExportDirectoryName);
+            IOUtility.CheckOrCreateDirectory(mSelectAssetBundleSavePath);
             mAssetDirectoryTreeView = new AssetDirectoryTreeView();
        
             InitialedTreeView();
@@ -93,10 +94,16 @@ namespace GameFramePro.EditorEx
                 #region 操作
                 GUILayout.Space(10);
                 GUILayout.BeginVertical("box");
+
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
                 if (GUILayout.Button("生成AssetBundle", GUILayout.Width(150)))
                 {
                     BuildAssetBundleTool.BeginBuildAssetBundle(mSelectAssetBundleSavePath, mSelectBuildAssetBundleOptions,new List<AppPlatformEnum> { mSelectAppPlatform });
                 }
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+
                 GUILayout.EndVertical();
                 #endregion
 
@@ -118,7 +125,7 @@ namespace GameFramePro.EditorEx
         {
             int directoryIndex = -1;
             string rootPath = ConstDefine.S_ResourcesRealPath; //根路径
-            string[] allResourcesRootFilesAndDirectory = IOUtility.GetFiles_DirectoryExculde(rootPath, "*.*", System.IO.SearchOption.TopDirectoryOnly, new string[] { ConstDefine .S_MetaExtension}, out directoryIndex, true);
+            string[] allResourcesRootFilesAndDirectory = IOUtility.GetDirectoriesAndFilesExculde(rootPath, "*.*", System.IO.SearchOption.TopDirectoryOnly, new string[] { ConstDefine .S_MetaExtension}, out directoryIndex, true);
             mAssetDirectoryTreeView.InitialTreeView(null);
 
             for (int dex = 0; dex < allResourcesRootFilesAndDirectory.Length; dex++)
@@ -132,8 +139,8 @@ namespace GameFramePro.EditorEx
             {
                 TreeNodePathRecursiveHandler<AssetStateNodeInfor> handler = (in AssetStateNodeInfor treeNode, out IEnumerable<string> allSubTreeNode, out int recursiveCount) =>
                 {
-                    string realPath = string.Format("{0}/{1}", ConstDefine.S_ResourcesRealPath, treeNode.TreeNodePathRelativeRoot);
-                    allSubTreeNode = IOUtility.GetFiles_DirectoryExculde(realPath, "*.*", System.IO.SearchOption.TopDirectoryOnly, new string[] { ConstDefine.S_MetaExtension }, out recursiveCount, true);
+                    string realPath = System.IO.Path.Combine(ConstDefine.S_ResourcesRealPath, treeNode.TreeNodePathRelativeRoot);// string.Format("{0}/{1}", ConstDefine.S_ResourcesRealPath, treeNode.TreeNodePathRelativeRoot);
+                    allSubTreeNode = IOUtility.GetDirectoriesAndFilesExculde(realPath, "*.*", System.IO.SearchOption.TopDirectoryOnly, new string[] { ConstDefine.S_MetaExtension }, out recursiveCount, true);
                 };
 
                 for (int dex = 0; dex < directoryIndex; dex++)
@@ -148,7 +155,6 @@ namespace GameFramePro.EditorEx
             }
 
      //       mAssetDirectoryTreeView.ShowTreeViewNodes();
-
         }
         #endregion
 
