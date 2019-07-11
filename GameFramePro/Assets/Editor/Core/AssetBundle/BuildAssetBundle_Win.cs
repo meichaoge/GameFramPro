@@ -48,6 +48,7 @@ namespace GameFramePro.EditorEx
                 GUILayout.BeginVertical("box");
 
                 #region 打包设置
+                GUILayout.BeginVertical("box");
                 GUILayout.Space(10);
 
                 #region 打包平台设置
@@ -82,6 +83,8 @@ namespace GameFramePro.EditorEx
                 GUILayout.EndHorizontal();
                 #endregion
 
+                GUILayout.Space(10);
+                GUILayout.EndVertical();
                 #endregion
 
                 #region 显示Resources 树形目录
@@ -97,7 +100,7 @@ namespace GameFramePro.EditorEx
 
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("生成AssetBundle", GUILayout.Width(150)))
+                if (GUILayout.Button("生成AssetBundle", GUILayout.Width(150),GUILayout.Height(35)))
                 {
                     BuildAssetBundleTool.BeginBuildAssetBundle(mSelectAssetBundleSavePath, mSelectBuildAssetBundleOptions,new List<AppPlatformEnum> { mSelectAppPlatform });
                 }
@@ -115,7 +118,7 @@ namespace GameFramePro.EditorEx
                 Close();
                 throw;
             }
-          
+
         }
 
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using UnityEditor;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace GameFramePro.EditorEx
 {
@@ -12,6 +13,15 @@ namespace GameFramePro.EditorEx
     /// </summary>
     internal static class BuildAssetBundleTool
     {
+        /// <summary>
+        /// 保存生成的AssetBundel 信息
+        /// </summary>
+        public static string S_BuildAssetBundleTotalRecordPath { get { return "Editor/Core/AssetBundle/BuildAssetBundleTotalRecord.txt"; } }
+        /// <summary>
+        /// 真是路径
+        /// </summary>
+        public static string S_BuildAssetBundleTotalRecordRealPath { get { return Application.dataPath.CombinePathEx(S_BuildAssetBundleTotalRecordPath); } }
+
 
         /// <summary>
         /// 根据选择的不同平台打包生成AssetBundle  
@@ -103,7 +113,7 @@ namespace GameFramePro.EditorEx
         /// </summary>
         private static void RecordAllBuildAssetBundleContainAssetInfor(string outputPath, AssetBundleManifest assetBundleManifest)
         {
-            EditorTotalAssetBundleInfor taotalAssetBundleInfor = new EditorTotalAssetBundleInfor();
+            EditorTotalAssetBundleInfor totalAssetBundleInfor = new EditorTotalAssetBundleInfor();
             string[] allAssetBundlePackage = assetBundleManifest.GetAllAssetBundles();
             foreach (var assetBundlePackage in allAssetBundlePackage)
             {
@@ -137,11 +147,26 @@ namespace GameFramePro.EditorEx
                 }
 
 
+            
 
                 Debug.Log(assetBundlePackInfor);
-
+                totalAssetBundleInfor.mTotalSize += assetBundlePackInfor.mPackageSize;
+                totalAssetBundleInfor.mTotalAssetBundleInfor[assetBundlePackInfor.mAssetBundlePackageName] = assetBundlePackInfor;
             }
+
+            string content = SerilazeManager.SerializeObject(totalAssetBundleInfor);
+            IOUtility.CreateOrSetFileContent(S_BuildAssetBundleTotalRecordRealPath, content);
+            Debug.LogEditorInfor("生成AssetBundle 信息成功！！保存在目录 {0}", S_BuildAssetBundleTotalRecordRealPath);
+
+            Debug.Log("-------------RecordAllBuildAssetBundleContainAssetInfor____________");
         }
+
+
+
+
+        #region 读写生成的配置文件
+
+        #endregion
 
     }
 }

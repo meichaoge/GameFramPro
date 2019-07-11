@@ -10,7 +10,7 @@ namespace GameFramePro.EditorEx
     /// 编辑器下所有 AssetBundle 资源信息
     /// </summary>
     [System.Serializable]
-    public class EditorTotalAssetBundleInfor : MonoBehaviour
+    public class EditorTotalAssetBundleInfor 
     {
         public string mVersion = "1.0.0.1"; //资源版本
         public long mTotalSize; //总大小
