@@ -1,226 +1,125 @@
-﻿using GameFramePro.ResourcesEx;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 namespace GameFramePro
 {
     /// <summary>
-    /// 负责整个项目的加载逻辑处理
+    /// 这里只有ResourcesManger 提供的对外访问接口和实现
     /// </summary>
-    public partial class ResourcesManager : Single<ResourcesManager>, IAssetManager
+    public partial class ResourcesManager : Single<ResourcesManager>
     {
+        #region 对象的创建和销毁逻辑（实例化对象 (这里对内部的GameObject.Instantiate<T> 做了一层封装，主要是想后期能够监控对象的创建TODO)）
 
-        #region Data
-        //key  =assetpath 
-        private Dictionary<string, BaseLoadedAssetInfor> mAllLoadedAssetRecord = new Dictionary<string, BaseLoadedAssetInfor>(200); //Cache 所有加载的资源
-        #endregion
-
-        #region IAssetManager 接口实现
-
-        public int MaxAliveTimeAfterNoReference { get { return 600; } } //最多存在10分钟
-
-        public void NotifyAssetNoReference(BaseLoadedAssetInfor infor)
+        // 实例化一个对象
+        public static GameObject Instantiate(string goName)
         {
-            throw new System.NotImplementedException();
+            GameObject go = new GameObject(goName);
+            ResourcesTracker.RegistTraceResources(go, TraceResourcesStateEnum.Normal);
+            return go;
         }
 
-        public void NotifyAssetForceDelete(BaseLoadedAssetInfor infor)
+        //标记为不会被销毁的对象
+        public static bool MarkNotDestroyOnLoad(GameObject go)
         {
-            if (infor == null) return;
-            if (mAllLoadedAssetRecord.ContainsKey(infor.mAssetPath))
-                mAllLoadedAssetRecord.Remove(infor.mAssetPath);
-        }
-
-        #endregion
-
-
-        /// <summary>
-        /// 从缓存中加载一个资源 可能返回null(标示没有加载过这个资源，或者这个资源已经被释放了)
-        /// </summary>
-        /// <param name="assetpath"></param>
-        /// <returns></returns>
-        public Object LoadResourcesFromCache(string assetpath)
-        {
-            BaseLoadedAssetInfor infor = null;
-            if(mAllLoadedAssetRecord.TryGetValue(assetpath, out infor))
+            if (go == null)
             {
-                if (infor != null)
-                    infor.AddReference();
-
-                if (infor.mTargetAsset != null)
-                    return infor.mTargetAsset;
-            }
-            return null;
-        }
-
-        #region  Resources 加载资源接口(同步&异步)
-        //Resources 同步加载资源
-        public void LoadResourcesAssetSync(string assetpath, System.Action<Object> loadCallback)
-        {
-            Object asset = LoadResourcesFromCache(assetpath);  //优先加载缓存中的
-            if (asset != null)
-            {
-                if (loadCallback != null)
-                    loadCallback(asset);
-                return;
+                Debug.LogError("MarkNotDestroyOnLoad Fail, Parameter is Null");
+                return false;
             }
 
-            asset = Resources.Load(assetpath);
-            if (asset == null)
-                Debug.LogError(string.Format("LoadResourcesAssetSync Fail,AssetPath={0}  not exit", assetpath));
+            ResourcesTracker.RegistTraceResources(go, TraceResourcesStateEnum.NotDestroyGameObject);
 
-            RecordLoadAsset(assetpath, asset); //当 asset==null 时候记录返回 
-
-            if (loadCallback != null)
-                loadCallback(asset);
+            GameObject.DontDestroyOnLoad(go);
+            return true;
         }
 
-        //Resources 异步加载资源
-        public void LoadResourcesAssetAsync(string assetpath, System.Action<Object> loadCallback, System.Action<string, float> procressCallback)
+        public static void Destroy(Object obj)
         {
-            Object asset = LoadResourcesFromCache(assetpath);  //优先加载缓存中的
-            if (asset != null)
-            {
-                if (procressCallback != null)
-                    procressCallback(assetpath,1f);
+            ResourcesTracker.UnRegistTraceResources(obj);
+            GameObject.Destroy(obj);
+        }
 
-                if (loadCallback != null)
-                    loadCallback(asset);
-                return;
+        public static void DestroyImmediate(Object obj)
+        {
+            ResourcesTracker.UnRegistTraceResources(obj);
+            GameObject.DestroyImmediate(obj);
+        }
+
+        // 实例化一个对象
+        public static T Instantiate<T>(T original) where T : Object
+        {
+            T go = GameObject.Instantiate<T>(original, Vector3.zero, Quaternion.identity);
+            ResourcesTracker.RegistTraceResources(go, TraceResourcesStateEnum.Normal);
+            return go;
+        }
+
+        // 实例化一个对象
+        public static T Instantiate<T>(T original, Transform parent) where T : Object
+        {
+            T go = Instantiate<T>(original, parent, true);
+            ResourcesTracker.RegistTraceResources(go, TraceResourcesStateEnum.Normal);
+            return go;
+        }
+
+        // 实例化一个对象
+        public static T Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T : Object
+        {
+            T go = Instantiate<T>(original, position, rotation, null);
+            ResourcesTracker.RegistTraceResources(go, TraceResourcesStateEnum.Normal);
+            return go;
+        }
+
+        // 实例化一个对象
+        public static T Instantiate<T>(T original, Vector3 position, Quaternion rotation, Transform parent) where T : Object
+        {
+            if (original == null)
+            {
+                Debug.LogError("Instantiate Fail,参数预制体为null");
+                return null;
             }
 
-            ResourceRequest request = Resources.LoadAsync(assetpath);
-
-            if (procressCallback != null)
-            {
-                AsyncManager.S_Instance.StartAsyncOperation(request as AsyncOperation, (async) =>
-                {
-                    ResourceRequest result = async as ResourceRequest;
-                    RecordLoadAsset(assetpath, result.asset); //当 asset==null 时候记录返回 
-                    if (loadCallback != null)
-                        loadCallback.Invoke(result.asset);
-                }, (procress) =>
-                {
-                    if (procressCallback != null)
-                        procressCallback(assetpath, procress);
-                });
-            }//返回加载进度
-            else
-            {
-                AsyncManager.S_Instance.StartAsyncOperation(request as AsyncOperation, (async) =>
-                {
-                    ResourceRequest result = async as ResourceRequest;
-                    RecordLoadAsset(assetpath, result.asset); //当 asset==null 时候记录返回 
-                    if (loadCallback != null)
-                        loadCallback.Invoke(result.asset);
-                }, null);
-            }//不考虑加载进度
-        }
-        #endregion
-
-        #region AssetBundle 加载资源接口 (同步&异步)
-        //AssetBundle 同步加载
-        public void LoadAssetBundleAssetSync(string assetpath, System.Action<Object> loadCallback)
-        {
-
+            T go = GameObject.Instantiate<T>(original, position, rotation, parent);
+            ResourcesTracker.RegistTraceResources(go, TraceResourcesStateEnum.Normal);
+            return go;
         }
 
-        //AssetBundle 异步加载
-        public void LoadAssetBundleAssetAsync(string assetpath, System.Action<Object> loadCallback)
+        // 实例化一个对象
+        public static T Instantiate<T>(T original, Transform parent, bool worldPositionStays) where T : Object
         {
-
-        }
-        #endregion
-
-
-        #region 资源处理
-        /// <summary>
-        /// 记录加载的资源
-        /// </summary>
-        /// <param name="assetpath"></param>
-        /// <param name="asset"></param>
-        public void RecordLoadAsset(string assetpath, Object asset)
-        {
-            if (asset == null)
-                return;
-            BaseLoadedAssetInfor infor = null;
-            if (mAllLoadedAssetRecord.TryGetValue(assetpath, out infor))
+            if (original == null)
             {
-                if (object.ReferenceEquals(asset, infor.mTargetAsset))
-                {
-                    infor.AddReference(); //增加引用次数
-                //    Debug.LogError(string.Format("RecordLoadAsset Fail,Already Exit Asset at path={0} of asset={1}", assetpath, asset));
-                    return;
-                }
-                Debug.LogError(string.Format("RecordLoadAsset Fail,Already Exit Asset at path={0} of asset={1} Not Equal", assetpath, asset));
-                return;
+                Debug.LogError("Instantiate Fail,参数预制体为null");
+                return null;
             }
-            infor = new BaseLoadedAssetInfor(assetpath, LoadedAssetTypeEnum.Resources_UnKnown, asset,this);
-            mAllLoadedAssetRecord[assetpath] = infor;
+
+            T go = GameObject.Instantiate<T>(original, parent, worldPositionStays);
+            ResourcesTracker.RegistTraceResources(go, TraceResourcesStateEnum.Normal);
+            return go;
         }
 
-        //public void UnRecordLoadAsset(string assetpath, Object asset)
+
+        #endregion
+
+        #region 资源加载接口实现
+        ///// <summary>
+        ///// 加载项目资源的接口，屏蔽内部Resources/AssetBundle 加载，隐藏内部同步/异步加载逻辑
+        ///// </summary>
+        ///// <param name="assetpath"></param>
+        ///// <param name="loadCallback"></param>
+        //private void LoadResourcesAsset(string assetpath, System.Action<UnityEngine.Object> loadCallback)
         //{
-        //    if (asset == null)
-        //        return;
-        //    BaseLoadedAssetInfor infor = null;
-        //    if (mAllLoadedAssetRecord.TryGetValue(assetpath, out infor))
+        //    if (string.IsNullOrEmpty(assetpath))
         //    {
-        //        if (object.ReferenceEquals(asset, infor.mTargetAsset))
-        //        {
-        //            mAllLoadedAssetRecord.Remove(assetpath);
-        //            return;
-        //        }
-        //        Debug.LogError(string.Format("UnRecordLoadAsset Fail,Already Exit Asset at path={0} of asset={1} Not Equal", assetpath, asset));
+        //        Debug.LogError("LoadResourcesAsset Fail,parameter assetpath is null");
+        //        if (loadCallback != null) loadCallback.Invoke(null);
         //        return;
         //    }
-
-        //    Debug.LogError(string.Format("UnRecordLoadAsset Fail,Not Exit Asset at path={0} of asset={1}", assetpath, asset));
         //}
-
-        //public void UnRecordLoadAsset(string assetpath)
-        //{
-        //    if (mAllLoadedAssetRecord.ContainsKey(assetpath))
-        //    {
-        //        mAllLoadedAssetRecord.Remove(assetpath);
-        //        return;
-        //    }
-        //    Debug.LogError(string.Format("UnRecordLoadAsset Fail,Not Exit Asset at path={0} ", assetpath));
-        //}
-
-        /// <summary>
-        /// 减少对象的引用 如果 isforceDelete =true,则会强制删除这个对象
-        /// </summary>
-        /// <param name="asset"></param>
-        /// <param name="isforceDelete"></param>
-        public void UnRecordLoadAsset(Object asset,bool isforceDelete)
-        {
-            if (asset == null)
-                return;
-
-            string assetpath = string.Empty;
-            foreach (var item in mAllLoadedAssetRecord)
-            {
-                if (item.Value.mTargetAsset == asset)
-                {
-                    assetpath = item.Key;
-                    break;
-                }
-            }
-
-            if (string.IsNullOrEmpty(assetpath) == false)
-            {
-                var loadAssetInfor = mAllLoadedAssetRecord[assetpath];
-                loadAssetInfor.ReduceReference(isforceDelete);
-                return;
-            }
-
-            Debug.LogError(string.Format("UnRecordLoadAsset Fail,Not Exit asset={0}", asset));
-        }
-
-
         #endregion
+
+      
 
     }
 }
