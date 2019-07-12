@@ -80,6 +80,26 @@ namespace GameFramePro
 
         }
 
+        /// <summary>
+        /// 读取指定路径上文件的全部信息
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="content"></param>
+        /// <returns>返回值标示是否读取生成</returns>
+        public static bool GetFileContent(string filePath, out string content)
+        {
+            content = string.Empty;
+            if (System.IO.File.Exists(filePath) == false)
+            {
+                Debug.LogError("GetFileContent Fail,Not Exit File Path " + filePath);
+                return false;
+            }
+
+            content = System.IO.File.ReadAllText(filePath);
+            return true;
+        }
+
+
         #endregion
 
         #region 目录操作 (获取父目录、判断是否包含子目录、创建和销毁目录)
@@ -447,6 +467,23 @@ namespace GameFramePro
         public static string CombinePathEx(this string path1, string path2)
         {
             return System.IO.Path.Combine(path1, path2);
+        }
+
+        /// <summary>
+        /// 直接组合两个字符串
+        /// </summary>
+        /// <param name="path1"></param>
+        /// <param name="path2"></param>
+        /// <returns></returns>
+        public static string ConcatPathEx(this string path1, string path2)
+        {
+            string resultStr = string.Empty;
+            StringBuilder builder = StringUtility.GetStringBuilder();
+            builder.Append(path1);
+            builder.Append(path2);
+            resultStr = builder.ToString();
+            StringUtility.ReleaseStringBuilder(builder);
+            return resultStr;
         }
 
         /// <summary>

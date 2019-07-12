@@ -30,6 +30,11 @@ namespace GameFramePro
         }
 
         #region 辅助
+        /// <summary>
+        /// 根据路劲获取已经加载的 AssetBundle 可能得到空结果
+        /// </summary>
+        /// <param name="assetBundlePath"></param>
+        /// <returns></returns>
         private AssetBundle GetAssetBundleByPath(string assetBundlePath)
         {
             AssetBundle result = null;

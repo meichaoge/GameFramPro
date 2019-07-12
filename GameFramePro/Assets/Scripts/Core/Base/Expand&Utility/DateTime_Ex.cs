@@ -33,7 +33,7 @@ public static class DateTime_Ex
     /// </summary>
     /// <param name="timeStamp">时间戳(单位秒)</param>
     /// <returns></returns>
-    public static int DateTimeToTimestamp_Second(this DateTime utcDateTime)
+    public static int ToTimestamp_Second(this DateTime utcDateTime)
     {
         if (utcDateTime.Kind != DateTimeKind.Utc)
         {
@@ -67,7 +67,7 @@ public static class DateTime_Ex
     /// </summary>
     /// <param name="timeStamp">时间戳(单位毫秒)</param>
     /// <returns></returns>
-    public static long DateTimeToTimestamp_Millisecond(this DateTime utcDateTime)
+    public static long ToTimestamp_Millisecond(this DateTime utcDateTime)
     {
         if (utcDateTime.Kind != DateTimeKind.Utc)
         {
@@ -86,5 +86,48 @@ public static class DateTime_Ex
     }
     #endregion
 
+
+
+    #region 格式转换
+    /// <summary>
+    /// 参数DataTime 裁剪成指定格式(忽略秒以后的数据部分数据)
+    /// </summary>
+    /// <param name="targetDataTime"></param>
+    /// <returns></returns>
+    public static DateTime TruncatedDataTime_Second(this DateTime targetDataTime)
+    {
+        return new DateTime(targetDataTime.Year, targetDataTime.Month, targetDataTime.Day, targetDataTime.Hour, targetDataTime.Minute, targetDataTime.Second, targetDataTime.Kind);
+    }
+
+    /// <summary>
+    /// 参数DataTime 裁剪成指定格式(忽略分钟以后的数据部分数据)
+    /// </summary>
+    /// <param name="targetDataTime"></param>
+    /// <returns></returns>
+    public static DateTime TruncatedDataTime_Minute(this DateTime targetDataTime)
+    {
+        return new DateTime(targetDataTime.Year, targetDataTime.Month, targetDataTime.Day, targetDataTime.Hour, targetDataTime.Minute, 0, targetDataTime.Kind);
+    }
+
+    /// <summary>
+    /// 参数DataTime 裁剪成指定格式(忽略分钟以后的数据部分数据)
+    /// </summary>
+    /// <param name="targetDataTime"></param>
+    /// <returns></returns>
+    public static DateTime TruncatedDataTime_Hour(this DateTime targetDataTime)
+    {
+        return new DateTime(targetDataTime.Year, targetDataTime.Month, targetDataTime.Day, targetDataTime.Hour, 0, 0, targetDataTime.Kind);
+    }
+
+    /// <summary>
+    /// 参数DataTime 裁剪成指定格式(忽略天以后的数据部分数据)
+    /// </summary>
+    /// <param name="targetDataTime"></param>
+    /// <returns></returns>
+    public static DateTime TruncatedDataTime_Day(this DateTime targetDataTime)
+    {
+        return new DateTime(targetDataTime.Year, targetDataTime.Month, targetDataTime.Day, 0, 0, 0, targetDataTime.Kind);
+    }
+    #endregion
 
 }

@@ -13,6 +13,7 @@ namespace GameFramePro.EditorEx
     public class EditorTotalAssetBundleInfor 
     {
         public string mVersion = "1.0.0.1"; //资源版本
+        public long mConfigBuildTime = 0; //创建这个配置文件的时间(utc);
         public long mTotalSize; //总大小
         public Dictionary<string, EditorAssetBundleInfor> mTotalAssetBundleInfor = new Dictionary<string, EditorAssetBundleInfor>(); //包含的所有资源信息
     }

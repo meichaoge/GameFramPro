@@ -72,6 +72,25 @@ namespace GameFramePro
             }
         }
 
+        public static AppPlatformEnum GetAppPlatformEnumFromBuildTarget(UnityEditor.BuildTarget buildTarget)
+        {
+            switch (buildTarget)
+            {
+                case UnityEditor.BuildTarget.StandaloneOSX:
+                    return AppPlatformEnum.Mac;
+                case UnityEditor.BuildTarget.StandaloneWindows:
+                    return AppPlatformEnum.Windows64;
+                case UnityEditor.BuildTarget.iOS:
+                    return AppPlatformEnum.IOS;
+                case UnityEditor.BuildTarget.Android:
+                    return AppPlatformEnum.Android;
+                case UnityEditor.BuildTarget.StandaloneWindows64:
+                    return AppPlatformEnum.Windows64;
+                default:
+                    Debug.LogError(string.Format("GetBuildTargetFromAppPlatformEnum Fail,Not Support Platform={0}", buildTarget));
+                    return AppPlatformEnum.Windows64;
+            }
+        }
 
         public static UnityEditor.BuildTargetGroup GetBuildTargetGroupFromAppPlatformEnum(AppPlatformEnum platform)
         {
@@ -89,6 +108,17 @@ namespace GameFramePro
                     Debug.LogError(string.Format("GetBuildTargetFromAppPlatformEnum Fail,Not Support Platform={0}", platform));
                     return UnityEditor.BuildTargetGroup.Standalone;
             }
+        }
+
+
+        /// <summary>
+        /// 获取各个平台对应的目录
+        /// </summary>
+        /// <param name="platform"></param>
+        /// <returns></returns>
+        public static string GetPlatformFolderName(UnityEditor.BuildTarget buildTarget)
+        {
+            return GetPlatformFolderName(GetAppPlatformEnumFromBuildTarget(buildTarget));
         }
 #endif
 
