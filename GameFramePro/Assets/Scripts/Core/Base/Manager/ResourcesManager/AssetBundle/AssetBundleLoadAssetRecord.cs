@@ -20,7 +20,6 @@ namespace GameFramePro.ResourcesEx
         public long MarkToDeleteTime { get; protected set; } = 0;
         public IAssetManager BelongAssetManager { get; protected set; } = null;
 
-        public string AssetName { get; protected set; } //资源名称
 
         #region 构造函数& 设置
         public AssetBundleLoadAssetRecord()
@@ -29,23 +28,16 @@ namespace GameFramePro.ResourcesEx
         }
 
         public AssetBundleLoadAssetRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-          : this(assetPath, System.IO.Path.GetFileNameWithoutExtension(assetPath), typeEnum, asset, manager)
         {
-
+            Initial(assetPath, typeEnum, asset, manager);
         }
 
-        public AssetBundleLoadAssetRecord(string assetPath, string assetName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        {
-            Initial(assetPath, assetName, typeEnum, asset, manager);
-        }
-
-        public void Initial(string assetPath, string assetName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        public void Initial(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
         {
             Debug.Assert(manager != null);
             Debug.Assert(asset != null);
 
             AssetPath = assetPath;
-            AssetName = assetName;
             InstanceID = asset.GetInstanceID();
             ReferenceCount = 1;
             AssetLoadedType = typeEnum;
@@ -62,7 +54,7 @@ namespace GameFramePro.ResourcesEx
         {
             if (TargetAsset == null)
             {
-                Debug.LogErrorFormat("资源{0} Name={1} 已经被卸载了, 无法增加引用", AssetPath, AssetName);
+                Debug.LogErrorFormat("资源{0} 已经被卸载了, 无法增加引用", AssetPath);
                 BelongAssetManager.MarkTargetAssetNull(this);
                 return;
             }
@@ -73,7 +65,7 @@ namespace GameFramePro.ResourcesEx
         {
             if (TargetAsset == null)
             {
-                Debug.LogErrorFormat("资源{0} Name={1} 已经被卸载了, 无法减少引用", AssetPath, AssetName);
+                Debug.LogErrorFormat("资源{0}  已经被卸载了, 无法减少引用", AssetPath);
                 BelongAssetManager.MarkTargetAssetNull(this);
                 return;
             }
@@ -121,7 +113,6 @@ namespace GameFramePro.ResourcesEx
         public void NotifyReleaseRecord()
         {
             AssetPath = null;
-            AssetName = null;
             ReferenceCount = 0;
             AssetLoadedType = LoadedAssetTypeEnum.None;
             BelongAssetManager = null;

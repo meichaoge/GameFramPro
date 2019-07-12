@@ -21,6 +21,7 @@ namespace GameFramePro.ResourcesEx
         public IAssetManager BelongAssetManager { get; protected set; } = null;
 
         public string AssetName { get; protected set; } //资源名称
+        public string ParentAssetBundlePath { get; protected set; } //所属的AssetBundle 目录
 
         #region 构造函数& 设置
         public AssetBundleSubAssetLoadRecord()
@@ -28,18 +29,18 @@ namespace GameFramePro.ResourcesEx
 
         }
 
-        public AssetBundleSubAssetLoadRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-          : this(assetPath, System.IO.Path.GetFileNameWithoutExtension(assetPath), typeEnum, asset, manager)
-        {
+        //public AssetBundleSubAssetLoadRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager, string ParentAssetBundle)
+        //  : this(assetPath, System.IO.Path.GetFileNameWithoutExtension(assetPath), typeEnum, asset, manager, ParentAssetBundle)
+        //{
 
+        //}
+
+        public AssetBundleSubAssetLoadRecord(string assetPath, string assetName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager, string ParentAssetBundle)
+        {
+            Initial(assetPath, assetName, typeEnum, asset, manager, ParentAssetBundle);
         }
 
-        public AssetBundleSubAssetLoadRecord(string assetPath, string assetName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        {
-            Initial(assetPath, assetName, typeEnum, asset, manager);
-        }
-
-        public void Initial(string assetPath, string assetName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        public void Initial(string assetPath, string assetName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager,string ParentAssetBundle)
         {
             Debug.Assert(manager != null);
             Debug.Assert(asset != null);
@@ -52,6 +53,7 @@ namespace GameFramePro.ResourcesEx
             BelongAssetManager = manager;
             TargetAsset = asset;
             RemainTimeToBeDelete = BelongAssetManager.MaxAliveTimeAfterNoReference;
+            ParentAssetBundlePath = ParentAssetBundle;
         }
 
         #endregion
