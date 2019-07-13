@@ -29,11 +29,6 @@ namespace GameFramePro.ResourcesEx
 
         }
 
-        //public AssetBundleSubAssetLoadRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager, string ParentAssetBundle)
-        //  : this(assetPath, System.IO.Path.GetFileNameWithoutExtension(assetPath), typeEnum, asset, manager, ParentAssetBundle)
-        //{
-
-        //}
 
         public AssetBundleSubAssetLoadRecord(string assetPath, string assetName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager, string ParentAssetBundle)
         {

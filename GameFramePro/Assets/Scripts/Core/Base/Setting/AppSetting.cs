@@ -8,7 +8,7 @@ namespace GameFramePro
     /// <summary>
     /// 配置应用的设置
     /// </summary>
-    public class AppSetting : Single_Mono_AutoCreateNotDestroy<AppSetting>
+    public class AppSetting : Single_Mono_NotDestroy<AppSetting>
     {
 
         [Header("标示是否在优先加载Resources下资源, =false 时候优先加载外部AssetBundle资源")]

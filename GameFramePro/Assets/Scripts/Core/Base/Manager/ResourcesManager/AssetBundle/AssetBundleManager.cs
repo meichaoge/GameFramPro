@@ -116,6 +116,8 @@ namespace GameFramePro.ResourcesEx
         /// <param name="loadCallback"></param>
         public void LoadAsserBundleAssetSync(string assetBundlePath, string assetName, Action<UnityEngine.Object> loadCallback)
         {
+            #region 加载缓存中的资源
+
             Object assetObject = LoadAssetFromCache(assetName);
             if (assetObject != null)
             {
@@ -133,6 +135,10 @@ namespace GameFramePro.ResourcesEx
                     loadCallback(asset);
                 return;
             }
+
+            #endregion
+
+
         }
 
         #endregion
@@ -168,7 +174,9 @@ namespace GameFramePro.ResourcesEx
                 return;
             }
 
-            record = mAssetBundleLoadSubAssetRecordPoolMgr.GetItemFromPool();
+            record = AssetDelayDeleteManager.TryGetILoadAssetRecord(assetBundlePath) as AssetBundleSubAssetLoadRecord;
+            if (record == null)
+                record = mAssetBundleLoadSubAssetRecordPoolMgr.GetItemFromPool();
             record.Initial(assetBundlePath, assetName,LoadedAssetTypeEnum.AssetBundle_UnKnown,asset,this, assetBundlePath);
 
             mAllLoadedAssetBundleSubAssetRecord[assetName] = record;

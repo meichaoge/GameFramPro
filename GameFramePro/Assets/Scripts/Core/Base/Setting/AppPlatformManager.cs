@@ -124,7 +124,31 @@ namespace GameFramePro
 
         #endregion
 
-
+        /// <summary>
+        /// 获取当前运行时的路径
+        /// </summary>
+        /// <returns></returns>
+        public static string GetRuntimePlatformFolderName()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.Android:
+                    return GetPlatformFolderName(AppPlatformEnum.Android);
+                case RuntimePlatform.WindowsEditor:
+                case RuntimePlatform.WindowsPlayer:
+                    return GetPlatformFolderName(AppPlatformEnum.Windows64);
+                case RuntimePlatform.OSXEditor:
+                    return GetPlatformFolderName(AppPlatformEnum.Mac);
+                case RuntimePlatform.OSXPlayer:
+                    return GetPlatformFolderName(AppPlatformEnum.Mac);
+                case RuntimePlatform.IPhonePlayer:
+                    return GetPlatformFolderName(AppPlatformEnum.IOS);
+                default:
+                    Debug.LogError("GetRuntimePlatformFolderName Fail,Not Support " + Application.platform);
+                    break;
+            }
+            return GetPlatformFolderName(AppPlatformEnum.Windows64);
+        }
 
 
     }

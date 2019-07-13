@@ -9,8 +9,9 @@ namespace GameFramePro.EditorEx
     /// 编辑器下每个AssetBundle 包中的单个资源信息
     /// </summary>
     [System.Serializable]
-    public class EditorAssetBundleAssetInfor : AssetBundleAssetInfor
+    public class EditorAssetBundleAssetInfor 
     {
+        public string mAssetRelativePath;  //资源路径
         public string mMD5Code;  //编辑器下有效 用于在两个版本之间比对资源
         public long mFileAssetSize; //实际文件资源大小
 

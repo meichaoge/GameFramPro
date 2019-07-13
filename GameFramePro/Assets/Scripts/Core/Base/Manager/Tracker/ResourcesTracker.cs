@@ -63,7 +63,7 @@ namespace GameFramePro
                 {
                     if ((infor.ResourcesStateEnum & stateEnum) != 0)  //判断是否已经包含了这一状态
                     {
-                        Debug.LogEditorInfor(string.Format("RegistTraceResources Fail,Already exit Target instanceid={0} ,state is {1}}", instanceId, stateEnum));
+                        Debug.LogEditorInfor(string.Format("RegistTraceResources Fail,Already exit Target instanceid={0} ,state is {1}", instanceId, stateEnum));
                         return false;
                     }
                     infor.ResourcesStateEnum = infor.ResourcesStateEnum | stateEnum; //新增这个状态

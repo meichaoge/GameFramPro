@@ -1,6 +1,5 @@
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Assembly-CSharp.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Assembly-CSharp.pdb
-E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Boo.Lang.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\Microsoft.Win32.Primitives.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\mscorlib.dll
 E:\GameFraneWorkSpace\GameFramePro\Temp\bin\Debug\netstandard.dll
