@@ -46,7 +46,7 @@ public class Single_Mono_AutoCreate<T> : MonoBehaviour where T : MonoBehaviour
     {
         if (s_Instance != null && isIgnoreCheck)
             return s_Instance;
-        if (AppSetting.S_Instance.IsSingletonCreateSaftCheck)
+        if (AppSetting.S_IsSingletonCreateSaftCheck)
         {
             try
         {

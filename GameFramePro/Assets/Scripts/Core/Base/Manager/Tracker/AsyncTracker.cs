@@ -22,7 +22,7 @@ namespace GameFramePro
         /// <returns></returns>
         public bool TrackAsyncTask(YieldInstruction task)
         {
-            if (AppSetting.S_Instance.IsTrackAsyncTask == false || Application.isPlaying)
+            if (AppSetting.S_IsTrackAsyncTask == false || Application.isPlaying)
                 return false;
 
             int hashCode = task.GetHashCode();
@@ -51,7 +51,7 @@ namespace GameFramePro
         /// <returns></returns>
         public bool UnTrackAsyncTask(YieldInstruction task)
         {
-            if (AppSetting.S_Instance.IsTrackAsyncTask == false || Application.isPlaying)
+            if (AppSetting.S_IsTrackAsyncTask == false || Application.isPlaying)
                 return false;
 
             int hashCode = task.GetHashCode();

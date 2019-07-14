@@ -54,7 +54,7 @@ namespace GameFramePro.ResourcesEx
         private void GetServerAssetBundleContainAssetConfig()
         {
             string assetBundleConfigFileUrl = AppUrlManager.S_AssetBundleCDNTopUrl.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName);
-            DownloadManager.S_Instance.GetStringDataFromUrl(assetBundleConfigFileUrl, OnCompleteGetServerAssetBundleConfig, UnityWebRequestTaskPriorityEnum.Immediately);
+            //DownloadManager.S_Instance.GetStringDataFromUrl(assetBundleConfigFileUrl, OnCompleteGetServerAssetBundleConfig, UnityTaskPriorityEnum.Immediately);
         }
 
 
@@ -63,10 +63,6 @@ namespace GameFramePro.ResourcesEx
             Debug.LogInfor("----  " + assetBundleConfig);
         }
         #endregion
-
-
-
-
 
 
         #region 接口
