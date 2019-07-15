@@ -56,16 +56,20 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-        private HashSet<string> mAllNeedDownloadAssetBundleNameRecord; //所有需要下载更新的AssetBundle 信息
+        private HashSet<string> mAllNeedDownloadAssetBundleNameRecord=new HashSet<string>(); //所有需要下载更新的AssetBundle 信息
         private Dictionary<string, UpdateAssetBundleInfor> mAllNeedUpdateAssetBundleAssetInfor = new Dictionary<string, UpdateAssetBundleInfor>(); //所有需要更新的资源
-
+        private const int S_MaxDownloadTimes = 3; //最大下载次数
+        private int mCurDownloadTime = 0; 
         #endregion
 
 
 
 
         #region 获取本地AssetBundle 资源以及对于的配置表                                               
-        private AssetBundleAssetTotalInfor mLocalBundleAssetConfigInfor = null; //本地的AssetBundle 配置 ，可能是null
+        //     private AssetBundleAssetTotalInfor mLocalBundleAssetConfigInfor = null; //本地的AssetBundle 配置 ，可能是null
+        //key=assetBundle 资源的路径 value=每个AssetBundle资源信息
+        private Dictionary<string, AssetBundleInfor> mAllLocalAssetBundleAssetFileInfor = new Dictionary<string, AssetBundleInfor>();
+        private float mAllLocalAssetBundleLoadProcess = 0f; //获取进度
 
         /// <summary>
         /// 首先需要判断本地文件有没有被修改过(或者被删除了部分资源)，如果有改动则需要读取每个文件的MD5,否则只需要根据本地配置文件修改即可
@@ -78,29 +82,54 @@ namespace GameFramePro.ResourcesEx
             var allAssetBundleFiles = System.IO.Directory.GetFiles(S_LocalAssetBundleTopDirectoryPath, "*.*", System.IO.SearchOption.AllDirectories);
             if (allAssetBundleFiles.Length == 0)
                 return true;
-
-     //       string localAssetBundleTotalConfigFilePath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName); //本地配置文件的路径
-
-
-
-            return true;
-        }
-
-
-
-        private void GetLocalAsetBundleContainAssetConfig()
-        {
-            mLocalBundleAssetConfigInfor = null;
-            string localAssetBundleTotalConfigFilePath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName); //本地配置文件的路径
-            string assetBundleConfigContent = string.Empty;
-            if (IOUtility.GetFileContent(localAssetBundleTotalConfigFilePath, out assetBundleConfigContent) == false)
+            Loom.RunAsync(() =>
             {
-                Debug.LogInfor(string.Format("GetLocalAsetBundleContainAssetConfig Fail,Local Path ({0}) AssetBundle Config Not Exit!", localAssetBundleTotalConfigFilePath));
-                return;
-            }
+                for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
+                {
+                    var filePath = allAssetBundleFiles[dex];
+                    AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
+                    assetBundleInfor.mBundleName = filePath;
+                    assetBundleInfor.mBundleMD5Code = MD5Helper.GetFileMD5(filePath, ref assetBundleInfor.mBundleSize);
 
-            mLocalBundleAssetConfigInfor = SerilazeManager.DeserializeObject<AssetBundleAssetTotalInfor>(assetBundleConfigContent);
+                    mAllLocalAssetBundleAssetFileInfor[filePath] = assetBundleInfor; //记录本地AssetBundle 资源信息
+
+                    mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length;  //进度
+                }
+                Loom.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
+
+            }).Start();
+
+            return false;
         }
+
+        /// <summary>
+        /// 完成获取本地资源的任务
+        /// </summary>
+        private void OnCompleteAllLocalAssetBundleInfor()
+        {
+            Debug.Log("OnCompleteAllLocalAssetBundleInfor------------->>");
+            mAllLocalAssetBundleLoadProcess = 1f;
+            //   GetLocalAsetBundleContainAssetConfig();
+
+            GetServerAssetBundleContainAssetConfig(GetAllNeedUpdateAssetBundleAssetInfor);
+        }
+
+        ///// <summary>
+        ///// 获取本地配置文件信息
+        ///// </summary>
+        //private void GetLocalAsetBundleContainAssetConfig()
+        //{
+        //    //mLocalBundleAssetConfigInfor = null;
+        //    //string localAssetBundleTotalConfigFilePath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName); //本地配置文件的路径
+        //    //string assetBundleConfigContent = string.Empty;
+        //    //if (IOUtility.GetFileContent(localAssetBundleTotalConfigFilePath, out assetBundleConfigContent) == false)
+        //    //{
+        //    //    Debug.LogInfor(string.Format("GetLocalAsetBundleContainAssetConfig Fail,Local Path ({0}) AssetBundle Config Not Exit!", localAssetBundleTotalConfigFilePath));
+        //    //    return;
+        //    //}
+
+        //    //mLocalBundleAssetConfigInfor = SerilazeManager.DeserializeObject<AssetBundleAssetTotalInfor>(assetBundleConfigContent);
+        //}
 
 
 
@@ -148,21 +177,21 @@ namespace GameFramePro.ResourcesEx
         /// <returns></returns>
         private void GetAllNeedUpdateAssetBundleAssetInfor(bool isSuccessGetServerConfig)
         {
-            if (isSuccessGetServerConfig == false) return ;
+            if (isSuccessGetServerConfig == false) return;
             //Key =AssetBundle Name, value{=true 标示需要更新 =fasle 标示需要删除资源}
-        
+
             AssetBundleInfor localAssetBundleConfig = null;
 
             //对比服务器配置 获取哪些资源需要更新或者新增
             foreach (var assetBunleInfor in mServerBundleAssetConfigInfor.mTotalAssetBundleInfor.Values)
             {
-                if (mLocalBundleAssetConfigInfor == null)
-                {
-                    mAllNeedUpdateAssetBundleAssetInfor.Add(assetBunleInfor.mBundleName,new UpdateAssetBundleInfor(  AssetBundleAssetUpdateTagEnum.AddAsset, assetBunleInfor.mBundleName, assetBunleInfor.mBundleSize));
-                    continue;
-                }
+                //if (mLocalBundleAssetConfigInfor == null)
+                //{
+                //    mAllNeedUpdateAssetBundleAssetInfor.Add(assetBunleInfor.mBundleName,new UpdateAssetBundleInfor(  AssetBundleAssetUpdateTagEnum.AddAsset, assetBunleInfor.mBundleName, assetBunleInfor.mBundleSize));
+                //    continue;
+                //}
 
-                if (mLocalBundleAssetConfigInfor.mTotalAssetBundleInfor.TryGetValue(assetBunleInfor.mBundleName, out localAssetBundleConfig))
+                if (mAllLocalAssetBundleAssetFileInfor.TryGetValue(assetBunleInfor.mBundleName, out localAssetBundleConfig))
                 {
                     if (localAssetBundleConfig.mBundleMD5Code != assetBunleInfor.mBundleMD5Code)
                         mAllNeedUpdateAssetBundleAssetInfor.Add(assetBunleInfor.mBundleName, new UpdateAssetBundleInfor(AssetBundleAssetUpdateTagEnum.UpdateAsset, assetBunleInfor.mBundleName, assetBunleInfor.mBundleSize)); //需要更新
@@ -174,14 +203,14 @@ namespace GameFramePro.ResourcesEx
 
             HashSet<string> allNeedDeleteAssetBundleNameInfor = new HashSet<string>();
             //对比获取哪些资源需要删除
-            if (mLocalBundleAssetConfigInfor == null)
+            //  if (mLocalBundleAssetConfigInfor == null)
             {
-                foreach (var assetBunleInfor in mLocalBundleAssetConfigInfor.mTotalAssetBundleInfor.Values)
+                foreach (var assetBunleInfor in mAllLocalAssetBundleAssetFileInfor)
                 {
-                    if (mServerBundleAssetConfigInfor.mTotalAssetBundleInfor.ContainsKey(assetBunleInfor.mBundleName))
+                    if (mServerBundleAssetConfigInfor.mTotalAssetBundleInfor.ContainsKey(assetBunleInfor.Value.mBundleName))
                         continue;
 
-                    allNeedDeleteAssetBundleNameInfor.Add(assetBunleInfor.mBundleName); //需要删除
+                    allNeedDeleteAssetBundleNameInfor.Add(assetBunleInfor.Key); //需要删除
                 }
             }
 
@@ -192,7 +221,9 @@ namespace GameFramePro.ResourcesEx
             ShowAllNeedUpdateAssetBundleByType(mAllNeedUpdateAssetBundleAssetInfor);
 #endif
             Debug.LogEditorError("需要新增下载的平台manifest 文件");
-            return ;
+
+            BeginDownloadAssetBundle(mAllNeedUpdateAssetBundleAssetInfor);  //开始下载
+            return;
         }
 
         /// <summary>
@@ -200,7 +231,7 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         private void DeleteAllInvalidAssetBundelAsset(HashSet<string> dataSources)
         {
-            if(dataSources==null|| dataSources.Count == 0)
+            if (dataSources == null || dataSources.Count == 0)
             {
                 Debug.LogEditorInfor("没有需要删除的本地AssetBundle");
                 return;
@@ -216,28 +247,32 @@ namespace GameFramePro.ResourcesEx
         /// <param name="dataSources"></param>
         private void BeginDownloadAssetBundle(Dictionary<string, UpdateAssetBundleInfor> dataSources)
         {
-            if(dataSources==null|| dataSources.Count == 0)
+            if (dataSources == null || dataSources.Count == 0)
             {
                 Debug.Log("所有的AssetBundle 资源都是最新的");
+                OnAllLocalAssetBundleIsValib();
                 return;
             }
             Debug.LogInfor(string.Format("BeginDownloadAssetBundle ,一共有{0}个需要需要更新或者下载", dataSources.Count));
-            mAllNeedDownloadAssetBundleNameRecord = new HashSet<string>();
+            //mAllNeedDownloadAssetBundleNameRecord = new HashSet<string>();
 
             foreach (var assetBundleRecord in dataSources.Values)
             {
                 if (assetBundleRecord.mAssetBundleAssetUpdateTagEnum == AssetBundleAssetUpdateTagEnum.RemoveLocalAsset)
+                {
+                    Debug.LogError("BeginDownloadAssetBundle Error " + assetBundleRecord.mNeedUpdateAssetName);
                     continue;
+                }
                 string updateAssetBundleUrl = string.Format("{0}/{1}", AppUrlManager.S_AssetBundleCDNTopUrl, assetBundleRecord.mNeedUpdateAssetName);
                 mAllNeedDownloadAssetBundleNameRecord.Add(assetBundleRecord.mNeedUpdateAssetName); //记录那些资源需要下载
                 DownloadManager.S_Instance.GetAssetBundleFromUrl(updateAssetBundleUrl, OnDownloadAssetBundleCallback, UnityTaskPriorityEnum.Immediately);
             }
 
-            if (mAllNeedDownloadAssetBundleNameRecord.Count == 0)
-            {
-                Debug.LogError("没有需要下载的AssetBundle 资源,只需要删除旧的资源");
-                return;
-            }
+            //if (mAllNeedDownloadAssetBundleNameRecord.Count == 0)
+            //{
+            //    Debug.LogError("没有需要下载的AssetBundle 资源,只需要删除旧的资源");
+            //    return;
+            //}
             Debug.Log(string.Format("BeginDownloadAssetBundle 一共有{0} 个下载AssetBundle 需求", mAllNeedDownloadAssetBundleNameRecord.Count));
         }
 
@@ -258,40 +293,65 @@ namespace GameFramePro.ResourcesEx
             mAllNeedDownloadAssetBundleNameRecord.Remove(assetBundleName);
             if (assetBundle != null)
             {
-                mAllNeedDownloadAssetBundleNameRecord.Remove(assetBundleName);
+                mAllNeedUpdateAssetBundleAssetInfor.Remove(assetBundleName);
                 SaveDownloadAssetBundleAsset(assetBundle, assetBundleName);
             }
             else
             {
                 Debug.LogInfor("OnDownloadAssetBundleCallback ,下载的AssetBundle 为null, url= " + url);
             }
-            CheckIfCompleteAllDownloadAssetBundle();
+            if (mAllNeedDownloadAssetBundleNameRecord.Count == 0)
+                OnCompleteDownloadAssetBundelAsset();
         }
 
         /// <summary>
         /// 保存下载的AssetBundle 资源
         /// </summary>
         /// <param name="assetBundle"></param>
-        private void  SaveDownloadAssetBundleAsset(AssetBundle assetBundle, string assetBundleName)
+        private void SaveDownloadAssetBundleAsset(AssetBundle assetBundle, string assetBundleName)
         {
             Debug.LogError("SaveDownloadAssetBundleAsset  TODO");
         }
 
-        /// <summary>
-        /// 检测是否完成下载任务
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckIfCompleteAllDownloadAssetBundle()
+        ///// <summary>
+        ///// 检测是否完成下载任务
+        ///// </summary>
+        ///// <returns></returns>
+        //private bool CheckIfCompleteAllDownloadAssetBundle()
+        //{
+          
+        //        return false;
+        //    if (mAllNeedUpdateAssetBundleAssetInfor.Count != 0)
+        //    {
+        //        Debug.LogError("CheckIfCompleteAllDownloadAssetBundle !!! 有部分资源下载失败 " + mAllNeedUpdateAssetBundleAssetInfor.Count);
+        //        return false;
+        //    }
+
+        //    return true;
+        //}
+
+        private void OnAllLocalAssetBundleIsValib()
         {
-            if (mAllNeedDownloadAssetBundleNameRecord.Count != 0) return false;
-            if (mAllNeedDownloadAssetBundleNameRecord.Count != 0)
+            Debug.LogInfor("OnAllLocalAssetBundleIsValib 本地资源是最新的不需要处理");
+        }
+
+        /// <summary>
+        /// 完成 了资源的下载 
+        /// </summary>
+        private void OnCompleteDownloadAssetBundelAsset()
+        {
+            if (mAllNeedUpdateAssetBundleAssetInfor.Count != 0)
             {
-                Debug.LogError("CheckIfCompleteAllDownloadAssetBundle !!! 有部分资源下载失败 " + mAllNeedDownloadAssetBundleNameRecord.Count);
-                return false;
+                Debug.LogError("CheckIfCompleteAllDownloadAssetBundle !!! 有部分资源下载失败 " + mAllNeedUpdateAssetBundleAssetInfor.Count);
+                if (mCurDownloadTime < S_MaxDownloadTimes)
+                    BeginDownloadAssetBundle(mAllNeedUpdateAssetBundleAssetInfor); //重新下载
+                Debug.LogError("多次下载失败");
+                return;
             }
 
-            return true;
+            Debug.LogInfor("完成了所有的任务");
         }
+
 
 #if UNITY_EDITOR
 
@@ -320,8 +380,11 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         public void BeginUpdateAssetBundle()
         {
-            GetServerAssetBundleContainAssetConfig(null);
-
+            bool isLoalAssetBundleValib = CheckIsLocalAssetBundleAssetValib();
+            if (isLoalAssetBundleValib == false)
+            {
+                OnCompleteAllLocalAssetBundleInfor();//不需要子线程获取本地数据
+            }
         }
 
 
