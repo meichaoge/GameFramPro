@@ -19,13 +19,13 @@ namespace GameFramePro.EditorEx
         public override void OnGUI(Rect position)
         {
             CustomerHeaderAttribute headAttribute = (CustomerHeaderAttribute)attribute;  //获取自定义的标签
-            //Color color = ColorUtility.Instance.htmlToColor(headAttribute.m_Color);
+            Color color = ColorExpand.HtmToColor(headAttribute.m_Color);
 
-            //#region 重绘GUI
-            //position = EditorGUI.IndentedRect(position);
-            //style.normal.textColor = color;
+            #region 重绘GUI
+            position = EditorGUI.IndentedRect(position);
+            style.normal.textColor = color;
             GUI.Label(position, headAttribute.m_Ttitle, style);
-            //#endregion
+            #endregion
 
 
         }

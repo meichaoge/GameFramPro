@@ -25,7 +25,7 @@ namespace GameFramePro
             get
             {
                 if (string.IsNullOrEmpty(s_AssetBundleCDNTopUrl))
-                    s_AssetBundleCDNTopUrl = s_TopCDNUrl.CombinePathEx(ConstDefine.S_AssetBundleDirectoryName);
+                    s_AssetBundleCDNTopUrl = s_TopCDNUrl.CombinePathEx(AppPlatformManager.GetRuntimePlatformFolderName()).CombinePathEx(ConstDefine.S_AssetBundleDirectoryName);
                 return s_AssetBundleCDNTopUrl;
             }
         }

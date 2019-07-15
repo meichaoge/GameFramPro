@@ -7,16 +7,19 @@ namespace GameFramePro
 {
     public static class ConstDefine
     {
+#if UNITY_EDITOR
+        public static readonly string S_EditorName = "Editor"; //Editor 目录名
+#endif
+
         public static readonly string S_MetaExtension = ".meta"; //meta 扩展名
         public static readonly string S_TextAssetExtension = ".txt"; //文件文件扩展名
         public static readonly string S_PrefabExtension = ".prefab"; //文件文件扩展名
 
 
-        /// <summary>
-        /// Resources 目录名
-        /// </summary>
-        public static readonly string S_ResourcesName = "Resources";
-        public static readonly string S_AssetsName = "Assets";
+        public static readonly string S_ResourcesName = "Resources"; //Resources 目录名
+        public static readonly string S_AssetsName = "Assets"; //Assets 目录名
+
+
 
         public static readonly string S_ExportDirectoryName = "Export"; //项目导出需要提交到CDN的目录名
         public static readonly string S_LocalStoreDirectoryName = "Download"; //外部下载保存本地的顶层目录

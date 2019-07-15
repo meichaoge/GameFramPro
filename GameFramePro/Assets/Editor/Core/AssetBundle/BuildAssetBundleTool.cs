@@ -227,13 +227,13 @@ namespace GameFramePro.EditorEx
                 return;
             EditorTotalAssetBundleInfor totalAssetBundleInfor = SerilazeManager.DeserializeObject<EditorTotalAssetBundleInfor>(configContent);
 
-            LocalAssetBundleAssetTotalInfor localAssetBundleConfig = new LocalAssetBundleAssetTotalInfor();
+            AssetBundleAssetTotalInfor localAssetBundleConfig = new AssetBundleAssetTotalInfor();
             localAssetBundleConfig.mVersion = totalAssetBundleInfor.mVersion;
             localAssetBundleConfig.mConfigBuildTime = totalAssetBundleInfor.mConfigBuildTime;
             localAssetBundleConfig.mTotalSize = totalAssetBundleInfor.mTotalSize;
             foreach (var bundleInfor in totalAssetBundleInfor.mTotalAssetBundleInfor.Values)
             {
-                LocalAssetBundleInfor assetBundleInfor = new LocalAssetBundleInfor();
+                AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
                 assetBundleInfor.mBundleName = bundleInfor.mAssetBundlePackageName;
                 assetBundleInfor.mBundleSize = bundleInfor.mPackageSize;
                 assetBundleInfor.mBundleAssetsCount = bundleInfor.mAllContainAssetInfor.Count;

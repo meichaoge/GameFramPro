@@ -14,20 +14,9 @@ using UnityEditor;
 public class Single_Mono<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static object obj = new object();
-    private static T s_Instance = null;
+    protected static T s_Instance = null;
     public static T S_Instance { get { return s_Instance; } }
-
-
-    /// <summary>
-    /// 确保在运行时动态创建和添加组件依然保持只有一个对象
-    /// </summary>
-    protected virtual void Awake()
-    {
-        s_Instance = gameObject.GetAddComponent<T>();
-        GetInstance(false);  //Make sure the other Component is destroyed
-    }
-
-    private static T GetInstance(bool isIgnoreCheck = true)
+    protected static T GetInstance(bool isIgnoreCheck = true)
     {
         if (s_Instance != null && isIgnoreCheck)
             return s_Instance;
@@ -66,9 +55,21 @@ public class Single_Mono<T> : MonoBehaviour where T : MonoBehaviour
         return s_Instance;
     }
 
+
+    /// <summary>
+    /// 确保在运行时动态创建和添加组件依然保持只有一个对象
+    /// </summary>
+    protected virtual void Awake()
+    {
+        s_Instance = gameObject.GetAddComponent<T>();
+        GetInstance(false);  //Make sure the other Component is destroyed
+        ResourcesTracker.RegisterTraceResources(s_Instance,TraceResourcesStateEnum.Singtion);
+    }
+
+
     protected virtual void OnDestroy()
     {
-        ResourcesTracker.UnRegistTraceResources(s_Instance);
+        ResourcesTracker.UnRegisterTraceResources(s_Instance);
 
         s_Instance = null;
         obj = null;
