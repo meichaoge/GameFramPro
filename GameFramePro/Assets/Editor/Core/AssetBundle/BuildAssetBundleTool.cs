@@ -129,14 +129,14 @@ namespace GameFramePro.EditorEx
                 assetBundlePackInfor.mAssetBundlePackageName = assetBundlePackage;
 
                 string assetBundlePackagePath = outputPath.CombinePathEx(assetBundlePackage);
-                assetBundlePackInfor.mMD5Code = MD5Helper.GetFileMD5(assetBundlePackagePath, ref assetBundlePackInfor.mPackageSize); //当前AssetBundle 包大小
+                assetBundlePackInfor.mCRCCode = CRC32Helper.GetFileCRC32(assetBundlePackagePath, ref assetBundlePackInfor.mPackageSize); //当前AssetBundle 包大小
 
                 string[] allContainAssetInfor = AssetDatabase.GetAssetPathsFromAssetBundle(assetBundlePackage);
                 foreach (var containAsset in allContainAssetInfor)
                 {
                     EditorAssetBundleAssetInfor assetInfor = new EditorAssetBundleAssetInfor();
                     assetInfor.mAssetRelativePath = containAsset.GetPathFromSpecialDirectoryName(ConstDefine.S_ResourcesName, false);
-                    assetInfor.mMD5Code = MD5Helper.GetFileMD5(ConstDefine.S_ResourcesRealPath.CombinePathEx(assetInfor.mAssetRelativePath), ref assetInfor.mFileAssetSize);
+                    assetInfor.mCRCCode = CRC32Helper.GetFileCRC32(ConstDefine.S_ResourcesRealPath.CombinePathEx(assetInfor.mAssetRelativePath), ref assetInfor.mFileAssetSize);
 
                     assetBundlePackInfor.mAllContainAssetInfor.Add(assetInfor);
                     //Debug.LogEditorInfor("assetInfor=" + assetInfor);

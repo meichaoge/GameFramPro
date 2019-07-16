@@ -11,7 +11,7 @@ namespace GameFramePro
     /// <summary>
     /// 获取文件MD5码的帮助类
     /// </summary>
-    public class MD5Helper
+    public static class MD5Helper
     {
         /// <summary>
         /// 获取指定绝对路径下文件的MD5 
@@ -87,6 +87,7 @@ namespace GameFramePro
             }
 
         }
+
 
     }
 }
