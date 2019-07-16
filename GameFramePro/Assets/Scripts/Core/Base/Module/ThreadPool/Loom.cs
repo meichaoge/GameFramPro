@@ -13,15 +13,15 @@ namespace GameFramePro
         public static int _maxThreads = 5;
         private static int _numThreads = 0;
         private static bool _initialized = false;
-        private static Loom _current;
-        public static Loom Current
-        {
-            get
-            {
-                Initialize();
-                return _current;
-            }
-        }
+        public static Loom _current;
+        //public static Loom Current
+        //{
+        //    get
+        //    {
+        //        Initialize();
+        //        return _current;
+        //    }
+        //}
 
         List<Action> _actions = new List<Action>();
         List<Action> _currentActions = new List<Action>();
@@ -38,30 +38,30 @@ namespace GameFramePro
 
         void Awake()
         {
-            Initialize();
+         //   Initialize();
             _current = this;
             _initialized = true;
             DontDestroyOnLoad(gameObject);
         }
 
 
-        static void Initialize()
-        {
-            if (!_initialized)
-            {
-                if (!Application.isPlaying)
-                    return;
-                _initialized = true;
-                _current = AppManager.S_Instance.gameObject.GetAddComponent<Loom>();
-            }
-        }
+        //static void Initialize()
+        //{
+        //    if (!_initialized)
+        //    {
+        //        if (!Application.isPlaying)
+        //            return;
+        //        _initialized = true;
+        //        _current = AppManager.S_Instance.gameObject.GetAddComponent<Loom>();
+        //    }
+        //}
 
-        public static void QueueOnMainThread(Action action)
+        public  void QueueOnMainThread(Action action)
         {
             QueueOnMainThread(action, 0f);
         }
 
-        public static void QueueOnMainThread(Action action, float time)
+        public  void QueueOnMainThread(Action action, float time)
         {
             if (time != 0)
             {
@@ -79,9 +79,9 @@ namespace GameFramePro
             }
         }
 
-        public static Thread RunAsync(Action a)
+        public  Thread RunAsync(Action a)
         {
-            Initialize();
+            //Initialize();
             while (_numThreads >= _maxThreads)
             {
                 Thread.Sleep(1);

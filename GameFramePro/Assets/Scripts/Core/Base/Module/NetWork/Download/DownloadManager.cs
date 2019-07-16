@@ -50,20 +50,20 @@ namespace GameFramePro
 
 
         #region 通用的下载接口 对外隐藏实现 (这里不能是静态的 否则没法注册)
-        public  void GetAssetBundleFromUrl(string taskUrl, System.Action<AssetBundle, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public  void GetAssetBundleFromUrl(string taskUrl, System.Action<AssetBundle, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
-            AssetBundleDownloadManager.S_Instance.GetAssetBundleFromUrl(taskUrl,callback, priorityEnum);
+            AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,callback, priorityEnum);
         }
 
-        public  void GetStringDataFromUrl(string taskUrl, System.Action<string, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public  void GetStringDataFromUrl(string taskUrl, System.Action<string, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
-            StringDataDownloadManager.S_Instance.GetStringDataFromUrl(taskUrl, callback, priorityEnum);
+            StringDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
 
 
-        public  void GetByteDataFromUrl(string taskUrl, System.Action<byte[], string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public  void GetByteDataFromUrl(string taskUrl, System.Action<byte[], bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
-            ByteDataDownloadManager.S_Instance.GetByteDataFromUrl(taskUrl, callback, priorityEnum);
+            ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
         #endregion
 

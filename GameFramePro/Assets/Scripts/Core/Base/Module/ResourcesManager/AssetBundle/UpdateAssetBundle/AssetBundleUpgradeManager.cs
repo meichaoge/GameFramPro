@@ -82,7 +82,7 @@ namespace GameFramePro.ResourcesEx
             var allAssetBundleFiles = System.IO.Directory.GetFiles(S_LocalAssetBundleTopDirectoryPath, "*.*", System.IO.SearchOption.AllDirectories);
             if (allAssetBundleFiles.Length == 0)
                 return true;
-            Loom.RunAsync(() =>
+            Loom._current.RunAsync(() =>
             {
                 for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
                 {
@@ -95,7 +95,7 @@ namespace GameFramePro.ResourcesEx
 
                     mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length;  //进度
                 }
-                Loom.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
+                Loom._current.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
 
             }).Start();
 
@@ -145,7 +145,7 @@ namespace GameFramePro.ResourcesEx
         private void GetServerAssetBundleContainAssetConfig(System.Action<bool> onCompleteDownloadConfig)
         {
             string assetBundleConfigFileUrl = AppUrlManager.S_AssetBundleCDNTopUrl.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName);
-            DownloadManager.S_Instance.GetStringDataFromUrl(assetBundleConfigFileUrl, (assetBundleConfig, url) =>
+            DownloadManager.S_Instance.GetStringDataFromUrl(assetBundleConfigFileUrl, (assetBundleConfig,isSuccess, url) =>
             {
                 OnCompleteGetServerAssetBundleConfig(assetBundleConfig, url, onCompleteDownloadConfig);
             }, UnityTaskPriorityEnum.Immediately);
@@ -282,7 +282,7 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         /// <param name="assetBundle"></param>
         /// <param name="url"></param>
-        private void OnDownloadAssetBundleCallback(AssetBundle assetBundle, string url)
+        private void OnDownloadAssetBundleCallback(AssetBundle assetBundle,bool isSuccess, string url)
         {
             string assetBundleName = IOUtility.GetFileNameWithoutExtensionEx(url);
             if (mAllNeedDownloadAssetBundleNameRecord.Contains(assetBundleName) == false)
@@ -381,7 +381,7 @@ namespace GameFramePro.ResourcesEx
         public void BeginUpdateAssetBundle()
         {
             bool isLoalAssetBundleValib = CheckIsLocalAssetBundleAssetValib();
-            if (isLoalAssetBundleValib == false)
+            if (isLoalAssetBundleValib )
             {
                 OnCompleteAllLocalAssetBundleInfor();//不需要子线程获取本地数据
             }
