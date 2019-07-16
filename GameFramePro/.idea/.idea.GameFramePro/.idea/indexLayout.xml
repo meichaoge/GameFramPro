@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelUserStore">
+    <attachedFolders />
+    <explicitIncludes>
+      <Path>Packages</Path>
+      <Path>ProjectSettings</Path>
+    </explicitIncludes>
+    <explicitExcludes>
+      <Path>.idea</Path>
+      <Path>.vs</Path>
+      <Path>DebugEX</Path>
+      <Path>Export</Path>
+      <Path>General</Path>
+      <Path>Library</Path>
+      <Path>Logs</Path>
+      <Path>Temp</Path>
+      <Path>Test</Path>
+      <Path>Tools</Path>
+      <Path>WebGLPlugins</Path>
+      <Path>build</Path>
+      <Path>docs</Path>
+      <Path>obj</Path>
+    </explicitExcludes>
+  </component>
+</project>

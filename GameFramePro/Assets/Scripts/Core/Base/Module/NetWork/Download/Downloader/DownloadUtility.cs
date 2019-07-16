@@ -19,7 +19,7 @@ namespace GameFramePro.NetWorkEx
         /// <param name="completeCallback"></param>
         /// <param name="priorityEnum"></param>
         /// <returns>返回值标示是否成功的将当前需要下载的任务插入正在下载的任务回调中</returns>
-        public static bool TryAddCallbackOnWorkingTask<T, U>(string taskUrl, System.Action<T, bool, string> completeCallback, Dictionary<string, U> allDownloadingTasks, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal) where U : BaseDownloadTask<T, W>
+        public static bool TryAddCallbackOnWorkingTask<U>(string taskUrl, System.Action<W, bool, string> completeCallback, Dictionary<string, U> allDownloadingTasks, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal) where U : BaseDownloadTask<W>
         {
             if (allDownloadingTasks == null || allDownloadingTasks.Count == 0)
                 return false;
@@ -43,7 +43,7 @@ namespace GameFramePro.NetWorkEx
             return false;
         }
 
-        public static bool TryAddCallbackOnWorkingTask<T, U>(U task, Dictionary<string, U> allDownloadingTasks) where U : BaseDownloadTask<T, W>
+        public static bool TryAddCallbackOnWorkingTask<U>(U task, Dictionary<string, U> allDownloadingTasks) where U : BaseDownloadTask<W>
         {
             if (allDownloadingTasks == null || allDownloadingTasks.Count == 0)
                 return false;
@@ -71,14 +71,13 @@ namespace GameFramePro.NetWorkEx
         /// <summary>
         ///  获取指定的任务需要插入到那个位置(调用前需要自行处理原有的链表没有元素的情况)
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <typeparam name="U"></typeparam>
         /// <param name="taskUrl"></param>
         /// <param name="priorityEnum"></param>
         /// <param name="allWaiteDownloadTasks"></param>
         /// <param name="targetNode">要插入的节点 需要根据返回值一起使用，</param>
         /// <returns>如果targetNode 不为空, =true时候则插入其回调中,否则新建一个节点插入之前；新建一个节点插入最后</returns>
-        public static bool TryAddDownloadTaskAtWaitingList<T, U>(string taskUrl, UnityTaskPriorityEnum priorityEnum, LinkedList<U> allWaiteDownloadTasks, out LinkedListNode<U> targetNode) where U : BaseDownloadTask<T, W>
+        public static bool TryAddDownloadTaskAtWaitingList<U>(string taskUrl, UnityTaskPriorityEnum priorityEnum, LinkedList<U> allWaiteDownloadTasks, out LinkedListNode<U> targetNode) where U : BaseDownloadTask<W>
         {
             //if (allWaiteDownloadTasks.Count == 0)
             //    return false; 
@@ -119,7 +118,7 @@ namespace GameFramePro.NetWorkEx
         /// <summary>
         /// 检测等待的任务
         /// </summary>
-        public static void DoWaitingDownloadTask<T, U>(IDownloadManager<U> downloadManager) where U : BaseDownloadTask<T, W>
+        public static void DoWaitingDownloadTask<U>(IDownloadManager<U> downloadManager) where U : BaseDownloadTask<W>
         {
             if (downloadManager.AllDownloadingTasks.Count >= downloadManager.MaxDownloadTaskCount) return;
             if (downloadManager.AllWaitDownloadTasks.Count == 0) return;
@@ -127,7 +126,7 @@ namespace GameFramePro.NetWorkEx
             var waitingTask = downloadManager.AllWaitDownloadTasks.First;
             while (waitingTask != null)
             {
-                if (TryAddCallbackOnWorkingTask<T, U>(waitingTask.Value, downloadManager.AllDownloadingTasks) == false)
+                if (TryAddCallbackOnWorkingTask<U>(waitingTask.Value, downloadManager.AllDownloadingTasks) == false)
                 {
 #if UNITY_EDITOR
                     if (downloadManager.AllDownloadingTasks.ContainsKey(waitingTask.Value.TaskUrl))
@@ -144,33 +143,7 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        /// <summary>
-        /// 清理已经完成的下载任务
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="downloadManager"></param>
-        public static void ClearCompletedTask<T, U>(IDownloadManager<U> downloadManager) where U : BaseDownloadTask<T, W>
-        {
-            if (downloadManager.AllDownloadingTasks == null || downloadManager.AllDownloadingTasks.Count == 0)
-                return;
 
-                var taskKeys = downloadManager. AllDownloadingTasks.Keys;
-           U taskInfor = null;
-            foreach (var taskUrl in taskKeys)
-            {
-                if (downloadManager.AllDownloadingTasks.TryGetValue(taskUrl, out taskInfor))
-                {
-                    if (taskInfor.IsCompleteInvoke)
-                    {
-                        downloadManager.AllDownloadingTasks.Remove(taskUrl); //完成了任务
-                    }//完成了任务
-                }
-                else
-                {
-                    Debug.LogError("ClearCompletedTask Fail,Not Find Task " + taskUrl);
-                }
-            }
-        }
+
     }
 }

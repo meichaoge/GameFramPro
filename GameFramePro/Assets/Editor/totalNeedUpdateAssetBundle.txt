@@ -1,0 +1,1 @@
+[[{"Key":"common","Value":{"mAssetBundleAssetUpdateTagEnum":2,"mNeedUpdateAssetName":"common","mAssetByteSize":9597}},{"Key":"common 1","Value":{"mAssetBundleAssetUpdateTagEnum":2,"mNeedUpdateAssetName":"common 1","mAssetByteSize":9639}},{"Key":"core","Value":{"mAssetBundleAssetUpdateTagEnum":2,"mNeedUpdateAssetName":"core","mAssetByteSize":1654}}]]

@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using GameFramePro.NetWorkEx;
+using UnityEngine.Networking;
 
 namespace GameFramePro.ResourcesEx
 {
@@ -114,25 +115,6 @@ namespace GameFramePro.ResourcesEx
             GetServerAssetBundleContainAssetConfig(GetAllNeedUpdateAssetBundleAssetInfor);
         }
 
-        ///// <summary>
-        ///// 获取本地配置文件信息
-        ///// </summary>
-        //private void GetLocalAsetBundleContainAssetConfig()
-        //{
-        //    //mLocalBundleAssetConfigInfor = null;
-        //    //string localAssetBundleTotalConfigFilePath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName); //本地配置文件的路径
-        //    //string assetBundleConfigContent = string.Empty;
-        //    //if (IOUtility.GetFileContent(localAssetBundleTotalConfigFilePath, out assetBundleConfigContent) == false)
-        //    //{
-        //    //    Debug.LogInfor(string.Format("GetLocalAsetBundleContainAssetConfig Fail,Local Path ({0}) AssetBundle Config Not Exit!", localAssetBundleTotalConfigFilePath));
-        //    //    return;
-        //    //}
-
-        //    //mLocalBundleAssetConfigInfor = SerilazeManager.DeserializeObject<AssetBundleAssetTotalInfor>(assetBundleConfigContent);
-        //}
-
-
-
 
         #endregion
 
@@ -145,24 +127,25 @@ namespace GameFramePro.ResourcesEx
         private void GetServerAssetBundleContainAssetConfig(System.Action<bool> onCompleteDownloadConfig)
         {
             string assetBundleConfigFileUrl = AppUrlManager.S_AssetBundleCDNTopUrl.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName);
-            DownloadManager.S_Instance.GetStringDataFromUrl(assetBundleConfigFileUrl, (assetBundleConfig,isSuccess, url) =>
+            DownloadManager.S_Instance.GetByteDataFromUrl(assetBundleConfigFileUrl, (webRequset, isSuccess, url) =>
             {
-                OnCompleteGetServerAssetBundleConfig(assetBundleConfig, url, onCompleteDownloadConfig);
+                OnCompleteGetServerAssetBundleConfig(webRequset, isSuccess, url, onCompleteDownloadConfig);
             }, UnityTaskPriorityEnum.Immediately);
         }
 
 
-        private void OnCompleteGetServerAssetBundleConfig(string assetBundleConfig, string url, System.Action<bool> onCompleteDownloadConfig)
+        private void OnCompleteGetServerAssetBundleConfig(UnityWebRequest webRequset,bool isSuccess, string url, System.Action<bool> onCompleteDownloadConfig)
         {
-            if (string.IsNullOrEmpty(assetBundleConfig))
+            if (isSuccess == false)
             {
-                Debug.LogError("OnCompleteGetServerAssetBundleConfig Config is Null Or Empty");
+                Debug.LogError("OnCompleteGetServerAssetBundleConfig Fail Error:"+ webRequset.error);
                 if (onCompleteDownloadConfig != null)
                     onCompleteDownloadConfig(false);
-                return;
+                return ;
             }
+
             Debug.LogInfor("OnCompleteGetServerAssetBundleConfig Success!!");
-            mServerBundleAssetConfigInfor = SerilazeManager.DeserializeObject<AssetBundleAssetTotalInfor>(assetBundleConfig);
+            mServerBundleAssetConfigInfor = SerilazeManager.DeserializeObject<AssetBundleAssetTotalInfor>((webRequset.downloadHandler as DownloadHandlerBuffer).text);
             if (onCompleteDownloadConfig != null)
                 onCompleteDownloadConfig(true);
         }
@@ -282,23 +265,34 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         /// <param name="assetBundle"></param>
         /// <param name="url"></param>
-        private void OnDownloadAssetBundleCallback(AssetBundle assetBundle,bool isSuccess, string url)
+        private void OnDownloadAssetBundleCallback(UnityWebRequest webRequest ,bool isSuccess, string url)
         {
+            if (isSuccess == false)
+            {
+                Debug.LogError("OnDownloadAssetBundleCallback Fail,Error " + webRequest.error);
+                return;
+            }
+
+
             string assetBundleName = IOUtility.GetFileNameWithoutExtensionEx(url);
             if (mAllNeedDownloadAssetBundleNameRecord.Contains(assetBundleName) == false)
             {
                 Debug.LogError("OnDownloadAssetBundleCallback Fail,没有记载的下载AssetBundle 记录 " + url);
                 return;
             }
+
+            DownloadHandlerAssetBundle handle = webRequest.downloadHandler as DownloadHandlerAssetBundle;
+
+            Debug.LogInfor("OnDownloadAssetBundleCallback-->>> " + handle.assetBundle.name+"  \t "+ url);
             mAllNeedDownloadAssetBundleNameRecord.Remove(assetBundleName);
-            if (assetBundle != null)
+            if (handle.assetBundle != null)
             {
                 mAllNeedUpdateAssetBundleAssetInfor.Remove(assetBundleName);
-                SaveDownloadAssetBundleAsset(assetBundle, assetBundleName);
+                SaveDownloadAssetBundleAsset(handle.assetBundle, assetBundleName);
             }
             else
             {
-                Debug.LogInfor("OnDownloadAssetBundleCallback ,下载的AssetBundle 为null, url= " + url);
+                Debug.LogInfor("OnDownloadAssetBundleCallback ,下载的AssetBundle 为 null, url= " + url);
             }
             if (mAllNeedDownloadAssetBundleNameRecord.Count == 0)
                 OnCompleteDownloadAssetBundelAsset();
@@ -364,7 +358,8 @@ namespace GameFramePro.ResourcesEx
             var dataList = dataSources.GroupBy((assetBundleItem) => assetBundleItem.Value.mAssetBundleAssetUpdateTagEnum).ToList();
             string content = SerilazeManager.SerializeObject(dataList);
             string filePath = Application.dataPath.CombinePathEx(ConstDefine.S_EditorName).CombinePathEx("totalNeedUpdateAssetBundle.txt");
-            IOUtility.CreateOrSetFileContent(content, filePath);
+            Debug.Log("ShowAllNeedUpdateAssetBundleByType-->>> " + filePath);
+            IOUtility.CreateOrSetFileContent( filePath, content);
             Debug.LogEditorInfor("ShowAllNeedUpdateAssetBundleByType 成功，保存在目录" + filePath);
         }
 #endif
@@ -383,7 +378,9 @@ namespace GameFramePro.ResourcesEx
             bool isLoalAssetBundleValib = CheckIsLocalAssetBundleAssetValib();
             if (isLoalAssetBundleValib )
             {
-                OnCompleteAllLocalAssetBundleInfor();//不需要子线程获取本地数据
+                Debug.LogInfor("BeginUpdateAssetBundle 本地没有资源 下载所有的资源");
+                mAllLocalAssetBundleLoadProcess = 1f;
+                GetServerAssetBundleContainAssetConfig(GetAllNeedUpdateAssetBundleAssetInfor);
             }
         }
 

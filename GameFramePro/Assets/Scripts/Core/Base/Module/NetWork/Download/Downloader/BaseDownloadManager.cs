@@ -8,48 +8,26 @@ namespace GameFramePro.NetWorkEx
     /// <summary>
     ///  提供泛型加载器的各种实现
     /// </summary>
-    /// <typeparam name="T">需要加载的资源类型(AssetBundle,byte,)</typeparam>
-    /// <typeparam name="U">任务类型，继承自 BaseDownloadTask<T, W></typeparam>
+    /// <typeparam name="U">任务类型，继承自 BaseDownloadTask< W></typeparam>
     /// <typeparam name="W">真是的下载器类型(UnityWebRequest)</typeparam>
-    public abstract class BaseDownloadManager<T, U, W> :  IDownloadManager<U> where U : BaseDownloadTask<T, W>
+    public abstract class BaseDownloadManager<U, W> : IDownloadManager<U> where U : BaseDownloadTask<W>
     {
-        //所有的正在下载中的 UnityWebRequest 任务
-        public Dictionary<string, U> AllDownloadingTasks { get; private set; }
-        //按照优先级排序
-        public LinkedList<U> AllWaitDownloadTasks { get; private set; }
-        public int MaxDownloadTaskCount { get; private set; } = 20;
-      
+        public Dictionary<string, U> AllDownloadingTasks { get; protected set; }= new Dictionary<string, U>();
+
+        public LinkedList<U> AllWaitDownloadTasks { get; protected set; } = new LinkedList<U>();
+        public int MaxDownloadTaskCount { get; protected set; } = 20;
 
 
-        public virtual void InitialedManager()
-        {
-            AllDownloadingTasks = new Dictionary<string, U>();
-            AllWaitDownloadTasks = new LinkedList<U>();
-        }
 
-
-        #region 对象池接口
-        protected virtual void OnBeforGetWebRequestTaskItem(U task)
-        {
-        }
-
-        protected virtual void OnBeforRecycleWebRequestTaskItem(U task)
-        {
-            if (task != null)
-            {
-                task.ClearDownloadTask();
-            }
-        }
-        #endregion
 
         public virtual void Tick()
         {
             if (AllDownloadingTasks != null && AllDownloadingTasks.Count > 0)
             {
-                DownloadUtility<W>.ClearCompletedTask<T, U>(this);
+                ClearCompletedTask();
                 foreach (var workingTask in AllDownloadingTasks.Values)
                     workingTask.Tick();
-                DownloadUtility<W>.DoWaitingDownloadTask<T, U>(this);
+                DownloadUtility<W>.DoWaitingDownloadTask< U>(this);
             }
         }
 
@@ -60,7 +38,7 @@ namespace GameFramePro.NetWorkEx
         /// <param name="taskUrl"></param>
         /// <param name="completeCallback"></param>
         /// <param name="priorityEnum"></param>
-        public void GetDataFromUrl(string taskUrl, System.Action<T, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public virtual void GetDataFromUrl(string taskUrl, System.Action<W, bool, string> callback, UnityTaskPriorityEnum priorityEnum=UnityTaskPriorityEnum.Normal,params object[] otherParameter)
         {
             if (callback == null)
             {
@@ -72,7 +50,7 @@ namespace GameFramePro.NetWorkEx
             if (DownloadUtility<W>.TryAddCallbackOnWorkingTask(taskUrl, callback, AllDownloadingTasks, priorityEnum))
                 return;
 
-            DownloadUtility<W>.ClearCompletedTask<T, U>(this);   //清理已经完成的任务
+            ClearCompletedTask();         //清理已经完成的任务
 
             if (AllDownloadingTasks.Count >= MaxDownloadTaskCount)
             {
@@ -88,7 +66,7 @@ namespace GameFramePro.NetWorkEx
                 else
                 {
                     isAddFirstNode = false;
-                    isAddCallbackLinkedList = DownloadUtility<W>.TryAddDownloadTaskAtWaitingList<T, U>(taskUrl, priorityEnum, AllWaitDownloadTasks, out targetNode);
+                    isAddCallbackLinkedList = DownloadUtility<W>.TryAddDownloadTaskAtWaitingList< U>(taskUrl, priorityEnum, AllWaitDownloadTasks, out targetNode);
                 }
 
 
@@ -98,12 +76,7 @@ namespace GameFramePro.NetWorkEx
                 }
                 else
                 {
-                    //var newTask = mUnityWebRequestTaskPoolManager.GetItemFromPool();
-                    //UnityWebRequest webRequest = new UnityWebRequest(taskUrl);
-                    //webRequest.downloadHandler = new DownloadHandlerAssetBundle(taskUrl, uint.MaxValue);
-                    //newTask.InitialedDownloadTask(taskUrl, webRequest, priorityEnum, callback, UnityWebRequestToAssetBundle);
-
-                    U newDownLoadTask = GetDownloadTaskInstance(taskUrl, callback, priorityEnum);
+                    U newDownLoadTask = GetDownloadTaskInstance(taskUrl, callback, priorityEnum, otherParameter);
 
                     if (isAddFirstNode)
                     {
@@ -122,19 +95,15 @@ namespace GameFramePro.NetWorkEx
             }//需要添加到等待任务链表中
             else
             {
-                //var newTask = mUnityWebRequestTaskPoolManager.GetItemFromPool();
-                //UnityWebRequest webRequest = new UnityWebRequest(taskUrl);
-                //webRequest.downloadHandler = new DownloadHandlerAssetBundle(taskUrl, uint.MaxValue);
-                //newTask.InitialedDownloadTask(taskUrl, webRequest, priorityEnum, callback, UnityWebRequestToAssetBundle);
 
-                U newDownLoadTask = GetDownloadTaskInstance(taskUrl, callback, priorityEnum);
+                U newDownLoadTask = GetDownloadTaskInstance(taskUrl, callback, priorityEnum, otherParameter);
                 AllDownloadingTasks[taskUrl] = newDownLoadTask;
                 newDownLoadTask.StartDownloadTask();
             }//直接加入到正在执行的下载任务中 并启动任务
         }
 
 
-        protected abstract U GetDownloadTaskInstance(string taskUrl, System.Action<T, bool, string> callback, UnityTaskPriorityEnum priorityEnum);
+        protected abstract U GetDownloadTaskInstance(string taskUrl, System.Action<W, bool, string> callback, UnityTaskPriorityEnum priorityEnum, params object[] otherParameter);
         //{
         //    //var newTask = mUnityWebRequestTaskPoolManager.GetItemFromPool();
         //    //UnityWebRequest webRequest = new UnityWebRequest(taskUrl);
@@ -142,18 +111,38 @@ namespace GameFramePro.NetWorkEx
         //    //newTask.InitialedDownloadTask(taskUrl, webRequest, priorityEnum, callback, UnityWebRequestToAssetBundle);
         //}
 
-
-
         /// <summary>
-        /// 将结果转换成需要的数据
+        ///  清理已经完成的任务
         /// </summary>
-        /// <param name="webRequest"></param>
-        /// <returns></returns>
-        protected abstract T GetDataFromDownloadHandler(W downloadHandler);
-        //{
-        //    if (realDownloader == null) return default(T);
-        //    return (webRequest.downloadHandler as DownloadHandlerAssetBundle).assetBundle;
-        //}
+        public virtual void ClearCompletedTask()
+        {
+            if (AllDownloadingTasks == null || AllDownloadingTasks.Count == 0)
+                return;
+
+            HashSet<string> allTaskKeys = new HashSet<string>();
+            foreach (var item in AllDownloadingTasks.Keys)
+            {
+                allTaskKeys.Add(item);
+            }
+
+
+            U taskInfor = null;
+            foreach (var taskKey in allTaskKeys)
+            {
+                if (AllDownloadingTasks.TryGetValue(taskKey, out taskInfor))
+                {
+                    if (taskInfor.IsCompleteInvoke)
+                    {
+                        AllDownloadingTasks.Remove(taskKey); //完成了任务
+                    }//完成了任务
+                }
+                else
+                {
+                    Debug.LogError("ClearCompletedTask Fail,Not Find Task " + taskKey);
+                }
+            }
+        }
+
 
 
 

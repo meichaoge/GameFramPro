@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using GameFramePro.NetWorkEx;
 using System.Reflection;
+using UnityEngine.Networking;
 
 namespace GameFramePro
 {
@@ -25,7 +26,6 @@ namespace GameFramePro
 
 
             AssetBundleDownloadManager.S_Instance.Tick();
-            StringDataDownloadManager.S_Instance.Tick();
             ByteDataDownloadManager.S_Instance.Tick();
 
             //if (mAllDownloadeManagers.Count > 0)
@@ -50,18 +50,12 @@ namespace GameFramePro
 
 
         #region 通用的下载接口 对外隐藏实现 (这里不能是静态的 否则没法注册)
-        public  void GetAssetBundleFromUrl(string taskUrl, System.Action<AssetBundle, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public  void GetAssetBundleFromUrl(string taskUrl, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
             AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,callback, priorityEnum);
         }
 
-        public  void GetStringDataFromUrl(string taskUrl, System.Action<string, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
-        {
-            StringDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
-        }
-
-
-        public  void GetByteDataFromUrl(string taskUrl, System.Action<byte[], bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public  void GetByteDataFromUrl(string taskUrl, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
             ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }

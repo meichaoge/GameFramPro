@@ -21,9 +21,8 @@ namespace GameFramePro.NetWorkEx
     /// <summary>
     /// 下载任务的基类
     /// </summary>
-    /// <typeparam name="T">需要加载的资源类型(AssetBundle,byte,)</typeparam>
     /// <typeparam name="W">真是的下载器类型(UnityWebRequest)</typeparam>
-    public class BaseDownloadTask<T, W> : IDownloadTaskProcess
+    public class BaseDownloadTask< W> : IDownloadTaskProcess
     {
         /// <summary>
         /// 下载任务的状态
@@ -48,8 +47,7 @@ namespace GameFramePro.NetWorkEx
         public UnityTaskPriorityEnum TaskPriorityEnum { get; protected set; } = UnityTaskPriorityEnum.Normal;  //下载任务的优先级
         protected DownloadStateEnum DownloadTaskStateEnum { get; set; } = DownloadStateEnum.None; //当前的状态
 
-        protected Func<W, T> GetCallbackDataHandler { get; private set; } //将UnityWebRequest 转换成需要的数据
-        protected LinkedList<Action<T, bool, string>> TaskCompleteCallBackLinkList = new LinkedList<Action<T, bool, string>>(); //完成任务的事件链 bool 标示是否成功
+        protected LinkedList<Action<W, bool, string>> TaskCompleteCallBackLinkList = new LinkedList<Action<W, bool, string>>(); //完成任务的事件链 bool 标示是否成功
 
         /// <summary>
         /// 回调回去的参数  刚开始又初始化的时候赋值传入，开始下载后更新这个对象
@@ -64,17 +62,16 @@ namespace GameFramePro.NetWorkEx
 
         public BaseDownloadTask() { }
 
-        public BaseDownloadTask(string url, W taskData, UnityTaskPriorityEnum priority, Action<T, bool, string> completeCallback, Func<W, T> getDataHandler)
+        public BaseDownloadTask(string url, W taskData, UnityTaskPriorityEnum priority, Action<W, bool, string> completeCallback)
         {
-            InitialedDownloadTask(url, taskData, priority, completeCallback, getDataHandler);
+            InitialedDownloadTask(url, taskData, priority, completeCallback);
         }
 
-        public void InitialedDownloadTask(string url, W taskData, UnityTaskPriorityEnum priority, Action<T, bool, string> completeCallback, Func<W, T> getDataHandler)
+        public void InitialedDownloadTask(string url, W taskData, UnityTaskPriorityEnum priority, Action<W, bool, string> completeCallback)
         {
             TaskUrl = url;
             TaskPriorityEnum = priority;
             DownloadTaskCallbackData = taskData;
-            GetCallbackDataHandler = getDataHandler;
             TaskCompleteCallBackLinkList.AddLast(completeCallback);
             ChangeDownloadState(DownloadStateEnum.Initialed);
         }
@@ -102,14 +99,11 @@ namespace GameFramePro.NetWorkEx
                 else
                     ChangeDownloadState(DownloadStateEnum.Done);
 
-
-                T callbackData = GetCallbackDataHandler(DownloadTaskCallbackData);
                 var targetCallback = TaskCompleteCallBackLinkList.First;
-
                 while (targetCallback != null)
                 {
                     if (targetCallback.Value != null)
-                        targetCallback.Value.Invoke(callbackData, IsError && IsDone, TaskUrl);
+                        targetCallback.Value.Invoke(DownloadTaskCallbackData, !IsError && IsDone, TaskUrl);
 
                     targetCallback = targetCallback.Next;
                 }//调用事件链
@@ -132,7 +126,6 @@ namespace GameFramePro.NetWorkEx
         {
             ChangeDownloadState(DownloadStateEnum.None);
             TaskCompleteCallBackLinkList.Clear();
-            GetCallbackDataHandler = null;
             OnProgressChangedEvent = null;
         }
         #endregion
@@ -147,12 +140,12 @@ namespace GameFramePro.NetWorkEx
 
 
         #region  增加或者移除回调
-        public void AddCompleteCallback(Action<T, bool, string> completeCallback)
+        public void AddCompleteCallback(Action<W, bool, string> completeCallback)
         {
             AddCompleteCallback(completeCallback, UnityTaskPriorityEnum.None);
         }
 
-        public void AddCompleteCallback(Action<T, bool, string> completeCallback, UnityTaskPriorityEnum priority)
+        public void AddCompleteCallback(Action<W, bool, string> completeCallback, UnityTaskPriorityEnum priority)
         {
             if (completeCallback != null)
                 TaskCompleteCallBackLinkList.AddLast(completeCallback);
@@ -160,7 +153,7 @@ namespace GameFramePro.NetWorkEx
                 TaskPriorityEnum = priority;
         }
 
-        public void AddCompleteCallback(BaseDownloadTask<T, W> task)
+        public void AddCompleteCallback(BaseDownloadTask<W> task)
         {
             if (task == null) return;
             if (task.TaskPriorityEnum != UnityTaskPriorityEnum.None)
@@ -179,12 +172,12 @@ namespace GameFramePro.NetWorkEx
         }
 
 
-        public void RemoveCompleteCallback(Action<T, bool, string> completeCallback)
+        public void RemoveCompleteCallback(Action<W, bool, string> completeCallback)
         {
             RemoveCompleteCallback(completeCallback, UnityTaskPriorityEnum.None);
         }
         //移除回调 并修改优先级
-        public void RemoveCompleteCallback(Action<T, bool, string> completeCallback, UnityTaskPriorityEnum priority)
+        public void RemoveCompleteCallback(Action<W, bool, string> completeCallback, UnityTaskPriorityEnum priority)
         {
             if (completeCallback != null)
                 TaskCompleteCallBackLinkList.Remove(completeCallback);

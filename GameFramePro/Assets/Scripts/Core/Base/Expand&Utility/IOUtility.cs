@@ -32,6 +32,7 @@ namespace GameFramePro
                 return;
             }
 
+
             byte[] data = Encoding.UTF8.GetBytes(content);
             FileStream operateStream = null;
 

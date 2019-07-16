@@ -10,7 +10,7 @@ namespace GameFramePro.NetWorkEx
     /// <summary>
     /// 使用 UnityWebRequest 的 下载任务
     /// </summary>
-    public class UnityWebRequestDownloadTask<T> : BaseDownloadTask<T, UnityWebRequest>
+    public class UnityWebRequestDownloadTask : BaseDownloadTask< UnityWebRequest>
     {
         protected UnityWebRequestAsyncOperation mUnityWebRequestAsyncOperation { get; set; } = null; //发送请求后的状态
 
@@ -33,6 +33,7 @@ namespace GameFramePro.NetWorkEx
 
                 mUnityWebRequestAsyncOperation = DownloadTaskCallbackData.SendWebRequest();  //启动任务
                 DownloadTaskCallbackData = mUnityWebRequestAsyncOperation.webRequest;
+                ChangeDownloadState(DownloadStateEnum.Running);
             }
         }
 
@@ -45,7 +46,7 @@ namespace GameFramePro.NetWorkEx
                 OnCompleted(true, true, 1f);
                 return;
             }
-            OnCompleted(DownloadTaskCallbackData.isDone, DownloadTaskCallbackData.isHttpError && DownloadTaskCallbackData.isNetworkError, DownloadTaskCallbackData.downloadProgress);
+            OnCompleted(DownloadTaskCallbackData.isDone, DownloadTaskCallbackData.isHttpError || DownloadTaskCallbackData.isNetworkError, DownloadTaskCallbackData.downloadProgress);
 
         }
 
