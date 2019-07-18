@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GameFramePro.ResourcesEx;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace GameFramePro
     /// <summary>
     /// 这里只有ResourcesManger 提供的对外访问接口和实现
     /// </summary>
-    public partial class ResourcesManager : Single<ResourcesManager>
+    public class ResourcesManager : Single<ResourcesManager>
     {
         #region 对象的创建和销毁逻辑（实例化对象 (这里对内部的GameObject.Instantiate<T> 做了一层封装，主要是想后期能够监控对象的创建TODO)）
 
@@ -100,24 +101,14 @@ namespace GameFramePro
 
         #endregion
 
-        #region 资源加载接口实现
-        ///// <summary>
-        ///// 加载项目资源的接口，屏蔽内部Resources/AssetBundle 加载，隐藏内部同步/异步加载逻辑
-        ///// </summary>
-        ///// <param name="assetpath"></param>
-        ///// <param name="loadCallback"></param>
-        //private void LoadResourcesAsset(string assetpath, System.Action<UnityEngine.Object> loadCallback)
-        //{
-        //    if (string.IsNullOrEmpty(assetpath))
-        //    {
-        //        Debug.LogError("LoadResourcesAsset Fail,parameter assetpath is null");
-        //        if (loadCallback != null) loadCallback.Invoke(null);
-        //        return;
-        //    }
-        //}
-        #endregion
+        public static UnityEngine.Object LoadAssetSync(string assetpath)
+        {
+            if (AppSetting.S_IsLoadResourcesAssetPriority)
+                return LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetpath);
 
-      
+            return AssetBundleManager.S_Instance.LoadAssetSync(AssetBundleUpgradeManager.S_Instance.GetBundleNameByAssetPath(assetpath), assetpath);
+        }
+
 
     }
 }

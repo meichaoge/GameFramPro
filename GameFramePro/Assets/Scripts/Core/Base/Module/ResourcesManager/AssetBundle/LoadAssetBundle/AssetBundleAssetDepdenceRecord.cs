@@ -9,7 +9,7 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// 加载的AssetBundle 包资源
     /// </summary>
-    public class AssetBundleLoadAssetRecord: ILoadAssetRecord
+    public class AssetBundleAssetDepdenceRecord : ILoadAssetRecord
     {
         public int InstanceID { get; protected set; } = 0;
         public string AssetPath { get; protected set; } = string.Empty;
@@ -20,14 +20,16 @@ namespace GameFramePro.ResourcesEx
         public long MarkToDeleteTime { get; protected set; } = 0;
         public IAssetManager BelongAssetManager { get; protected set; } = null;
 
+        protected Dictionary<int, AssetBundleAssetDepdenceRecord> mAllDepdenceAssetBundleRecord =new Dictionary<int, AssetBundleAssetDepdenceRecord>();//当前AssetBundle 依赖的的其他AssetBundle
+
 
         #region 构造函数& 设置
-        public AssetBundleLoadAssetRecord()
+        public AssetBundleAssetDepdenceRecord()
         {
 
         }
 
-        public AssetBundleLoadAssetRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        public AssetBundleAssetDepdenceRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
         {
             Initial(assetPath, typeEnum, asset, manager);
         }
@@ -44,12 +46,31 @@ namespace GameFramePro.ResourcesEx
             BelongAssetManager = manager;
             TargetAsset = asset;
             RemainTimeToBeDelete = BelongAssetManager.MaxAliveTimeAfterNoReference;
+         
         }
 
         #endregion
 
 
+        public void AddDepdence(AssetBundleAssetDepdenceRecord depdence)
+        {
+            if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
+            {
+                Debug.LogError("AddDepdence Fail,Already Contain Key"+ depdence.InstanceID);
+                return;
+            }
+            mAllDepdenceAssetBundleRecord[depdence.InstanceID] = depdence;
+        }
 
+        public void ReduceDepdence(AssetBundleAssetDepdenceRecord depdence)
+        {
+            if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
+            {
+                mAllDepdenceAssetBundleRecord.Remove(depdence.InstanceID);          
+                return;
+            }
+            Debug.LogError("ReduceDepdence Fail,Not Contain Key" + depdence.InstanceID);
+        }
         public void AddReference()
         {
             if (TargetAsset == null)
@@ -115,6 +136,7 @@ namespace GameFramePro.ResourcesEx
             AssetPath = null;
             ReferenceCount = 0;
             AssetLoadedType = LoadedAssetTypeEnum.None;
+            mAllDepdenceAssetBundleRecord.Clear();
             BelongAssetManager = null;
             TargetAsset = null;
         }

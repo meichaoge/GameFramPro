@@ -15,8 +15,6 @@ namespace GameFramePro.ResourcesEx
     public class AssetBundleUpgradeManager : Single<AssetBundleUpgradeManager>
     {
 
-
-
         #region 需要更新的AssetBundle 信息
 
         /// <summary>
@@ -54,8 +52,6 @@ namespace GameFramePro.ResourcesEx
         private const int S_MaxDownloadTimes = 3; //最大下载次数
         private int mCurDownloadTime = 0;
         #endregion
-
-
 
 
         #region 获取本地AssetBundle 资源以及对于的配置表                                               
@@ -345,7 +341,6 @@ namespace GameFramePro.ResourcesEx
 #endif
 
 
-
         #endregion
 
 
@@ -365,12 +360,52 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-
-
-        public AssetBundle GetAssetBundleByPath(string assetBundleRelativePath)
+        /// <summary>
+        /// 根据一个资源名称获取所在的AssetBundle name
+        /// </summary>
+        /// <param name="assetPath"></param>
+        /// <returns></returns>
+        public string GetBundleNameByAssetPath(string assetPath)
         {
-            return null;
+            if (mServerBundleAssetConfigInfor == null)
+            {
+                Debug.LogError("GetBundleNameByAssetPath Fail,没有获取最新的AssetBundle 配置 ");
+                return null;
+            }
+            foreach (var assetBundleInfor in mServerBundleAssetConfigInfor.mTotalAssetBundleInfor)
+            {
+                if (assetBundleInfor.Value.mContainAssetPathInfor.Contains(assetPath))
+                    return assetBundleInfor.Value.mBundleName;
+            }
+
+            Debug.LogError("GetBundleNameByAssetPath Fail,没有找到资源 " + assetPath);
+            return string.Empty;
         }
+
+        /// <summary>
+        /// 获取指定参数的AssetBundle 依赖的信息 (内部会对路径处理)
+        /// </summary>
+        /// <param name="assetBundlePath"></param>
+        /// <returns></returns>
+        public string[] GetAllDependencies(string assetBundlePath)
+        {
+            if (mServerBundleAssetConfigInfor == null)
+            {
+                Debug.LogError("GetAllDependencies Fail,没有初始化获取AssetBundle 配置信息 " );
+                return new string[0];
+            }
+            assetBundlePath = assetBundlePath.GetPathStringEx();
+
+            foreach (var assetBundleInfor in mServerBundleAssetConfigInfor.mTotalAssetBundleInfor)
+            {
+                if (assetBundleInfor.Key == assetBundlePath)
+                    return assetBundleInfor.Value.mDepdenceAssetBundleInfor;
+            }
+
+            Debug.LogError("GetAllDependencies Fail,没有找到以来关系 " + assetBundlePath);
+            return new string[0];
+        }
+
         #endregion
 
     }

@@ -19,6 +19,7 @@ namespace GameFramePro
         public string mBundleMD5Code;  /// MD5 码
         public uint mBundleCRC;
         public HashSet<string> mContainAssetPathInfor = new HashSet<string>(); //包含的资源路径
+        public string[] mDepdenceAssetBundleInfor; //依赖的其他AssetBundle 资源
     }
 
     /// <summary>

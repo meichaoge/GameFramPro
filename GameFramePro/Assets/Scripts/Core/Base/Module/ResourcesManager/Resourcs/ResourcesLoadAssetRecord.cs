@@ -8,8 +8,44 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// 加载Resources 时候的记录
     /// </summary>
+    #if UNITY_EDITOR
+    [System.Serializable]
+#endif
     public class ResourcesLoadAssetRecord : ILoadAssetRecord
     {
+
+#if UNITY_EDITOR
+        #region Show
+        public int Debug_InstanceID  = 0;
+        public string Debug_AssetPath  = string.Empty;
+        public int Debug_ReferenceCount  = 1;
+        public LoadedAssetTypeEnum Debug_AssetLoadedType  = LoadedAssetTypeEnum.None;
+        public UnityEngine.Object Debug_TargetAsset  = null;
+        public float Debug_RemainTimeToBeDelete  = 0;
+        public long Debug_MarkToDeleteTime  = 0;
+        public IAssetManager Debug_BelongAssetManager  = null;
+        public string Debug_AssetName;  //资源名称
+
+
+        public void UpdateData()
+        {
+            Debug_InstanceID = InstanceID;
+            Debug_AssetPath = AssetPath;
+            Debug_ReferenceCount = ReferenceCount;
+            Debug_AssetLoadedType = AssetLoadedType;
+            Debug_TargetAsset = TargetAsset;
+            Debug_RemainTimeToBeDelete = RemainTimeToBeDelete;
+            Debug_MarkToDeleteTime = MarkToDeleteTime;
+            Debug_BelongAssetManager = BelongAssetManager;
+            Debug_AssetName = AssetName;
+
+        }
+
+        #endregion
+#endif
+
+
+
         public int InstanceID { get; protected set; } = 0;
         public string AssetPath { get; protected set; } = string.Empty;
         public int ReferenceCount { get; protected set; } = 1;

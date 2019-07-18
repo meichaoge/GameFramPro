@@ -16,6 +16,10 @@ namespace GameFramePro.ResourcesEx
         private Dictionary<string, ResourcesLoadAssetRecord> mAllLoadedAssetRecord = new Dictionary<string, ResourcesLoadAssetRecord>(200); //Cache 所有加载的资源
         private HashSet<int> mAllResoucesLoadAssetInstanceIds = new HashSet<int>();
         private NativeObjectPool<ResourcesLoadAssetRecord> mResourcesLoadAssetRecordPoolMgr;
+#if UNITY_EDITOR
+        public Dictionary<string, ResourcesLoadAssetRecord> Debug_mAllLoadedAssetRecord { get { return mAllLoadedAssetRecord; } }
+        public HashSet<int> Debug_mAllResoucesLoadAssetInstanceIds { get { return mAllResoucesLoadAssetInstanceIds; } }
+#endif
         #endregion
 
 
@@ -116,6 +120,21 @@ namespace GameFramePro.ResourcesEx
                 loadCallback(asset);
         }
 
+        public Object ResourcesLoadAssetSync(string assetpath)
+        {
+            Object asset = ResourcesLoadAssetFromCache(assetpath);
+            if (asset != null)
+            {
+                RecordResourcesLoadAsset(assetpath, asset); //当 asset==null 时候记录返回 
+                return asset;
+            }
+            asset = Resources.Load(assetpath);
+            if (asset == null)
+                Debug.LogError(string.Format("LoadResourcesAssetSync Fail,AssetPath={0}  not exit", assetpath));
+
+            RecordResourcesLoadAsset(assetpath, asset); //当 asset==null 时候记录返回 
+            return asset;
+        }
         //Resources 异步加载资源
         public void ResourcesLoadAssetAsync(string assetpath, System.Action<Object> loadCallback, System.Action<string, float> procressCallback)
         {

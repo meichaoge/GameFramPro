@@ -63,7 +63,7 @@ namespace GameFramePro.ResourcesEx
         public static ILoadAssetRecord TryGetILoadAssetRecord(string assetPath)
         {
             var target = s_AllDelayDeleteAssetInfor.First;
-            while (target.Value.AssetPath != assetPath)
+            while (target !=null&& target.Value.AssetPath != assetPath)
             {
                 target = target.Next;
             }

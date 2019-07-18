@@ -50,6 +50,7 @@ namespace GameFramePro.ResourcesEx
     /// </summary>
     public interface ILoadAssetRecord
     {
+
         /// <summary>
         /// 加载时候Unity 生成的实例ID (不可靠)
         /// </summary>

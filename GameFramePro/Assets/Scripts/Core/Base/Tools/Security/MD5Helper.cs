@@ -41,7 +41,8 @@ namespace GameFramePro
 
             finally
             {
-                builder.Clear();
+                if (builder != null)
+                    builder.Clear();
                 if (fileStream != null)
                     fileStream.Close();
             }
@@ -79,6 +80,7 @@ namespace GameFramePro
 
             finally
             {
+                if(builder!=null)
                 builder.Clear();
                 if (fileStream != null)
                     fileStream.Close();

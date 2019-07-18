@@ -108,7 +108,7 @@ namespace GameFramePro.EditorEx
             string assetBundleConfigPath = RecordAllBuildAssetBundleContainAssetInfor(createAssetBundleSavePath, assetBundleManifest);
             //  ExportAssetBundleInforToCsv(assetBundleConfigPath, targetPlatform);  //目前不适用csv  避免自己解析 TODO
             AssetDatabase.Refresh();
-            IOUtility.CopyDirectory(createAssetBundleSavePath, exportPath, new string[] { ConstDefine.S_MetaExtension });
+            IOUtility.CopyDirectory(createAssetBundleSavePath, exportPath, new string[] { ConstDefine.S_MetaExtension,ConstDefine.S_AssetBundleManifestExtension });
 
             ExportAssetBundleInforToJson(assetBundleConfigPath, targetPlatform); //在复制完文件资源之后再生成配置，否则会被删除
 
@@ -191,8 +191,9 @@ namespace GameFramePro.EditorEx
                 foreach (var containAsset in allContainAssetInfor)
                 {
                     EditorAssetBundleAssetInfor assetInfor = new EditorAssetBundleAssetInfor();
-                    assetInfor.mAssetRelativePath = containAsset.GetPathFromSpecialDirectoryName(ConstDefine.S_ResourcesName, false);
-                    assetInfor.mMD5Code = MD5Helper.GetFileMD5(ConstDefine.S_ResourcesRealPath.CombinePathEx(assetInfor.mAssetRelativePath), ref assetInfor.mFileAssetSize);
+                    string assetRelativePath = containAsset.GetPathFromSpecialDirectoryName(ConstDefine.S_ResourcesName, false);
+                    assetInfor.mAssetRelativePath = assetRelativePath.GetPathWithOutExtension(); //这里不需要任何扩展名
+                    assetInfor.mMD5Code = MD5Helper.GetFileMD5(ConstDefine.S_ResourcesRealPath.CombinePathEx(assetRelativePath), ref assetInfor.mFileAssetSize);
 
                     assetBundlePackInfor.mAllContainAssetInfor.Add(assetInfor);
                     //Debug.LogEditorInfor("assetInfor=" + assetInfor);
@@ -321,6 +322,8 @@ namespace GameFramePro.EditorEx
             localAssetBundleConfig.mTotalSize = totalAssetBundleInfor.mTotalSize;
             foreach (var bundleInfor in totalAssetBundleInfor.mTotalAssetBundleInfor.Values)
             {
+                string assetBundleNameStr = bundleInfor.mAssetBundlePackageName.GetPathStringEx();
+
                 AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
                 assetBundleInfor.mBundleName = bundleInfor.mAssetBundlePackageName;
                 assetBundleInfor.mBundleSize = bundleInfor.mPackageSize;
@@ -332,9 +335,15 @@ namespace GameFramePro.EditorEx
                 foreach (var assetInfor in bundleInfor.mAllContainAssetInfor)
                 {
                     assetBundleInfor.mContainAssetPathInfor.Add(assetInfor.mAssetRelativePath);
-                }
+                }//获取包含的资源信息
 
-                localAssetBundleConfig.mTotalAssetBundleInfor[assetBundleInfor.mBundleName.GetPathStringEx()] = assetBundleInfor; //这里的key 不带路径分隔符
+                assetBundleInfor.mDepdenceAssetBundleInfor = new string[bundleInfor.mDepdenceAssetBundle.Count];
+                for (int dex = 0; dex < bundleInfor.mDepdenceAssetBundle.Count; dex++)
+                {
+                    assetBundleInfor.mDepdenceAssetBundleInfor[dex]= bundleInfor.mDepdenceAssetBundle[dex].mAssetBundlePackageName;
+                }//获取依赖信息 这里不是处理之后的AssetBundle Name
+
+                localAssetBundleConfig.mTotalAssetBundleInfor[assetBundleNameStr] = assetBundleInfor; //这里的key 不带路径分隔符
             }
 
             string content = SerilazeManager.SerializeObject(localAssetBundleConfig);
