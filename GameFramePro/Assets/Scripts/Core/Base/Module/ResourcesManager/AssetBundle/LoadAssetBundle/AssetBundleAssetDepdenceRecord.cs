@@ -9,8 +9,42 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// 加载的AssetBundle 包资源
     /// </summary>
+#if UNITY_EDITOR
+    [System.Serializable]
+#endif
     public class AssetBundleAssetDepdenceRecord : ILoadAssetRecord
     {
+#if UNITY_EDITOR
+        #region Show
+        public int Debug_InstanceID = 0;
+        public string Debug_AssetPath = string.Empty;
+        public int Debug_ReferenceCount = 1;
+        public LoadedAssetTypeEnum Debug_AssetLoadedType = LoadedAssetTypeEnum.None;
+        public UnityEngine.Object Debug_TargetAsset = null;
+        public float Debug_RemainTimeToBeDelete = 0;
+        public long Debug_MarkToDeleteTime = 0;
+        public IAssetManager Debug_BelongAssetManager = null;
+        public List<AssetBundleAssetDepdenceRecord> Debug_AllDepdenceAssetBundleRecord = new List<AssetBundleAssetDepdenceRecord>();
+
+        public void UpdateData() 
+        {
+            Debug_InstanceID = InstanceID;
+            Debug_AssetPath = AssetPath;
+            Debug_ReferenceCount = ReferenceCount;
+            Debug_AssetLoadedType = AssetLoadedType;
+            Debug_TargetAsset = TargetAsset;
+            Debug_RemainTimeToBeDelete = RemainTimeToBeDelete;
+            Debug_MarkToDeleteTime = MarkToDeleteTime;
+            Debug_BelongAssetManager = BelongAssetManager;
+            Debug_AllDepdenceAssetBundleRecord.Clear();
+            Debug_AllDepdenceAssetBundleRecord.AddRange(mAllDepdenceAssetBundleRecord.Values);
+        }
+
+        #endregion
+#endif
+
+
+
         public int InstanceID { get; protected set; } = 0;
         public string AssetPath { get; protected set; } = string.Empty;
         public int ReferenceCount { get; protected set; } = 1;

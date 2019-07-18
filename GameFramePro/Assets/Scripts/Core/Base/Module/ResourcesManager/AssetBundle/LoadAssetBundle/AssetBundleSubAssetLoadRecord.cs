@@ -9,8 +9,43 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// AssetBundle 包中加载的子资源
     /// </summary>
+#if UNITY_EDITOR
+    [System.Serializable]
+#endif
     public class AssetBundleSubAssetLoadRecord: ILoadAssetRecord
     {
+
+#if UNITY_EDITOR
+        #region Show
+        public int Debug_InstanceID = 0;
+        public string Debug_AssetPath = string.Empty;
+        public int Debug_ReferenceCount = 1;
+        public LoadedAssetTypeEnum Debug_AssetLoadedType = LoadedAssetTypeEnum.None;
+        public UnityEngine.Object Debug_TargetAsset = null;
+        public float Debug_RemainTimeToBeDelete = 0;
+        public long Debug_MarkToDeleteTime = 0;
+        public IAssetManager Debug_BelongAssetManager = null;
+        public string Debug_AssetName;
+        public string Debug_ParentAssetBundlePath;
+
+
+        public void UpdateData()
+        {
+            Debug_InstanceID = InstanceID;
+            Debug_AssetPath = AssetPath;
+            Debug_ReferenceCount = ReferenceCount;
+            Debug_AssetLoadedType = AssetLoadedType;
+            Debug_TargetAsset = TargetAsset;
+            Debug_RemainTimeToBeDelete = RemainTimeToBeDelete;
+            Debug_MarkToDeleteTime = MarkToDeleteTime;
+            Debug_BelongAssetManager = BelongAssetManager;
+            Debug_AssetName = AssetName;
+            Debug_ParentAssetBundlePath = ParentAssetBundlePath;
+        }
+
+        #endregion
+#endif
+
         public int InstanceID { get; protected set; } = 0;
         public string AssetPath { get; protected set; } = string.Empty;
         public int ReferenceCount { get; protected set; } = 1;

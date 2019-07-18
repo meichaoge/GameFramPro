@@ -37,6 +37,12 @@ namespace GameFramePro.ResourcesEx
 
         private HashSet<int> mAllAssetBundleLoadAssetInstanceIds = new HashSet<int>();
 
+#if UNITY_EDITOR
+        public Dictionary<string, AssetBundleAssetDepdenceRecord> Debug_mAllLoadAssetBundleCache { get { return mAllLoadAssetBundleCache; } }
+        public Dictionary<string, AssetBundleSubAssetLoadRecord> Debug_mAllLoadedAssetBundleSubAssetRecord { get { return mAllLoadedAssetBundleSubAssetRecord; } }
+
+#endif
+
         //private AssetBundleManifest mAssetBundleManifest = null;
         //public AssetBundleManifest AssetBundleManifestInfor
         //{
