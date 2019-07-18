@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using System.IO;
 using System.Text;
 using System.Linq;
-using GameFramePro;
-
+using System.Text.RegularExpressions;
 
 namespace GameFramePro
 {
@@ -31,11 +28,13 @@ namespace GameFramePro
                 Debug.LogError("CreateOrSetFileContent Path is Null  ");
                 return;
             }
-
-
             byte[] data = Encoding.UTF8.GetBytes(content);
-            FileStream operateStream = null;
+            CreateOrSetFileContent(filePath, data, isAppend);
+        }
 
+        public static void CreateOrSetFileContent(string filePath, byte[] byteData, bool isAppend = false)
+        {
+            FileStream operateStream = null;
             try
             {
                 string directionaryPath = Path.GetDirectoryName(filePath);
@@ -49,7 +48,7 @@ namespace GameFramePro
 
 
                 int buffersize = 1024;
-                buffersize = Mathf.Max(buffersize, data.Length);  //防止content为null时候buffer=0报错
+                buffersize = Mathf.Max(buffersize, byteData.Length);  //防止content为null时候buffer=0报错
 
                 if (File.Exists(filePath) && (isAppend == false))
                     operateStream = new FileStream(filePath, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read, buffersize);//截断
@@ -57,9 +56,9 @@ namespace GameFramePro
                     operateStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, buffersize);//打开或者创建
 
                 if (isAppend)
-                    operateStream.Write(data, (int)operateStream.Length, data.Length);
+                    operateStream.Write(byteData, (int)operateStream.Length, byteData.Length);
                 else
-                    operateStream.Write(data, 0, data.Length);
+                    operateStream.Write(byteData, 0, byteData.Length);
 
                 operateStream.Flush();// 刷新
             }
@@ -76,9 +75,6 @@ namespace GameFramePro
                 UnityEditor.AssetDatabase.Refresh();
 #endif
             }
-
-
-
         }
 
         /// <summary>
@@ -99,6 +95,30 @@ namespace GameFramePro
             content = System.IO.File.ReadAllText(filePath);
             return true;
         }
+
+        /// <summary>
+        /// 文件重命名
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="newFileName"></param>
+        /// <returns></returns>
+        public static bool FileModifyName(string filePath, string newFileName)
+        {
+            if (System.IO.File.Exists(filePath) == false)
+                return false;
+
+            string newFilePath = System.IO.Path.GetDirectoryName(filePath).CombinePathEx(newFileName);
+            if (System.IO.File.Exists(newFilePath))
+            {
+                Debug.LogError("存在同名的文件 ，无法修改文件名 " + newFilePath);
+                return false;
+            }
+
+            System.IO.File.Move(filePath, newFileName);
+            return true;
+        }
+
+
 
 
         #endregion
@@ -139,7 +159,7 @@ namespace GameFramePro
         /// <param name="targetPath"></param>
         /// <param name="parentDeep">默认=0时候表示是当前目录名</param>
         /// <returns></returns>
-        public static string GetPathDirectoryNameByDeep(this string targetPath, uint parentDeep=0)
+        public static string GetPathDirectoryNameByDeep(this string targetPath, uint parentDeep = 0)
         {
             if (string.IsNullOrEmpty(targetPath))
                 return string.Empty;
@@ -162,7 +182,7 @@ namespace GameFramePro
                         currentPath = Path.GetDirectoryName(currentPath);  //第一个处理文件路径需要取目录后再处理
                     }
                 }
-               
+
                 directoryName = Path.GetFileName(currentPath);
                 currentPath = Path.GetDirectoryName(currentPath);
                 ++deep;
@@ -218,11 +238,12 @@ namespace GameFramePro
         }
 
         /// <summary>
-        /// 清空目录中所有的资源
+        /// / 清空目录中所有的资源
         /// </summary>
         /// <param name="directoryPath"></param>
+        /// <param name="isAutoCreate">如果不存在时候自动创建</param>
         /// <returns></returns>
-        public static bool ClearDirectory(string directoryPath)
+        public static bool ClearOrCreateDirectory(string directoryPath, bool isAutoCreate = true)
         {
             if (string.IsNullOrEmpty(directoryPath))
             {
@@ -231,13 +252,59 @@ namespace GameFramePro
             }
             if (System.IO.Directory.Exists(directoryPath) == false)
             {
-                Debug.LogError(string.Format("ClearDirectory Fail, directoryPath[ {0} ] is not exit ", directoryPath));
+                if (isAutoCreate)
+                    System.IO.Directory.CreateDirectory(directoryPath);
+                //  Debug.LogError(string.Format("ClearDirectory Fail, directoryPath[ {0} ] is not exit ", directoryPath));
                 return false;
             }
             System.IO.Directory.Delete(directoryPath, true);
             System.IO.Directory.CreateDirectory(directoryPath);
             return true;
         }
+
+
+
+        /// <summary>
+        ///  复制文件夹（及文件夹下所有子文件夹和文件）
+        /// </summary>
+        /// <param name="sourcePath">待复制的文件夹路径</param>
+        /// <param name="destinationPath">目标路径</param>
+        /// <param name="exculdeExtension">需要过滤哪些扩展名文件</param>
+        public static void CopyDirectory(string sourcePath, string destinationPath, string[] exculdeExtension)
+        {
+            DirectoryInfo info = new DirectoryInfo(sourcePath);
+            //Directory.CreateDirectory(destinationPath);
+            ClearOrCreateDirectory(destinationPath);
+
+            foreach (FileSystemInfo fsi in info.GetFileSystemInfos())
+            {
+                string destName = Path.Combine(destinationPath, fsi.Name);
+                if (exculdeExtension != null && exculdeExtension.Length != 0)
+                {
+                    string extensionName = Path.GetExtension(destName);
+                    if (exculdeExtension.Contains(extensionName))
+                        continue;
+                }
+
+                if (fsi is System.IO.FileInfo)          //如果是文件，复制文件
+                {
+                    if (System.IO.File.Exists(destName))
+                        System.IO.File.Delete(destName);
+                    File.Copy(fsi.FullName, destName);
+                }
+                else                                    //如果是文件夹，新建文件夹，递归
+                {
+                    Directory.CreateDirectory(destName);
+                    CopyDirectory(fsi.FullName, destName, exculdeExtension);
+                }
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sourcePath">待复制的文件夹路径</param>
+        /// <param name="destinationPath">目标路径</param>
         #endregion
 
         #region 获取目录下的文件和子目录(可以过滤部分扩展名)
@@ -492,7 +559,7 @@ namespace GameFramePro
         /// </summary>
         /// <param name="targetPath"></param>
         /// <returns></returns>
-        public static string GetPathWithOutExtension(this string targetPath,char extensionTag = '.')
+        public static string GetPathWithOutExtension(this string targetPath, char extensionTag = '.')
         {
             if (string.IsNullOrEmpty(targetPath))
                 return targetPath;
@@ -538,7 +605,38 @@ namespace GameFramePro
                 pathInfor = Path.GetFileNameWithoutExtension(pathInfor);
             return pathInfor;
         }
+
+
+        /// <summary>
+        /// 忽略掉路径中的转移字符和目录字符
+        /// </summary>
+        /// <param name="targetPath"></param>
+        /// <param name="otherPath"></param>
+        /// <returns></returns>
+        public static bool ComparePathEx(this string targetPath, string otherPath)
+        {
+            string path1 = GetPathStringEx(targetPath);
+            string path2 = GetPathStringEx(otherPath);
+            return path1 == path2;
+        }
+        /// <summary>
+        /// 获取不带路径分隔符(/or\or空白符)的字符串
+        /// </summary>
+        /// <param name="targetPath"></param>
+        /// <returns></returns>
+        public static string GetPathStringEx(this string targetPath)
+        {
+            if (string.IsNullOrEmpty(targetPath) == false)
+                return Regex.Replace(targetPath, @"[\\/\s]", string.Empty);
+            return string.Empty;
+        }
         #endregion
+
+
+
+
+
+
 
 
 

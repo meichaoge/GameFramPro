@@ -97,8 +97,9 @@ namespace GameFramePro
             {
                 ((Action)action)();
             }
-            catch
+            catch (Exception e)
             {
+                Debug.LogError("RunAsync Error " + e);
             }
             finally
             {

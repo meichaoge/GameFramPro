@@ -12,7 +12,7 @@ using GameFramePro;
 /// <typeparam name="T"></typeparam>
 public class Single<T> where T : class, new()
 {
-    protected static T s_Instance = default(T);
+    private static T s_Instance = default(T);
     private static object obj = new object();
     public static T S_Instance
     {

@@ -12,7 +12,7 @@ namespace GameFramePro.EditorEx
     [System.Serializable]
     public class EditorTotalAssetBundleInfor 
     {
-        public string mAssetRelativePath; //加载时候识别的路径
+    //    public string mAssetRelativePath; //加载时候识别的路径
         public string mVersion = "1.0.0.1"; //资源版本
         public long mConfigBuildTime = 0; //创建这个配置文件的时间(utc);
         public long mTotalSize; //总大小

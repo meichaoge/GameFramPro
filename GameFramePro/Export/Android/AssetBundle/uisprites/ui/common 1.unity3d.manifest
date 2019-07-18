@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 721708792
+CRC: 2258897270
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5f3c6a751e609680bba3d5cb297a07f6
+    Hash: db80ecd8ecf30385f0faaaef67e1d8ce
   TypeTreeHash:
     serializedVersion: 2
     Hash: cd0013560214ef49039b368191162a3c
@@ -24,6 +24,7 @@ ClassTypes:
 - Class: 213
   Script: {instanceID: 0}
 Assets:
-- Assets/Resources/UISprites/UI/Common/event_button_zi.prefab
-- Assets/Resources/UISprites/UI/Common/event_button_hui.prefab
+- Assets/Resources/UISprites/UI/Common 1/event_button_jin.prefab
+- Assets/Resources/UISprites/UI/Common 1/event_button_hui.prefab
+- Assets/Resources/UISprites/UI/Common 1/event_button_zi.prefab
 Dependencies: []

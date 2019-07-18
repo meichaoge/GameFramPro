@@ -12,21 +12,18 @@ namespace GameFramePro
     /// <summary>
     /// 对外提供下载接口 对内隐藏实现
     /// </summary>
-    public class DownloadManager : Single<DownloadManager>, IUpdateTick
+    public class DownloadManager : Single<DownloadManager>
     {
         //private HashSet<IDownloadManager<object, ITaskProcess>> mAllDownloadeManagers = new HashSet<IDownloadManager<object, ITaskProcess>>(); //所有的下载器
+ 
 
-        public float TickTimeInterval { get { return 0.1f; } } //调用的时间
-        private float mLastTickTime = 0;
-        public void Tick(float realtimeSinceStartup)
+
+        public void UpdateTick()
         {
-            if (Time.realtimeSinceStartup - mLastTickTime <= TickTimeInterval)
-                return;
-            mLastTickTime = Time.realtimeSinceStartup;
+           
 
-
-            AssetBundleDownloadManager.S_Instance.Tick();
-            ByteDataDownloadManager.S_Instance.Tick();
+       //     AssetBundleDownloadManager.S_Instance.Tick();
+            ByteDataDownloadManager.S_Instance.UpdateTick();
 
             //if (mAllDownloadeManagers.Count > 0)
             //{
@@ -35,27 +32,27 @@ namespace GameFramePro
             //}
         }
 
-      //  protected override void InitialSingleton()
-      //  {
-      //      base.InitialSingleton();
-      // //     AppManager.S_Instance.RegisterUpdateTick(this);
+        //  protected override void InitialSingleton()
+        //  {
+        //      base.InitialSingleton();
+        // //     AppManager.S_Instance.RegisterUpdateTick(this);
 
-      //  }
-      //  public override void DisposeInstance()
-      //  {
-      ////      AppManager.S_Instance.UnRegisterUpdateTick(this);
-      //      base.DisposeInstance();
-      //  }
+        //  }
+        //  public override void DisposeInstance()
+        //  {
+        ////      AppManager.S_Instance.UnRegisterUpdateTick(this);
+        //      base.DisposeInstance();
+        //  }
 
 
 
         #region 通用的下载接口 对外隐藏实现 (这里不能是静态的 否则没法注册)
-        public  void GetAssetBundleFromUrl(string taskUrl, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public void GetAssetBundleFromUrl(string taskUrl,uint crc, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
-            AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,callback, priorityEnum);
+           // AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,crc, callback, priorityEnum);
         }
 
-        public  void GetByteDataFromUrl(string taskUrl, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public void GetByteDataFromUrl(string taskUrl, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
             ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
@@ -87,7 +84,7 @@ namespace GameFramePro
         //    return;
         //}
 
-   
+
         #endregion
 
 

@@ -25,6 +25,7 @@ namespace GameFramePro.NetWorkEx
                 Debug.LogError(string.Format("StartDownloadTask Fail,this Task is Already Start!! url={0}", TaskUrl));
                 return;
             }
+            ChangeDownloadState(DownloadStateEnum.Running);
 
             if (DownloadTaskCallbackData != null)
             {
@@ -33,7 +34,10 @@ namespace GameFramePro.NetWorkEx
 
                 mUnityWebRequestAsyncOperation = DownloadTaskCallbackData.SendWebRequest();  //启动任务
                 DownloadTaskCallbackData = mUnityWebRequestAsyncOperation.webRequest;
-                ChangeDownloadState(DownloadStateEnum.Running);
+            }
+            else
+            {
+                ChangeDownloadState(DownloadStateEnum.Error);
             }
         }
 

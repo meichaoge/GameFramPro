@@ -22,7 +22,7 @@ namespace GameFramePro.EditorEx
 
 
         #region 数据
-        private AppPlatformEnum mSelectAppPlatform = AppPlatformEnum.Android; //选择的平台
+        private AppPlatformEnum mSelectAppPlatform = AppPlatformEnum.Windows64; //选择的平台
         private BuildAssetBundleOptions mSelectBuildAssetBundleOptions = BuildAssetBundleOptions.None;// 打包AssetBundle 设置
         private string mSelectAssetBundleSavePath = string.Empty; //保存生成的AssetBundle 目录
 
@@ -30,6 +30,7 @@ namespace GameFramePro.EditorEx
         private Vector2 mResourcesTreeViewScrollPos = Vector2.zero;
 
         private TextAsset mTotalAssetBundleInforConfig = null;
+        private string outPutPath { get { return Application.streamingAssetsPath.CombinePathEx(AppPlatformManager.GetPlatformFolderName(mSelectAppPlatform)).CombinePathEx(ConstDefine.S_AssetBundleDirectoryName); } }
         #endregion
 
         //初始化
@@ -44,8 +45,6 @@ namespace GameFramePro.EditorEx
 
         private void OnGUI()
         {
-            // try
-            //   {
             GUILayout.BeginVertical("box");
 
             #region 打包设置
@@ -82,6 +81,13 @@ namespace GameFramePro.EditorEx
                 }
             }
             GUILayout.EndHorizontal();
+
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("生成AssetBunde 资保存在Assets相对路径", GUILayout.Width(180));
+            GUILayout.Label(outPutPath.GetPathFromSpecialDirectoryName(ConstDefine.S_AssetsName), GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+
             #endregion
 
             GUILayout.Space(10);
@@ -92,11 +98,11 @@ namespace GameFramePro.EditorEx
             GUILayout.Space(8);
             GUILayout.BeginVertical("box");
 
+            GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Label("上一次生成AssetBundle 配置", GUILayout.Width(180));
             mTotalAssetBundleInforConfig = (TextAsset)EditorGUILayout.ObjectField("", mTotalAssetBundleInforConfig, typeof(TextAsset), false);
             GUILayout.EndHorizontal();
-
 
 
             GUILayout.Space(8);
@@ -104,10 +110,13 @@ namespace GameFramePro.EditorEx
             #endregion
 
             #region 显示Resources 树形目录
-            mResourcesTreeViewScrollPos = GUILayout.BeginScrollView(mResourcesTreeViewScrollPos);
+            if (mAssetDirectoryTreeView != null)
+            {
+                mResourcesTreeViewScrollPos = GUILayout.BeginScrollView(mResourcesTreeViewScrollPos);
 
-            mAssetDirectoryTreeView.DrawTreeView(-1, true);
-            GUILayout.EndScrollView();
+                mAssetDirectoryTreeView.DrawTreeView(-1, true);
+                GUILayout.EndScrollView();
+            }
             #endregion
 
             #region 操作
@@ -120,6 +129,7 @@ namespace GameFramePro.EditorEx
             {
                 BuildAssetBundleTool.BeginBuildAssetBundle(mSelectAssetBundleSavePath, mSelectBuildAssetBundleOptions, new List<AppPlatformEnum> { mSelectAppPlatform });
             }
+
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
@@ -127,14 +137,6 @@ namespace GameFramePro.EditorEx
             #endregion
 
             GUILayout.EndVertical();
-            // }
-            //catch (Exception e)
-            //{
-            //    Debug.LogEditorError("BuildAssetBundle_Win OnGUI" + e.ToString());
-            //    Close();
-            //    throw;
-            //}
-
         }
 
 

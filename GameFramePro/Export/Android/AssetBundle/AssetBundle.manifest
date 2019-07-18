@@ -1,13 +1,13 @@
 ManifestFileVersion: 0
-CRC: 2076966490
+CRC: 1968739981
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: core
+      Name: lua/core.unity3d
       Dependencies: {}
     Info_1:
-      Name: common 1
+      Name: uisprites/ui/common.unity3d
       Dependencies: {}
     Info_2:
-      Name: common
+      Name: uisprites/ui/common 1.unity3d
       Dependencies: {}

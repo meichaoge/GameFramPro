@@ -23,7 +23,7 @@ namespace GameFramePro.ResourcesEx
         }
         public static void TrackPoolManager<T>(Type type, INativeObjectPool<T> poolManager) where T : new()
         {
-            if (Application.isPlaying == false) return; //过滤编辑器代码
+       //     if (Application.isPlaying == false) return; //过滤编辑器代码
 
             INativeObjectPool<object> pool = null;
 
@@ -44,7 +44,7 @@ namespace GameFramePro.ResourcesEx
 
         public static void UnTrackPoolManager<T>(Type type, INativeObjectPool<T> poolManager) where T : new()
         {
-            if (Application.isPlaying == false) return; //过滤编辑器代码
+    //        if (Application.isPlaying == false) return; //过滤编辑器代码
             INativeObjectPool<object> pool = null;
 
             if (mAllNativeObjectPoolManagers.TryGetValue(type, out pool))

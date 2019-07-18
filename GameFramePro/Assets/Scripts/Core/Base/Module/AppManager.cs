@@ -36,7 +36,7 @@ namespace GameFramePro
         #region 总的刷新控制
         private void UpdateTick(float realtimeSinceStartup)
         {
-            DownloadManager.S_Instance.Tick(realtimeSinceStartup);
+            DownloadManager.S_Instance.UpdateTick();
 
             //foreach (var updateTick in mAllControllUpdateTicks)
             //{

@@ -19,23 +19,26 @@ namespace GameFramePro.NetWorkEx
     }
 
     /// <summary>
+    /// 下载任务的状态
+    /// </summary>
+    public enum DownloadStateEnum
+    {
+        None = 0, //无效的初始状态
+        Initialed, //初始化
+        Waiting,  //等待下载
+        Running,
+        Done, //完成
+        Cancel,//取消
+        Error, //错误
+    }
+
+    /// <summary>
     /// 下载任务的基类
     /// </summary>
     /// <typeparam name="W">真是的下载器类型(UnityWebRequest)</typeparam>
     public class BaseDownloadTask< W> : IDownloadTaskProcess
     {
-        /// <summary>
-        /// 下载任务的状态
-        /// </summary>
-        protected enum DownloadStateEnum
-        {
-            None = 0, //无效的初始状态
-            Initialed, //初始化
-            Running,
-            Done, //完成
-            Cancel,//取消
-            Error, //错误
-        }
+
 
 
         public bool IsDone { get; protected set; } = false;
@@ -45,7 +48,7 @@ namespace GameFramePro.NetWorkEx
         public bool IsCompleteInvoke { get; protected set; } = false;
 
         public UnityTaskPriorityEnum TaskPriorityEnum { get; protected set; } = UnityTaskPriorityEnum.Normal;  //下载任务的优先级
-        protected DownloadStateEnum DownloadTaskStateEnum { get; set; } = DownloadStateEnum.None; //当前的状态
+        public DownloadStateEnum DownloadTaskStateEnum { get; protected set; } = DownloadStateEnum.None; //当前的状态
 
         protected LinkedList<Action<W, bool, string>> TaskCompleteCallBackLinkList = new LinkedList<Action<W, bool, string>>(); //完成任务的事件链 bool 标示是否成功
 
@@ -120,6 +123,9 @@ namespace GameFramePro.NetWorkEx
             ClearDownloadTask();
         }
 
+        /// <summary>
+        /// 任务的Tick 只处理自身的状态变化 和回调处理，不能删除自身或者调用StartDownloadTask
+        /// </summary>
         public virtual void Tick() { }
 
         public virtual void ClearDownloadTask() 
@@ -131,7 +137,7 @@ namespace GameFramePro.NetWorkEx
         #endregion
 
 
-        protected virtual void ChangeDownloadState(DownloadStateEnum downloadState)
+        public virtual void ChangeDownloadState(DownloadStateEnum downloadState)
         {
             if (DownloadTaskStateEnum == downloadState)
                 return;

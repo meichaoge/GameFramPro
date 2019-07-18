@@ -17,6 +17,7 @@ namespace GameFramePro
         public long mBundleSize;// 对应 EditorAssetBundleInfor.mPackageSize
         public int mBundleAssetsCount;// 包含的资源数量
         public string mBundleMD5Code;  /// MD5 码
+        public uint mBundleCRC;
         public HashSet<string> mContainAssetPathInfor = new HashSet<string>(); //包含的资源路径
     }
 

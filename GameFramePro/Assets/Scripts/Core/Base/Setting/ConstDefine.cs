@@ -14,6 +14,10 @@ namespace GameFramePro
         public static readonly string S_MetaExtension = ".meta"; //meta 扩展名
         public static readonly string S_TextAssetExtension = ".txt"; //文件文件扩展名
         public static readonly string S_PrefabExtension = ".prefab"; //文件文件扩展名
+        public static readonly string S_AssetBundleManifestExtension = ".manifest"; //AssetBundleManifest文件文件扩展名
+        public static readonly string S_AssetBundleExtension = ".unity3d"; //AssetBundle t文件文件扩展名
+
+
 
 
         public static readonly string S_ResourcesName = "Resources"; //Resources 目录名

@@ -27,7 +27,7 @@ namespace GameFramePro
                 fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 MD5 md5 = new MD5CryptoServiceProvider();
                 byte[] result = md5.ComputeHash(fileStream);
-                builder = StringUtility.GetStringBuilder();
+                builder = new StringBuilder();
                 foreach (byte b in result)
                     builder.Append(Convert.ToString(b, 16));
 
@@ -41,8 +41,7 @@ namespace GameFramePro
 
             finally
             {
-                if (builder != null)
-                    StringUtility.ReleaseStringBuilder(builder);
+                builder.Clear();
                 if (fileStream != null)
                     fileStream.Close();
             }
@@ -66,7 +65,7 @@ namespace GameFramePro
                 fileSize = fileStream.Length;
                 MD5 md5 = new MD5CryptoServiceProvider();
                 byte[] result = md5.ComputeHash(fileStream);
-                builder = StringUtility.GetStringBuilder();
+                builder = new StringBuilder();
                 foreach (byte b in result)
                     builder.Append(Convert.ToString(b, 16));
 
@@ -80,8 +79,7 @@ namespace GameFramePro
 
             finally
             {
-                if (builder != null)
-                    StringUtility.ReleaseStringBuilder(builder);
+                builder.Clear();
                 if (fileStream != null)
                     fileStream.Close();
             }

@@ -7,23 +7,30 @@ namespace GameFramePro.NetWorkEx
 {
     public interface IDownloadManager<U> where U : IDownloadTaskProcess
     {
+
         /// <summary>
-        /// 所有的正在下载中的 UnityWebRequest 任务
+        ///所有的下载任务，按照优先级排序，包含已经开始的和等待的任务
         /// </summary>
-        Dictionary<string, U> AllDownloadingTasks { get; }
+        LinkedList<U> AllDownloadTaskLinkedList { get; }
         /// <summary>
-        /// 排队中的任务， 按照优先级排序
+        /// 所有的任务请求会先进入这里然后在 Tick 时候加入 AllDownloadTaskLinkedList
         /// </summary>
-        LinkedList<U> AllWaitDownloadTasks { get; }
+        LinkedList<U> AllCacheDownloadTaskLinkedList { get; }
+
 
         int MaxDownloadTaskCount { get; }
-
-        void Tick(); //定时获取状态
+        /// <summary>
+        /// 下载中的任务总数
+        /// </summary>
+        int CurDownloadingTaskCount { get; }
 
         /// <summary>
-        /// 清理已经完成的任务
+        /// 定义每这个数量的Mono  Update 更新一次
         /// </summary>
-        void ClearCompletedTask();
+        int TickPerUpdateCount { get; }
+
+        void UpdateTick(); //定时获取状态
+
 
     }
 }

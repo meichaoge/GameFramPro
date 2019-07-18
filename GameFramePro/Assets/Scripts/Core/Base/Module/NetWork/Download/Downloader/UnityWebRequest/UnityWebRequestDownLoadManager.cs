@@ -16,9 +16,6 @@ namespace GameFramePro.NetWorkEx
 
 
 
-
-
-
         static UnityWebRequestDownLoadManager()
         {
             if (s_IsInitialed == false)
@@ -30,6 +27,9 @@ namespace GameFramePro.NetWorkEx
             Debug.LogError("UnityWebRequestDownLoadManager Already Intial");
         }
 
+
+    
+
         #region 对象池接口
         protected static void OnBeforRecycleWebRequestTaskItem(UnityWebRequestDownloadTask task)
         {
@@ -40,9 +40,6 @@ namespace GameFramePro.NetWorkEx
         }
         #endregion
 
-        protected override UnityWebRequestDownloadTask GetDownloadTaskInstance(string taskUrl, Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum, params object[] otherParameter)
-        {
-            return null;
-        }
+ 
     }
 }
