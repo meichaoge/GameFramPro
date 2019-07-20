@@ -15,17 +15,18 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         float MaxAliveTimeAfterNoReference { get; }
 
-        /// <summary>
-        /// 收到资源没有引用的消息(可能是强制删除了)
-        /// </summary>
-        /// <param name="infor"></param>
-        void NotifyAssetNoReference(ILoadAssetRecord infor);
 
         /// <summary>
-        /// 当一个记录的引用对应已经被销毁时候仍然增加或者减少引用时候调用
+        /// 管理的资源引用次数改变
         /// </summary>
         /// <param name="record"></param>
-        void MarkTargetAssetNull(ILoadAssetRecord record);
+        void NotifyAssetReferenceChange(ILoadAssetRecord record);
+
+        /// <summary>
+        /// 一个资源没有被引用一段时间后彻底释放自己 需要删除记录
+        /// </summary>
+        /// <param name="record"></param>
+        void NotifyAssetRelease (ILoadAssetRecord record);
 
     }
 }

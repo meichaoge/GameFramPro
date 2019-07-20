@@ -1,8 +1,10 @@
 ﻿using GameFramePro.ResourcesEx;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace GameFramePro
 {
@@ -34,13 +36,13 @@ namespace GameFramePro
             return true;
         }
 
-        public static void Destroy(Object obj)
+        public static void Destroy(UnityEngine.Object obj)
         {
             ResourcesTracker.UnRegisterTraceResources(obj);
             GameObject.Destroy(obj);
         }
 
-        public static void DestroyImmediate(Object obj)
+        public static void DestroyImmediate(UnityEngine.Object obj)
         {
             ResourcesTracker.UnRegisterTraceResources(obj);
             GameObject.DestroyImmediate(obj);
@@ -103,18 +105,88 @@ namespace GameFramePro
 
 
         #region 资源加载接口
+        #region Sprite 加载
+    
+        /// <summary>
+        /// 从指定路径加载一个sprite 并赋值给 targetImage 认的 是从加载资源的记录中取得SpriteRender 组件然后赋给参数targetImage
+        /// </summary>
+        /// <param name="assetPath">当assetPath 为null 时候设置targetImage为空。否则正常加载对应路径的资源</param>
+        /// <param name="targetImage"></param>
+        /// <param name="getAssetReference">定义了如何从当前组件 targetImage 的所有引用资源链表中找到自己想要的修改的那个引用记录</param>
+        /// <param name="getAssetFromRecordAction"></param>
+        public static void LoadSpriteAssetSync<T>(string assetPath, T targetImage,Action<T, ILoadAssetRecord> getAssetFromRecordAction=null, Func<LinkedList<IAssetReference>, IAssetReference> getAssetReference=null) where T:Image
+        {
+            if (getAssetFromRecordAction == null)
+            {
+                //Debug.LogError("LoadSpriteAssetSync Fail, 必须设置如何从加载的资源中获取需要的资源的方法");
+                //return;
+                getAssetFromRecordAction = SpriteAssetReference.GetSpriteFromSpriteRender;
+            }
+            if (getAssetReference == null)
+            {
+                //Debug.LogError("LoadSpriteAssetSync Fail, 必须指定如何从一个组件的所有当前资源引用中找到对应的引用的方法");
+                getAssetReference = SpriteAssetReference.GetSpriteAssetReference;
+            }
+         
+            ILoadAssetRecord assetRecord = null;
+            if (string.IsNullOrEmpty(assetPath) == false)
+            {
+                assetRecord = LoadAssetFromCache(assetPath);
+                if (assetRecord == null || assetRecord.TargetAsset == null)
+                    assetRecord = LoadAssetSync(assetPath);
+            }
+            AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction);
+        }
+
+        public static void LoadSpriteAssetAsync<T>(string assetPath, T targetImage, Action<T, ILoadAssetRecord> getAssetFromRecordAction=null, Func<LinkedList<IAssetReference>, IAssetReference> getAssetReference=null) where T : Image
+        {
+            if (getAssetFromRecordAction == null)
+            {
+                //Debug.LogError("LoadSpriteAssetSync Fail, 必须设置如何从加载的资源中获取需要的资源的方法");
+                getAssetFromRecordAction = SpriteAssetReference.GetSpriteFromSpriteRender;
+            }
+            if (getAssetReference == null)
+            {
+                //Debug.LogError("LoadSpriteAssetSync Fail, 必须指定如何从一个组件的所有当前资源引用中找到对应的引用的方法");
+                getAssetReference = SpriteAssetReference.GetSpriteAssetReference;
+            }
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                AssetReferenceController.CreateOrAddReference<T>(targetImage, null, getAssetReference, getAssetFromRecordAction);
+                return;
+            }
+
+
+            ILoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
+            if (assetRecord != null && assetRecord.TargetAsset != null)
+            {
+                AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction);
+                return;
+            }
+
+            LoadAssetAsync(assetPath, (record)=> { AssetReferenceController.CreateOrAddReference<T>(targetImage, record, getAssetReference, getAssetFromRecordAction); });
+        }
+
+
+        #endregion
+
+        #endregion
+
+
+
+        #region 资源加载接口
         /// <summary>
         /// 缓存中加载资源
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="assetpath"></param>
         /// <returns></returns>
-        private static T LoadAssetFromCache<T>(string assetPath) where T : UnityEngine.Object
+        private static ILoadAssetRecord LoadAssetFromCache(string assetPath)
         {
-            T asset = LocalResourcesManager.S_Instance.LoadAssetFromCache<T>(assetPath);
+            ILoadAssetRecord asset = LocalResourcesManager.S_Instance.LoadAssetFromCache(assetPath);
             if (asset != null)
                 return asset;
-            asset = AssetBundleManager.S_Instance.LoadAssetFromCache<T>(assetPath);
+        //    asset = AssetBundleManager.S_Instance.LoadAssetFromCache(assetPath);
             return asset;
         }
 
@@ -123,48 +195,38 @@ namespace GameFramePro
         /// </summary>
         /// <param name="assetpath"></param>
         /// <returns></returns>
-        public static UnityEngine.Object LoadAssetSync(string assetPath)
+        private static ILoadAssetRecord  LoadAssetSync(string assetPath)
         {
-            Object asset = LoadAssetFromCache<Object>(assetPath);
-            if (asset != null)
-                return asset;
-
+            ILoadAssetRecord record = null;
 
             if (AppSetting.S_IsLoadResourcesAssetPriority)
-                return LocalResourcesManager.S_Instance.ResourcesLoadAssetSync<Object>(assetPath);
-
-            return AssetBundleManager.S_Instance.LoadAssetSync<Object>(assetPath);
+            {
+                record = LocalResourcesManager.S_Instance.LoadAssetSync(assetPath);
+                if (record == null)
+                    record = AssetBundleManager.S_Instance.LoadAssetSync(assetPath);
+            }
+            else
+            {
+               record = AssetBundleManager.S_Instance.LoadAssetSync(assetPath);
+                if (record == null)
+                    record = LocalResourcesManager.S_Instance.LoadAssetSync(assetPath);
+            }
+            return record;
         }
 
-        /// <summary>
-        /// 同步下载资源接口
-        /// </summary>
-        /// <param name="assetpath"></param>
-        /// <returns></returns>
-        public static T LoadAssetSync<T>(string assetPath) where T : UnityEngine.Object
-        {
-            T asset = LoadAssetFromCache<T>(assetPath);
-            if (asset != null)
-                return asset;
-
-
-            if (AppSetting.S_IsLoadResourcesAssetPriority)
-                return LocalResourcesManager.S_Instance.ResourcesLoadAssetSync<T>(assetPath);
-            return AssetBundleManager.S_Instance.LoadAssetSync<T>(assetPath);
-        }
 
         /// <summary>
         /// 异步下载资源的接口
         /// </summary>
         /// <param name="assetpath"></param>
         /// <param name="loadCallback"></param>
-        public static void LoadAssetAsync(string assetPath, System.Action<UnityEngine.Object> loadCallback)
+        public static void LoadAssetAsync(string assetPath, System.Action<ILoadAssetRecord> loadCallback)
         {
-            Object asset = LoadAssetFromCache<Object>(assetPath);
-            if (asset != null)
+            ILoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
+            if (assetRecord != null)
             {
                 if (loadCallback != null)
-                    loadCallback(asset);
+                    loadCallback(assetRecord);
                 return;
             }
 
@@ -178,35 +240,9 @@ namespace GameFramePro
 
 
         #region 辅助接口
-        /// <summary>
-        /// 释放某个资源的引用
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="asset"></param>
-        public static void ReleaseReference<T>(T asset) where T : UnityEngine.Object
-        {
-            if (LocalResourcesManager.S_Instance.ReleaseReference<T>(asset))
-                return;
 
-            AssetBundleManager.S_Instance.ReleaseReference<T>(asset);
-        }
 
-        /// <summary>
-        /// 在使用ResoucesMgr 后改变图片使用这个接口
-        /// </summary>
-        /// <param name="image"></param>
-        /// <param name="sp"></param>
-        public static void SetSprite(UnityEngine.UI.Image image, Sprite sp)
-        {
-            if (image == null)
-            {
-                Debug.LogError("SetSprite Fail,Parameter image is null");
-                return;
-            }
-            if (image.sprite != null)
-                ReleaseReference<Sprite>(image.sprite);
-            image.sprite = sp;
-        }
+
         #endregion
 
     }

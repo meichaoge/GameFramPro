@@ -14,28 +14,38 @@ public class TestLoadAsset : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+
+        if (Input.GetKeyDown(KeyCode.C))
         {
-            GameObject obj = ResourcesManager.LoadAssetSync<GameObject>(assetPath);
-            Debug.Log(obj.GetInstanceID());
-            var sp = obj .GetComponent<SpriteRenderer>().sprite;
-
-            Debug.Log(sp.GetInstanceID());
-
-            ResourcesManager.SetSprite(mTarget, sp);
+            ResourcesManager.LoadSpriteAssetSync(assetPath, mTarget);
         }
 
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            ResourcesManager.LoadAssetAsync(assetPath, (asset) =>
-            {
-                if (asset != null)
-                {
-                    var sp = (asset as GameObject).GetComponent<SpriteRenderer>().sprite;
-                    ResourcesManager.SetSprite(mTarget2, sp);
-                }
-            });
-        }
+
+
+        //if (Input.GetKeyDown(KeyCode.A))
+        //{
+        //    GameObject obj = ResourcesManager.LoadAssetSync<GameObject>(assetPath);
+        //    Debug.Log(obj.GetInstanceID());
+        //    var sp = obj .GetComponent<SpriteRenderer>().sprite;
+
+        //    Debug.Log(sp.GetInstanceID());
+
+        //    ResourcesManager.SetSprite(mTarget, sp);
+        //}
+
+     
+
+        //if (Input.GetKeyDown(KeyCode.B))
+        //{
+        //    ResourcesManager.LoadAssetAsync(assetPath, (asset) =>
+        //    {
+        //        if (asset != null)
+        //        {
+        //            var sp = (asset as GameObject).GetComponent<SpriteRenderer>().sprite;
+        //            ResourcesManager.SetSprite(mTarget2, sp);
+        //        }
+        //    });
+        //}
 
     }
 

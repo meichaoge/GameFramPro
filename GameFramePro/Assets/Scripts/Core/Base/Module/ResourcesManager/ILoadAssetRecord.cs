@@ -50,15 +50,14 @@ namespace GameFramePro.ResourcesEx
     /// </summary>
     public interface ILoadAssetRecord
     {
-
         /// <summary>
         /// 加载时候Unity 生成的实例ID (不可靠)
         /// </summary>
         int InstanceID { get; }
         /// <summary>
-        /// 资源路径
+        /// 唯一标示一个资源的，通常赋值为加载这个资源时候使用的相对路径(相对于Resouces 目录)
         /// </summary>
-        string AssetPath { get; }
+        string AssetUrl { get; }
         /// <summary>
         /// 引用次数
         /// </summary>
@@ -86,6 +85,9 @@ namespace GameFramePro.ResourcesEx
         /// 被哪个管理器管理
         /// </summary>
         IAssetManager BelongAssetManager { get; }
+
+
+
 
 
         /// <summary>
@@ -116,6 +118,14 @@ namespace GameFramePro.ResourcesEx
         /// 后台时候被重新引用
         /// </summary>
         bool  NotifyReReference();
+
+        /// <summary>
+        /// 资源的引用次数改变时候
+        /// </summary>
+        void NotifyReferenceChange(); 
+
+
+
         /// <summary>
         /// 超过最大后台存活时间后释放自己
         /// </summary>

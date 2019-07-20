@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using GameFramePro.ResourcesEx;
 
 namespace GameFramePro
 {
@@ -11,6 +11,15 @@ namespace GameFramePro
     /// </summary>
     public interface IAssetReference
     {
+        /// <summary>
+        /// 标示当前引用哪个资源
+        /// </summary>
+        ILoadAssetRecord CurLoadAssetRecord { get; }
 
+
+
+        #region   编辑器下显示数据
+        void UpdateView();
+        #endregion
     }
 }

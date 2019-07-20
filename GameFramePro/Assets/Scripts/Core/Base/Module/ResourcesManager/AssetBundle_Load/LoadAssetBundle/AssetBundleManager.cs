@@ -36,7 +36,7 @@ namespace GameFramePro.ResourcesEx
         private NativeObjectPool<AssetBundleSubAssetLoadRecord> mAssetBundleLoadSubAssetRecordPoolMgr;
 
         //value  为上面的key
-        private Dictionary<int,string > mAllAssetBundleLoadAssetInstanceIds = new Dictionary<int, string>();
+        private Dictionary<int, string> mAllAssetBundleLoadAssetInstanceIds = new Dictionary<int, string>();
 
 #if UNITY_EDITOR
         public Dictionary<string, AssetBundleAssetDepdenceRecord> Debug_mAllLoadAssetBundleCache { get { return mAllLoadAssetBundleCache; } }
@@ -85,60 +85,167 @@ namespace GameFramePro.ResourcesEx
 
         public float MaxAliveTimeAfterNoReference { get { return 600; } } //最多存在10分钟
 
-        public void NotifyAssetNoReference(ILoadAssetRecord infor)
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <param name="record"></param>
+        public void NotifyAssetRelease(ILoadAssetRecord record)
         {
-            if (infor == null) return;
-            if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(infor.AssetPath))
+            if (record is AssetBundleSubAssetLoadRecord)
             {
-                mAllLoadedAssetBundleSubAssetRecord.Remove(infor.AssetPath);
-                AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(infor);
+                if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(record.AssetUrl))
+                    mAllLoadedAssetBundleSubAssetRecord.Remove(record.AssetUrl);
+                else
+                    Debug.LogError("NotifyAssetRelease Fail,没有找到这个AssetBundle 子资源的记录 {0} ", record.AssetUrl);
+            }
+            else if (record is AssetBundleAssetDepdenceRecord)
+            {
+                AssetBundleAssetDepdenceRecord assetBundleDepdence = record as AssetBundleAssetDepdenceRecord;
+                if (mAllLoadAssetBundleCache.ContainsKey(assetBundleDepdence.AssetUrl))
+                    mAllLoadAssetBundleCache.Remove(assetBundleDepdence.AssetUrl);
+                else
+                    Debug.LogError("NotifyAssetRelease Fail,没有找到这个AssetBundle的记录 {0} ", assetBundleDepdence.AssetUrl);
+
+                AssetBundle bundle = assetBundleDepdence.TargetAsset as AssetBundle;
+                if (bundle != null)
+                    AssetBundle.UnloadAllAssetBundles(true);
+                else
+                    Debug.LogError("NotifyAssetRelease Fail,没有找到这个AssetBundle {0} ", assetBundleDepdence.AssetUrl);
             }
             else
             {
-                Debug.LogError("NotifyAssetNoReference Error !!" + infor.AssetPath);
+                Debug.LogError("NotifyAssetReferenceChange Fail,无法处理的类型 " + record.GetType());
             }
         }
 
-        public void MarkTargetAssetNull(ILoadAssetRecord record)
+
+
+
+        public void NotifyAssetReferenceChange(ILoadAssetRecord record)
         {
             if (record == null) return;
-            AssetBundleSubAssetLoadRecord recordInfor = null;
-            string key = record.AssetPath;
-            if (mAllLoadedAssetBundleSubAssetRecord.TryGetValue(key, out recordInfor))
+            if (record is AssetBundleSubAssetLoadRecord)
             {
-                mAssetBundleLoadSubAssetRecordPoolMgr.RecycleItemToPool(recordInfor);
-                mAllLoadedAssetBundleSubAssetRecord.Remove(key);
+                AssetBundleSubAssetLoadRecord subAssetRecord = record as AssetBundleSubAssetLoadRecord;
+                OnAssetBundleSubAssetReferenceChange(subAssetRecord);
+                return;
+            }
+
+            if (record is AssetBundleAssetDepdenceRecord)
+            {
+                AssetBundleAssetDepdenceRecord depdenceAssetRecord = record as AssetBundleAssetDepdenceRecord;
+                OnAssetBundleDepdenceReferenceChange(depdenceAssetRecord);
+                return;
+            }
+            Debug.LogError("NotifyAssetReferenceChange Fail,无法处理的类型 " + record.GetType());
+        }
+
+        /// <summary>
+        /// AssetBundle 加载的资源的引用关系改变
+        /// </summary>
+        /// <param name="subAssetRecord"></param>
+        private void OnAssetBundleSubAssetReferenceChange(AssetBundleSubAssetLoadRecord subAssetRecord)
+        {
+            if (subAssetRecord.ReferenceCount == 0)
+            {
+                if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(subAssetRecord.AssetUrl))
+                {
+                   // mAllLoadedAssetBundleSubAssetRecord.Remove(subAssetRecord.AssetUrl);  //这里不能释放需要等待资源真的被释放时候调用
+                    AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(subAssetRecord);
+                }
+                else
+                {
+                    Debug.LogError("NotifyAssetReferenceChange Error !!" + subAssetRecord.AssetUrl);
+                }
+
+                AssetBundleAssetDepdenceRecord assetBundleRecord = null;
+                if (mAllLoadAssetBundleCache.TryGetValue(subAssetRecord.AssetBelongBundleName, out assetBundleRecord))
+                {
+                    assetBundleRecord.ReduceSubAssetReference(subAssetRecord);
+                }
+
+            } //资源没有引用时候 释放资源
+            else
+            {
+                if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(subAssetRecord.AssetUrl) == false)
+                {
+                    mAllLoadedAssetBundleSubAssetRecord[subAssetRecord.AssetUrl] = subAssetRecord;
+                }
+                AssetBundleAssetDepdenceRecord assetBundleRecord = null;
+                if (mAllLoadAssetBundleCache.TryGetValue(subAssetRecord.AssetBelongBundleName, out assetBundleRecord))
+                {
+                    assetBundleRecord.AddSubAssetReference(subAssetRecord);
+                }
+                else
+                {
+                    Debug.LogError("NotifyAssetReferenceChange Error !!" + subAssetRecord.AssetUrl);
+                }
             }
         }
+
+        /// <summary>
+        /// AssetBundle 资源被引用次数改变
+        /// </summary>
+        /// <param name="subAssetRecord"></param>
+        private void OnAssetBundleDepdenceReferenceChange(AssetBundleAssetDepdenceRecord depdenceAssetRecord)
+        {
+            if (depdenceAssetRecord.ReferenceCount == 0)
+            {
+                AssetBundleAssetDepdenceRecord assetBundleRecord = null;
+                if (mAllLoadAssetBundleCache.TryGetValue(depdenceAssetRecord.AssetUrl, out assetBundleRecord))
+                {
+                    //**这里不能释放
+                    //mAllLoadAssetBundleCache.Remove(depdenceAssetRecord.AssetUrl);
+                    depdenceAssetRecord.ClearAllDepdence();  //释放依赖的其他AssetBundle  
+                    AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(depdenceAssetRecord);
+                    Debug.LogInfor("OnAssetBundleDepdenceReferenceChange AssetBundle 资源 {0} 已经没有任何资源引用了!!", depdenceAssetRecord.AssetUrl);
+                }
+                else
+                {
+                    Debug.LogError("OnAssetBundleDepdenceReferenceChange Error !!" + depdenceAssetRecord.AssetUrl);
+                }
+            } //资源没有引用时候 释放资源
+              //    else
+              //    {
+              //        if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(subAssetRecord.AssetUrl) == false)
+              //        {
+              //            mAllLoadedAssetBundleSubAssetRecord[subAssetRecord.AssetUrl] = subAssetRecord;
+              //        }
+              //        AssetBundleAssetDepdenceRecord assetBundleRecord = null;
+              //        if (mAllLoadAssetBundleCache.TryGetValue(subAssetRecord.AssetBelongBundleName, out assetBundleRecord))
+              //        {
+              //            assetBundleRecord.AddSubAssetReference(subAssetRecord);
+              //        }
+              //        else
+              //        {
+              //            Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
+              //        }
+              //    }
+        }
+
         #endregion
 
         #region 资源加载
-
-
-        #region 加载缓存的资源
-
-        public Object LoadAssetFromCache(string assetPath) { return LoadAssetFromCache<Object>(assetPath); }
 
         /// <summary>
         /// 加载缓存的AssetBundle
         /// </summary>
         /// <param name="assetPath">资源相对于Resources的完整路径</param>
         /// <returns></returns>
-        public T LoadAssetFromCache<T>(string assetPath) where T : UnityEngine.Object
+        public AssetBundleSubAssetLoadRecord LoadAssetFromCache(string assetPath)
         {
             AssetBundleSubAssetLoadRecord record = null;
             if (mAllLoadedAssetBundleSubAssetRecord.TryGetValue(assetPath, out record))
             {
                 if (record.TargetAsset != null)
                 {
-                    record.AddReference();
-                    return record.TargetAsset as T;
+                    //  record.AddReference();
+                    return record;
                 }
             }
             return null;
         }
 
-        #endregion
 
         #region 加载AssetBundle 以及依赖资源 并记录
         /// <summary>
@@ -161,7 +268,7 @@ namespace GameFramePro.ResourcesEx
             {
                 if (assetBundleRecord != null && assetBundleRecord.TargetAsset != null)
                 {
-                    assetBundleRecord.AddReference();
+                    //   assetBundleRecord.AddReference();
                     return assetBundleRecord.TargetAsset as AssetBundle;
                 }
                 else
@@ -214,7 +321,7 @@ namespace GameFramePro.ResourcesEx
             {
                 if (record != null && record.TargetAsset != null)
                 {
-                    record.AddReference();
+                    //  record.AddReference();
                     if (assetBundleDepdence != null)
                         assetBundleDepdence(record, record.TargetAsset as AssetBundle);
                     return;
@@ -275,16 +382,23 @@ namespace GameFramePro.ResourcesEx
         #endregion
 
 
-        #region 同步加载本地的 AssetBundle
+        #region 同步加载本地的 AssetBundle 中的资源
 
         /// <summary>
         /// 同步加载AssetBundle 方法（优先从缓存中读取）
         /// </summary>
-        /// <typeparam name="T">资源相对于Resouces 完整的路径</typeparam>
-        /// <param name="assetPath"></param>
+        /// <param name="assetPath">资源相对于Resouces 完整的路径</param>
         /// <param name="loadCallback"></param>
-        public void LoadAssetSync<T>(string assetPath, Action<T> loadCallback) where T : UnityEngine.Object
+        public void LoadAssetSync(string assetPath, Action<AssetBundleSubAssetLoadRecord> loadCallback)
         {
+            AssetBundleSubAssetLoadRecord assetRecord = LoadAssetFromCache(assetPath);
+            if (assetRecord != null)
+            {
+                if (loadCallback != null)
+                    loadCallback(assetRecord);
+                return;
+            }
+
             string assetBundlePath = AssetBundleUpgradeManager.S_Instance.GetBundleNameByAssetPath(assetPath);
             if (string.IsNullOrEmpty(assetBundlePath))
             {
@@ -295,33 +409,39 @@ namespace GameFramePro.ResourcesEx
             }
 
             string assetName = System.IO.Path.GetFileNameWithoutExtension(assetPath).ToLower();
-            LoadAssetSync<T>(assetPath, assetBundlePath, assetName, loadCallback, false);
+            LoadAssetSync(assetPath, assetBundlePath, assetName, loadCallback, false, false);
         }
 
         /// <summary>
         /// 同步加载AssetBundle 方法（优先从缓存中读取）
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="assetPath">资源相对于Resouces 完整的路径</param>
         /// <param name="assetBundlePath"></param>
         /// <param name="assetName"></param>
         /// <param name="loadCallback"></param>
-        /// <param name="isNeedTranslateAssetName">标示是否需要处理这个参数，转化成没有扩展名的小写字符串！  默认=true</param>
-        public void LoadAssetSync<T>(string assetPath, string assetBundlePath, string assetName, Action<T> loadCallback,bool isNeedTranslateAssetName=true) where T : UnityEngine.Object
+        /// <param name="isNeedTranslateAssetName">标示是否需要处理这个参数，转化成没有扩展名的小写字符串！  默认应该=true</param>
+        /// <param name="isNeedCheckCaheRecord">标示是否检测缓存中是否有数据</param>
+        public void LoadAssetSync(string assetPath, string assetBundlePath, string assetName, Action<AssetBundleSubAssetLoadRecord> loadCallback, bool isNeedTranslateAssetName, bool isNeedCheckCaheRecord)
         {
-            T assetObject = LoadAssetFromCache<T>(assetPath);
-            if (assetObject != null)
+            AssetBundleSubAssetLoadRecord assetRecord = null;
+            if (isNeedCheckCaheRecord)
             {
-                if (loadCallback != null)
-                    loadCallback(assetObject);
-                return;
+                assetRecord = LoadAssetFromCache(assetPath);
+                if (assetRecord != null)
+                {
+                    if (loadCallback != null)
+                        loadCallback(assetRecord);
+                    return;
+                }
             }
+
             if (isNeedTranslateAssetName)
                 assetName = System.IO.Path.GetFileNameWithoutExtension(assetName).ToLower();
             if (string.IsNullOrEmpty(assetName))
             {
                 Debug.LogError("LoadAssetSync Fail,assetName Is Null " + assetPath);
-                if (loadCallback != null) loadCallback(null);
+                if (loadCallback != null)
+                    loadCallback(null);
                 return;
             }
 
@@ -330,31 +450,39 @@ namespace GameFramePro.ResourcesEx
             AssetBundle assetBundle = LoadAssetBundleSync(assetBundlePath, out record);
             if (assetBundle != null)
             {
-                T asset = assetBundle.LoadAsset<T>(assetName);
-                RecordAssetBundleLoadSubAsset(assetPath, assetBundlePath, assetName, asset, assetBundle);
+                UnityEngine.Object asset = assetBundle.LoadAsset<UnityEngine.Object>(assetName);
+                assetRecord = RecordAssetBundleLoadSubAsset(assetPath, assetBundlePath, asset, assetBundle);
                 if (loadCallback != null)
-                    loadCallback(asset as T);
+                    loadCallback(assetRecord);
                 return;
             }
+
+            Debug.LogErrorFormat("LoadAssetSync Fail,assetPath={0}  ", assetPath);
+            if (loadCallback != null)
+                loadCallback(null);
         }
 
         /// <summary>
         /// 同步加载AssetBundle 方法（优先从缓存中读取）
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="assetPath">资源相对于Resouces 完整的路径</param>
         /// <param name="assetBundlePath"></param>
         /// <param name="assetName"></param>
         /// <param name="isNeedTranslateAssetName">标示是否需要处理这个参数，转化成没有扩展名的小写字符串！  默认=true</param>
+        /// <param name="isNeedCheckCaheRecord">标示是否检测缓存中是否有数据</param>
         /// <returns></returns>
-        public T LoadAssetSync<T>(string assetPath, string assetBundlePath, string assetName, bool isNeedTranslateAssetName = true) where T: UnityEngine.Object
+        public AssetBundleSubAssetLoadRecord LoadAssetSync(string assetPath, string assetBundlePath, string assetName, bool isNeedTranslateAssetName, bool isNeedCheckCaheRecord)
         {
-            T assetObject = LoadAssetFromCache<T>(assetPath);
-            if (assetObject != null)
-                return assetObject;
+            AssetBundleSubAssetLoadRecord assetRecord = null;
+            if (isNeedCheckCaheRecord)
+            {
+                assetRecord = LoadAssetFromCache(assetPath);
+                if (assetRecord != null)
+                    return assetRecord;
+            }
 
-            if(isNeedTranslateAssetName)
-            assetName = System.IO.Path.GetFileNameWithoutExtension(assetName).ToLower();
+            if (isNeedTranslateAssetName)
+                assetName = System.IO.Path.GetFileNameWithoutExtension(assetName).ToLower();
 
             if (string.IsNullOrEmpty(assetName))
             {
@@ -366,9 +494,9 @@ namespace GameFramePro.ResourcesEx
             AssetBundle assetBundle = LoadAssetBundleSync(assetBundlePath, out record);
             if (assetBundle != null)
             {
-                assetObject = assetBundle.LoadAsset<T>(assetName);
-                RecordAssetBundleLoadSubAsset(assetPath, assetBundlePath, assetName, assetObject, assetBundle);
-                return assetObject;
+                UnityEngine.Object asset = assetBundle.LoadAsset<UnityEngine.Object>(assetName);
+                assetRecord = RecordAssetBundleLoadSubAsset(assetPath, assetBundlePath, asset, assetBundle);
+                return assetRecord;
             }
             return null;
         }
@@ -376,17 +504,16 @@ namespace GameFramePro.ResourcesEx
         /// <summary>
         /// 同步加载AssetBundle 方法（优先从缓存中读取）
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="assetPath">资源相对于Resouces 完整的路径</param>
         /// <param name="assetBundlePath"></param>
         /// <param name="assetName"></param>
         /// <param name="isNeedTranslateAssetName">标示是否需要处理这个参数，转化成没有扩展名的小写字符串！  默认=true</param>
         /// <returns></returns>
-        public T LoadAssetSync<T>(string assetPath) where T : UnityEngine.Object
+        public AssetBundleSubAssetLoadRecord LoadAssetSync(string assetPath)
         {
-            T assetObject = LoadAssetFromCache<T>(assetPath);
-            if (assetObject != null)
-                return assetObject;
+            AssetBundleSubAssetLoadRecord assetRecord = LoadAssetFromCache(assetPath);
+            if (assetRecord != null)
+                return assetRecord;
 
             string assetBundlePath = AssetBundleUpgradeManager.S_Instance.GetBundleNameByAssetPath(assetPath);
             if (string.IsNullOrEmpty(assetBundlePath))
@@ -396,7 +523,7 @@ namespace GameFramePro.ResourcesEx
             }
 
             string assetName = System.IO.Path.GetFileNameWithoutExtension(assetPath).ToLower();
-            return LoadAssetSync<T>(assetPath, assetBundlePath, assetName,false);
+            return LoadAssetSync(assetPath, assetBundlePath, assetName, false, false);
         }
         #endregion
 
@@ -407,13 +534,13 @@ namespace GameFramePro.ResourcesEx
         /// <param name="assetBundlePath"></param>
         /// <param name="assetName"></param>
         /// <param name="loadCallback"></param>
-        public void LoadAssetAsync<T>(string assetPath, Action<T> loadCallback) where T : UnityEngine.Object
+        public void LoadAssetAsync(string assetPath, Action<AssetBundleSubAssetLoadRecord> loadCallback)
         {
-            T assetObject = LoadAssetFromCache<T>(assetPath);
-            if (assetObject != null)
+            AssetBundleSubAssetLoadRecord assetRecord = LoadAssetFromCache(assetPath);
+            if (assetRecord != null)
             {
                 if (loadCallback != null)
-                    loadCallback(assetObject);
+                    loadCallback(assetRecord);
                 return;
             }
             string assetBundlePath = AssetBundleUpgradeManager.S_Instance.GetBundleNameByAssetPath(assetPath);
@@ -422,13 +549,11 @@ namespace GameFramePro.ResourcesEx
                 Debug.LogError("LoadAssetAsync Fail,Not Exit asset " + assetPath);
                 if (loadCallback != null)
                     loadCallback(null);
-                return ;
+                return;
             }
             string assetName = System.IO.Path.GetFileNameWithoutExtension(assetPath).ToLower();
-            LoadAssetAsync<T>(assetPath, assetBundlePath, assetName, loadCallback,false);
+            LoadAssetAsync(assetPath, assetBundlePath, assetName, loadCallback, false, false);
         }
-
-
 
         /// <summary>
         /// 异步加载AssetBundle 方法（优先从缓存中读取）
@@ -437,13 +562,13 @@ namespace GameFramePro.ResourcesEx
         /// <param name="assetName"></param>
         /// <param name="loadCallback"></param>
         /// <param name="isNeedTranslateAssetName">标示是否需要处理这个参数，转化成没有扩展名的小写字符串！  默认=true</param>
-        public void LoadAssetAsync<T>(string assetPath, string assetBundlePath, string assetName, Action<T> loadCallback, bool isNeedTranslateAssetName = true) where T: UnityEngine.Object
+        public void LoadAssetAsync(string assetPath, string assetBundlePath, string assetName, Action<AssetBundleSubAssetLoadRecord> loadCallback, bool isNeedTranslateAssetName, bool isNeedCheckCaheRecord)
         {
-            T assetObject = LoadAssetFromCache<T>(assetPath);
-            if (assetObject != null)
+            AssetBundleSubAssetLoadRecord assetRecord = LoadAssetFromCache(assetPath);
+            if (assetRecord != null)
             {
                 if (loadCallback != null)
-                    loadCallback(assetObject);
+                    loadCallback(assetRecord);
                 return;
             }
             assetName = System.IO.Path.GetFileNameWithoutExtension(assetName).ToLower();
@@ -452,61 +577,21 @@ namespace GameFramePro.ResourcesEx
             {
                 if (assetBundle != null)
                 {
-                    T asset = assetBundle.LoadAsset<T>(assetName);
-                    RecordAssetBundleLoadSubAsset(assetPath, assetBundlePath, assetName, asset, assetBundle);
+                    UnityEngine.Object asset = assetBundle.LoadAsset<UnityEngine.Object>(assetName);
+                    assetRecord = RecordAssetBundleLoadSubAsset(assetPath, assetBundlePath, asset, assetBundle);
                     if (loadCallback != null)
-                        loadCallback(asset);
+                        loadCallback(assetRecord);
                     return;
                 }
+                Debug.LogErrorFormat("LoadAssetAsync Fail,assetPath={0}  ", assetPath);
+
+                if (loadCallback != null)
+                    loadCallback(null);
             });
         }
 
         #endregion
 
-        #region 非泛型的同步、异步方法
-        public void LoadAssetSync(string assetPath, string assetBundlePath, string assetName, Action<UnityEngine.Object> loadCallback)
-        {
-            LoadAssetSync<UnityEngine.Object>(assetPath, assetBundlePath, assetName, loadCallback);
-        }
-
-        public UnityEngine.Object LoadAssetSync(string assetPath, string assetBundlePath, string assetName)
-        {
-            return LoadAssetSync<UnityEngine.Object>(assetPath, assetBundlePath, assetName);
-        }
-
-        public void LoadAssetAsync(string assetPath, string assetBundlePath, string assetName, Action<UnityEngine.Object> loadCallback)
-        {
-            LoadAssetAsync<UnityEngine.Object>(assetPath, assetBundlePath, assetName, loadCallback);
-        }
-        #endregion
-
-        #endregion
-
-        #region 资源释放
-        /// <summary>
-        /// 较少某个加载资源的引用
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="asset"></param>
-        /// <returns>如果成功则返回true</returns>
-        public bool ReleaseReference<T>(T asset) where T : UnityEngine.Object
-        {
-            if (asset == null) return false;
-            int instanceID = asset.GetInstanceID();
-            string recordKey = string.Empty;
-            if (mAllAssetBundleLoadAssetInstanceIds.TryGetValue(instanceID, out recordKey))
-            {
-                AssetBundleSubAssetLoadRecord record = null;
-                if (mAllLoadedAssetBundleSubAssetRecord.TryGetValue(recordKey, out record))
-                {
-                    record.ReduceReference();
-                    return true;
-                }
-                Debug.LogError("数据记录不一致 " + recordKey);
-                return false;
-            }
-            return false;
-        }
         #endregion
 
         #region 辅助
@@ -564,7 +649,6 @@ namespace GameFramePro.ResourcesEx
         #endregion
 
 
-
         /// <summary>
         /// 保存下载的AssetBundel 资源
         /// </summary>
@@ -579,28 +663,6 @@ namespace GameFramePro.ResourcesEx
             Debug.LogInfor("保存下载的AssetBundel 资源 " + fileSavePath);
         }
 
-        /// <summary>
-        /// 根据路劲获取已经加载的 AssetBundle 可能得到空结果
-        /// </summary>
-        /// <param name="assetBundlePath"></param>
-        /// <returns></returns>
-        private AssetBundle GetAssetBundleByPath(string assetBundlePath)
-        {
-            AssetBundleAssetDepdenceRecord assetBundleRecord = null;
-            if (mAllLoadAssetBundleCache.TryGetValue(assetBundlePath, out assetBundleRecord))
-            {
-                if (assetBundleRecord != null && assetBundleRecord.TargetAsset != null)
-                {
-                    assetBundleRecord.AddReference();
-                    return assetBundleRecord.TargetAsset as AssetBundle;
-                }
-                Debug.LogInfor(string.Format("GetAssetBundleByPath Fail，AssetBundle={0} 资源已经被卸载了", assetBundlePath));
-                mAllLoadAssetBundleCache.Remove(assetBundlePath);
-            }
-            return null;
-        }
-
-
 
         /// <summary>
         /// 记录从AssetBundel 加载的资源
@@ -609,42 +671,26 @@ namespace GameFramePro.ResourcesEx
         /// <param name="assetName"></param>
         /// <param name="asset"></param>
         /// <param name="parentAssetBundle"></param>
-        private void RecordAssetBundleLoadSubAsset(string assetPath, string assetBundlePath, string assetName, Object asset, AssetBundle parentAssetBundle)
+        private AssetBundleSubAssetLoadRecord RecordAssetBundleLoadSubAsset(string assetPath, string assetBundlePath, Object asset, AssetBundle parentAssetBundle)
         {
             AssetBundleSubAssetLoadRecord record = null;
-            if (mAllLoadedAssetBundleSubAssetRecord.TryGetValue(assetName, out record))
+            if (mAllLoadedAssetBundleSubAssetRecord.TryGetValue(assetPath, out record))
             {
-                record.AddReference();
-                return;
+                //   record.AddReference();
+                return record;
             }
 
             record = AssetDelayDeleteManager.TryGetILoadAssetRecord(assetBundlePath) as AssetBundleSubAssetLoadRecord;
             if (record == null)
                 record = mAssetBundleLoadSubAssetRecordPoolMgr.GetItemFromPool();
-            record.Initial(assetBundlePath, assetName, LoadedAssetTypeEnum.AssetBundle_UnKnown, asset, this, assetBundlePath);
+            record.Initial(assetPath, assetBundlePath, LoadedAssetTypeEnum.AssetBundle_UnKnown, asset, this);
 
             mAllLoadedAssetBundleSubAssetRecord[assetPath] = record;
 
             mAllAssetBundleLoadAssetInstanceIds[record.InstanceID] = assetPath;
+            return record;
         }
 
-        ////记录加载的AssetBundle
-        //private void RecordAssetBundleLoad(string assetBundlePath, AssetBundle targetAssetBundle)
-        //{
-        //    AssetBundleAssetDepdenceRecord record = null;
-        //    if (mAllLoadAssetBundleCache.TryGetValue(assetBundlePath, out record))
-        //    {
-        //        record.AddReference();
-        //        return;
-        //    }
-
-        //    record = AssetDelayDeleteManager.TryGetILoadAssetRecord(assetBundlePath) as AssetBundleAssetDepdenceRecord;
-        //    if (record == null)
-        //        record = mAssetBundleRecordPoolMgr.GetItemFromPool();
-        //    record.Initial(assetBundlePath, LoadedAssetTypeEnum.AssetBundle_UnKnown, targetAssetBundle, this);
-
-        //    mAllLoadAssetBundleCache[assetBundlePath] = record;
-        //}
         #endregion
 
 

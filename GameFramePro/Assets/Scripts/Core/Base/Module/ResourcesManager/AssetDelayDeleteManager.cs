@@ -21,19 +21,17 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         public static void Tick()
         {
-            if (s_LastTickRealTime == 0f)
-            {
-                s_LastTickRealTime = Time.realtimeSinceStartup;
+            if (s_AllDelayDeleteAssetInfor.Count == 0)
                 return;
-            }
+            if (s_LastTickRealTime == 0)
+                s_LastTickRealTime = Time.realtimeSinceStartup;
 
-            if (s_AllDelayDeleteAssetInfor.Count == 0) return;
             float timeTick = Time.realtimeSinceStartup - s_LastTickRealTime;
             var target = s_AllDelayDeleteAssetInfor.First;
             var temp = target;
             while (target != null)
             {
-                bool isEnable = target.Value.TimeTick(s_LastTickRealTime);
+                bool isEnable = target.Value.TimeTick(timeTick);
                 temp = target.Next;
                 if (isEnable == false)
                 {
@@ -63,7 +61,7 @@ namespace GameFramePro.ResourcesEx
         public static ILoadAssetRecord TryGetILoadAssetRecord(string assetPath)
         {
             var target = s_AllDelayDeleteAssetInfor.First;
-            while (target !=null&& target.Value.AssetPath != assetPath)
+            while (target !=null&& target.Value.AssetUrl != assetPath)
             {
                 target = target.Next;
             }
