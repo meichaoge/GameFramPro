@@ -9,14 +9,34 @@ public class TestLoadAsset : MonoBehaviour
 {
     public string assetPath;
     public Image mTarget;
+    public Image mTarget2;
+
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            UnityEngine.Object obj = ResourcesManager.LoadAssetSync(assetPath);
-            mTarget.sprite = (obj as GameObject).GetComponent<SpriteRenderer>().sprite;
+            GameObject obj = ResourcesManager.LoadAssetSync<GameObject>(assetPath);
+            Debug.Log(obj.GetInstanceID());
+            var sp = obj .GetComponent<SpriteRenderer>().sprite;
+
+            Debug.Log(sp.GetInstanceID());
+
+            ResourcesManager.SetSprite(mTarget, sp);
         }
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            ResourcesManager.LoadAssetAsync(assetPath, (asset) =>
+            {
+                if (asset != null)
+                {
+                    var sp = (asset as GameObject).GetComponent<SpriteRenderer>().sprite;
+                    ResourcesManager.SetSprite(mTarget2, sp);
+                }
+            });
+        }
+
     }
 
 }

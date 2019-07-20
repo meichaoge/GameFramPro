@@ -12,7 +12,6 @@ namespace GameFramePro
     {
 
         [Header("标示是否在优先加载Resources下资源, =false 时候优先加载外部AssetBundle资源")]
-        [SerializeField]
         private static bool s_IsLoadResourcesAssetPriority = true;
         public static bool S_IsLoadResourcesAssetPriority
         {
@@ -28,7 +27,6 @@ namespace GameFramePro
         }
 
         [Header("标示是否追踪资源的创建的开关, 以便需要的时候输出当前使用的资源，分析性能")]
-        [SerializeField]
         private static bool s_IsTraceRecourceCreate = true;
         public static bool S_IsTraceResourceCreate
         {
@@ -50,7 +48,6 @@ namespace GameFramePro
 
 
         [Header("标示是否追踪异步&协程任务")]
-        [SerializeField]
         private static bool s_IsTrackAsyncTask = true;
         public static bool S_IsTrackAsyncTask
         {
@@ -71,7 +68,6 @@ namespace GameFramePro
         }
 
         [Header("标示是否在创建单例对象时候检测,如果不检测则可能存在多个单例脚本同时存在")]
-        [SerializeField]
         private static bool s_IsSingletonCreateSaftCheck = true;
         public static bool S_IsSingletonCreateSaftCheck
         {

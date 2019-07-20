@@ -19,16 +19,13 @@ namespace GameFramePro
         private void Start()
         {
             Debug.Log("AppManager--->>>>");
+            AssetBundleUpgradeManager.S_Instance.BeginUpdateAssetBundle();
         }
 
 
         private void Update()
         {
             UpdateTick(Time.realtimeSinceStartup);
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                AssetBundleUpgradeManager.S_Instance.BeginUpdateAssetBundle();
-            }
         }
 
 

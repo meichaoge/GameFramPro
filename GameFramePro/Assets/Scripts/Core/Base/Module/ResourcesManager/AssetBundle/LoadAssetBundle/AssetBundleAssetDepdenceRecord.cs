@@ -88,18 +88,33 @@ namespace GameFramePro.ResourcesEx
 
         public void AddDepdence(AssetBundleAssetDepdenceRecord depdence)
         {
+            if (depdence == null)
+                return;
+
             if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
             {
                 Debug.LogError("AddDepdence Fail,Already Contain Key"+ depdence.InstanceID);
                 return;
             }
             mAllDepdenceAssetBundleRecord[depdence.InstanceID] = depdence;
+            depdence.AddReference();
         }
 
+
+        public void ClearAllDepdence()
+        {
+            foreach (var depdence in mAllDepdenceAssetBundleRecord)
+            {
+                if (depdence.Value != null)
+                    depdence.Value.ReduceReference();
+            }
+            mAllDepdenceAssetBundleRecord.Clear();
+        }
         public void ReduceDepdence(AssetBundleAssetDepdenceRecord depdence)
         {
             if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
             {
+                depdence.ReduceReference();
                 mAllDepdenceAssetBundleRecord.Remove(depdence.InstanceID);          
                 return;
             }

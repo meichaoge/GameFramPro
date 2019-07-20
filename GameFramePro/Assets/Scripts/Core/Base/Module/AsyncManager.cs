@@ -69,6 +69,7 @@ namespace GameFramePro
 
         private IEnumerator StartAsyncOperate(AsyncOperation async, Action<AsyncOperation> completeCallback, Action<float> procressCallback)
         {
+            float progress = 0f;
             while (true)
             {
                 if (async.isDone)
@@ -81,8 +82,14 @@ namespace GameFramePro
                     yield break;
                 }
 
-                if (procressCallback != null)
-                    procressCallback.Invoke(async.progress);
+                if (progress != async.progress)
+                {
+                    progress = async.progress;
+                    if (procressCallback != null)
+                        procressCallback.Invoke(async.progress);
+                }
+
+                yield return null;
             }
         }
 
@@ -114,7 +121,6 @@ namespace GameFramePro
             StopCoroutine(routine);
             routine = null; //注意这里 多加了一个=null 来清理资源
         }
-
 
         public void StartAsyncOperation(AsyncOperation async,Action<AsyncOperation> completeCallback,Action<float> procressCallback)
         {

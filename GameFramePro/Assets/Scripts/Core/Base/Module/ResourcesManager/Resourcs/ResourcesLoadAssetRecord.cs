@@ -44,8 +44,6 @@ namespace GameFramePro.ResourcesEx
         #endregion
 #endif
 
-
-
         public int InstanceID { get; protected set; } = 0;
         public string AssetPath { get; protected set; } = string.Empty;
         public int ReferenceCount { get; protected set; } = 1;
@@ -56,6 +54,9 @@ namespace GameFramePro.ResourcesEx
         public IAssetManager BelongAssetManager { get; protected set; } = null;
 
         public string AssetName { get; protected set; } //资源名称
+
+        protected HashSet<int> ReferenceTagetInstanceIDs = new HashSet<int>(); //引用当前资源的对象实例ID
+
 
         #region 构造函数& 设置
         public ResourcesLoadAssetRecord()

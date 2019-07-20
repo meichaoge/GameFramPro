@@ -20,7 +20,9 @@
       <Path>WebGLPlugins</Path>
       <Path>build</Path>
       <Path>docs</Path>
+      <Path>lua</Path>
       <Path>obj</Path>
+      <Path>uisprites</Path>
     </explicitExcludes>
   </component>
 </project>

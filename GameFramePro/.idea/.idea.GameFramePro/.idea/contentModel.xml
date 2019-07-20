@@ -30,6 +30,7 @@
               </e>
               <e p="BuildAssetBundle_Win.cs" t="Include" />
               <e p="BuildAssetBundleTool.cs" t="Include" />
+              <e p="BuildAssetBundleTotalRecord_2019_07_18_17_11.txt" t="Include" />
             </e>
             <e p="EditorApplicationSetting.cs" t="Include" />
             <e p="EditorHelperUtility.cs" t="Include" />
@@ -49,6 +50,7 @@
             <e p="CustomerHeaderAttributeDrawer.cs" t="Include" />
             <e p="ScriptableObjectUtility.cs" t="Include" />
           </e>
+          <e p="totalNeedUpdateAssetBundle.txt" t="Include" />
         </e>
         <e p="Resources" t="Include">
           <e p="Lua" t="Include">
@@ -82,12 +84,17 @@
                 <e p="NetWork" t="Include">
                   <e p="Download" t="Include">
                     <e p="Downloader" t="Include">
-                      <e p="AssetBundleDownloadManager.cs" t="Include" />
                       <e p="BaseDownloadManager.cs" t="Include" />
-                      <e p="ByteDataDownloadManager.cs" t="Include" />
                       <e p="DownloadUtility.cs" t="Include" />
                       <e p="IDownloadManager.cs" t="Include" />
-                      <e p="StringDataDownloadManager.cs" t="Include" />
+                      <e p="UnityWebRequest" t="Include">
+                        <e p="AssetBundleDownloadManager.cs" t="Include" />
+                        <e p="AudioClipDownloadManager.cs" t="Include" />
+                        <e p="ByteDataDownloadManager.cs" t="Include" />
+                        <e p="FileDownloadManager.cs" t="Include" />
+                        <e p="TextureDownloadManager.cs" t="Include" />
+                        <e p="UnityWebRequestDownLoadManager.cs" t="Include" />
+                      </e>
                     </e>
                     <e p="DownloadManager.cs" t="Include" />
                     <e p="DownloadTask" t="Include">
@@ -98,10 +105,25 @@
                   </e>
                   <e p="ITaskProcess.cs" t="Include" />
                 </e>
+                <e p="PoolManager" t="Include">
+                  <e p="NativePool" t="Include">
+                    <e p="INativeObjectPool.cs" t="Include" />
+                    <e p="NativeObjectPool.cs" t="Include" />
+                  </e>
+                  <e p="PoolObjectManager.cs" t="Include" />
+                  <e p="UnityPool" t="Include">
+                    <e p="IUnityGameObjectPool.cs" t="Include" />
+                    <e p="IUnityMonoPool.cs" t="Include" />
+                    <e p="IUnityObjectPool.cs" t="Include" />
+                    <e p="UnityGameObjectPool.cs" t="Include" />
+                    <e p="UnityMonoObjectPoolHelper.cs" t="Include" />
+                    <e p="UnityMonoPool.cs" t="Include" />
+                  </e>
+                </e>
                 <e p="ResourcesManager" t="Include">
                   <e p="AssetBundle" t="Include">
                     <e p="LoadAssetBundle" t="Include">
-                      <e p="AssetBundleLoadAssetRecord.cs" t="Include" />
+                      <e p="AssetBundleAssetDepdenceRecord.cs" t="Include" />
                       <e p="AssetBundleManager.cs" t="Include" />
                       <e p="AssetBundleSubAssetLoadRecord.cs" t="Include" />
                     </e>
@@ -128,21 +150,6 @@
                   <e p="ResourcesTracker_Native.cs" t="Include" />
                 </e>
               </e>
-              <e p="PoolManager" t="Include">
-                <e p="NativePool" t="Include">
-                  <e p="INativeObjectPool.cs" t="Include" />
-                  <e p="NativeObjectPool.cs" t="Include" />
-                </e>
-                <e p="PoolObjectManager.cs" t="Include" />
-                <e p="UnityPool" t="Include">
-                  <e p="IUnityGameObjectPool.cs" t="Include" />
-                  <e p="IUnityMonoPool.cs" t="Include" />
-                  <e p="IUnityObjectPool.cs" t="Include" />
-                  <e p="UnityGameObjectPool.cs" t="Include" />
-                  <e p="UnityMonoObjectPoolHelper.cs" t="Include" />
-                  <e p="UnityMonoPool.cs" t="Include" />
-                </e>
-              </e>
               <e p="Setting" t="Include">
                 <e p="AppPlatformManager.cs" t="Include" />
                 <e p="AppSetting.cs" t="Include" />
@@ -158,6 +165,7 @@
               </e>
               <e p="Tools" t="Include">
                 <e p="Security" t="Include">
+                  <e p="CRC32Helper.cs" t="Include" />
                   <e p="DataProcessor.cs" t="Include" />
                   <e p="GlobalDataHelper.cs" t="Include" />
                   <e p="MD5Helper.cs" t="Include" />
@@ -180,6 +188,14 @@
               <e p="XluaManager.cs" t="Include" />
             </e>
             <e p="说明.txt" t="Include" />
+          </e>
+          <e p="TestCore" t="Include">
+            <e p="DebugControl" t="Include">
+              <e p="Debug_ControllAppSetting.cs" t="Include" />
+            </e>
+            <e p="DebugShow" t="Include">
+              <e p="Debug_ShowAllTraceResources.cs" t="Include" />
+            </e>
           </e>
         </e>
         <e p="SDK" t="Include">
@@ -709,6 +725,8 @@
           <e p="TestCourtinue.cs" t="Include" />
           <e p="TestDiff.cs" t="Include" />
           <e p="TestLinkList.cs" t="Include" />
+          <e p="TestLoadAsset.cs" t="Include" />
+          <e p="TestPath.cs" t="Include" />
         </e>
       </e>
       <e p="GameFramePro.sln" t="IncludeFlat" />

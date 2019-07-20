@@ -101,14 +101,113 @@ namespace GameFramePro
 
         #endregion
 
-        public static UnityEngine.Object LoadAssetSync(string assetpath)
-        {
-            if (AppSetting.S_IsLoadResourcesAssetPriority)
-                return LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetpath);
 
-            return AssetBundleManager.S_Instance.LoadAssetSync(AssetBundleUpgradeManager.S_Instance.GetBundleNameByAssetPath(assetpath), assetpath);
+        #region 资源加载接口
+        /// <summary>
+        /// 缓存中加载资源
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="assetpath"></param>
+        /// <returns></returns>
+        private static T LoadAssetFromCache<T>(string assetPath) where T : UnityEngine.Object
+        {
+            T asset = LocalResourcesManager.S_Instance.LoadAssetFromCache<T>(assetPath);
+            if (asset != null)
+                return asset;
+            asset = AssetBundleManager.S_Instance.LoadAssetFromCache<T>(assetPath);
+            return asset;
         }
 
+        /// <summary>
+        /// 同步下载资源接口
+        /// </summary>
+        /// <param name="assetpath"></param>
+        /// <returns></returns>
+        public static UnityEngine.Object LoadAssetSync(string assetPath)
+        {
+            Object asset = LoadAssetFromCache<Object>(assetPath);
+            if (asset != null)
+                return asset;
+
+
+            if (AppSetting.S_IsLoadResourcesAssetPriority)
+                return LocalResourcesManager.S_Instance.ResourcesLoadAssetSync<Object>(assetPath);
+
+            return AssetBundleManager.S_Instance.LoadAssetSync<Object>(assetPath);
+        }
+
+        /// <summary>
+        /// 同步下载资源接口
+        /// </summary>
+        /// <param name="assetpath"></param>
+        /// <returns></returns>
+        public static T LoadAssetSync<T>(string assetPath) where T : UnityEngine.Object
+        {
+            T asset = LoadAssetFromCache<T>(assetPath);
+            if (asset != null)
+                return asset;
+
+
+            if (AppSetting.S_IsLoadResourcesAssetPriority)
+                return LocalResourcesManager.S_Instance.ResourcesLoadAssetSync<T>(assetPath);
+            return AssetBundleManager.S_Instance.LoadAssetSync<T>(assetPath);
+        }
+
+        /// <summary>
+        /// 异步下载资源的接口
+        /// </summary>
+        /// <param name="assetpath"></param>
+        /// <param name="loadCallback"></param>
+        public static void LoadAssetAsync(string assetPath, System.Action<UnityEngine.Object> loadCallback)
+        {
+            Object asset = LoadAssetFromCache<Object>(assetPath);
+            if (asset != null)
+            {
+                if (loadCallback != null)
+                    loadCallback(asset);
+                return;
+            }
+
+            if (AppSetting.S_IsLoadResourcesAssetPriority)
+                LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetPath, loadCallback, null);
+            else
+                AssetBundleManager.S_Instance.LoadAssetAsync(assetPath, loadCallback);
+        }
+        #endregion
+
+
+
+        #region 辅助接口
+        /// <summary>
+        /// 释放某个资源的引用
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="asset"></param>
+        public static void ReleaseReference<T>(T asset) where T : UnityEngine.Object
+        {
+            if (LocalResourcesManager.S_Instance.ReleaseReference<T>(asset))
+                return;
+
+            AssetBundleManager.S_Instance.ReleaseReference<T>(asset);
+        }
+
+        /// <summary>
+        /// 在使用ResoucesMgr 后改变图片使用这个接口
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="sp"></param>
+        public static void SetSprite(UnityEngine.UI.Image image, Sprite sp)
+        {
+            if (image == null)
+            {
+                Debug.LogError("SetSprite Fail,Parameter image is null");
+                return;
+            }
+            if (image.sprite != null)
+                ReleaseReference<Sprite>(image.sprite);
+            image.sprite = sp;
+        }
+        #endregion
 
     }
 }

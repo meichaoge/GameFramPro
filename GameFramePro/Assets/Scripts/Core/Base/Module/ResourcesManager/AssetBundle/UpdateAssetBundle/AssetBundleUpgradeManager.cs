@@ -178,10 +178,9 @@ namespace GameFramePro.ResourcesEx
             {
                 foreach (var assetBunleInfor in mAllLocalAssetBundleAssetFileInfor)
                 {
-                    if (mServerBundleAssetConfigInfor.mTotalAssetBundleInfor.ContainsKey(assetBunleInfor.Value.mBundleName))
+                    if (mServerBundleAssetConfigInfor.mTotalAssetBundleInfor.ContainsKey(assetBunleInfor.Key))
                         continue;
-
-                    allNeedDeleteAssetBundleNameInfor.Add(assetBunleInfor.Key); //需要删除
+                    allNeedDeleteAssetBundleNameInfor.Add(assetBunleInfor.Value.mBundleName); //需要删除
                 }
             }
 
@@ -191,8 +190,6 @@ namespace GameFramePro.ResourcesEx
 #if UNITY_EDITOR
             ShowAllNeedUpdateAssetBundleByType(mAllNeedUpdateAssetBundleAssetInfor);
 #endif
-            Debug.LogEditorError("需要新增下载的平台manifest 文件");
-
             BeginDownloadAssetBundle(mAllNeedUpdateAssetBundleAssetInfor);  //开始下载
             return;
         }
@@ -207,8 +204,14 @@ namespace GameFramePro.ResourcesEx
                 Debug.LogEditorInfor("没有需要删除的本地AssetBundle");
                 return;
             }
-
-            Debug.LogError("需要删除的本地AssetBundle  TODO");
+            foreach (var assetBundlePath in dataSources)
+            {
+                IOUtility.DeleteFile(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundlePath));
+#if UNITY_EDITOR
+                Debug.LogEditorInfor("删除了无效的AssetBundle资源  " + assetBundlePath);
+#endif
+            }
+            Debug.Log("DeleteAllInvalidAssetBundelAsset Complete");
         }
 
 

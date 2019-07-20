@@ -11,7 +11,7 @@ using GameFramePro.ResourcesEx;
 public class Debug_ShowAllTraceResources :MonoBehaviour
 {
     public List<ResourcesLoadAssetRecord> mAllResourcesLoadAssets = new List<ResourcesLoadAssetRecord>();
-    public List<int> mAllResourcesLoadAssetInstances = new List<int>();
+    public List<string> mAllResourcesLoadAssetInstances = new List<string>();
     [Header("AssetBundle")]
     public List<AssetBundleAssetDepdenceRecord> mAllLoadAssetBundleCache = new List<AssetBundleAssetDepdenceRecord>();
     public List<AssetBundleSubAssetLoadRecord> mAllLoadedAssetBundleSubAssetRecord = new List<AssetBundleSubAssetLoadRecord>();
@@ -31,7 +31,7 @@ public class Debug_ShowAllTraceResources :MonoBehaviour
         }
        
         mAllResourcesLoadAssetInstances.Clear();
-        mAllResourcesLoadAssetInstances.AddRange(LocalResourcesManager.S_Instance.Debug_mAllResoucesLoadAssetInstanceIds);
+        mAllResourcesLoadAssetInstances.AddRange(LocalResourcesManager.S_Instance.Debug_mAllResoucesLoadAssetInstanceIds.Values);
         #endregion
 
         #region  AssetBundle

@@ -2,11 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e5850fe4-bda8-44c5-bea1-f2af6716d47f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/UpdateAssetBundle/AssetBundleUpgradeManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/UpdateAssetBundle/AssetBundleUpgradeManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/indexLayout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Editor/totalNeedUpdateAssetBundle.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Editor/totalNeedUpdateAssetBundle.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Test.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/LoadAssetBundle/AssetBundleAssetDepdenceRecord.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/LoadAssetBundle/AssetBundleAssetDepdenceRecord.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/LoadAssetBundle/AssetBundleManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/LoadAssetBundle/AssetBundleManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Setting/AppSetting.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Setting/AppSetting.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Test/TestLoadAsset.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Test/TestLoadAsset.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp-Editor.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp-Editor.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp-Editor.csprojAssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp-Editor.csprojAssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/Assembly-CSharp.pdb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -29,76 +41,116 @@
     <select />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/UpdateAssetBundle/AssetBundleUpgradeManager.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="22" column="78" selection-start-line="22" selection-start-column="78" selection-end-line="22" selection-end-column="78" />
+            <state relative-caret-position="136">
+              <caret line="16" selection-start-line="16" selection-end-line="16" />
               <folding>
-                <marker date="1563265015473" expanded="true" signature="6:141" ph="..." />
-                <marker date="1563265015473" expanded="true" signature="177:16317" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="184:246" ph="/// 负责AssetBundle 资源的更新逻辑 ... " />
-                <marker date="1563265015473" expanded="true" signature="325:16315" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="476:920" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="502:910" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="580:837" ph="{...}" />
-                <marker date="1563265015473" expanded="false" signature="955:2276" ph="需要更新的AssetBundle 信息" />
-                <marker date="1563265015473" expanded="true" signature="992:1065" ph="/// 标示更新Asset Bundle 资源时候的状态 ... " />
-                <marker date="1563265015473" expanded="true" signature="1116:1249" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="1325:1875" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="1686:1865" ph="{...}" />
-                <marker date="1563265015473" expanded="false" signature="2289:5547" ph="获取本地AssetBundle 资源以及对于的配置表" />
-                <marker date="1563265015473" expanded="true" signature="2379:2542" ph="/* private AssetBundleAssetTotalInfor mLocalBundleAssetConfigInfor = null; //本地的AssetBundle 配置 ，可能是null ... */" />
-                <marker date="1563265015473" expanded="true" signature="2753:2900" ph="/// 首先需要判断本地文件有没有被修改过(或者被删除了部分资源)，如果有改动则需要读取每个文件的MD5,否则只需要根据本地配置文件修改即可 ... " />
-                <marker date="1563265015473" expanded="true" signature="2957:4157" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="3367:4110" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="3443:4010" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="4167:4227" ph="/// 完成获取本地资源的任务 ... " />
-                <marker date="1563265015473" expanded="true" signature="4285:4580" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="4590:5524" ph="/* 获取本地配置文件信息 ... */" />
-                <marker date="1563265015473" expanded="false" signature="5557:7117" ph="下载服务器的AssetBundle 配置信息" />
-                <marker date="1563265015473" expanded="true" signature="5703:5762" ph="/// 下载服务器的配置信息 ... " />
-                <marker date="1563265015473" expanded="true" signature="5868:6320" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="6154:6273" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="6464:7098" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="6531:6786" ph="{...}" />
-                <marker date="1563265015473" expanded="false" signature="7128:15619" ph="对比获取需要下载的资源 /下载资源" />
-                <marker date="1563265015473" expanded="true" signature="7162:7331" ph="/// 对比获取所有需要更新的 AssetBundle 资源资源 ... " />
-                <marker date="1563265015473" expanded="true" signature="7421:9821" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="7767:8887" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="7798:8132" ph="/* if (mLocalBundleAssetConfigInfor == null) ... */" />
-                <marker date="1563265015473" expanded="true" signature="8258:8651" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="8989:9061" ph="/* 对比获取哪些资源需要删除 ... */" />
-                <marker date="1563265015473" expanded="true" signature="9159:9442" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="9831:9900" ph="/// 删除无效的AsssetBundle 资源 ... " />
-                <marker date="1563265015473" expanded="true" signature="9983:10237" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="10056:10170" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="10248:10357" ph="/// 根据获取的下载列表下载资源 ... " />
-                <marker date="1563265015473" expanded="true" signature="10459:12022" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="10532:10685" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="10938:11680" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="11072:11250" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="11694:11876" ph="/* if (mAllNeedDownloadAssetBundleNameRecord.Count == 0) ... */" />
-                <marker date="1563265015473" expanded="true" signature="12033:12187" ph="/// 下载一个Asetbundle 资源回调 ... " />
-                <marker date="1563265015473" expanded="true" signature="12290:13192" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="12473:12624" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="12736:12917" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="12934:13062" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="13202:13317" ph="/// 保存下载的AssetBundle 资源 ... " />
-                <marker date="1563265015473" expanded="true" signature="13416:13502" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="13512:14033" ph="/* 检测是否完成下载任务 ... */" />
-                <marker date="1563265015473" expanded="true" signature="14086:14180" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="14190:14249" ph="/// 完成 了资源的下载  ... " />
-                <marker date="1563265015473" expanded="true" signature="14307:14807" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="14381:14756" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="14836:14957" ph="/// 根据类型分类需要更新的AssetBundle 资源 ... " />
-                <marker date="1563265015473" expanded="true" signature="15069:15590" ph="{...}" />
-                <marker date="1563265015473" expanded="false" signature="15630:16308" ph="接口" />
-                <marker date="1563265015473" expanded="true" signature="15649:15725" ph="/// 检测AssetBundle 资源的状态是否需要更新下载 ... " />
-                <marker date="1563265015473" expanded="true" signature="15770:16160" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="15900:16150" ph="{...}" />
-                <marker date="1563265015473" expanded="true" signature="16244:16289" ph="{...}" />
+                <marker date="1563441215408" expanded="false" signature="6:195" ph="..." />
+                <marker date="1563441215408" expanded="true" signature="231:16951" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="238:300" ph="/// 负责AssetBundle 资源的更新逻辑 ... " />
+                <marker date="1563441215408" expanded="true" signature="379:16949" ph="{...}" />
+                <marker date="1563441215408" expanded="false" signature="395:1800" ph="需要更新的AssetBundle 信息" />
+                <marker date="1563441215408" expanded="true" signature="432:505" ph="/// 标示更新Asset Bundle 资源时候的状态 ... " />
+                <marker date="1563441215408" expanded="true" signature="556:689" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="765:1398" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="1176:1388" ph="{...}" />
+                <marker date="1563441215408" expanded="false" signature="1811:4382" ph="获取本地AssetBundle 资源以及对于的配置表" />
+                <marker date="1563441215408" expanded="true" signature="1901:2064" ph="/* private AssetBundleAssetTotalInfor mLocalBundleAssetConfigInfor = null; //本地的AssetBundle 配置 ，可能是null ... */" />
+                <marker date="1563441215408" expanded="true" signature="2275:2422" ph="/// 首先需要判断本地文件有没有被修改过(或者被删除了部分资源)，如果有改动则需要读取每个文件的MD5,否则只需要根据本地配置文件修改即可 ... " />
+                <marker date="1563441215408" expanded="true" signature="2479:3899" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="2927:3860" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="3003:3761" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="3909:3969" ph="/// 完成获取本地资源的任务 ... " />
+                <marker date="1563441215408" expanded="true" signature="4027:4361" ph="{...}" />
+                <marker date="1563441215408" expanded="false" signature="4392:5994" ph="下载服务器的AssetBundle 配置信息" />
+                <marker date="1563441215408" expanded="true" signature="4538:4597" ph="/// 下载服务器的配置信息 ... " />
+                <marker date="1563441215408" expanded="true" signature="4703:5151" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="4981:5104" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="5313:5975" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="5359:5621" ph="{...}" />
+                <marker date="1563441215408" expanded="false" signature="6005:14620" ph="对比获取需要下载的资源 /下载资源" />
+                <marker date="1563441215408" expanded="true" signature="6039:6208" ph="/// 对比获取所有需要更新的 AssetBundle 资源资源 ... " />
+                <marker date="1563441215408" expanded="true" signature="6298:8816" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="6637:7882" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="6668:7002" ph="/* if (mLocalBundleAssetConfigInfor == null) ... */" />
+                <marker date="1563441215408" expanded="true" signature="7182:7609" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="7984:8056" ph="/* 对比获取哪些资源需要删除 ... */" />
+                <marker date="1563441215408" expanded="true" signature="8154:8437" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="8826:8895" ph="/// 删除无效的AsssetBundle 资源 ... " />
+                <marker date="1563441215408" expanded="true" signature="8978:9232" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="9051:9165" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="9244:9353" ph="/// 根据获取的下载列表下载资源 ... " />
+                <marker date="1563441215408" expanded="true" signature="9455:11014" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="9528:9681" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="9934:10672" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="10068:10246" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="10686:10868" ph="/* if (mAllNeedDownloadAssetBundleNameRecord.Count == 0) ... */" />
+                <marker date="1563441215408" expanded="true" signature="11025:11179" ph="/// 下载一个Asetbundle 资源回调 ... " />
+                <marker date="1563441215408" expanded="true" signature="11286:12430" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="11332:11509" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="11701:11883" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="12446:12957" ph="/* 检测是否完成下载任务 ... */" />
+                <marker date="1563441215408" expanded="true" signature="13010:13104" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="13114:13173" ph="/// 完成 了资源的下载  ... " />
+                <marker date="1563441215408" expanded="true" signature="13231:13731" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="13305:13680" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="13760:13881" ph="/// 根据类型分类需要更新的AssetBundle 资源 ... " />
+                <marker date="1563441215408" expanded="true" signature="13993:14592" ph="{...}" />
+                <marker date="1563441215408" expanded="false" signature="14631:16942" ph="接口" />
+                <marker date="1563441215408" expanded="true" signature="14650:14726" ph="/// 检测AssetBundle 资源的状态是否需要更新下载 ... " />
+                <marker date="1563441215408" expanded="true" signature="14771:15160" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="14900:15150" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="15171:15326" ph="/// 根据一个资源名称获取所在的AssetBundle name ... " />
+                <marker date="1563441215408" expanded="true" signature="15391:16003" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="15456:15601" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="15700:15878" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="16013:16180" ph="/// 获取指定参数的AssetBundle 依赖的信息 (内部会对路径处理) ... " />
+                <marker date="1563441215408" expanded="true" signature="16247:16922" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="16312:16463" ph="{...}" />
+                <marker date="1563441215408" expanded="true" signature="16628:16794" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Assets/Test/TestLoadAsset.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
+              <folding>
+                <marker date="1563522306333" expanded="true" signature="6:134" ph="..." />
+                <marker date="1563522306333" expanded="true" signature="178:863" ph="{...}" />
+                <marker date="1563522306333" expanded="true" signature="290:860" ph="{...}" />
+                <marker date="1563522306333" expanded="true" signature="337:525" ph="{...}" />
+                <marker date="1563522306333" expanded="true" signature="567:853" ph="{...}" />
+                <marker date="1563522306333" expanded="true" signature="656:841" ph="{...}" />
+                <marker date="1563522306333" expanded="true" signature="692:827" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Assets/Test/TestLinkList.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="168">
+              <caret line="8" column="37" lean-forward="true" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+              <folding>
+                <marker date="1562384665992" expanded="true" signature="6:92" ph="..." />
+                <marker date="1562384665992" expanded="true" signature="135:1278" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="223:450" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="320:444" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="477:1274" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="524:1103" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="683:1093" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="740:862" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="918:1041" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="1147:1268" ph="{...}" />
+                <marker date="1562384665992" expanded="true" signature="1197:1258" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -110,7 +162,16 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Test/TestLinkList.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Test/TestLoadAsset.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/UpdateAssetBundle/AssetBundleUpgradeManager.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Assets/Test/TestLinkList.cs" />
+      </list>
+    </option>
   </component>
   <component name="ProjectConfigurationFiles">
     <option name="files">
@@ -121,10 +182,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="240" />
-    <option name="y" value="130" />
-    <option name="width" value="1440" />
-    <option name="height" value="780" />
+    <option name="x" value="1912" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -132,14 +193,14 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="SolutionExplorer">
-        <option name="show-all-files" value="false" />
-      </pane>
-      <pane id="FileSystemExplorer" />
       <pane id="AssemblyExplorer" />
       <pane id="UnityExplorer">
         <option name="show-hidden-items" value="false" />
         <option name="show-project-names" value="true" />
+      </pane>
+      <pane id="FileSystemExplorer" />
+      <pane id="SolutionExplorer">
+        <option name="show-all-files" value="false" />
       </pane>
     </panes>
   </component>
@@ -148,7 +209,7 @@
     <property name="Rider.DefaultBreakpoints.AreToggled" value="true" />
     <property name="Rider.ProjectViewActivator.IsNotFirstRun" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="preferences.CSharpInteractiveConfiguration" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -189,11 +250,13 @@
       <option name="presentableId" value="Default" />
       <updated>1563272076060</updated>
       <workItem from="1563272083787" duration="752000" />
+      <workItem from="1563522709982" duration="341000" />
+      <workItem from="1563523636993" duration="468000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="752000" />
+    <option name="totallyTimeSpent" value="1561000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -205,20 +268,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24986681" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="NuGet" />
-      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Unity" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Unit Tests" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="Performance Profiler" />
+      <window_info id="Structure" order="0" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -226,12 +279,22 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Errors In Solution" weight="0.32978156" />
-      <window_info anchor="right" id="Database" weight="0.32978156" />
-      <window_info anchor="right" id="Unit Tests Coverage" weight="0.32978156" />
+      <window_info anchor="bottom" id="NuGet" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Performance Profiler" order="8" />
+      <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="10" />
+      <window_info anchor="bottom" id="Unity" order="11" />
+      <window_info anchor="bottom" id="Database Changes" order="12" />
+      <window_info anchor="bottom" id="Unit Tests" order="13" />
+      <window_info anchor="bottom" id="Terminal" order="14" />
+      <window_info anchor="bottom" id="Event Log" order="15" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Errors In Solution" order="3" weight="0.32978156" />
+      <window_info anchor="right" id="Database" order="4" weight="0.32978156" />
+      <window_info anchor="right" id="Unit Tests Coverage" order="5" weight="0.32978156" />
+      <window_info active="true" anchor="right" content_ui="combo" id="Project" order="6" visible="true" weight="0.17581247" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -252,72 +315,108 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/UpdateAssetBundle/AssetBundleUpgradeManager.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="22" column="78" selection-start-line="22" selection-start-column="78" selection-end-line="22" selection-end-column="78" />
+        <state relative-caret-position="136">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
           <folding>
-            <marker date="1563265015473" expanded="true" signature="6:141" ph="..." />
-            <marker date="1563265015473" expanded="true" signature="177:16317" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="184:246" ph="/// 负责AssetBundle 资源的更新逻辑 ... " />
-            <marker date="1563265015473" expanded="true" signature="325:16315" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="476:920" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="502:910" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="580:837" ph="{...}" />
-            <marker date="1563265015473" expanded="false" signature="955:2276" ph="需要更新的AssetBundle 信息" />
-            <marker date="1563265015473" expanded="true" signature="992:1065" ph="/// 标示更新Asset Bundle 资源时候的状态 ... " />
-            <marker date="1563265015473" expanded="true" signature="1116:1249" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="1325:1875" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="1686:1865" ph="{...}" />
-            <marker date="1563265015473" expanded="false" signature="2289:5547" ph="获取本地AssetBundle 资源以及对于的配置表" />
-            <marker date="1563265015473" expanded="true" signature="2379:2542" ph="/* private AssetBundleAssetTotalInfor mLocalBundleAssetConfigInfor = null; //本地的AssetBundle 配置 ，可能是null ... */" />
-            <marker date="1563265015473" expanded="true" signature="2753:2900" ph="/// 首先需要判断本地文件有没有被修改过(或者被删除了部分资源)，如果有改动则需要读取每个文件的MD5,否则只需要根据本地配置文件修改即可 ... " />
-            <marker date="1563265015473" expanded="true" signature="2957:4157" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="3367:4110" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="3443:4010" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="4167:4227" ph="/// 完成获取本地资源的任务 ... " />
-            <marker date="1563265015473" expanded="true" signature="4285:4580" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="4590:5524" ph="/* 获取本地配置文件信息 ... */" />
-            <marker date="1563265015473" expanded="false" signature="5557:7117" ph="下载服务器的AssetBundle 配置信息" />
-            <marker date="1563265015473" expanded="true" signature="5703:5762" ph="/// 下载服务器的配置信息 ... " />
-            <marker date="1563265015473" expanded="true" signature="5868:6320" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="6154:6273" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="6464:7098" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="6531:6786" ph="{...}" />
-            <marker date="1563265015473" expanded="false" signature="7128:15619" ph="对比获取需要下载的资源 /下载资源" />
-            <marker date="1563265015473" expanded="true" signature="7162:7331" ph="/// 对比获取所有需要更新的 AssetBundle 资源资源 ... " />
-            <marker date="1563265015473" expanded="true" signature="7421:9821" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="7767:8887" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="7798:8132" ph="/* if (mLocalBundleAssetConfigInfor == null) ... */" />
-            <marker date="1563265015473" expanded="true" signature="8258:8651" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="8989:9061" ph="/* 对比获取哪些资源需要删除 ... */" />
-            <marker date="1563265015473" expanded="true" signature="9159:9442" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="9831:9900" ph="/// 删除无效的AsssetBundle 资源 ... " />
-            <marker date="1563265015473" expanded="true" signature="9983:10237" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="10056:10170" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="10248:10357" ph="/// 根据获取的下载列表下载资源 ... " />
-            <marker date="1563265015473" expanded="true" signature="10459:12022" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="10532:10685" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="10938:11680" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="11072:11250" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="11694:11876" ph="/* if (mAllNeedDownloadAssetBundleNameRecord.Count == 0) ... */" />
-            <marker date="1563265015473" expanded="true" signature="12033:12187" ph="/// 下载一个Asetbundle 资源回调 ... " />
-            <marker date="1563265015473" expanded="true" signature="12290:13192" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="12473:12624" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="12736:12917" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="12934:13062" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="13202:13317" ph="/// 保存下载的AssetBundle 资源 ... " />
-            <marker date="1563265015473" expanded="true" signature="13416:13502" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="13512:14033" ph="/* 检测是否完成下载任务 ... */" />
-            <marker date="1563265015473" expanded="true" signature="14086:14180" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="14190:14249" ph="/// 完成 了资源的下载  ... " />
-            <marker date="1563265015473" expanded="true" signature="14307:14807" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="14381:14756" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="14836:14957" ph="/// 根据类型分类需要更新的AssetBundle 资源 ... " />
-            <marker date="1563265015473" expanded="true" signature="15069:15590" ph="{...}" />
-            <marker date="1563265015473" expanded="false" signature="15630:16308" ph="接口" />
-            <marker date="1563265015473" expanded="true" signature="15649:15725" ph="/// 检测AssetBundle 资源的状态是否需要更新下载 ... " />
-            <marker date="1563265015473" expanded="true" signature="15770:16160" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="15900:16150" ph="{...}" />
-            <marker date="1563265015473" expanded="true" signature="16244:16289" ph="{...}" />
+            <marker date="1563441215408" expanded="false" signature="6:195" ph="..." />
+            <marker date="1563441215408" expanded="true" signature="231:16951" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="238:300" ph="/// 负责AssetBundle 资源的更新逻辑 ... " />
+            <marker date="1563441215408" expanded="true" signature="379:16949" ph="{...}" />
+            <marker date="1563441215408" expanded="false" signature="395:1800" ph="需要更新的AssetBundle 信息" />
+            <marker date="1563441215408" expanded="true" signature="432:505" ph="/// 标示更新Asset Bundle 资源时候的状态 ... " />
+            <marker date="1563441215408" expanded="true" signature="556:689" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="765:1398" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="1176:1388" ph="{...}" />
+            <marker date="1563441215408" expanded="false" signature="1811:4382" ph="获取本地AssetBundle 资源以及对于的配置表" />
+            <marker date="1563441215408" expanded="true" signature="1901:2064" ph="/* private AssetBundleAssetTotalInfor mLocalBundleAssetConfigInfor = null; //本地的AssetBundle 配置 ，可能是null ... */" />
+            <marker date="1563441215408" expanded="true" signature="2275:2422" ph="/// 首先需要判断本地文件有没有被修改过(或者被删除了部分资源)，如果有改动则需要读取每个文件的MD5,否则只需要根据本地配置文件修改即可 ... " />
+            <marker date="1563441215408" expanded="true" signature="2479:3899" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="2927:3860" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="3003:3761" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="3909:3969" ph="/// 完成获取本地资源的任务 ... " />
+            <marker date="1563441215408" expanded="true" signature="4027:4361" ph="{...}" />
+            <marker date="1563441215408" expanded="false" signature="4392:5994" ph="下载服务器的AssetBundle 配置信息" />
+            <marker date="1563441215408" expanded="true" signature="4538:4597" ph="/// 下载服务器的配置信息 ... " />
+            <marker date="1563441215408" expanded="true" signature="4703:5151" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="4981:5104" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="5313:5975" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="5359:5621" ph="{...}" />
+            <marker date="1563441215408" expanded="false" signature="6005:14620" ph="对比获取需要下载的资源 /下载资源" />
+            <marker date="1563441215408" expanded="true" signature="6039:6208" ph="/// 对比获取所有需要更新的 AssetBundle 资源资源 ... " />
+            <marker date="1563441215408" expanded="true" signature="6298:8816" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="6637:7882" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="6668:7002" ph="/* if (mLocalBundleAssetConfigInfor == null) ... */" />
+            <marker date="1563441215408" expanded="true" signature="7182:7609" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="7984:8056" ph="/* 对比获取哪些资源需要删除 ... */" />
+            <marker date="1563441215408" expanded="true" signature="8154:8437" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="8826:8895" ph="/// 删除无效的AsssetBundle 资源 ... " />
+            <marker date="1563441215408" expanded="true" signature="8978:9232" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="9051:9165" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="9244:9353" ph="/// 根据获取的下载列表下载资源 ... " />
+            <marker date="1563441215408" expanded="true" signature="9455:11014" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="9528:9681" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="9934:10672" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="10068:10246" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="10686:10868" ph="/* if (mAllNeedDownloadAssetBundleNameRecord.Count == 0) ... */" />
+            <marker date="1563441215408" expanded="true" signature="11025:11179" ph="/// 下载一个Asetbundle 资源回调 ... " />
+            <marker date="1563441215408" expanded="true" signature="11286:12430" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="11332:11509" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="11701:11883" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="12446:12957" ph="/* 检测是否完成下载任务 ... */" />
+            <marker date="1563441215408" expanded="true" signature="13010:13104" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="13114:13173" ph="/// 完成 了资源的下载  ... " />
+            <marker date="1563441215408" expanded="true" signature="13231:13731" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="13305:13680" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="13760:13881" ph="/// 根据类型分类需要更新的AssetBundle 资源 ... " />
+            <marker date="1563441215408" expanded="true" signature="13993:14592" ph="{...}" />
+            <marker date="1563441215408" expanded="false" signature="14631:16942" ph="接口" />
+            <marker date="1563441215408" expanded="true" signature="14650:14726" ph="/// 检测AssetBundle 资源的状态是否需要更新下载 ... " />
+            <marker date="1563441215408" expanded="true" signature="14771:15160" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="14900:15150" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="15171:15326" ph="/// 根据一个资源名称获取所在的AssetBundle name ... " />
+            <marker date="1563441215408" expanded="true" signature="15391:16003" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="15456:15601" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="15700:15878" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="16013:16180" ph="/// 获取指定参数的AssetBundle 依赖的信息 (内部会对路径处理) ... " />
+            <marker date="1563441215408" expanded="true" signature="16247:16922" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="16312:16463" ph="{...}" />
+            <marker date="1563441215408" expanded="true" signature="16628:16794" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Test/TestLoadAsset.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
+          <folding>
+            <marker date="1563522306333" expanded="true" signature="6:134" ph="..." />
+            <marker date="1563522306333" expanded="true" signature="178:863" ph="{...}" />
+            <marker date="1563522306333" expanded="true" signature="290:860" ph="{...}" />
+            <marker date="1563522306333" expanded="true" signature="337:525" ph="{...}" />
+            <marker date="1563522306333" expanded="true" signature="567:853" ph="{...}" />
+            <marker date="1563522306333" expanded="true" signature="656:841" ph="{...}" />
+            <marker date="1563522306333" expanded="true" signature="692:827" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Test/TestLinkList.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="8" column="37" lean-forward="true" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+          <folding>
+            <marker date="1562384665992" expanded="true" signature="6:92" ph="..." />
+            <marker date="1562384665992" expanded="true" signature="135:1278" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="223:450" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="320:444" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="477:1274" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="524:1103" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="683:1093" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="740:862" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="918:1041" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="1147:1268" ph="{...}" />
+            <marker date="1562384665992" expanded="true" signature="1197:1258" ph="{...}" />
           </folding>
         </state>
       </provider>

@@ -118,7 +118,28 @@ namespace GameFramePro
             return true;
         }
 
+        /// <summary>
+        /// 删除指定的文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static bool DeleteFile(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                Debug.LogError("DeleteFile Fail,Parameter is null");
+                return false;
+            }
 
+            if (System.IO.File.Exists(filePath)==false)
+            {
+                Debug.LogError("DeleteFile Fail,File Not Exit "+ filePath);
+                return false;
+            }
+
+            System.IO.File.Delete(filePath);
+            return true;
+        }
 
 
         #endregion
