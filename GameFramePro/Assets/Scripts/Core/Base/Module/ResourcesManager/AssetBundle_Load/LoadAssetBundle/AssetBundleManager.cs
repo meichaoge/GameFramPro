@@ -83,7 +83,7 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-        public float MaxAliveTimeAfterNoReference { get { return 600; } } //最多存在10分钟
+        public float MaxAliveTimeAfterNoReference { get { return 60; } } //最多存在1分钟
 
         /// <summary>
         /// 释放资源
@@ -106,11 +106,7 @@ namespace GameFramePro.ResourcesEx
                 else
                     Debug.LogError("NotifyAssetRelease Fail,没有找到这个AssetBundle的记录 {0} ", assetBundleDepdence.AssetUrl);
 
-                AssetBundle bundle = assetBundleDepdence.TargetAsset as AssetBundle;
-                if (bundle != null)
-                    AssetBundle.UnloadAllAssetBundles(true);
-                else
-                    Debug.LogError("NotifyAssetRelease Fail,没有找到这个AssetBundle {0} ", assetBundleDepdence.AssetUrl);
+                ResourcesManager.UnLoadAssetBundle(record,true);
             }
             else
             {

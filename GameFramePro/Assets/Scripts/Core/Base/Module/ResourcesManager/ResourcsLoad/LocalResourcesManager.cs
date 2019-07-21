@@ -48,7 +48,7 @@ namespace GameFramePro.ResourcesEx
 
     
 
-        public float MaxAliveTimeAfterNoReference { get { return 600; } } //最多存在10分钟
+        public float MaxAliveTimeAfterNoReference { get { return 60; } } //最多存在1分钟
 
         public void NotifyAssetRelease(ILoadAssetRecord record)
         {
@@ -60,8 +60,7 @@ namespace GameFramePro.ResourcesEx
                 else
                     Debug.LogError("NotifyAssetRelease Error  不存在这个资源 {0}的记录" , record.AssetUrl);
 
-                if (record.TargetAsset != null)
-                    Resources.UnloadAsset(record.TargetAsset);
+                ResourcesManager.UnLoadResourceAsset(record);
                 return;
             }
             Debug.LogError("NotifyAssetRelease Fail,无法处理的类型 " + record.GetType());
@@ -75,21 +74,14 @@ namespace GameFramePro.ResourcesEx
                 if (record.ReferenceCount == 0)
                 {
                     if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
-                    {
-                        //mAllLoadedAssetRecord.Remove(record.AssetUrl);
                         AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record);
-                    }
                     else
-                    {
                         Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
-                    }
                 } //资源没有引用时候 释放资源
                 else
                 {
                     if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl) == false)
-                    {
                         mAllLoadedAssetRecord[record.AssetUrl] = record as ResourcesLoadAssetRecord;
-                    }
                 }
 
                 #endregion

@@ -10,10 +10,10 @@ namespace GameFramePro
     /// <summary>
     /// Sprite 资源被引用
     /// </summary>
-    public class SpriteAssetReference : BaseGameObjectAssetReference<UnityEngine.UI.Image>
+    public class SpriteAssetReference <T>: BaseAssetReference<T> where T: UnityEngine.UI.Image
     {
 
-        public override BaseGameObjectAssetReference<Image> AttachComponentReference(Image component, ILoadAssetRecord newAssetRecord, System.Action<Image, ILoadAssetRecord> getAssetFromRecordAction)
+        public override BaseAssetReference<T> AttachComponentReference(T component, ILoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction)
         {
             if (getAssetFromRecordAction == null)
             {
@@ -21,24 +21,21 @@ namespace GameFramePro
                 return null;
             }
 
-
             if (newAssetRecord == null)
             {
                 if (CurLoadAssetRecord != null)
                     CurLoadAssetRecord.ReduceReference();
                 CurLoadAssetRecord = newAssetRecord;
-                getAssetFromRecordAction(component, newAssetRecord);
+                ReferenceAssetInfor = getAssetFromRecordAction(component, newAssetRecord);
                 return this;
             }
-
-
 
 
             if (CurLoadAssetRecord == null)
             {
                 CurLoadAssetRecord = newAssetRecord;
                 CurLoadAssetRecord.AddReference();
-                getAssetFromRecordAction(component, newAssetRecord);
+                ReferenceAssetInfor = getAssetFromRecordAction(component, newAssetRecord);
                 return this;
             }//第一次赋值
 
@@ -59,15 +56,30 @@ namespace GameFramePro
 
 
         /// <summary>
-        /// 如何从一堆的数据中找到自己需要的数据
+        /// 如何从一堆的数据中找到自己需要的数据(目前根据引用的实例ID 获取)
         /// </summary>
         /// <param name="allSpriteAssetReference"></param>
         /// <returns></returns>
-        public static IAssetReference GetSpriteAssetReference(LinkedList<IAssetReference> allSpriteAssetReference)
+        public static IAssetReference GetSpriteAssetReference(T component, LinkedList<IAssetReference> allSpriteAssetReference) 
         {
             if (allSpriteAssetReference == null || allSpriteAssetReference.Count == 0)
-                return new SpriteAssetReference();
-            return allSpriteAssetReference.First.Value ;
+                return new SpriteAssetReference<T>();
+
+            int curReferenceInstanceID = -1;
+            if (component != null && component.sprite != null)
+                curReferenceInstanceID = component.sprite.GetInstanceID();
+            if(curReferenceInstanceID==-1)
+                return new SpriteAssetReference<T>(); //说明之前没有引用资源
+
+            var targetNode = allSpriteAssetReference.First;
+            while (targetNode!=null)
+            {
+                if (targetNode.Value.ReferenceAssetInfor.ReferenceInstanceID == curReferenceInstanceID)
+                    return targetNode.Value;
+                targetNode = targetNode.Next;
+            }
+
+            return new SpriteAssetReference<T>(); //没有找到匹配的引用资源
         }
 
         /// <summary>
@@ -75,13 +87,18 @@ namespace GameFramePro
         /// </summary>
         /// <param name="component"></param>
         /// <param name="assetRecord"></param>
-        public static void GetSpriteFromSpriteRender(Image component, ILoadAssetRecord assetRecord)
+        /// <returns>返回组件的实例ID .-1表示没有获取到.0 表示可能有地方没有赋值</returns>
+        public static BaseBeReferenceAssetInfor GetSpriteFromSpriteRender(T component, ILoadAssetRecord assetRecord) 
         {
+            BaseBeReferenceAssetInfor referenceAssetInfor = new BaseBeReferenceAssetInfor();
+
+            referenceAssetInfor .ReferenceAssetType= typeof(Sprite);
             if (assetRecord == null || assetRecord.TargetAsset == null)
             {
-              //  Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Parameter is null or Asset is null");
+                //  Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Parameter is null or Asset is null");
                 component.sprite = null;
-                return;
+                referenceAssetInfor.ReferenceInstanceID = -1;
+                return referenceAssetInfor;
             }
 
             SpriteRenderer spriteRender = (assetRecord.TargetAsset as GameObject).GetComponent<SpriteRenderer>();
@@ -89,9 +106,13 @@ namespace GameFramePro
             {
                 Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Not Contain SpriteRenderer Component of Record {0}", assetRecord.AssetUrl);
                 component.sprite = null;
-                return;
+                referenceAssetInfor.ReferenceInstanceID = -1;
+                return referenceAssetInfor;
             }
             component.sprite = spriteRender.sprite;
+            referenceAssetInfor.ReferenceAsset = component.sprite;
+            referenceAssetInfor.ReferenceInstanceID = spriteRender.sprite.GetInstanceID();
+            return referenceAssetInfor;
         }
 
 

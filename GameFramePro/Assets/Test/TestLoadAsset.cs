@@ -12,6 +12,7 @@ public class TestLoadAsset : MonoBehaviour
     public Image mTarget2;
 
 
+
     private void Update()
     {
 
@@ -20,7 +21,12 @@ public class TestLoadAsset : MonoBehaviour
             ResourcesManager.LoadSpriteAssetSync(assetPath, mTarget);
         }
 
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            ResourcesManager.LoadSpriteAssetAsync(mTarget, mTarget2);
+        }
 
+        
 
         //if (Input.GetKeyDown(KeyCode.A))
         //{
@@ -33,7 +39,7 @@ public class TestLoadAsset : MonoBehaviour
         //    ResourcesManager.SetSprite(mTarget, sp);
         //}
 
-     
+
 
         //if (Input.GetKeyDown(KeyCode.B))
         //{

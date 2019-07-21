@@ -29,7 +29,7 @@ namespace GameFramePro
         /// <param name="targetComponent"></param>
         /// <param name="referenceAssetRecord"></param>
         /// <param name="assetReferenceAct"></param>
-        public static void CreateOrAddReference<T>(T targetComponent, ILoadAssetRecord referenceAssetRecord, System.Func<LinkedList<IAssetReference>, IAssetReference> getAssetReference,System.Action<T, ILoadAssetRecord> getAssetFromRecordAction) where T : Component
+        public static void CreateOrAddReference<T>(T targetComponent, ILoadAssetRecord referenceAssetRecord, GetCurReferenceHandler<T> getAssetReference, GetAssetFromRecordHandler<T> getAssetFromRecordAction) where T : Component
         {
             AssetReferenceController referenceController = null;
             if(mAllGameObjectReferenceController.TryGetValue(targetComponent.gameObject,out referenceController)==false)
@@ -45,56 +45,71 @@ namespace GameFramePro
                 referenceController.mAllComponentReferencesRecord[targetComponent] = assetReferencesLinkedList;
             }
 
-            IAssetReference gameObjectReference = getAssetReference(assetReferencesLinkedList);
-            Action<Component, ILoadAssetRecord> getAssetFromRecordAct = TranslateAction<T>(getAssetFromRecordAction);
-            (gameObjectReference as BaseGameObjectAssetReference<T>).AttachComponentReference(targetComponent, referenceAssetRecord, getAssetFromRecordAct);
-            referenceController.ModifyReference(targetComponent, gameObjectReference);
-        }
+            IAssetReference assetReference = getAssetReference(targetComponent, assetReferencesLinkedList);
+            if (assetReference == null)
+                return;
 
-
-
-        /// <summary>
-        /// 转换回调类型
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="getAssetFromRecordAction"></param>
-        /// <returns></returns>
-        private static Action<Component, ILoadAssetRecord> TranslateAction<T>(System.Action<T, ILoadAssetRecord> getAssetFromRecordAction) where T : Component
-        {
-            Action<Component, ILoadAssetRecord> getAssetFromRecordAct = null;
-            if (getAssetFromRecordAction != null)
-            {
-                getAssetFromRecordAct = (component, record) =>
-                {
-                    getAssetFromRecordAction(component as T, record);
-                };
-            }//转换回调
-            return getAssetFromRecordAct;
-        }
-        #endregion
-
-
-        /// <summary>
-        /// 当某个组件上资源引用关系改变时候
-        /// </summary>
-        /// <param name="targetComponent"></param>
-        /// <param name="reference"></param>
-        public void ModifyReference(Component targetComponent, IAssetReference reference)
-        {
-            LinkedList<IAssetReference> referenceRecords = null;
-            if(mAllComponentReferencesRecord.TryGetValue(targetComponent,out referenceRecords)==false|| referenceRecords.Count==0)
-            {
-                if (referenceRecords == null)
-                    referenceRecords = new LinkedList<IAssetReference>();
-            }
-            if (referenceRecords.Contains(reference) == false)
-                referenceRecords.AddLast(reference);
+            (assetReference as BaseAssetReference<T>).AttachComponentReference(targetComponent, referenceAssetRecord, getAssetFromRecordAction);
+            //   referenceController.ModifyReference(targetComponent, gameObjectReference);
+            if (assetReferencesLinkedList.Contains(assetReference) == false)
+                assetReferencesLinkedList.AddLast(assetReference);
 #if UNITY_EDITOR
-            UpdateDebugView();
+            referenceController. UpdateDebugView();
 #endif
         }
 
+        /// <summary>
+        /// 获取指定组件上满足条件的第一个 引用的资源信息
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="targetComponent"></param>
+        /// <param name="getAssetReference"></param>
+        /// <returns></returns>
+        public static IAssetReference GetAssetReference<T>(T targetComponent, GetCurReferenceHandler<T> getAssetReference) where T : Component
+        {
+            if (getAssetReference == null)
+            {
+                Debug.LogError("GetAssetReference Fail,parameter getAssetReference is null  ");
+                return null;
+            }
 
+            AssetReferenceController referenceController = null;
+            if (mAllGameObjectReferenceController.TryGetValue(targetComponent.gameObject, out referenceController))
+            {
+                LinkedList<IAssetReference> allAssetReferences = null;
+                if (referenceController.mAllComponentReferencesRecord.TryGetValue(targetComponent, out allAssetReferences))
+                {
+                    return getAssetReference(targetComponent, allAssetReferences);
+                }
+            }
+            return null;
+        }
+
+        #endregion
+
+
+        private void OnDestroy()
+        {
+            OnRemoveAllReference();
+        }
+
+        public void OnRemoveAllReference()
+        {
+            Debug.LogInfor("OnRemoveAllReference");
+            foreach (var referenceInfor in mAllComponentReferencesRecord)
+            {
+                if (referenceInfor.Value.Count == 0)
+                    continue;
+                var node = referenceInfor.Value.First;
+                while (node!=null)
+                {
+                    if (node.Value.CurLoadAssetRecord != null)
+                        node.Value.CurLoadAssetRecord.ReduceReference();
+                    node = node.Next;
+                }
+            }
+            mAllComponentReferencesRecord.Clear();
+        }
 
 
 
@@ -104,6 +119,8 @@ namespace GameFramePro
         public class ComponentReferenceInfor
         {
             public Component mTargetComponent;
+
+            public List<BaseBeReferenceAssetInfor> Debug_ReferenceDetail = new List<BaseBeReferenceAssetInfor>();
             public List<ResourcesLoadAssetRecord> mAllCurrentResourcesRecord = new List<ResourcesLoadAssetRecord>();
             public List<AssetBundleSubAssetLoadRecord> mAllCurrentAssetBundleRecord = new List<AssetBundleSubAssetLoadRecord>();
 
@@ -119,6 +136,20 @@ namespace GameFramePro
                     {
                         if (node.Value.CurLoadAssetRecord != null)
                         {
+                            if(node.Value.ReferenceAssetInfor.ReferenceInstanceID==0)
+                            {
+                                Debug.LogErrorFormat("没有赋值的实例ID " + node.Value.CurLoadAssetRecord);
+                            }
+
+                            BaseBeReferenceAssetInfor detailInfor = new BaseBeReferenceAssetInfor();
+                            detailInfor.ReferenceInstanceID = node.Value.ReferenceAssetInfor.ReferenceInstanceID;
+                            detailInfor.ReferenceAsset = node.Value.ReferenceAssetInfor.ReferenceAsset;
+                            if (node.Value.ReferenceAssetInfor.ReferenceAssetType != null)
+                                detailInfor.ReferenceAssetType = node.Value.ReferenceAssetInfor.ReferenceAssetType;
+                            Debug_ReferenceDetail.Add(detailInfor);
+
+
+
                             if (node.Value.CurLoadAssetRecord is ResourcesLoadAssetRecord)
                                 mAllCurrentResourcesRecord.Add(node.Value.CurLoadAssetRecord as ResourcesLoadAssetRecord);
                             else

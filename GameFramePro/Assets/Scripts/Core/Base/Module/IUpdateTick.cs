@@ -14,7 +14,11 @@ namespace GameFramePro
            /// </summary>
         int TickPerUpdateCount { get; }
 
-        void UpdateTick(); //定时获取状态
+        /// <summary>
+        /// 计时滴答
+        /// </summary>
+        /// <param name="currentTime">当前的时间(单位秒)</param>
+        void UpdateTick(float currentTime); //定时获取状态
 
     }
 }

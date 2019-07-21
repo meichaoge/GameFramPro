@@ -46,8 +46,8 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool RegisterTraceResources(UnityEngine.Object obj, TraceResourcesStateEnum stateEnum)
         {
-            if (Application.isPlaying == false||AppSetting.S_IsTraceResourceCreate==false)
-                return false; 
+            if (Application.isPlaying == false || AppSetting.S_IsTraceResourceCreate == false)
+                return false;
 
             if (obj == null)
             {
@@ -167,7 +167,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool UnRegisterTraceResources(UnityEngine.Object obj)
         {
-              if (Application.isPlaying == false||AppSetting.S_IsTraceResourceCreate==false)
+            if (Application.isPlaying == false || AppSetting.S_IsTraceResourceCreate == false)
                 return false;
             if (obj == null)
             {
@@ -205,7 +205,7 @@ namespace GameFramePro
 
         #endregion
 
-      
+
 
     }
 }

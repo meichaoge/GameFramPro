@@ -62,6 +62,9 @@ namespace GameFramePro.ResourcesEx
         /// 引用次数
         /// </summary>
         int ReferenceCount { get; }
+
+
+
         /// <summary>
         /// 加载的方式和类型
         /// </summary>

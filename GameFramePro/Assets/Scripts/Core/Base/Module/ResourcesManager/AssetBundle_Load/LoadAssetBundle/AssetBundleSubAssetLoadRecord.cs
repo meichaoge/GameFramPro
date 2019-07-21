@@ -49,7 +49,7 @@ namespace GameFramePro.ResourcesEx
         public int ReferenceCount { get; protected set; } = 0;
         public LoadedAssetTypeEnum AssetLoadedType { get; protected set; } = LoadedAssetTypeEnum.None;
         public UnityEngine.Object TargetAsset { get; protected set; } = null;
-        public float RemainTimeToBeDelete { get; protected set; } = 300f;
+        public float RemainTimeToBeDelete { get; protected set; } = 0f;
         public long MarkToDeleteTime { get; protected set; } = 0;
         public IAssetManager BelongAssetManager { get; protected set; } = null;
 
