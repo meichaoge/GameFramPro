@@ -114,7 +114,7 @@ namespace GameFramePro
         /// </summary>
         /// <param name="assetPath"></param>
         /// <returns></returns>
-        public static string LoadTextAssettSync(string assetPath,bool isForceReload=false)
+        public static string LoadTextAssettSync(string assetPath, bool isForceReload = false)
         {
             string reseultStr = string.Empty;
             if (isForceReload == false)
@@ -123,9 +123,9 @@ namespace GameFramePro
                     return reseultStr;
             }
             ILoadAssetRecord assetRecord = LoadAssetSync(assetPath);
-            if(assetRecord!=null&& assetRecord.TargetAsset != null)
+            if (assetRecord != null && assetRecord.TargetAsset != null)
             {
-                if(assetRecord.TargetAsset is TextAsset)
+                if (assetRecord.TargetAsset is TextAsset)
                 {
                     reseultStr = (assetRecord.TargetAsset as TextAsset).text;
                     mAllCacheTextInfor[assetPath] = reseultStr;
@@ -134,6 +134,36 @@ namespace GameFramePro
             }
             Debug.LogError("获取文本 资源失败 " + assetPath);
             return reseultStr;
+        }
+
+        public static void LoadTextAssettAsync(string assetPath, System.Action<string> textAssetAction, bool isForceReload = false)
+        {
+            string reseultStr = string.Empty;
+            if (isForceReload == false)
+            {
+                if (mAllCacheTextInfor.TryGetValue(assetPath, out reseultStr) && string.IsNullOrEmpty(reseultStr) == false)
+                {
+                    if (textAssetAction != null) textAssetAction(reseultStr);
+                    return;
+                }
+            }
+            LoadAssetAsync(assetPath, (assetRecord) =>
+            {
+                if (assetRecord != null && assetRecord.TargetAsset != null)
+                {
+                    if (assetRecord.TargetAsset is TextAsset)
+                    {
+                        reseultStr = (assetRecord.TargetAsset as TextAsset).text;
+                        mAllCacheTextInfor[assetPath] = reseultStr;
+                        if (textAssetAction != null) textAssetAction(reseultStr);
+                        return;
+                    }
+                }
+                Debug.LogError("获取文本 资源失败 " + assetPath);
+                if (textAssetAction != null) textAssetAction(null);
+                return;
+            });
+
         }
         #endregion
 
@@ -147,7 +177,7 @@ namespace GameFramePro
         /// <param name="targetImage"></param>
         /// <param name="getAssetReference">定义了如何从当前组件 targetImage 的所有引用资源链表中找到自己想要的修改的那个引用记录</param>
         /// <param name="getAssetFromRecordAction"></param>
-        public static void LoadSpriteAssetSync<T>(string assetPath, T targetImage, GetAssetFromRecordHandler<T> getAssetFromRecordAction =null, GetCurReferenceHandler<T> getAssetReference =null) where T:Image
+        public static void LoadSpriteAssetSync<T>(string assetPath, T targetImage, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             if (getAssetFromRecordAction == null)
             {
@@ -159,7 +189,7 @@ namespace GameFramePro
                 //Debug.LogError("LoadSpriteAssetSync Fail, 必须指定如何从一个组件的所有当前资源引用中找到对应的引用的方法");
                 getAssetReference = SpriteAssetReference<T>.GetSpriteAssetReference;
             }
-         
+
             ILoadAssetRecord assetRecord = null;
             if (string.IsNullOrEmpty(assetPath) == false)
             {
@@ -176,7 +206,7 @@ namespace GameFramePro
         /// <param name="targetImage"></param>
         /// <param name="getAssetReference">定义了如何从当前组件 targetImage 的所有引用资源链表中找到自己想要的修改的那个引用记录</param>
         /// <param name="getAssetFromRecordAction"></param>
-        public static void LoadSpriteAssetAsync<T>(string assetPath, T targetImage, GetAssetFromRecordHandler<T> getAssetFromRecordAction =null, GetCurReferenceHandler<T> getAssetReference =null) where T : Image
+        public static void LoadSpriteAssetAsync<T>(string assetPath, T targetImage, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             if (getAssetFromRecordAction == null)
             {
@@ -202,7 +232,7 @@ namespace GameFramePro
                 return;
             }
 
-            LoadAssetAsync(assetPath, (record)=> { AssetReferenceController.CreateOrAddReference<T>(targetImage, record, getAssetReference, getAssetFromRecordAction); });
+            LoadAssetAsync(assetPath, (record) => { AssetReferenceController.CreateOrAddReference<T>(targetImage, record, getAssetReference, getAssetFromRecordAction); });
         }
 
         /// <summary>
@@ -267,7 +297,7 @@ namespace GameFramePro
             ILoadAssetRecord asset = LocalResourcesManager.S_Instance.LoadAssetFromCache(assetPath);
             if (asset != null)
                 return asset;
-        //    asset = AssetBundleManager.S_Instance.LoadAssetFromCache(assetPath);
+            //    asset = AssetBundleManager.S_Instance.LoadAssetFromCache(assetPath);
             return asset;
         }
 
@@ -276,7 +306,7 @@ namespace GameFramePro
         /// </summary>
         /// <param name="assetpath"></param>
         /// <returns></returns>
-        private static ILoadAssetRecord  LoadAssetSync(string assetPath)
+        private static ILoadAssetRecord LoadAssetSync(string assetPath)
         {
             ILoadAssetRecord record = null;
 
@@ -288,7 +318,7 @@ namespace GameFramePro
             }
             else
             {
-               record = AssetBundleManager.S_Instance.LoadAssetSync(assetPath);
+                record = AssetBundleManager.S_Instance.LoadAssetSync(assetPath);
                 if (record == null)
                     record = LocalResourcesManager.S_Instance.LoadAssetSync(assetPath);
             }
@@ -344,7 +374,7 @@ namespace GameFramePro
         /// </summary>
         /// <param name="assetRecord"></param>
         /// <param name="isUnloadAllLoadedObjects"></param>
-        public static void UnLoadAssetBundle(ILoadAssetRecord assetRecord,bool isUnloadAllLoadedObjects)
+        public static void UnLoadAssetBundle(ILoadAssetRecord assetRecord, bool isUnloadAllLoadedObjects)
         {
             if (assetRecord == null)
             {

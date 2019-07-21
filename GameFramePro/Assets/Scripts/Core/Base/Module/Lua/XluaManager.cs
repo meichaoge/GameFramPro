@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using XLua;
 
@@ -42,7 +43,11 @@ namespace GameFramePro
         private byte[] CustomerLuaLoader(ref string filePath)
         {
             Debug.LogError("TODO Customer loader");
-            return null;
+            string luaAssetInfor = ResourcesManager.LoadTextAssettSync(filePath);
+            if (string.IsNullOrEmpty(luaAssetInfor) == false)
+                return new byte[0];
+
+            return Encoding.UTF8.GetBytes(luaAssetInfor);
         }
 
 
