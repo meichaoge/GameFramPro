@@ -107,7 +107,7 @@ namespace GameFramePro
             Coroutine coroutinue = s_AppManager. StartCoroutine(routine);
             RegisterCoroutine(routine, coroutinue);
             AsyncTracker.S_Instance.TrackAsyncTask(coroutinue);
-
+            
             return coroutinue;
         }
 
