@@ -49,7 +49,18 @@ namespace GameFramePro
         //获取默认的语言
         private void GetDefaultLanguage()
         {
+            int lastSelectedLanguage = PlayerPrefsManager.GetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key);
+            if (lastSelectedLanguage != (int)Language.None)
+            {
+                mCurLanguage = (Language)lastSelectedLanguage;
+                return;
+            }
+
+            //TODO  
+            Debug.LogError("需要获取各个平台系统语言环境");
+
             mCurLanguage = Language.zh_CN;
+            PlayerPrefsManager.SetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key, (int)mCurLanguage);
         }
 
         /// <summary>
@@ -122,11 +133,21 @@ namespace GameFramePro
 
         #region 本地化加载配置文件
         /// <summary>
+        /// 加载默认的语言 本地化配置，信息不一定是最新的，只是保证一开始能正确显示
+        /// </summary>
+        public void LoadDefaultLocalizationConfig()
+        {
+            LoadLocalizationConfig(CurLanguage);
+        }
+
+
+        /// <summary>
         /// 加载多个语言版本的配置文件
         /// </summary>
-        private void LoadLocalizationConfig()
+        private string LoadLocalizationConfig(Language language)
         {
-
+            Debug.LogError("TODO 加载配置");
+            return string.Empty;
         }
 
         /// <summary>
@@ -147,8 +168,23 @@ namespace GameFramePro
                 Debug.LogError("GetLocalizationByKey Fail,parameter key  is Null");
                 return string.Empty;
             }
+            string result = string.Empty;
 
-            return string.Empty;
+            Dictionary<string, string> languageLocalizationInfor = null;
+            if (mAllSupportLanguageConfig.TryGetValue(language, out languageLocalizationInfor) == false)
+            {
+                string content = LoadLocalizationConfig(language);
+                Debug.LogError("TODO 转换配置配置");
+            }
+
+            if (languageLocalizationInfor != null)
+            {
+                if (languageLocalizationInfor.TryGetValue(key, out result))
+                    return result;
+            }
+
+            Debug.LogError(string.Format("GetLocalizationByKey Fail,No Key={0} Of Language={1}", key, language));
+            return result;
         }
 
 

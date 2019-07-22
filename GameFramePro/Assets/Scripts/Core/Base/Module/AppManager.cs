@@ -19,6 +19,7 @@ namespace GameFramePro
         private void Start()
         {
             Debug.Log("AppManager--->>>>");
+            LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
             AssetBundleUpgradeManager.S_Instance.BeginUpdateAssetBundle();
         }
 

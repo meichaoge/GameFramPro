@@ -32,7 +32,7 @@ namespace GameFramePro
         public static readonly string S_AssetBundleConfigFileName = "AssetBundleContainAssetInfor.csv";  //所有关于AssetBundle 资源配置文件名
 
 
-
+        public const   string S_StringEmpty = ""; //空字符串
 
 
         private static string s_ResourcesRealPath = string.Empty;

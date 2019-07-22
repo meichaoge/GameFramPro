@@ -88,7 +88,7 @@ namespace GameFramePro
         {
             return PlayerPrefs.GetInt(key, defaultValue);
         }
-        public static string GetString(string key, string defaultValue = "")
+        public static string GetString(string key, string defaultValue = ConstDefine.S_StringEmpty)
         {
             return PlayerPrefs.GetString(key, defaultValue);
         }
