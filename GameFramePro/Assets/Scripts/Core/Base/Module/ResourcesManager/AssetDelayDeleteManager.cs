@@ -15,20 +15,32 @@ namespace GameFramePro.ResourcesEx
         private static LinkedList<ILoadAssetRecord> s_AllDelayDeleteAssetInfor = new LinkedList<ILoadAssetRecord>();
 
 
-        #region Interface
+        #region IUpdateTick Interface
         protected int curUpdateCount = 0; //当前的帧基数
         protected float lastRecordTime = 0; // 上一次记录的时间
-        public int TickPerUpdateCount { get; protected set; } = 30;
+        public uint TickPerUpdateCount { get; protected set; } = 30;
+
+        public bool CheckIfNeedUpdateTick()
+        {
+            ++curUpdateCount;
+            if (curUpdateCount == 1)
+                return true;  //确保第一次被调用
+
+            if (curUpdateCount < TickPerUpdateCount)
+                return false;
+
+            curUpdateCount = 0;
+            return true;
+        }
+
 
 
         public void UpdateTick(float currentTime)
         {
-            if (lastRecordTime == 0f)
+            if (lastRecordTime == 0)
                 lastRecordTime = currentTime;
-            ++curUpdateCount;
-            if (curUpdateCount < TickPerUpdateCount)
-                return;
-            curUpdateCount = 0;
+            if (CheckIfNeedUpdateTick() == false) return;
+
             float timeSpane = currentTime - lastRecordTime;
             lastRecordTime = currentTime;
 

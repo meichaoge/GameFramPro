@@ -80,7 +80,7 @@ namespace GameFramePro.ResourcesEx
             {
                 itemInfor = new UnityMonoPoolItemInfor();
                 itemInfor .mTargetObject= ResourcesManager.Instantiate<GameObject>(PrefabTarget, PoolManagerTarget, false);
-                itemInfor.mTargetScript = itemInfor.mTargetObject.GetAddComponent<T>();
+                itemInfor.mTargetScript = itemInfor.mTargetObject.GetAddComponentEx<T>();
             }
 
             if (BeforGetAction != null)

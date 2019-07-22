@@ -156,7 +156,7 @@ namespace GameFramePro
         //        return true;
         //    }
 
-        //    Debug.LogErrorFormat("UnRegisterTraceResources Fail, No Record of InstanceID", instanceId.ToString());
+        //    Debug.LogError("UnRegisterTraceResources Fail, No Record of InstanceID", instanceId.ToString());
         //    return false;
         //}
 
@@ -199,7 +199,7 @@ namespace GameFramePro
                 return true;
             }
 
-            Debug.LogErrorFormat("UnRegisterTraceResources Fail, No Record of InstanceID {0} of object {1} type={1}", instanceId.ToString(), obj.name, obj.GetType());
+            Debug.LogError(string.Format("UnRegisterTraceResources Fail, No Record of InstanceID {0} of object {1} type={1}", instanceId.ToString(), obj.name, obj.GetType()));
             return false;
         }
 

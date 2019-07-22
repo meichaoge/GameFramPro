@@ -19,14 +19,25 @@ namespace GameFramePro
 
         #region IUpdateTick 接口
         protected int curUpdateCount = 0; //当前的帧基数
-        public int TickPerUpdateCount { get; protected set; } = 5;
+        public uint TickPerUpdateCount { get; protected set; } = 5;
+
+        public bool CheckIfNeedUpdateTick()
+        {
+            ++curUpdateCount;
+            if (curUpdateCount == 1)
+                return true;  //确保第一次被调用
+
+            if (curUpdateCount < TickPerUpdateCount)
+                return false;
+
+            curUpdateCount = 0;
+            return true;
+        }
+
 
         public void UpdateTick(float currentTime)
         {
-            ++curUpdateCount;
-            if (curUpdateCount < TickPerUpdateCount)
-                return;
-            curUpdateCount = 0;
+            if (CheckIfNeedUpdateTick() == false) return;
 
             //     AssetBundleDownloadManager.S_Instance.Tick();
             ByteDataDownloadManager.S_Instance.UpdateTick();

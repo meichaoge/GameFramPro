@@ -71,7 +71,7 @@ namespace GameFramePro.ResourcesEx
             var allAssetBundleFiles = System.IO.Directory.GetFiles(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath, "*.*", System.IO.SearchOption.AllDirectories);
             if (allAssetBundleFiles.Length == 0)
                 return true;
-            Loom._current.RunAsync(() =>
+            Loom.S_Instance.RunAsync(() =>
             {
                 for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
                 {
@@ -84,7 +84,7 @@ namespace GameFramePro.ResourcesEx
 
                     mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length;  //进度
                 }
-                Loom._current.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
+                Loom.S_Instance.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
             });
 
             return false;

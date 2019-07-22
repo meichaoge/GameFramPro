@@ -19,13 +19,13 @@ public static class Debug
     /// </summary>
     public enum LogLevel
     {
-        Warning=-1,  //兼容Unity状态 不建议使用
-        Assert =0,
-        EditorLog=1,
-        Log =2,
-        Infor=3,
-        Exception=4,
-        Error=10,
+        Warning = -1,  //兼容Unity状态 不建议使用
+        Assert = 0,
+        EditorLog = 1,
+        Log = 2,
+        Infor = 3,
+        Exception = 4,
+        Error = 10,
     }
 
     /// <summary>
@@ -228,12 +228,14 @@ public static class Debug
         UnityEngine.Debug.LogAssertion(message, context);
     }
     [Conditional("UNITY_ASSERTIONS")]
+    [Obsolete("使用这个格式化日志会导致堆栈信息无法点击跳转,请使用  其他的接口 ")]
     public static void LogAssertionFormat(string format, params object[] args)
     {
         if (S_LogLevel > LogLevel.Log) return;
         UnityEngine.Debug.LogAssertionFormat(format, args);
     }
     [Conditional("UNITY_ASSERTIONS")]
+    [Obsolete("使用这个格式化日志会导致堆栈信息无法点击跳转,请使用  其他的接口 ")]
     public static void LogAssertionFormat(UnityEngine.Object context, string format)
     {
         if (S_LogLevel > LogLevel.Log) return;
@@ -273,12 +275,14 @@ public static class Debug
         UnityEngine.Debug.LogError(message, context);
     }
 
+    [Obsolete("使用这个格式化日志会导致堆栈信息无法点击跳转,请使用  LogError ")]
     public static void LogErrorFormat(string format, params object[] args)
     {
         if (S_LogLevel > LogLevel.Error) return;
         UnityEngine.Debug.LogErrorFormat(format, args);
     }
 
+    [Obsolete("使用这个格式化日志会导致堆栈信息无法点击跳转,请使用  LogError ")]
     public static void LogErrorFormat(UnityEngine.Object context, string format, params object[] args)
     {
         if (S_LogLevel > LogLevel.Error) return;

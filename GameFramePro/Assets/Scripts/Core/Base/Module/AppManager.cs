@@ -13,7 +13,7 @@ namespace GameFramePro
     /// </summary>
     public class AppManager : Single_Mono_NotDestroy<AppManager>
     {
-     //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
+        //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
 
         private void Start()
@@ -33,6 +33,8 @@ namespace GameFramePro
         #region 总的刷新控制
         private void UpdateTick(float realtimeSinceStartup)
         {
+            Loom.S_Instance.UpdateTick(realtimeSinceStartup);
+            XluaManager.S_Instance.UpdateTick(realtimeSinceStartup);
             DownloadManager.S_Instance.UpdateTick(realtimeSinceStartup);
             AssetDelayDeleteManager.S_Instance.UpdateTick(realtimeSinceStartup);
             //foreach (var updateTick in mAllControllUpdateTicks)

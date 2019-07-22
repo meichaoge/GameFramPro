@@ -2,6 +2,8 @@
 
 namespace XLuaTest
 {
+
+
     [XLua.Hotfix]
     public class StatefullTest
     {

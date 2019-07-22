@@ -22,7 +22,7 @@ public class Single_Mono_AutoCreate<T> : Single_Mono<T> where T : MonoBehaviour
             if (s_Instance == null)
             {
                 GameObject go = ResourcesManager.Instantiate(typeof(T).Name);
-                s_Instance = go.GetAddComponent<T>();
+                s_Instance = go.GetAddComponentEx<T>();
                 ResourcesTracker.RegisterTraceResources(s_Instance, TraceResourcesStateEnum.Singtion);
             }
             return s_Instance;

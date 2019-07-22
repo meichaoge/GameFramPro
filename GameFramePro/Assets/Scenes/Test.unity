@@ -527,6 +527,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mPath: Lua/Core/cs_coroutine.lua
+  mTextAsset: 
 --- !u!4 &1268209836
 Transform:
   m_ObjectHideFlags: 0
@@ -627,8 +628,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1642776644}
   - component: {fileID: 1642776645}
-  - component: {fileID: 1642776646}
-  - component: {fileID: 1642776647}
   m_Layer: 0
   m_Name: AppManager
   m_TagString: Untagged
@@ -660,30 +659,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 729b925873312c74c97555fcf6c0358c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1642776646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1642776643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f23361697e27a64aa6cc838b1cee7b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1642776647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1642776643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36f6eb6908ab7ba469338ba61e5b3ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1652667699

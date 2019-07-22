@@ -19,6 +19,10 @@ namespace XLuaTest
         local foo = CS.XLuaTest.Foo()
         foo:Test1(foo1)
         foo:Test2(foo1,foo2,obj)
+        foo:UnsupportedMethod1(foo1)
+        foo:UnsupportedMethod1(foo1)
+
+
 ";
         private LuaEnv env;
 

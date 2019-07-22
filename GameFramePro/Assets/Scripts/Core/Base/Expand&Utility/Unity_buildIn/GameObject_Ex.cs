@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public static class GameObject_Ex 
 {
-    public static T GetAddComponent<T>(this GameObject target) where T : Component
+    public static T GetAddComponentEx<T>(this GameObject target) where T : Component
     {
         if (target == null)
         {

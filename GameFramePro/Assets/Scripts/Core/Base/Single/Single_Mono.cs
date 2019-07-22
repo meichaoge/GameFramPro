@@ -61,7 +61,7 @@ public class Single_Mono<T> : MonoBehaviour where T : MonoBehaviour
     /// </summary>
     protected virtual void Awake()
     {
-        s_Instance = gameObject.GetAddComponent<T>();
+        s_Instance = gameObject.GetAddComponentEx<T>();
         GetInstance(false);  //Make sure the other Component is destroyed
         ResourcesTracker.RegisterTraceResources(s_Instance,TraceResourcesStateEnum.Singtion);
     }

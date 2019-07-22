@@ -9,7 +9,7 @@ namespace GameFramePro
     /// <summary>
     /// 异步&协程管理器
     /// </summary>
-    public class AsyncManager : Single_Mono_AutoCreateNotDestroy<AsyncManager>
+    public class AsyncManager:Single<AsyncManager> //: Single_Mono_AutoCreateNotDestroy<AsyncManager>
     {
         //***WaitForSecondsRealtime Todo
         public readonly YieldInstruction WaitFor_OneSecond = new WaitForSeconds(1);
@@ -18,6 +18,7 @@ namespace GameFramePro
         public readonly YieldInstruction WaitFor_EndOfFrame = new WaitForEndOfFrame();
         public readonly YieldInstruction WaitFor_FixedUpdate = new WaitForFixedUpdate();
 
+        private static readonly AppManager s_AppManager = AppManager.S_Instance;
 
         #region Data
         private Dictionary<IEnumerator, Coroutine> mAllCreateCoroutines = new Dictionary<IEnumerator, Coroutine>();       //创建的协程
@@ -103,7 +104,7 @@ namespace GameFramePro
         /// <param name="routine"></param>
         public Coroutine StartCoroutineEx(IEnumerator routine)
         {
-            Coroutine coroutinue = StartCoroutine(routine);
+            Coroutine coroutinue = s_AppManager. StartCoroutine(routine);
             RegisterCoroutine(routine, coroutinue);
             AsyncTracker.S_Instance.TrackAsyncTask(coroutinue);
 
@@ -118,7 +119,7 @@ namespace GameFramePro
         {
             AsyncTracker.S_Instance.UnTrackAsyncTask(routine);
             UnRegisterCoroutine(routine);
-            StopCoroutine(routine);
+            s_AppManager.StopCoroutine(routine);
             routine = null; //注意这里 多加了一个=null 来清理资源
         }
 

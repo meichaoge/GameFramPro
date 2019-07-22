@@ -7,21 +7,13 @@ using System.Linq;
 
 namespace GameFramePro
 {
-
-    public class Loom : MonoBehaviour
+    /// <summary>
+    /// 用来控制子线程到Unity 线程的跳转
+    /// </summary>
+    public class Loom : Single<Loom> , IUpdateTick
     {
         public static int _maxThreads = 5;
         private static int _numThreads = 0;
-        private static bool _initialized = false;
-        public static Loom _current;
-        //public static Loom Current
-        //{
-        //    get
-        //    {
-        //        Initialize();
-        //        return _current;
-        //    }
-        //}
 
         List<Action> _actions = new List<Action>();
         List<Action> _currentActions = new List<Action>();
@@ -34,29 +26,33 @@ namespace GameFramePro
 
         List<DelayedQueueItem> _delayed = new List<DelayedQueueItem>();
         List<DelayedQueueItem> _currentDelayed = new List<DelayedQueueItem>();
+  
 
+        #region IUpdateTick 接口
+        protected int curUpdateCount = 0; //当前的帧基数
+        public uint TickPerUpdateCount { get; protected set; } = 1;
 
-        void Awake()
+        public bool CheckIfNeedUpdateTick()
         {
-         //   Initialize();
-            _current = this;
-            _initialized = true;
-            DontDestroyOnLoad(gameObject);
+            //++curUpdateCount;
+            //if (curUpdateCount == 1)
+            //    return true;  //确保第一次被调用
+            //if (curUpdateCount < TickPerUpdateCount)
+            //    return false;
+            //curUpdateCount = 0;
+            return true;
         }
 
 
-        //static void Initialize()
-        //{
-        //    if (!_initialized)
-        //    {
-        //        if (!Application.isPlaying)
-        //            return;
-        //        _initialized = true;
-        //        _current = AppManager.S_Instance.gameObject.GetAddComponent<Loom>();
-        //    }
-        //}
+        public void UpdateTick(float currentTime)
+        {
+            if (CheckIfNeedUpdateTick() == false) return;
+            UpdateAction();
+        }
+        #endregion
 
-        public  void QueueOnMainThread(Action action)
+
+        public void QueueOnMainThread(Action action)
         {
             QueueOnMainThread(action, 0f);
         }
@@ -65,16 +61,16 @@ namespace GameFramePro
         {
             if (time != 0)
             {
-                lock (_current._delayed)
+                lock (S_Instance._delayed)
                 {
-                    _current._delayed.Add(new DelayedQueueItem { time = Time.time + time, action = action });
+                    S_Instance._delayed.Add(new DelayedQueueItem { time = Time.time + time, action = action });
                 }
             }
             else
             {
-                lock (_current._actions)
+                lock (S_Instance._actions)
                 {
-                    _current._actions.Add(action);
+                    S_Instance._actions.Add(action);
                 }
             }
         }
@@ -106,15 +102,9 @@ namespace GameFramePro
                 Interlocked.Decrement(ref _numThreads);
             }
         }
-        void OnDisable()
-        {
-            if (_current == this)
-            {
-                _current = null;
-            }
-        }
+       
 
-        void Update()
+        private void UpdateAction()
         {
             if (_actions.Count > 0)
             {
@@ -142,7 +132,6 @@ namespace GameFramePro
                 for (int _dex = 0; _dex < _currentDelayed.Count; ++_dex)
                     _currentDelayed[_dex].action();
             }//if
-
 
         }
     }
