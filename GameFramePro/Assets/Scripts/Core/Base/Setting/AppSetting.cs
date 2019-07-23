@@ -87,7 +87,10 @@ namespace GameFramePro
             }
         }
 
-
+        /// <summary>
+        /// Localization 本地化语言表的配置格式
+        /// </summary>
+        public static ExportFormatEnum S_LocalizationExportFormatType = ExportFormatEnum.Csv;
 
     }
 }

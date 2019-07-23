@@ -17,7 +17,7 @@ namespace GameFramePro
         public static readonly string S_AssetBundleManifestExtension = ".manifest"; //AssetBundleManifest文件文件扩展名
         public static readonly string S_AssetBundleExtension = ".unity3d"; //AssetBundle t文件文件扩展名
 
-
+        public static readonly string S_LocalizationKeyFlag = "_@"; //本地化语言key 的前两个字符标示 ,也是查找本地化key的模式
 
 
         public static readonly string S_ResourcesName = "Resources"; //Resources 目录名
@@ -27,8 +27,10 @@ namespace GameFramePro
 
         public static readonly string S_ExportDirectoryName = "Export"; //项目导出需要提交到CDN的目录名
         public static readonly string S_LocalStoreDirectoryName = "Download"; //外部下载保存本地的顶层目录
-
         public static readonly string S_AssetBundleDirectoryName = "AssetBundle";  //所有关于AssetBundle 资源生成的顶层目录
+
+
+        public static readonly string S_LocalizationDirectoryName = "Localization"; //本地化语言相对于Resources路径
         public static readonly string S_AssetBundleConfigFileName = "AssetBundleContainAssetInfor.csv";  //所有关于AssetBundle 资源配置文件名
 
 

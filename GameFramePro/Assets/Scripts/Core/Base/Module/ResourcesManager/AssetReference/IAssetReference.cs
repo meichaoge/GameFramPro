@@ -22,8 +22,8 @@ namespace GameFramePro
         /// </summary>
         BaseBeReferenceAssetInfor ReferenceAssetInfor { get; }
 
-        #region   编辑器下显示数据
-        void UpdateView();
-        #endregion
+        //#region   编辑器下显示数据
+        //void UpdateView();
+        //#endregion
     }
 }

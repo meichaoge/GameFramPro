@@ -17,7 +17,7 @@ namespace GameFramePro
 
         #region 支持的本地化语言
 
-        private Language mCurLanguage = Language.None;
+        private Language mCurLanguage =0;
         /// <summary>
         /// 当前的语言
         /// </summary>
@@ -31,6 +31,7 @@ namespace GameFramePro
         #endregion
 
         #region 本地化语言配置文件
+       
         private Dictionary<Language, Dictionary<string, string>> mAllSupportLanguageConfig = new Dictionary<Language, Dictionary<string, string>>();
         private bool mIsReadyGetLocalization = false; //标示是否加载完配置语言
 
@@ -50,7 +51,7 @@ namespace GameFramePro
         private void GetDefaultLanguage()
         {
             int lastSelectedLanguage = PlayerPrefsManager.GetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key);
-            if (lastSelectedLanguage != (int)Language.None)
+            if (lastSelectedLanguage != 0)
             {
                 mCurLanguage = (Language)lastSelectedLanguage;
                 return;
@@ -133,6 +134,29 @@ namespace GameFramePro
 
         #region 本地化加载配置文件
         /// <summary>
+        /// 根据指定的语言和格式获取本地化文件名
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="targetLanguage"></param>
+        /// <returns></returns>
+        public static string GetLocalizationConfigFileName(ExportFormatEnum format, Language targetLanguage)
+        {
+            switch (format)
+            {
+                case ExportFormatEnum.Csv:
+                    return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".csv");
+                case ExportFormatEnum.Json:
+                    return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".json");
+                case ExportFormatEnum.Lua:
+                    return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".lua");
+                case ExportFormatEnum.Xml:
+                    return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".xml");
+                default:
+                    Debug.LogError("S_LocalizationConfigFileName Fail,无法识别的格式 " + format);
+                    return string.Empty;
+            }
+        }
+        /// <summary>
         /// 加载默认的语言 本地化配置，信息不一定是最新的，只是保证一开始能正确显示
         /// </summary>
         public void LoadDefaultLocalizationConfig()
@@ -140,12 +164,13 @@ namespace GameFramePro
             LoadLocalizationConfig(CurLanguage);
         }
 
-
         /// <summary>
         /// 加载多个语言版本的配置文件
         /// </summary>
         private string LoadLocalizationConfig(Language language)
         {
+            string content = ResourcesManager.LoadTextAssettSync(GetLocalizationConfigFileName(AppSetting.S_LocalizationExportFormatType, language));
+
             Debug.LogError("TODO 加载配置");
             return string.Empty;
         }
@@ -187,6 +212,21 @@ namespace GameFramePro
             return result;
         }
 
+
+        #endregion
+
+        #region 解析获得的本地化配置
+        private void GetLocalizationConfigByFormat(string content, Language language, ExportFormatEnum exportFormat)
+        {
+
+        }
+
+        private Dictionary<string,string> GetLocalizationConfigByCsv(string content)
+        {
+            Dictionary<string, string> allConfig = new Dictionary<string, string>();
+
+            return allConfig;
+        }
 
         #endregion
 

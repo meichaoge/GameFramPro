@@ -12,7 +12,6 @@ namespace GameFramePro
     /// </summary>
     public static class PlayerPrefsKeyDefine
     {
-
         #region Localization 本地化
         //上一次选择的本地化语言
         public static string LocalizationLanguage_Key{ get { return "LastLocalizationLanguage"; } }
