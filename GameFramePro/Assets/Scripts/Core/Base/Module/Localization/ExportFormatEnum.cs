@@ -14,7 +14,6 @@ namespace GameFramePro
     {
         Csv = 1,
         Json = 2,
-        Lua = 4,
-        Xml = 8,
+        Xml = 4,
     }
 }

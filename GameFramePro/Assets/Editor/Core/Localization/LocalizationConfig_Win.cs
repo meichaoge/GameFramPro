@@ -231,6 +231,7 @@ namespace GameFramePro.EditorEx
 
 
             StringBuilder stringBuilder = new StringBuilder();
+            Dictionary<string, int> allKeyRecords = new Dictionary<string, int>();
 
             for (int row = 2; row < dataTable.Rows.Count; ++row)
             {
@@ -243,6 +244,17 @@ namespace GameFramePro.EditorEx
                     stringBuilder.Append(System.Environment.NewLine);
                     continue;
                 }
+
+                if(allKeyRecords.ContainsKey(key))
+                {
+                    mIsFormatEnable = false;
+                    stringBuilder.Append(string.Format("Row={0}  Key={1} 重复的key", row, key));
+                    stringBuilder.Append(System.Environment.NewLine);
+                    continue;
+                }
+                else
+                    allKeyRecords[key] = row;
+
                 if (Regex.IsMatch(key, s_LocalizationKeyReg, RegexOptions.Singleline) == false)
                 {
                     mIsFormatEnable = false;
@@ -251,6 +263,8 @@ namespace GameFramePro.EditorEx
                     stringBuilder.Append(System.Environment.NewLine);
                     continue;
                 }
+
+
             }
 
             if (mIsFormatEnable == false)
@@ -284,15 +298,9 @@ namespace GameFramePro.EditorEx
                             break;
                         case ExportFormatEnum.Json:
                             ExcelToJsonUtility.ConvertExcelToJson(mLocalizationExcelData.Tables[0], filePath, allExportColumn);
-
-                            break;
-                        case ExportFormatEnum.Lua:
-                            ExcelToLuaUtility.ConvertExcelToLua(mLocalizationExcelData.Tables[0], filePath, allExportColumn);
-
                             break;
                         case ExportFormatEnum.Xml:
                             ExcelToXmlUtility.ConvertExcelToXml(mLocalizationExcelData.Tables[0], filePath, allExportColumn);
-
                             break;
                         default:
                             Debug.LogError("未知的格式 " + exportFormat);

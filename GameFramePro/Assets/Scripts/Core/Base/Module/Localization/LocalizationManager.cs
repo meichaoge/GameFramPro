@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using System.Xml;
 
 namespace GameFramePro
 {
@@ -17,7 +17,7 @@ namespace GameFramePro
 
         #region 支持的本地化语言
 
-        private Language mCurLanguage =0;
+        private Language mCurLanguage = 0;
         /// <summary>
         /// 当前的语言
         /// </summary>
@@ -31,7 +31,7 @@ namespace GameFramePro
         #endregion
 
         #region 本地化语言配置文件
-       
+
         private Dictionary<Language, Dictionary<string, string>> mAllSupportLanguageConfig = new Dictionary<Language, Dictionary<string, string>>();
         private bool mIsReadyGetLocalization = false; //标示是否加载完配置语言
 
@@ -147,8 +147,6 @@ namespace GameFramePro
                     return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".csv");
                 case ExportFormatEnum.Json:
                     return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".json");
-                case ExportFormatEnum.Lua:
-                    return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".lua");
                 case ExportFormatEnum.Xml:
                     return string.Format("{0}_{1}{2}", ConstDefine.S_LocalizationDirectoryName, targetLanguage.ToString(), ".xml");
                 default:
@@ -169,9 +167,12 @@ namespace GameFramePro
         /// </summary>
         private string LoadLocalizationConfig(Language language)
         {
-            string content = ResourcesManager.LoadTextAssettSync(GetLocalizationConfigFileName(AppSetting.S_LocalizationExportFormatType, language));
+            string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(AppSetting.S_LocalizationExportFormatType, language));
+            string content = ResourcesManager.LoadTextAssettSync(filePath.GetPathWithOutExtension());
 
-            Debug.LogError("TODO 加载配置");
+            GetLocalizationConfigByFormat(content, language, AppSetting.S_LocalizationExportFormatType);
+
+            Debug.LogInfor(string.Format("完成加载语言 {0}的本地化配置", language));
             return string.Empty;
         }
 
@@ -216,15 +217,75 @@ namespace GameFramePro
         #endregion
 
         #region 解析获得的本地化配置
+        /// <summary>
+        /// 根据选择的语言和对应的导出格式解析配置文件
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="language"></param>
+        /// <param name="exportFormat"></param>
         private void GetLocalizationConfigByFormat(string content, Language language, ExportFormatEnum exportFormat)
         {
-
+            switch (exportFormat)
+            {
+                case ExportFormatEnum.Csv:
+                    mAllSupportLanguageConfig[language] = GetLocalizationConfigByCsv(content);
+                    break;
+                case ExportFormatEnum.Json:
+                    mAllSupportLanguageConfig[language] = GetLocalizationConfigByJson(content);
+                    break;
+                case ExportFormatEnum.Xml:
+                    mAllSupportLanguageConfig[language] = GetLocalizationConfigByXml(language, content);
+                    break;
+                default:
+                    Debug.LogError("GetLocalizationConfigByFormat Fail,没有定义的类型");
+                    break;
+            }
         }
 
-        private Dictionary<string,string> GetLocalizationConfigByCsv(string content)
+        private Dictionary<string, string> GetLocalizationConfigByCsv(string content)
+        {
+            Dictionary<string, string> allConfig = new Dictionary<string, string>();
+            string[] allLines = content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string key, localizationValue;
+            for (int dex = 0; dex < allLines.Length; dex++)
+            {
+                if (string.IsNullOrEmpty(allLines[dex])) continue;
+
+                if (CsvUtility.ReadLineCsv<string, string>(allLines[dex], out key, out localizationValue))
+                    allConfig[key] = localizationValue;
+                else
+                    Debug.LogError(string.Format("解析CSV 文件失败，第{0}行数据异常 ", dex));
+            }
+            return allConfig;
+        }
+
+        private Dictionary<string, string> GetLocalizationConfigByJson(string content)
+        {
+            Dictionary<string, string> allConfig = SerilazeManager.DeserializeObject<Dictionary<string, string>>(content);
+            return allConfig;
+        }
+
+        private Dictionary<string, string> GetLocalizationConfigByXml(Language language, string content)
         {
             Dictionary<string, string> allConfig = new Dictionary<string, string>();
 
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(content);
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreComments = true;//忽略文档里面的注释
+
+            XmlNode root = doc.SelectSingleNode("Table");
+            if (root != null)
+            {
+                foreach (var RowChildNode in root.ChildNodes)
+                {
+                    XmlNode RowNode = (XmlNode)RowChildNode;
+
+                    string key = RowNode.SelectSingleNode("Key").InnerText;
+                    string localizationValue = RowNode.SelectSingleNode(language.ToString()).InnerText;
+                    allConfig[key] = localizationValue;
+                }
+            }
             return allConfig;
         }
 

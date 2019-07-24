@@ -8,7 +8,9 @@ namespace GameFramePro
     /// <summary>
     /// 对各种类型添加一个回调处理
     /// </summary>
-    public static class FormatUtility<T, U>
+    /// <typeparam name="T">转换后的类型</typeparam>
+    /// <typeparam name="U">转换前的类型</typeparam>
+    public static class FormatUtility< T,U>
     {
         //key 注册的对象 value( key 关注的类型，对应的处理回调)
         private static Dictionary<object, Dictionary<Type, Func<U, T>>> s_FormatProcess = new Dictionary<object, Dictionary<Type, Func<U, T>>>();

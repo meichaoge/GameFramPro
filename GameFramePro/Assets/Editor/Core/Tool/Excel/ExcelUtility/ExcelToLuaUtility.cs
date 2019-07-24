@@ -32,11 +32,7 @@ namespace GameFramePro.EditorEx
                 return;
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("local datas = {");
-            stringBuilder.Append("\r\n");
-
-            //读取数据表
+            #region 读取表格数据
 
             //读取数据表行数和列数
             int rowCount = dataSources.Rows.Count;
@@ -68,6 +64,12 @@ namespace GameFramePro.EditorEx
                     }
                 }
             }
+            #endregion
+
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("local datas = {");
+            stringBuilder.Append("\r\n");
 
             stringBuilder.Append(string.Format("\t\"{0}\" = ", dataSources.TableName));
             stringBuilder.Append("{\r\n");
