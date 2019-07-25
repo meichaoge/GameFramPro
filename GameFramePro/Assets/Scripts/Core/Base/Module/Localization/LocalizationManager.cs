@@ -23,6 +23,7 @@ namespace GameFramePro
         /// </summary>
         private Language CurLanguage { get { return mCurLanguage; } }
 
+
         /// <summary>
         /// 本地化语言改变事件
         /// </summary>
