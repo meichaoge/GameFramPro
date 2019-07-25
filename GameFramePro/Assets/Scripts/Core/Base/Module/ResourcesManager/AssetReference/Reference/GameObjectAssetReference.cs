@@ -108,7 +108,7 @@ namespace GameFramePro
             GameObject go = GameObject.Instantiate(assetRecord.TargetAsset, targetParent) as GameObject;
             if (go == null)
             {
-                Debug.LogErrorFormat("GetGameObjectInstance Fail,Not GameObject Asset {0}", assetRecord.AssetUrl);
+                Debug.LogError("GetGameObjectInstance Fail,Not GameObject Asset {0}", assetRecord.AssetUrl);
                 referenceAssetInfor.ReferenceInstanceID = -1;
                 return referenceAssetInfor;
             }

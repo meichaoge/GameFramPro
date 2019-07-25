@@ -4,6 +4,16 @@ using UnityEngine;
 
 namespace GameFramePro
 {
+    public static class NameDefine
+    {
+
+    }
+
+    public static class PathDefine
+    {
+
+    }
+
 
 
 

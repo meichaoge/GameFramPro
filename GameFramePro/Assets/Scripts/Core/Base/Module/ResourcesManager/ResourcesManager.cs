@@ -177,7 +177,7 @@ namespace GameFramePro
         /// <param name="targetImage"></param>
         /// <param name="getAssetReference">定义了如何从当前组件 targetImage 的所有引用资源链表中找到自己想要的修改的那个引用记录</param>
         /// <param name="getAssetFromRecordAction"></param>
-        public static void LoadSpriteAssetSync<T>(string assetPath, T targetImage, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
+        public static void LoadSpriteAssetSync<T>(string assetPath, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             if (getAssetFromRecordAction == null)
             {
@@ -197,7 +197,7 @@ namespace GameFramePro
                 if (assetRecord == null || assetRecord.TargetAsset == null)
                     assetRecord = LoadAssetSync(assetPath);
             }
-            AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction);
+            AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
         }
         /// <summary>
         ///  异步 从指定路径加载一个sprite 并赋值给 targetImage 认的 是从加载资源的记录中取得SpriteRender 组件然后赋给参数targetImage
@@ -206,7 +206,7 @@ namespace GameFramePro
         /// <param name="targetImage"></param>
         /// <param name="getAssetReference">定义了如何从当前组件 targetImage 的所有引用资源链表中找到自己想要的修改的那个引用记录</param>
         /// <param name="getAssetFromRecordAction"></param>
-        public static void LoadSpriteAssetAsync<T>(string assetPath, T targetImage, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
+        public static void LoadSpriteAssetAsync<T>(string assetPath, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             if (getAssetFromRecordAction == null)
             {
@@ -232,7 +232,7 @@ namespace GameFramePro
                 return;
             }
 
-            LoadAssetAsync(assetPath, (record) => { AssetReferenceController.CreateOrAddReference<T>(targetImage, record, getAssetReference, getAssetFromRecordAction); });
+            LoadAssetAsync(assetPath, (record) => { AssetReferenceController.CreateOrAddReference<T>(targetImage, record, getAssetReference, getAssetFromRecordAction, AfterReferenceAction); });
         }
 
         /// <summary>
@@ -241,18 +241,18 @@ namespace GameFramePro
         /// <typeparam name="T"></typeparam>
         /// <param name="copyImage"></param>
         /// <param name="targetImage"></param>
-        public static void LoadSpriteAssetAsync<T>(T copyImage, T targetImage, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
+        public static void LoadSpriteAssetAsync<T>(T copyImage, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             IAssetReference assetReference = AssetReferenceController.GetAssetReference<T>(copyImage, SpriteAssetReference<T>.GetSpriteAssetReference);
             ILoadAssetRecord assetRecord = null;
             if (assetReference != null)
                 assetRecord = assetReference.CurLoadAssetRecord;
-            AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, SpriteAssetReference<T>.GetSpriteAssetReference, SpriteAssetReference<T>.GetSpriteFromSpriteRender);
+            AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, SpriteAssetReference<T>.GetSpriteAssetReference, SpriteAssetReference<T>.GetSpriteFromSpriteRender, AfterReferenceAction);
         }
         #endregion
 
         #region GameObject加载
-        public static void LoadGameObjectAssetSync(string assetPath, Transform targetParent, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction = null, GetCurReferenceHandler<Transform> getAssetReference = null)
+        public static void LoadGameObjectAssetSync(string assetPath, Transform targetParent, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction = null, GetCurReferenceHandler<Transform> getAssetReference = null)
         {
             if (getAssetFromRecordAction == null)
             {
@@ -272,7 +272,7 @@ namespace GameFramePro
                 if (assetRecord == null || assetRecord.TargetAsset == null)
                     assetRecord = LoadAssetSync(assetPath);
             }
-            AssetReferenceController.CreateOrAddReference<Transform>(targetParent, assetRecord, getAssetReference, getAssetFromRecordAction);
+            AssetReferenceController.CreateOrAddReference<Transform>(targetParent, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
         }
 
         #endregion
@@ -355,13 +355,13 @@ namespace GameFramePro
         {
             if (assetRecord == null)
             {
-                Debug.LogErrorFormat("UnLoadResourceAsset Fail!! 参数是null ");
+                Debug.LogError("UnLoadResourceAsset Fail!! 参数是null ");
                 return;
             }
 
             if (assetRecord.AssetLoadedType >= LoadedAssetTypeEnum.AssetBundle_UnKnown)
             {
-                Debug.LogErrorFormat("UnLoadResourceAsset Fail!! 当前资源不是Resource 资源 " + assetRecord.AssetUrl);
+                Debug.LogError("UnLoadResourceAsset Fail!! 当前资源不是Resource 资源 " + assetRecord.AssetUrl);
                 return;
             }
 
@@ -378,13 +378,13 @@ namespace GameFramePro
         {
             if (assetRecord == null)
             {
-                Debug.LogErrorFormat("UnLoadAssetBundle Fail!! 参数是null ");
+                Debug.LogError("UnLoadAssetBundle Fail!! 参数是null ");
                 return;
             }
 
             if (assetRecord.AssetLoadedType <= LoadedAssetTypeEnum.LocalStore_UnKnown)
             {
-                Debug.LogErrorFormat("UnLoadAssetBundle Fail!! 当前资源不是 AssetBundle 资源 " + assetRecord.AssetUrl);
+                Debug.LogError("UnLoadAssetBundle Fail!! 当前资源不是 AssetBundle 资源 " + assetRecord.AssetUrl);
                 return;
             }
 

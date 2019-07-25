@@ -29,7 +29,7 @@ namespace GameFramePro
         /// <param name="targetComponent"></param>
         /// <param name="referenceAssetRecord"></param>
         /// <param name="assetReferenceAct"></param>
-        public static void CreateOrAddReference<T>(T targetComponent, ILoadAssetRecord referenceAssetRecord, GetCurReferenceHandler<T> getAssetReference, GetAssetFromRecordHandler<T> getAssetFromRecordAction) where T : Component
+        public static void CreateOrAddReference<T>(T targetComponent, ILoadAssetRecord referenceAssetRecord, GetCurReferenceHandler<T> getAssetReference, GetAssetFromRecordHandler<T> getAssetFromRecordAction,System.Action<UnityEngine.Object>  AfterReferenceAction=null) where T : Component
         {
             AssetReferenceController referenceController = null;
             if(mAllGameObjectReferenceController.TryGetValue(targetComponent.gameObject,out referenceController)==false)
@@ -53,6 +53,10 @@ namespace GameFramePro
             //   referenceController.ModifyReference(targetComponent, gameObjectReference);
             if (assetReferencesLinkedList.Contains(assetReference) == false)
                 assetReferencesLinkedList.AddLast(assetReference);
+
+            if (AfterReferenceAction != null)
+                AfterReferenceAction(assetReference.ReferenceAssetInfor.ReferenceAsset);
+
 #if UNITY_EDITOR
             referenceController. UpdateDebugView();
 #endif
