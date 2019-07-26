@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using GameFramePro;
+using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -61,4 +63,38 @@ public static class Transform_Ex
         target.localScale = localScale;
         target.rotation = rataion;
     }
+
+    /// <summary>
+    /// 获取组件先后对于根节点的路径
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    public static string GetTransRelativePathToRoot(this Transform target,Transform root)
+    {
+        string path = string.Empty;
+        List<StringBuilder> stringBuilders = StringUtility.GetStringBuilderList();
+        Transform trans = target;
+        while (trans != null)
+        {
+            StringBuilder builder = StringUtility.GetStringBuilder();
+            builder.Append(trans.name);
+            if (trans == root)
+                break;
+            trans = trans.parent;
+        }
+        stringBuilders.Reverse();
+        StringBuilder pathBuilder= StringUtility.GetStringBuilder();
+        for (int dex = 0; dex < stringBuilders.Count; dex++)
+        {
+            pathBuilder.Append(stringBuilders[dex]);
+            if (dex != stringBuilders.Count - 1)
+                pathBuilder.Append("/");
+        }
+        path = pathBuilder.ToString();
+        StringUtility.ReleaseStringBuilder(pathBuilder);
+        StringUtility.ReleaseStringBuilderList(stringBuilders);
+        return path;
+    }
+
 }

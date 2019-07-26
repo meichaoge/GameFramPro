@@ -12,9 +12,13 @@ namespace GameFramePro.UI
     public interface IUIComponent
     {
 
-        //Transform FindChildByName(string searchName);
-        //Transform FindChildByPath(string searchPath);
+        T GetComponentByName<T>(string gameObjectName) where T : Component;
+        T GetComponentByPath<T>(string gameObjectName,string path) where T : Component;
 
+        /// <summary>
+        /// 关联的对象
+        /// </summary>
+        Transform ConnectTrans { get; }
 
 
         void AddButtonListenner(string buttonName, Delegate click);

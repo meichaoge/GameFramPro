@@ -32,12 +32,7 @@ namespace GameFramePro
         }
 
 
-        private static NativeObjectPool<List<StringBuilder>> s_StringBuilderListPool = new NativeObjectPool<List<StringBuilder>>(5, null, builder =>
-         {
-             foreach (var item in builder)
-                 ReleaseStringBuilder(item);
-             builder.Clear();
-         });
+        private static NativeObjectPool<List<StringBuilder>> s_StringBuilderListPool = new NativeObjectPool<List<StringBuilder>>(5, null,null);
         /// <summary>
         /// 获取一个 StringBuilder 对象
         /// </summary>
@@ -52,6 +47,10 @@ namespace GameFramePro
         /// <param name="builder"></param>
         public static void ReleaseStringBuilderList(List<StringBuilder> builder)
         {
+            foreach (var item in builder)
+                ReleaseStringBuilder(item);
+            builder.Clear();
+
             s_StringBuilderListPool.RecycleItemToPool(builder);
         }
 
