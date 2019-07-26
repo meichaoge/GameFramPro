@@ -105,7 +105,7 @@ namespace GameFramePro
             }
 
             //  SpriteRenderer spriteRender = (assetRecord.TargetAsset as GameObject).GetComponent<SpriteRenderer>();
-            GameObject go = GameObject.Instantiate(assetRecord.TargetAsset, targetParent) as GameObject;
+            GameObject go = ResourcesManager.Instantiate<GameObject>(assetRecord.TargetAsset as GameObject, targetParent,false) ;
             if (go == null)
             {
                 Debug.LogError("GetGameObjectInstance Fail,Not GameObject Asset {0}", assetRecord.AssetUrl);

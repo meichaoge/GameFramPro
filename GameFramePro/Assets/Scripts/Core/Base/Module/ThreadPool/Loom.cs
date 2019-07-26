@@ -10,7 +10,7 @@ namespace GameFramePro
     /// <summary>
     /// 用来控制子线程到Unity 线程的跳转
     /// </summary>
-    public class Loom : Single<Loom> , IUpdateTick
+    public class Loom : Single<Loom> , IUpdateCountTick
     {
         public static int _maxThreads = 5;
         private static int _numThreads = 0;

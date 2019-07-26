@@ -6,11 +6,34 @@ namespace GameFramePro
 {
     public static class NameDefine
     {
+        #region Login
+
+        public  static string UILoginChangePageName { get { return "UILoginChangePage"; } }
+        public static string UILoginTipPopWindowName { get { return "UILoginTipPopWindow"; } }
+        #endregion
+
+
+        #region Home
+
+        public static string UIHomeChangePageName { get { return "UIHomeChangePage"; } }
+        #endregion
+
 
     }
 
     public static class PathDefine
     {
+        #region Login
+
+        public static string UILoginChangePagePath { get { return "Prefabs/UI/Login/UILoginChangePage"; } }
+        public static string UILoginTipPopWindowPath { get { return "Prefabs/UI/Login/UILoginTipPopWindow"; } }
+
+        #endregion
+
+        #region Home
+        public static string UIHomeChangePagePath { get { return "Prefabs/UI/Home/UIHomeChangePage"; } }
+
+        #endregion
 
     }
 

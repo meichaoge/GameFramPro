@@ -9,38 +9,36 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// 管理当资源的引用为0时候,继续等待一段时间，如果再起被启用则不销毁
     /// </summary>
-    public  class AssetDelayDeleteManager:Single<AssetDelayDeleteManager>, IUpdateTick
+    public  class AssetDelayDeleteManager:Single<AssetDelayDeleteManager>, IUpdateTimeTick
     {
         //按照剩余存在时间排序
         private static LinkedList<ILoadAssetRecord> s_AllDelayDeleteAssetInfor = new LinkedList<ILoadAssetRecord>();
 
 
         #region IUpdateTick Interface
-        protected int curUpdateCount = 0; //当前的帧基数
-        protected float lastRecordTime = 0; // 上一次记录的时间
-        public uint TickPerUpdateCount { get; protected set; } = 30;
+        protected float lastRecordTime = 0; //上一次记录的时间
+        public float TickPerTimeInterval { get; private set; } = 30; //约等于30秒检测一次
 
-        public bool CheckIfNeedUpdateTick()
+        public bool CheckIfNeedUpdateTick(float curTime)
         {
-            ++curUpdateCount;
-            if (curUpdateCount == 1)
-                return true;  //确保第一次被调用
+            if (lastRecordTime == 0f)
+            {
+                lastRecordTime = curTime;
+                return true;
+            }
 
-            if (curUpdateCount < TickPerUpdateCount)
-                return false;
+            if (curTime - lastRecordTime >= TickPerTimeInterval)
+                return true;
 
-            curUpdateCount = 0;
-            return true;
+            return false;
         }
 
 
 
         public void UpdateTick(float currentTime)
         {
-            if (lastRecordTime == 0)
-                lastRecordTime = currentTime;
-            if (CheckIfNeedUpdateTick() == false) return;
-
+            if (CheckIfNeedUpdateTick(currentTime) == false)
+                return;
             float timeSpane = currentTime - lastRecordTime;
             lastRecordTime = currentTime;
 

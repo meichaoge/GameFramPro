@@ -92,5 +92,7 @@ namespace GameFramePro
         /// </summary>
         public static ExportFormatEnum S_LocalizationExportFormatType = ExportFormatEnum.Csv;
 
+
+
     }
 }

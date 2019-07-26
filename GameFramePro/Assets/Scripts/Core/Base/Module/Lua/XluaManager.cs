@@ -9,7 +9,7 @@ namespace GameFramePro
     /// <summary>
     /// 管理Xlua ，提供bug修复的入口
     /// </summary>
-    public class XluaManager : Single<XluaManager>,IUpdateTick
+    public class XluaManager : Single<XluaManager>, IUpdateCountTick
     {
         public LuaEnv LuaEngine { get; private set; } //lua 虚拟机
 

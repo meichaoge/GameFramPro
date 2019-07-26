@@ -5,6 +5,7 @@ using System;
 using GameFramePro.ResourcesEx;
 using System.Reflection;
 using System.Linq;
+using GameFramePro.UI;
 
 namespace GameFramePro
 {
@@ -15,18 +16,45 @@ namespace GameFramePro
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
+        public float CurrentRealTime { get { return Time.realtimeSinceStartup; } } //启动到现在的时间
 
-        private void Start()
+        private IEnumerator Start()
         {
             Debug.Log("AppManager--->>>>");
+            UIPageManager.InitialedPageManager();
+
             LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
             AssetBundleUpgradeManager.S_Instance.BeginUpdateAssetBundle();
+
+            yield return null;
+
+            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
         }
 
 
         private void Update()
         {
             UpdateTick(Time.realtimeSinceStartup);
+
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                UIPageManager.OpenChangePage<UIHomeChangePage>(NameDefine.UIHomeChangePageName, PathDefine.UIHomeChangePagePath); //切换页面
+            }
+
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                UIPageManager.ShowPopwindow<UILoginTipPopWindow>(NameDefine.UILoginTipPopWindowName, PathDefine.UILoginTipPopWindowPath, true); //弹出弹窗
+            }
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath); //返回登录页面
+            }
+
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                UIPageManager.BackPage();  //回退
+            }
         }
 
 
@@ -38,6 +66,8 @@ namespace GameFramePro
             XluaManager.S_Instance.UpdateTick(realtimeSinceStartup);
             DownloadManager.S_Instance.UpdateTick(realtimeSinceStartup);
             AssetDelayDeleteManager.S_Instance.UpdateTick(realtimeSinceStartup);
+            UIPageManagerUtility.S_Instance.UpdateTick(realtimeSinceStartup);
+
             //foreach (var updateTick in mAllControllUpdateTicks)
             //{
             //    updateTick.Tick(realtimeSinceStartup);

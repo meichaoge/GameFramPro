@@ -12,7 +12,7 @@ namespace GameFramePro
     /// <summary>
     /// 对外提供下载接口 对内隐藏实现
     /// </summary>
-    public class DownloadManager : Single<DownloadManager>, IUpdateTick
+    public class DownloadManager : Single<DownloadManager>, IUpdateCountTick
     {
         //private HashSet<IDownloadManager<object, ITaskProcess>> mAllDownloadeManagers = new HashSet<IDownloadManager<object, ITaskProcess>>(); //所有的下载器
 
