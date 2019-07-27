@@ -1,0 +1,32 @@
+﻿using System.Collections.Generic;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace GameFramePro.UI
+{
+   	public class #CLASSNAME# : UIBasePopWindow
+  	{
+     #region UI
+     #UIPARAMETER#
+     #endregion
+
+
+	   #region 基类重写
+        protected override void OnInitialed()
+        {
+            base.OnInitialed();
+           //TODO
+        }
+        #endregion
+
+		#region  创建视图
+        //TODO
+        #endregion
+
+		#region  按钮点击事件
+        //TODO
+        #endregion
+   
+  }
+}

@@ -100,4 +100,35 @@ public static class Transform_Ex
         return path;
     }
 
+#if UNITY_EDITOR
+    /// <summary>
+    /// 获取组件先后对于根节点的路径
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="root"></param>
+    /// <returns></returns>
+    public static string GetTransRelativePathToRoot_Editor(this Transform target, Transform root)
+    {
+        string path = string.Empty;
+        List<string> stringBuilders = new List<string>();
+        Transform trans = target;
+        while (trans != null)
+        {
+            if (trans == root)
+                break;
+            stringBuilders.Add(trans.name);
+            trans = trans.parent;
+        }
+        stringBuilders.Reverse();
+        StringBuilder pathBuilder = new StringBuilder();
+        for (int dex = 0; dex < stringBuilders.Count; dex++)
+        {
+            pathBuilder.Append(stringBuilders[dex]);
+            if (dex != stringBuilders.Count - 1)
+                pathBuilder.Append("/");
+        }
+        path = pathBuilder.ToString();
+        return path;
+    }
+#endif
 }

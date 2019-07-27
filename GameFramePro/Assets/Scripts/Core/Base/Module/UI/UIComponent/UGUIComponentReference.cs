@@ -6,26 +6,25 @@ using System;
 
 namespace GameFramePro.UI
 {
-
+#if UNITY_EDITOR
+    /// <summary>
+    /// 关联的资源类型 名称也是对应的 Tag
+    /// </summary>
+    [System.Serializable]
+    public enum UGUIComponentTypeEnum
+    {
+        Transform,
+        UGUIText,
+        UGUIImage,
+        UGUIButton,
+    }
+#endif
 
     /// <summary>
     /// 挂载在预制体上 编辑器配置哪些组件的引用可以序列化，主要使用这个避免每次查找
     /// </summary>
     public class UGUIComponentReference : MonoBehaviour
     {
-#if UNITY_EDITOR
-        /// <summary>
-        /// 关联的资源类型
-        /// </summary>
-        [System.Serializable]
-        public enum UGUIComponentTypeEnum
-        {
-            Transform,
-            Text,
-            Image,
-            Button,
-        }
-#endif
 
         [System.Serializable]
         public class UGUIComponentSerializationInfor
@@ -93,7 +92,6 @@ namespace GameFramePro.UI
 
 
 
-
 #if UNITY_EDITOR
 
         //检测对象名重复
@@ -123,32 +121,91 @@ namespace GameFramePro.UI
                 if (item == null || item.mReferenceComponent == null)
                     continue;
 
-                switch (item.mComponentType)
+                AttachComponentByType(item.mReferenceComponent,item.mComponentType, item.mReferenceComponent.transform);
+            }
+        }
+
+        private static void AttachComponentByType( Component targetComponent, UGUIComponentTypeEnum type,Transform target)
+        {
+            switch (type)
+            {
+                case UGUIComponentTypeEnum.Transform:
+                    targetComponent = target;
+                    break;
+                case UGUIComponentTypeEnum.UGUIText:
+                    targetComponent = target.GetComponent<Text>();
+                    break;
+                case UGUIComponentTypeEnum.UGUIImage:
+                    targetComponent = target.GetComponent<Image>();
+                    break;
+                case UGUIComponentTypeEnum.UGUIButton:
+                    targetComponent = target.GetComponent<Button>();
+                    break;
+                default:
+                    Debug.LogError("没有定义的类型 " + type);
+                    break;
+            }
+        }
+
+
+        //枚举类型转成对应的tag
+        public void AddAllUGUIComponentTypeTag()
+        {
+            List < UGUIComponentTypeEnum > allUGUIComponentEnum= EnumUtility.GetEnumValue<UGUIComponentTypeEnum>();
+            foreach (var item in allUGUIComponentEnum)
+            {
+                LayerAndTagManager.AddTag(item.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 根据子节点标注的Tag 来自动关联引用
+        /// </summary>
+        public void AutoRecordReferenceWithTag()
+        {
+            Transform[] allChildTrans = transform.GetComponentsInChildren<Transform>(true);
+            foreach (var trans in allChildTrans)
+            {
+                if (string.IsNullOrEmpty(trans.gameObject.tag)) continue;
+                UGUIComponentTypeEnum type;
+                if (System.Enum.TryParse(trans.gameObject.tag, out type) == false)
+                    continue;
+
+                bool isExit = false;
+                foreach (var item in mSerilizeUGUIComponents)
                 {
-                    case UGUIComponentTypeEnum.Transform:
-                        item.mReferenceComponent = item.mReferenceComponent.transform;
+                    if (item == null) continue;
+                    if (item.mReferenceComponent == null) continue;
+                    if(item.mReferenceComponent.gameObject.transform==trans)
+                    {
+                        isExit = true;
+                        if (item.mComponentType != type)
+                        {
+                            item.mComponentType = type;
+                            AttachComponentByType(item.mReferenceComponent, item.mComponentType, item.mReferenceComponent.transform);
+                        }
                         break;
-                    case UGUIComponentTypeEnum.Text:
-                        item.mReferenceComponent = item.mReferenceComponent.transform.GetComponent<Text>();
-                        break;
-                    case UGUIComponentTypeEnum.Image:
-                        item.mReferenceComponent = item.mReferenceComponent.transform.GetComponent<Image>();
-                        break;
-                    case UGUIComponentTypeEnum.Button:
-                        item.mReferenceComponent = item.mReferenceComponent.transform.GetComponent<Button>();
-                        break;
-                    default:
-                        Debug.LogError("没有定义的类型 " + item.mComponentType);
-                        break;
+                    }
+                }
+
+                if (isExit == false)
+                {
+                    UGUIComponentSerializationInfor infor = new UGUIComponentSerializationInfor();
+                    infor.mComponentType = type;
+                    AttachComponentByType(infor.mReferenceComponent, infor.mComponentType, trans);
+                    mSerilizeUGUIComponents.Add(infor);
                 }
             }
         }
 
-        private void OnValidate()
-        {
-            CheckIfContainSameNameObject();
-            GetComponentByTypeDefine();
-        }
+
+
+
+        //private void OnValidate()
+        //{
+        //    CheckIfContainSameNameObject();
+        //    GetComponentByTypeDefine();
+        //}
 #endif
 
 
