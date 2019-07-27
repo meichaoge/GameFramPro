@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 namespace GameFramePro.UI
 {
@@ -11,58 +12,36 @@ namespace GameFramePro.UI
     /// </summary>
     public class UGUIComponent : IUIComponent
     {
-        private Dictionary<string, GameObject> mAllUIPageInstanceChildNodes = new Dictionary<string, GameObject>();  //缓存所有获取过的UI节点
-
-
         private Dictionary<string, Component> mAllReferenceComponent = new Dictionary<string, Component>(); //所有脚本中引用的组件
-        private Dictionary<string, string> mNamePathMapInfor;
+        private bool mIsInitialed = false; //标示是否初始化了获取了名称和路径的映射
 
-        private Transform mConnectTrans = null;
-        public Transform ConnectTrans
-        {
-            get
-            {
-                if (mConnectTrans == null)
-                {
-                    UIBasePage page = UIPageManager.TryGetUIPageFromCache(mConnectUIBasePageName);
-                    if (page != null)
-                        mConnectTrans = page.ConnectPageInstance.transform;
-                }
-                return mConnectTrans;
-            }
-        }
-
-
+        public Dictionary<string, string> NamePathMapInfor { get; protected set; } //缓存映射关系
+    
+        public Transform ConnectTrans { get; protected set; }
+        //{
+        //    get
+        //    {
+        //        if (mConnectTrans == null)
+        //        {
+        //            UIBasePage page = UIPageManager.TryGetUIPageFromCache(mConnectUIBasePageName);
+        //            if (page != null)
+        //                mConnectTrans = page.ConnectPageInstance.transform;
+        //        }
+        //        return mConnectTrans;
+        //    }
+        //}
 
         private UGUIComponentReference mUGUIComponentReference;
         private string mConnectUIBasePageName;
-        public void InitailedComponentReference(string uiBasePageName, UGUIComponentReference uguiComponenentReference)
+        public void InitailedComponentReference(string uiBasePageName,GameObject connectPageInstance, UGUIComponentReference uguiComponenentReference)
         {
             mUGUIComponentReference = uguiComponenentReference;
             mConnectUIBasePageName = uiBasePageName;
+            ConnectTrans = connectPageInstance.transform;
         }
 
         #region 接口实现
 
-        public void AddButtonListenner(string buttonName, Delegate click)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveButtonListenner(string buttonName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetSprite(string imageName, Sprite sp)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetText(string textName, string textStr)
-        {
-            throw new NotImplementedException();
-        }
 
         public T GetComponentByName<T>(string gameObjectName) where T : Component
         {
@@ -76,26 +55,25 @@ namespace GameFramePro.UI
                 return component; //在看缓存的数据
 
             //最后找到映射的路径查找引用
-            if (mNamePathMapInfor == null)
-                mNamePathMapInfor = ComponentUtility.GetGameObjectPathByName(mConnectUIBasePageName);
-            if (mNamePathMapInfor == null)
+            if (mIsInitialed == false)
             {
-                mNamePathMapInfor = ComponentUtility.GetGameObjectNamePathMap(ConnectTrans.gameObject);
+                NamePathMapInfor = ComponentUtility.GetGameObjectNamePathMap(ConnectTrans.gameObject); //生成映射
+                mIsInitialed = true;
             }
 
-            if (mNamePathMapInfor == null)
+            if (NamePathMapInfor == null)
             {
                 Debug.LogError("获取UI界面节点路径映射失败");
                 return null;
             }
             string path = string.Empty;
-            if (mNamePathMapInfor.TryGetValue(gameObjectName, out path))
-                return      FindComponentByPath<T>(gameObjectName, path);
+            if (NamePathMapInfor.TryGetValue(gameObjectName, out path))
+                return FindComponentByPath<T>(gameObjectName, path);
             Debug.LogError("没有找到{0} 上节点{0} 的路径名称映射", mConnectUIBasePageName, gameObjectName);
             return null;
         }
 
-        public T GetComponentByPath<T>(string gameObjectName,string path) where T : Component
+        public T GetComponentByPath<T>(string gameObjectName, string path) where T : Component
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -111,8 +89,19 @@ namespace GameFramePro.UI
 
         }
 
+        public void ReleaseReference(bool isReleaseNamePathMap)
+        {
+            ConnectTrans = null;
+            mAllReferenceComponent.Clear();
+            if (isReleaseNamePathMap)
+            {
+                if (NamePathMapInfor != null)
+                    NamePathMapInfor.Clear();
+                mIsInitialed = false;
+            } //这里可以保留映射表以便于下次查询
 
-
+            mUGUIComponentReference = null;
+        }
         #endregion
 
 
@@ -146,12 +135,9 @@ namespace GameFramePro.UI
             }
             return null;
         }
-        //public GameObject FindChildGameObjectByName(string name)
-        //{
 
-            //}
 
-            #endregion
+        #endregion
 
 
 

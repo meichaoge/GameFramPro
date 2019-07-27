@@ -105,13 +105,15 @@ namespace GameFramePro
             }
 
             //  SpriteRenderer spriteRender = (assetRecord.TargetAsset as GameObject).GetComponent<SpriteRenderer>();
-            GameObject go = ResourcesManager.Instantiate<GameObject>(assetRecord.TargetAsset as GameObject, targetParent,false) ;
+            GameObject prefab = assetRecord.TargetAsset as GameObject;
+            GameObject go = ResourcesManager.Instantiate<GameObject>(prefab, targetParent,false) ;
             if (go == null)
             {
                 Debug.LogError("GetGameObjectInstance Fail,Not GameObject Asset {0}", assetRecord.AssetUrl);
                 referenceAssetInfor.ReferenceInstanceID = -1;
                 return referenceAssetInfor;
             }
+            go.name = prefab.name;
             referenceAssetInfor.ReferenceAsset = go;
             referenceAssetInfor.ReferenceInstanceID  = go.GetInstanceID();
             return referenceAssetInfor;

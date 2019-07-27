@@ -17,8 +17,7 @@ public class Debug_ShowAllTraceResources :MonoBehaviour
     public List<AssetBundleSubAssetLoadRecord> mAllLoadedAssetBundleSubAssetRecord = new List<AssetBundleSubAssetLoadRecord>();
 
 
-
-
+         
     private void Update()
     {
         #region Resources

@@ -51,6 +51,11 @@ namespace GameFramePro
                 UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath); //返回登录页面
             }
 
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                UIPageManager.HidePopwindow(NameDefine.UILoginTipPopWindowName); //弹出弹窗
+            }
+
             if (Input.GetKeyDown(KeyCode.D))
             {
                 UIPageManager.BackPage();  //回退

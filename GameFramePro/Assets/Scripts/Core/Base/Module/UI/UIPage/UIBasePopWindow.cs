@@ -19,20 +19,22 @@ namespace GameFramePro.UI
         public UIBasePopWindow():base()
         {
             mUIPageTypeEnum = UIPageTypeEnum.PopWindow;
-            MaxAliveAfterInActivte = 30;
+            MaxAliveAfterInActivte = 5;
             mBelongChangePage = null;
         }
 
 
-        public virtual void InitialedUIPage(string pageName, UIPageTypeEnum pageType, UIBaseChangePage belongChangePage, GameObject instance)
+        public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBaseChangePage belongChangePage, GameObject instance)
         {
-            InitialedBaseUIPage(pageName, pageType, instance);
+            BaseUIPageInitialed(pageName, pageType, instance);
             //  mBelongChangePage = belongChangePage;
             ChangeBelongChangePage(belongChangePage);
         }
 
         public virtual void ChangeBelongChangePage(UIBaseChangePage belongChangePage)
         {
+            if (mBelongChangePage == belongChangePage)
+                return;
             if (mBelongChangePage != null)
             {
 #if UNITY_EDITOR

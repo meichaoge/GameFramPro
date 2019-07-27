@@ -10,6 +10,8 @@ namespace GameFramePro
 
         public  static string UILoginChangePageName { get { return "UILoginChangePage"; } }
         public static string UILoginTipPopWindowName { get { return "UILoginTipPopWindow"; } }
+        public static string UITipInforWidgetName { get { return "UITipInforWidget"; } }
+
         #endregion
 
 
@@ -27,6 +29,8 @@ namespace GameFramePro
 
         public static string UILoginChangePagePath { get { return "Prefabs/UI/Login/UILoginChangePage"; } }
         public static string UILoginTipPopWindowPath { get { return "Prefabs/UI/Login/UILoginTipPopWindow"; } }
+        public static string UITipInforWidgetPath { get { return "Prefabs/UI/Login/UITipInforWidget"; } }
+
 
         #endregion
 

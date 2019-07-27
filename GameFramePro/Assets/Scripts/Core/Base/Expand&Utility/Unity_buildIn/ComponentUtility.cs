@@ -27,7 +27,7 @@ namespace GameFramePro
             }
             Dictionary<string, string> namePathMap = null;
             if (mAllGameObjectNamePathMap.TryGetValue(go.name,out namePathMap))
-                return namePathMap;
+                return GetNamePathMap(namePathMap);
             namePathMap = new Dictionary<string, string>();
             Transform[] allChildTrans = go.GetComponentsInChildren<Transform>(true);
             foreach (var child in allChildTrans)
@@ -40,7 +40,25 @@ namespace GameFramePro
                 namePathMap[child.name] = child.GetTransRelativePathToRoot(go.transform);
             }
             mAllGameObjectNamePathMap[go.name] = namePathMap;
-            return namePathMap;
+            return GetNamePathMap(namePathMap); 
+        }
+
+        /// <summary>
+        /// 避免直接修改了缓存的原始数据
+        /// </summary>
+        /// <param name="namePathMap"></param>
+        /// <returns></returns>
+        private static Dictionary<string, string> GetNamePathMap(Dictionary<string, string> namePathMap)
+        {
+            Dictionary<string, string> temp = new Dictionary<string, string>(namePathMap);
+            //if (namePathMap != null)
+            //{
+
+            //}
+            //foreach (var item in namePathMap)
+            //    temp[item.Key] = item.Value;
+
+            return temp;
         }
 
         /// <summary>

@@ -77,11 +77,14 @@ public static class Transform_Ex
         Transform trans = target;
         while (trans != null)
         {
-            StringBuilder builder = StringUtility.GetStringBuilder();
-            builder.Append(trans.name);
             if (trans == root)
                 break;
+            StringBuilder builder = StringUtility.GetStringBuilder();
+            builder.Append(trans.name);
+            stringBuilders.Add(builder);
+
             trans = trans.parent;
+
         }
         stringBuilders.Reverse();
         StringBuilder pathBuilder= StringUtility.GetStringBuilder();

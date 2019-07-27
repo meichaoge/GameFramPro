@@ -19,13 +19,15 @@ namespace GameFramePro.UI
         public UIBaseChangePage():base()
         {
             mUIPageTypeEnum = UIPageTypeEnum.ChangePage;
-            MaxAliveAfterInActivte = 60;
+            MaxAliveAfterInActivte = 10;
+            IsRealseOnDestroyPageInstance = false; //页面不能释放 UIBasePage 对象
         }
 
-        public virtual void InitialedUIPage(string pageName, string pagePath, UIPageTypeEnum pageType, GameObject instance)
+        public virtual void UIPageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, GameObject instance)
         {
-            InitialedBaseUIPage(pageName, pageType, instance);
+            BaseUIPageInitialed(pageName, pageType, instance);
             mPagePath = pagePath;
+            IsRealseOnDestroyPageInstance = false;
         }
 
 

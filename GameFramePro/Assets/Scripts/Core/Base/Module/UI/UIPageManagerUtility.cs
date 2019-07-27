@@ -97,6 +97,11 @@ namespace GameFramePro.UI
             if (page.MaxAliveAfterInActivte <0)
                 return; //长存的页面不销毁
 
+            if (page.mUIPageTypeEnum == UIPageTypeEnum.Widget)
+            {
+                Debug.LogError("组件 {0}  不应该受到UI管理器的生命周期管理 ", page.PageName);
+            }
+
             mTempInVisiblePage.Add(page);
         }
 

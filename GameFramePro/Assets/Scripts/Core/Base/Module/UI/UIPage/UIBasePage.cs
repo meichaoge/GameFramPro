@@ -13,7 +13,6 @@ namespace GameFramePro.UI
         PopWindow, //弹窗
         Widget, //组件 没有自己的声明周期，只被父组件管理 不被 UIPageManager 记录
     }
-
     //页面的状态
     public enum UIPageStateEnum
     {
@@ -29,42 +28,67 @@ namespace GameFramePro.UI
     /// </summary>
     public class UIBasePage
     {
-
-        #region UI 数据
-        public UIPageStateEnum mUIPageState { get; protected set; } = UIPageStateEnum.None; //页面的状态
-        public UIPageTypeEnum mUIPageTypeEnum { get; protected set; } = UIPageTypeEnum.None;  //界面类型 必须正确设置
-        public string PageName { get; protected set; }
-        public GameObject ConnectPageInstance { get; protected set; } //关联的预制体实例
+        /// <summary>
+        /// 标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。
+        /// 现在的页面类型UI 都应该是false,使得能够回退到上一个界面
+        /// </summary>
+        public bool IsRealseOnDestroyPageInstance { get; protected set; } = true;
         public bool mIsActivite { get { return ConnectPageInstance == null ? false : ConnectPageInstance.activeSelf; } }
 
-        public Dictionary<string, UIBaseWidget> mAllContainWidgets; //所有关联属于这个页面的组件，关闭的时候会一起被关闭
+
+
+        #region UI 界面相关数据
+        public string PageName { get; protected set; }
+        public UIPageStateEnum mUIPageState { get; protected set; } = UIPageStateEnum.None; //页面的状态
+        public UIPageTypeEnum mUIPageTypeEnum { get; protected set; } = UIPageTypeEnum.None;  //界面类型 必须正确设置
+        public GameObject ConnectPageInstance { get; protected set; } //关联的预制体实例
+        public List<UIBaseWidget> mAllContainWidgets; //所有关联属于这个页面的组件，关闭的时候会一起被关闭 可能包含多个同名组件
 
         #endregion
 
 
-        #region 辅助扩展功能
+        #region 辅助功能扩展功能（协程+UI组件引用+延迟销毁）
         protected List<Coroutine> mAllRuningCoroutine = new List<Coroutine>();
-
         public float MaxAliveAfterInActivte { get; protected set; } = 0f;  //当值等于0时候表示立刻销毁 ;小于0表示长存，其他值标示隐藏后的秒数
         public float RecordInvisibleRealTime { get; protected set; } = 0f; //不可见时候的时间
+
+        protected UGUIComponent mUGUIComponent = new UGUIComponent(); //用于查找获取预制体上的组件
         #endregion
 
-        #region 构造函数和初始化
+        #region 构造函数和初始化 和 IDisposable 接口
         public UIBasePage()
         {
             mUIPageState = UIPageStateEnum.Initialed;
         }
 
-        protected virtual void InitialedBaseUIPage(string pageName, UIPageTypeEnum pageType, GameObject instance)
+        protected virtual void BaseUIPageInitialed(string pageName, UIPageTypeEnum pageType, GameObject instance)
         {
             PageName = pageName;
             mUIPageTypeEnum = pageType;
             ConnectPageInstance = instance;
             mUIPageState = UIPageStateEnum.Initialed;
+
+            UGUIComponentReference uguiComponentReference = instance.GetComponent<UGUIComponentReference>();
+            if (uguiComponentReference != null)
+                mUGUIComponent.InitailedComponentReference(PageName, instance,uguiComponentReference);
+            else
+                mUGUIComponent.InitailedComponentReference(PageName, instance, null);
+
         }
+
+
+       
         #endregion
 
         #region UI界面外部控制接口
+        /// <summary>
+        /// 被实例化创建后调用 除非被销毁否则只会调用一次
+        /// </summary>
+        public void InstantiatePage()
+        {
+            OnInitialed();
+        }
+
         /// <summary>
         /// 只能由 UIPageManager 调用
         /// </summary>
@@ -127,15 +151,7 @@ namespace GameFramePro.UI
                     OnBeforeInVisible();
                     ConnectPageInstance.SetActive(false);
                     mUIPageState = UIPageStateEnum.Hide;
-                    OnAfterInVisible();
-                    if (isForceDestroyed)
-                        DestroyAndRelease();
-                    else
-                    {
-                        RecordInvisibleRealTime = AppManager.S_Instance.CurrentRealTime; //记录不可见的时间
-                        UIPageManagerUtility.S_Instance.RegisterUIBasePageInvisible(this);
-                    }
-
+                    OnAfterInVisible(isForceDestroyed);
                     break;
                 case UIPageStateEnum.Hide:
                     Debug.LogError("ShowPage Fail,已经隐藏了 {0} ", PageName);
@@ -150,19 +166,23 @@ namespace GameFramePro.UI
         }
 
         /// <summary>
-        ///恢复到初始的状态 不关联其他对象
+        /// 当UIBasePage 关联的对象不存在时候，恢复到初始的状态 进行数据重置然后重新关联新创建的预制体实例
         /// </summary>
-        public void ResetPage()
+        public void ResetPageForReConnectPageInstance()
         {
+            if (ConnectPageInstance != null)
+            {
+                Debug.LogError("ResetPage 只能在关联的预制体对象不存在时候调用");
+                return;
+            }
             OnBeforeDestroyed();
-            ConnectPageInstance = null;
             OnAfterDestroyed();
             mUIPageState = UIPageStateEnum.None;
         }
 
 
         /// <summary>
-        ///  只能由 UIPageManager 调用
+        ///  释放引用的对象和UIbasePage 对象
         /// </summary>
         public void DestroyAndRelease()
         {
@@ -175,7 +195,10 @@ namespace GameFramePro.UI
 
 
         #region UI 界面内部实现接口
-
+        /// <summary>
+        /// 每次界面关联的的预制体被创建时候调用
+        /// </summary>
+        protected virtual void OnInitialed() { }
 
         /// <summary>
         /// 调用SetActive(true )之前调用这个
@@ -193,7 +216,7 @@ namespace GameFramePro.UI
         {
             if (mAllContainWidgets != null && mAllContainWidgets.Count != 0)
             {
-                foreach (var widget in mAllContainWidgets.Values)
+                foreach (var widget in mAllContainWidgets)
                 {
                     if (widget == null) continue;
                     if (widget.mIsActivite == false) continue;
@@ -212,9 +235,17 @@ namespace GameFramePro.UI
         /// <summary>
         /// 调用SetActive(false )之后调用这个
         /// </summary>
-        protected virtual void OnAfterInVisible()
+        protected virtual void OnAfterInVisible(bool isForceDestroyed)
         {
-
+            if (isForceDestroyed)
+            {
+                DestroyAndRelease();
+            }
+            else
+            {
+                RecordInvisibleRealTime = AppManager.S_Instance.CurrentRealTime; //记录不可见的时间
+                UIPageManagerUtility.S_Instance.RegisterUIBasePageInvisible(this);
+            }
         }
 
         /// <summary>
@@ -222,8 +253,18 @@ namespace GameFramePro.UI
         /// </summary>
         protected virtual void OnBeforeDestroyed()
         {
+            //页面没有销毁UIBasePage 对象，其他的需要销毁
+            mUGUIComponent.ReleaseReference(IsRealseOnDestroyPageInstance);
             if (mAllContainWidgets != null)
+            {
+                foreach (var widget in mAllContainWidgets)
+                {
+                    if (widget == null) continue;
+                    if (widget.mParentUIPage != this) continue;
+                    widget.DestroyAndRelease();
+                }
                 mAllContainWidgets.Clear();
+            }
             if (mAllRuningCoroutine.Count != 0)
             {
                 StopAllCoroutines();
@@ -233,79 +274,110 @@ namespace GameFramePro.UI
         /// <summary>
         /// 在被销毁后执行
         /// </summary>
-        protected virtual void OnAfterDestroyed()
-        {
-
-        }
+        protected virtual void OnAfterDestroyed() { }
         #endregion
 
         #region 子组件
-        public bool IsContainWidget(string widgetName)
-        {
-            UIBaseWidget recordWidget = null;
-            if (mAllContainWidgets.TryGetValue(widgetName, out recordWidget))
-            {
-                if (recordWidget != null && recordWidget.ConnectPageInstance != null)
-                    return true;
-                Debug.LogError("包含的子组件 {0} 不存在 {1}或者引用为null ", widgetName, (recordWidget == null));
-            }
-            return false;
-        }
 
+        /// <summary>
+        /// 由于考虑到有多个同名的  UIBaseWidget 这里不会检测是否存在
+        /// </summary>
+        /// <param name="widgetName"></param>
+        /// <param name="widget"></param>
         public virtual void AddWidget(string widgetName, UIBaseWidget widget)
         {
             if (mAllContainWidgets == null)
-                mAllContainWidgets = new Dictionary<string, UIBaseWidget>();
-
-
+                mAllContainWidgets = new List<UIBaseWidget>();
             widget.SetWidgetParent(this);
+            mAllContainWidgets.Add(widget);
 
-            UIBaseWidget recordWidget = null;
-            if (mAllContainWidgets.TryGetValue(widgetName, out recordWidget))
-            {
-                if (recordWidget == null)
-                {
-                    recordWidget = widget;
-                    return;
-                }
-                if (recordWidget.ConnectPageInstance == null)
-                {
-                    UIPageManager.HideWidget(recordWidget.PageName, recordWidget);
-                    Debug.LogError("AddWidget 组件{0} 的记录中关联的预制体已经销毁，重新关联", widgetName);
-                    recordWidget = widget;
-                    return;
-                }
+            //UIBaseWidget recordWidget = null;
+            //if (mAllContainWidgets.TryGetValue(widgetName, out recordWidget))
+            //{
+            //    if (recordWidget == null)
+            //    {
+            //        recordWidget = widget;
+            //        return;
+            //    }
+            //    if (recordWidget.ConnectPageInstance == null)
+            //    {
+            //        UIPageManager.HideWidget(recordWidget.PageName, recordWidget);
+            //        Debug.LogError("AddWidget 组件{0} 的记录中关联的预制体已经销毁，重新关联", widgetName);
+            //        recordWidget = widget;
+            //        return;
+            //    }
 
-                if (recordWidget != widget)
-                {
-                    Debug.LogError("AddWidget Fail,Exit Widget of Name {0} is {1},new widget is {2}", widgetName, recordWidget.PageName, widget.PageName);
-                    recordWidget.SetWidgetParent(null);
-                    UIPageManager.HideWidget(recordWidget.PageName, recordWidget);
-                    recordWidget = widget;
-                }
-            }
-            else
-            {
-                mAllContainWidgets[widgetName] = widget;
-            }
+            //    if (recordWidget != widget)
+            //    {
+            //        Debug.LogError("AddWidget Fail,Exit Widget of Name {0} is {1},new widget is {2}", widgetName, recordWidget.PageName, widget.PageName);
+            //        recordWidget.SetWidgetParent(null);
+            //        UIPageManager.HideWidget(recordWidget.PageName, recordWidget);
+            //        recordWidget = widget;
+            //    }
+            //}
+            //else
+            //{
+            //    mAllContainWidgets[widgetName] = widget;
+            //}
 
         }
-        public virtual void RemoveWidget(string widgetName)
+        public virtual void RemoveWidget(UIBaseWidget widget)
         {
             if (mAllContainWidgets == null)
                 return;
+            mAllContainWidgets.Remove(widget);
 
-            UIBaseWidget widget = null;
-            if (mAllContainWidgets.TryGetValue(widgetName, out widget))
-            {
-                widget.SetWidgetParent(null);
-                mAllContainWidgets.Remove(widgetName);
-            }
+            //UIBaseWidget widget = null;
+            //if (mAllContainWidgets.TryGetValue(widgetName, out widget))
+            //{
+            //    widget.SetWidgetParent(null);
+            //    mAllContainWidgets.Remove(widgetName);
+            //}
         }
+
+
         #endregion
 
 
         #region 辅助功能接口
+
+        #region 根据对象名或者路径获取对象
+
+        protected T GetComponentByName<T>(string gameObjectName) where T : Component
+        {
+            if (mUGUIComponent != null)
+                return mUGUIComponent.GetComponentByName<T>(gameObjectName);
+            Debug.LogError("没有正确的初始化UGUI 组件索引系统");
+            return null;
+        }
+        protected T GetComponentByPath<T>(string gameObjectName, string path) where T : Component
+        {
+            if (mUGUIComponent != null)
+                return mUGUIComponent.GetComponentByPath<T>(gameObjectName, path);
+            Debug.LogError("没有正确的初始化UGUI 组件索引系统");
+            return null;
+        }
+        protected GameObject GetGameObjectByName(string gameObjectName)
+        {
+            Component target = GetComponentByName<Component>(gameObjectName);
+            if (target != null)
+                return target.gameObject;
+            Debug.LogError("没有正确的初始化UGUI 组件索引系统");
+            return null;
+        }
+        protected GameObject GetComponentByPath(string gameObjectName, string path)
+        {
+            Component target = GetComponentByPath<Component>(gameObjectName, path);
+            if (target != null)
+                return target.gameObject;
+            Debug.LogError("没有正确的初始化UGUI 组件索引系统");
+            return null;
+        }
+
+        #endregion
+
+        #region 协程相关
+
         protected virtual void StartCoroutine(IEnumerator routine)
         {
             mAllRuningCoroutine.Add(AsyncManager.S_Instance.StartCoroutineEx(routine));
@@ -323,6 +395,10 @@ namespace GameFramePro.UI
                 AsyncManager.S_Instance.StopCoroutineEx(routine);
             mAllRuningCoroutine.Clear();
         }
+
+      
+        #endregion
+
         #endregion
 
     }

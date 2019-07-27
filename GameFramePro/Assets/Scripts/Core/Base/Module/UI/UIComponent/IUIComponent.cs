@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using UnityEngine.Events;
 
 namespace GameFramePro.UI
 {
@@ -11,21 +11,25 @@ namespace GameFramePro.UI
     /// </summary>
     public interface IUIComponent
     {
-
-        T GetComponentByName<T>(string gameObjectName) where T : Component;
-        T GetComponentByPath<T>(string gameObjectName,string path) where T : Component;
-
+        /// <summary>
+        /// 节点名称和路径的映射关系 用于根据名字查找对象
+        /// </summary>
+        Dictionary<string, string> NamePathMapInfor { get; }
         /// <summary>
         /// 关联的对象
         /// </summary>
         Transform ConnectTrans { get; }
 
+        T GetComponentByName<T>(string gameObjectName) where T : Component;
+        T GetComponentByPath<T>(string gameObjectName, string path) where T : Component;
 
-        void AddButtonListenner(string buttonName, Delegate click);
-        void RemoveButtonListenner(string buttonName);
-        void SetText(string textName, string textStr);
-        void SetSprite(string imageName, Sprite sp);
+ 
 
+
+        /// <summary>
+        /// 被销毁时候释放引用
+        /// </summary>
+        void ReleaseReference(bool isReleaseNamePathMap);
 
     }
 }

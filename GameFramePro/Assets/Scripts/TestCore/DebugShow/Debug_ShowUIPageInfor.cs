@@ -13,7 +13,7 @@ public class Debug_ShowUIPageInfor :MonoBehaviour
     public float RecordInvisibleRealTime;
     public float MaxAliveAfterInActivte;
 
-    public List<string> mAllContainWidgets=new List<string>();
+    public List<UIBaseWidget> mAllContainWidgets=new List<UIBaseWidget>();
     public List<string> mAllContainSubPopWindows = new List<string>();
     public string mPagePath;
 
@@ -44,7 +44,7 @@ public class Debug_ShowUIPageInfor :MonoBehaviour
         MaxAliveAfterInActivte = mTarget.MaxAliveAfterInActivte;
         mAllContainWidgets.Clear();
         if (mTarget.mAllContainWidgets != null)
-            mAllContainWidgets.AddRange(mTarget.mAllContainWidgets.Keys);
+            mAllContainWidgets.AddRange(mTarget.mAllContainWidgets);
         if (mTarget.mUIPageTypeEnum == UIPageTypeEnum.ChangePage)
         {
             UIBaseChangePage changePage = mTarget as UIBaseChangePage;

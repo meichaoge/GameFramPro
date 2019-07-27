@@ -21,7 +21,7 @@ namespace GameFramePro
 
         //记录所有挂在了 AssetReferenceController 的对象
         public static Dictionary<GameObject, AssetReferenceController> mAllGameObjectReferenceController = new Dictionary<GameObject, AssetReferenceController>();
-      
+
         /// <summary>
         /// 对指定的组件增加或者更新引用关系
         /// </summary>
@@ -29,17 +29,17 @@ namespace GameFramePro
         /// <param name="targetComponent"></param>
         /// <param name="referenceAssetRecord"></param>
         /// <param name="assetReferenceAct"></param>
-        public static void CreateOrAddReference<T>(T targetComponent, ILoadAssetRecord referenceAssetRecord, GetCurReferenceHandler<T> getAssetReference, GetAssetFromRecordHandler<T> getAssetFromRecordAction,System.Action<UnityEngine.Object>  AfterReferenceAction=null) where T : Component
+        public static void CreateOrAddReference<T>(T targetComponent, ILoadAssetRecord referenceAssetRecord, GetCurReferenceHandler<T> getAssetReference, GetAssetFromRecordHandler<T> getAssetFromRecordAction, System.Action<UnityEngine.Object> AfterReferenceAction = null) where T : Component
         {
             AssetReferenceController referenceController = null;
-            if(mAllGameObjectReferenceController.TryGetValue(targetComponent.gameObject,out referenceController)==false)
+            if (mAllGameObjectReferenceController.TryGetValue(targetComponent.gameObject, out referenceController) == false)
             {
                 referenceController = targetComponent.gameObject.AddComponent<AssetReferenceController>();
                 mAllGameObjectReferenceController[targetComponent.gameObject] = referenceController;
             }
 
             LinkedList<IAssetReference> assetReferencesLinkedList = null;
-            if(referenceController.mAllComponentReferencesRecord.TryGetValue(targetComponent,out assetReferencesLinkedList)==false)
+            if (referenceController.mAllComponentReferencesRecord.TryGetValue(targetComponent, out assetReferencesLinkedList) == false)
             {
                 assetReferencesLinkedList = new LinkedList<IAssetReference>();
                 referenceController.mAllComponentReferencesRecord[targetComponent] = assetReferencesLinkedList;
@@ -58,7 +58,7 @@ namespace GameFramePro
                 AfterReferenceAction(assetReference.ReferenceAssetInfor.ReferenceAsset);
 
 #if UNITY_EDITOR
-            referenceController. UpdateDebugView();
+            referenceController.UpdateDebugView();
 #endif
         }
 
@@ -105,7 +105,7 @@ namespace GameFramePro
                 if (referenceInfor.Value.Count == 0)
                     continue;
                 var node = referenceInfor.Value.First;
-                while (node!=null)
+                while (node != null)
                 {
                     if (node.Value.CurLoadAssetRecord != null)
                         node.Value.CurLoadAssetRecord.ReduceReference();
@@ -133,14 +133,14 @@ namespace GameFramePro
             public ComponentReferenceInfor(Component component, LinkedList<IAssetReference> allReferences)
             {
                 mTargetComponent = component;
-                if(allReferences != null|| allReferences.Count != 0)
+                if (allReferences != null || allReferences.Count != 0)
                 {
                     var node = allReferences.First;
-                    while (node!=null)
+                    while (node != null)
                     {
                         if (node.Value.CurLoadAssetRecord != null)
                         {
-                            if(node.Value.ReferenceAssetInfor.ReferenceInstanceID==0)
+                            if (node.Value.ReferenceAssetInfor.ReferenceInstanceID == 0)
                             {
                                 Debug.LogErrorFormat("没有赋值的实例ID " + node.Value.CurLoadAssetRecord);
                             }
