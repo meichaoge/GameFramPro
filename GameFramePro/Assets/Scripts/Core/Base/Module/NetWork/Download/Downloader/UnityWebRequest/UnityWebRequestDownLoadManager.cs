@@ -14,6 +14,7 @@ namespace GameFramePro.NetWorkEx
         protected static NativeObjectPool<UnityWebRequestDownloadTask> mUnityWebRequestTaskPoolManager = null;
         protected static bool s_IsInitialed = false;
 
+        protected int mTimeOut = 15; //超时时间15秒+
 
 
         static UnityWebRequestDownLoadManager()

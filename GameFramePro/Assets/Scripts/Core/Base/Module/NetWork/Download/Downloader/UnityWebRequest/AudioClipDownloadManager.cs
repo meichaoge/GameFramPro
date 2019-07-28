@@ -85,6 +85,7 @@ namespace GameFramePro.NetWorkEx
         {
             var newTask = mUnityWebRequestTaskPoolManager.GetItemFromPool();
             UnityWebRequest webRequest = new UnityWebRequest(taskUrl);
+            webRequest.timeout = mTimeOut;
             webRequest.downloadHandler = new DownloadHandlerAudioClip(taskUrl, AudioType.MPEG);
             newTask.InitialedDownloadTask(taskUrl, webRequest, priorityEnum, callback);
             return newTask;

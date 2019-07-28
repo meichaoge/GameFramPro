@@ -161,8 +161,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mSerilizeUGUIComponents:
-  - mReferenceComponent: {fileID: 0}
-    mComponentType: 2
+  - mReferenceComponent: {fileID: 2918279463146009653}
+    mComponentType: 0
+  - mReferenceComponent: {fileID: 5513214671827734400}
+    mComponentType: 0
 --- !u!1 &5950566557018005789
 GameObject:
   m_ObjectHideFlags: 0

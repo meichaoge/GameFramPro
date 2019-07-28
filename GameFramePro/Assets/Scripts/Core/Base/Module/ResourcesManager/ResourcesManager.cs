@@ -1,9 +1,9 @@
-﻿using GameFramePro.ResourcesEx;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using GameFramePro.ResourcesEx;
 using Object = UnityEngine.Object;
 
 namespace GameFramePro
@@ -277,7 +277,29 @@ namespace GameFramePro
 
         #endregion
 
-        #region Material 加载
+        #region AudioClip 加载
+        public static void LoadAudioClipAssetSync(string assetPath, AudioSource targetAudioSource, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<AudioSource> getAssetFromRecordAction = null, GetCurReferenceHandler<AudioSource> getAssetReference = null) 
+        {
+            if (getAssetFromRecordAction == null)
+            {
+                //Debug.LogError("LoadAudioClipAssetSync Fail, 必须设置如何从加载的资源中获取需要的资源的方法");
+                getAssetFromRecordAction = AudioClipAssetReference.GetAudioClipFromAsset;
+            }
+            if (getAssetReference == null)
+            {
+                //Debug.LogError("LoadAudioClipAssetSync Fail, 必须指定如何从一个组件的所有当前资源引用中找到对应的引用的方法");
+                getAssetReference = AudioClipAssetReference.GetAudioClipAssetReference;
+            }
+
+            ILoadAssetRecord assetRecord = null;
+            if (string.IsNullOrEmpty(assetPath) == false)
+            {
+                assetRecord = LoadAssetFromCache(assetPath);
+                if (assetRecord == null || assetRecord.TargetAsset == null)
+                    assetRecord = LoadAssetSync(assetPath);
+            }
+            AssetReferenceController.CreateOrAddReference<AudioSource>(targetAudioSource, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
+        }
 
         #endregion
 

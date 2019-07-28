@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 namespace GameFramePro.UI
 {
 #if UNITY_EDITOR
@@ -36,13 +38,8 @@ namespace GameFramePro.UI
 #endif
         }
 
-
-        //TODO 增加编辑器下的按钮操作和检测逻辑
         [SerializeField]
         private List<UGUIComponentSerializationInfor> mSerilizeUGUIComponents = new List<UGUIComponentSerializationInfor>();
-
-        //[SerializeField]
-        //private List<Component> mAllSerilizeUGUIComponents = new List<Component>();
         public List<UGUIComponentSerializationInfor> AllSerilizeUGUIComponents { get { return mSerilizeUGUIComponents; } }
         private Dictionary<string, Component> mAllSerilizeUGUIComponentMap = new Dictionary<string, Component>();
 
@@ -121,11 +118,12 @@ namespace GameFramePro.UI
                 if (item == null || item.mReferenceComponent == null)
                     continue;
 
-                AttachComponentByType(item.mReferenceComponent,item.mComponentType, item.mReferenceComponent.transform);
+                AttachComponentByType(ref item.mReferenceComponent, item.mComponentType, item.mReferenceComponent.transform);
             }
         }
 
-        private static void AttachComponentByType( Component targetComponent, UGUIComponentTypeEnum type,Transform target)
+        //根据选择的参数类型获取指定对象的指定组件 第一个参数要是引用类型
+        private static void AttachComponentByType(ref Component targetComponent, UGUIComponentTypeEnum type, Transform target)
         {
             switch (type)
             {
@@ -151,7 +149,7 @@ namespace GameFramePro.UI
         //枚举类型转成对应的tag
         public void AddAllUGUIComponentTypeTag()
         {
-            List < UGUIComponentTypeEnum > allUGUIComponentEnum= EnumUtility.GetEnumValue<UGUIComponentTypeEnum>();
+            List<UGUIComponentTypeEnum> allUGUIComponentEnum = EnumUtility.GetEnumValue<UGUIComponentTypeEnum>();
             foreach (var item in allUGUIComponentEnum)
             {
                 LayerAndTagManager.AddTag(item.ToString());
@@ -163,6 +161,7 @@ namespace GameFramePro.UI
         /// </summary>
         public void AutoRecordReferenceWithTag()
         {
+            //    targetGo = UnityEditor.PrefabUtility.InstantiatePrefab(gameObject) as GameObject;
             Transform[] allChildTrans = transform.GetComponentsInChildren<Transform>(true);
             foreach (var trans in allChildTrans)
             {
@@ -176,14 +175,11 @@ namespace GameFramePro.UI
                 {
                     if (item == null) continue;
                     if (item.mReferenceComponent == null) continue;
-                    if(item.mReferenceComponent.gameObject.transform==trans)
+                    if (item.mReferenceComponent.gameObject.transform == trans)
                     {
                         isExit = true;
-                        if (item.mComponentType != type)
-                        {
-                            item.mComponentType = type;
-                            AttachComponentByType(item.mReferenceComponent, item.mComponentType, item.mReferenceComponent.transform);
-                        }
+                        item.mComponentType = type;
+                        AttachComponentByType(ref item.mReferenceComponent, item.mComponentType, item.mReferenceComponent.transform);
                         break;
                     }
                 }
@@ -192,13 +188,44 @@ namespace GameFramePro.UI
                 {
                     UGUIComponentSerializationInfor infor = new UGUIComponentSerializationInfor();
                     infor.mComponentType = type;
-                    AttachComponentByType(infor.mReferenceComponent, infor.mComponentType, trans);
+                    AttachComponentByType(ref infor.mReferenceComponent, infor.mComponentType, trans);
                     mSerilizeUGUIComponents.Add(infor);
                 }
             }
         }
 
+        //根据选的的类型判断引用组件是否正确
+        private bool CheckReferenceComponentType(ref Component targetComponent, UGUIComponentTypeEnum type)
+        {
+            if (targetComponent == null) return true;
 
+            switch (type)
+            {
+                case UGUIComponentTypeEnum.Transform:
+                    return targetComponent is Transform;
+                case UGUIComponentTypeEnum.UGUIText:
+                    return targetComponent is Text;
+                case UGUIComponentTypeEnum.UGUIImage:
+                    return targetComponent is Image;
+                case UGUIComponentTypeEnum.UGUIButton:
+                    return targetComponent is Button;
+                default:
+                    Debug.LogError("没有定义的类型 " + type);
+                    return false;
+            }
+        }
+
+        //判断引用组件和类型是佛正确
+        public void CheckSerializationComponentType()
+        {
+            for (int dex = 0; dex < mSerilizeUGUIComponents.Count; dex++)
+            {
+                var item = mSerilizeUGUIComponents[dex];
+                if (CheckReferenceComponentType(ref item.mReferenceComponent, item.mComponentType) == false)
+                    Debug.LogError("索引{0} 引用组件 {1} 不是指定的类型", dex, item.mReferenceComponent.gameObject.name);
+            }
+
+        }
 
 
         //private void OnValidate()

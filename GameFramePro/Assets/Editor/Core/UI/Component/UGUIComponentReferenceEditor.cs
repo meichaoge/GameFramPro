@@ -42,22 +42,27 @@ namespace GameFramePro.EditorEx
             GUILayout.FlexibleSpace();
 
             if (GUILayout.Button("自动序列化标记Tag 的组件", GUILayout.Height(25)))
+            {
                 mUGUIComponentReference.AutoRecordReferenceWithTag();
+            }
+
+            if (GUILayout.Button("关联指定类型的组件", GUILayout.Height(25)))
+                mUGUIComponentReference.GetComponentByTypeDefine();
 
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             #endregion
 
-
             #region 功能
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("关联指定类型的组件", GUILayout.Height(25)))
-                mUGUIComponentReference.GetComponentByTypeDefine();
 
             if (GUILayout.Button("检测是否有重名的对象", GUILayout.Height(25)))
                 mUGUIComponentReference.CheckIfContainSameNameObject();
+
+            if (GUILayout.Button("检测关联组件的类型是否正确", GUILayout.Height(25)))
+                mUGUIComponentReference.CheckSerializationComponentType();
 
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
