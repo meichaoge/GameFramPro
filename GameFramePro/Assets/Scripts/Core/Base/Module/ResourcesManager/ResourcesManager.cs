@@ -177,18 +177,14 @@ namespace GameFramePro
         /// <param name="targetImage"></param>
         /// <param name="getAssetReference">定义了如何从当前组件 targetImage 的所有引用资源链表中找到自己想要的修改的那个引用记录</param>
         /// <param name="getAssetFromRecordAction"></param>
-        public static void LoadSpriteAssetSync<T>(string assetPath, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
+        public static void LoadSpriteAssetSync<T>(string assetPath, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null,
+            GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             if (getAssetFromRecordAction == null)
-            {
-                //Debug.LogError("LoadSpriteAssetSync Fail, 必须设置如何从加载的资源中获取需要的资源的方法");
-                getAssetFromRecordAction = SpriteAssetReference<T>.GetSpriteFromSpriteRender;
-            }
+                getAssetFromRecordAction = SpriteAssetReference<T>.GetSpriteFromSpriteRender; //指定如何从一个组件的所有当前资源引用中找到对应的引用的方法
+
             if (getAssetReference == null)
-            {
-                //Debug.LogError("LoadSpriteAssetSync Fail, 必须指定如何从一个组件的所有当前资源引用中找到对应的引用的方法");
-                getAssetReference = SpriteAssetReference<T>.GetSpriteAssetReference;
-            }
+                getAssetReference = SpriteAssetReference<T>.GetSpriteAssetReference; //指定如何从一个组件的所有当前资源引用中找到对应的引用的方法
 
             ILoadAssetRecord assetRecord = null;
             if (string.IsNullOrEmpty(assetPath) == false)
@@ -199,6 +195,7 @@ namespace GameFramePro
             }
             AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
         }
+
         /// <summary>
         ///  异步 从指定路径加载一个sprite 并赋值给 targetImage 认的 是从加载资源的记录中取得SpriteRender 组件然后赋给参数targetImage
         /// </summary>
@@ -206,7 +203,8 @@ namespace GameFramePro
         /// <param name="targetImage"></param>
         /// <param name="getAssetReference">定义了如何从当前组件 targetImage 的所有引用资源链表中找到自己想要的修改的那个引用记录</param>
         /// <param name="getAssetFromRecordAction"></param>
-        public static void LoadSpriteAssetAsync<T>(string assetPath, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
+        public static void LoadSpriteAssetAsync<T>(string assetPath, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, 
+            GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             if (getAssetFromRecordAction == null)
             {
@@ -241,7 +239,8 @@ namespace GameFramePro
         /// <typeparam name="T"></typeparam>
         /// <param name="copyImage"></param>
         /// <param name="targetImage"></param>
-        public static void LoadSpriteAssetAsync<T>(T copyImage, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, GetCurReferenceHandler<T> getAssetReference = null) where T : Image
+        public static void LoadSpriteAssetAsync<T>(T copyImage, T targetImage, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<T> getAssetFromRecordAction = null, 
+            GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             IAssetReference assetReference = AssetReferenceController.GetAssetReference<T>(copyImage, SpriteAssetReference<T>.GetSpriteAssetReference);
             ILoadAssetRecord assetRecord = null;

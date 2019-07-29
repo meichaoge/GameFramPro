@@ -27,19 +27,11 @@ namespace GameFramePro
 
 
         #region 播放声音接口
-        /// <summary>
-        /// 播放背景音
-        /// </summary>
-        /// <param name="audioPath"></param>
-        /// <param name="audioName"></param>
-        /// <param name="volume"></param>
-        public void PlayBackgroundAudio(string audioPath, float volume,bool isLoop=true,bool isForeceReplay=false)
+        public void PlayBackgroundAudioSync(string audioPath, string audioName,float volume, bool isLoop = true, bool isForeceReplay = false)
         {
-            string audioName = IOUtility.GetFileNameWithoutExtensionEx(audioPath);
-
             if (mCurBackgroundAudioSource.clip != null)
             {
-                if(mCurBackgroundAudioSource.clip.name== audioName)
+                if (mCurBackgroundAudioSource.clip.name == audioName)
                 {
                     mCurBackgroundAudioSource.volume = volume;
                     mCurBackgroundAudioSource.loop = isLoop;
@@ -53,18 +45,26 @@ namespace GameFramePro
             }
 
             AudioClip clip = null;
-            if(mAllBackgroundAudioClips.TryGetValue(audioPath,out clip))
-            {
-                PlayBackgroundAudio(clip, volume,isLoop,isForeceReplay);
-            }
-            else
+            if (mAllBackgroundAudioClips.TryGetValue(audioPath, out clip)==false)
             {
                 //TODO  这里不能直接赋值
                 ResourcesManager.LoadAudioClipAssetSync(audioPath, mCurBackgroundAudioSource);
             }
-        }
 
-        private void PlayBackgroundAudio(AudioClip clip, float volume, bool isLoop = true, bool isForeceReplay = false)
+            PlayBackgroundAudioSync(clip, volume, isLoop, isForeceReplay);
+        }
+        /// <summary>
+        /// 播放背景音
+        /// </summary>
+        /// <param name="audioPath"></param>
+        /// <param name="audioName"></param>
+        /// <param name="volume"></param>
+        public void PlayBackgroundAudioSync(string audioPath, float volume,bool isLoop=true,bool isForeceReplay=false)
+        {
+            string audioName = IOUtility.GetFileNameWithoutExtensionEx(audioPath);
+            PlayBackgroundAudioSync(audioPath, audioName, volume, isLoop, isForeceReplay);
+        }
+        private void PlayBackgroundAudioSync(AudioClip clip, float volume, bool isLoop = true, bool isForeceReplay = false)
         {
             if (mCurBackgroundAudioSource.clip != null)
             {

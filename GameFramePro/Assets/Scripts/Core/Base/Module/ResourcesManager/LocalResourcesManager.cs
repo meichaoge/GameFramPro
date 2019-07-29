@@ -217,8 +217,6 @@ namespace GameFramePro.ResourcesEx
                 if (object.ReferenceEquals(asset, infor.TargetAsset))
                 {
                     RecordAssetInstanceId(infor.InstanceID, assetpath);
-                    //   infor.AddReference(); //增加引用次数
-                    //    Debug.LogError(string.Format("RecordLoadAsset Fail,Already Exit Asset at path={0} of asset={1}", assetpath, asset));
                     return infor;
                 }
                 Debug.LogError(string.Format("RecordLoadAsset Fail,Already Exit Asset at path={0} of asset={1} Not Equal", assetpath, asset));

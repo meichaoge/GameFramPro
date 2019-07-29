@@ -10,7 +10,7 @@ namespace GameFramePro
     /// <summary>
     /// Sprite 资源被引用
     /// </summary>
-    public class SpriteAssetReference <T>: BaseAssetReference<T> where T: UnityEngine.UI.Image
+    public class SpriteAssetReference <T>: BaseAssetReference<T> where T: Image
     {
 
         public override BaseAssetReference<T> AttachComponentReference(T component, ILoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction)
