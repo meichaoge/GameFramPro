@@ -106,7 +106,7 @@ namespace GameFramePro.ResourcesEx
                 else
                     Debug.LogError("NotifyAssetRelease Fail,没有找到这个AssetBundle的记录 {0} ", assetBundleDepdence.AssetUrl);
 
-                ResourcesManager.UnLoadAssetBundle(record,true);
+                ResourcesManager.UnLoadAssetBundle(assetBundleDepdence, true);
             }
             else
             {

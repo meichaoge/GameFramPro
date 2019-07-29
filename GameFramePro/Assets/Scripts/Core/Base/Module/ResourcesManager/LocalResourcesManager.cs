@@ -60,7 +60,7 @@ namespace GameFramePro.ResourcesEx
                 else
                     Debug.LogError("NotifyAssetRelease Error  不存在这个资源 {0}的记录", record.AssetUrl);
 
-                ResourcesManager.UnLoadResourceAsset(record);
+                ResourcesManager.UnLoadResourceAsset(record as ResourcesLoadAssetRecord);
                 return;
             }
             Debug.LogError("NotifyAssetRelease Fail,无法处理的类型 " + record.GetType());
@@ -74,7 +74,7 @@ namespace GameFramePro.ResourcesEx
                 if (record.ReferenceCount == 0)
                 {
                     if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
-                        AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record);
+                        AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record as ResourcesLoadAssetRecord);
                     else
                         Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
                 } //资源没有引用时候 释放资源

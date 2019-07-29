@@ -16,7 +16,7 @@ namespace GameFramePro
         /// </summary>
         public GameObject mTargetAssetInstance { get; protected set; }
 
-        public override BaseAssetReference<Transform> AttachComponentReference(Transform component, ILoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction)
+        public override BaseAssetReference<Transform> AttachComponentReference(Transform component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction)
         {
             if (getAssetFromRecordAction == null)
             {
@@ -92,7 +92,7 @@ namespace GameFramePro
         /// <param name="component"></param>
         /// <param name="assetRecord"></param>
         /// <returns>返回组件的实例ID .-1表示没有获取到.0 表示可能有地方没有赋值</returns>
-        public static BaseBeReferenceAssetInfor GetGameObjectInstance(Transform targetParent, ILoadAssetRecord assetRecord)
+        public static BaseBeReferenceAssetInfor GetGameObjectInstance(Transform targetParent, BaseLoadAssetRecord assetRecord)
         {
             BaseBeReferenceAssetInfor referenceAssetInfor = new BaseBeReferenceAssetInfor();
             referenceAssetInfor.ReferenceAssetType = typeof(GameObject);

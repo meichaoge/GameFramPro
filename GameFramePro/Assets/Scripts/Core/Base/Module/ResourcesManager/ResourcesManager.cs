@@ -122,7 +122,7 @@ namespace GameFramePro
                 if (mAllCacheTextInfor.TryGetValue(assetPath, out reseultStr) && string.IsNullOrEmpty(reseultStr) == false)
                     return reseultStr;
             }
-            ILoadAssetRecord assetRecord = LoadAssetSync(assetPath);
+            BaseLoadAssetRecord assetRecord = LoadAssetSync(assetPath);
             if (assetRecord != null && assetRecord.TargetAsset != null)
             {
                 if (assetRecord.TargetAsset is TextAsset)
@@ -186,7 +186,7 @@ namespace GameFramePro
             if (getAssetReference == null)
                 getAssetReference = SpriteAssetReference<T>.GetSpriteAssetReference; //指定如何从一个组件的所有当前资源引用中找到对应的引用的方法
 
-            ILoadAssetRecord assetRecord = null;
+            BaseLoadAssetRecord assetRecord = null;
             if (string.IsNullOrEmpty(assetPath) == false)
             {
                 assetRecord = LoadAssetFromCache(assetPath);
@@ -223,7 +223,7 @@ namespace GameFramePro
             }
 
 
-            ILoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
+            BaseLoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
             if (assetRecord != null && assetRecord.TargetAsset != null)
             {
                 AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction);
@@ -243,9 +243,9 @@ namespace GameFramePro
             GetCurReferenceHandler<T> getAssetReference = null) where T : Image
         {
             IAssetReference assetReference = AssetReferenceController.GetAssetReference<T>(copyImage, SpriteAssetReference<T>.GetSpriteAssetReference);
-            ILoadAssetRecord assetRecord = null;
+            BaseLoadAssetRecord assetRecord = null;
             if (assetReference != null)
-                assetRecord = assetReference.CurLoadAssetRecord;
+                assetRecord = assetReference.CurLoadAssetRecord as BaseLoadAssetRecord;
             AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, SpriteAssetReference<T>.GetSpriteAssetReference, SpriteAssetReference<T>.GetSpriteFromSpriteRender, AfterReferenceAction);
         }
         #endregion
@@ -264,7 +264,7 @@ namespace GameFramePro
                 getAssetReference = GameObjectAssetReference.GetTransformAssetReference;
             }
 
-            ILoadAssetRecord assetRecord = null;
+            BaseLoadAssetRecord assetRecord = null;
             if (string.IsNullOrEmpty(assetPath) == false)
             {
                 assetRecord = LoadAssetFromCache(assetPath);
@@ -290,7 +290,7 @@ namespace GameFramePro
                 getAssetReference = AudioClipAssetReference.GetAudioClipAssetReference;
             }
 
-            ILoadAssetRecord assetRecord = null;
+            BaseLoadAssetRecord assetRecord = null;
             if (string.IsNullOrEmpty(assetPath) == false)
             {
                 assetRecord = LoadAssetFromCache(assetPath);
@@ -313,9 +313,9 @@ namespace GameFramePro
         /// <typeparam name="T"></typeparam>
         /// <param name="assetpath"></param>
         /// <returns></returns>
-        private static ILoadAssetRecord LoadAssetFromCache(string assetPath)
+        private static BaseLoadAssetRecord LoadAssetFromCache(string assetPath)
         {
-            ILoadAssetRecord asset = LocalResourcesManager.S_Instance.LoadAssetFromCache(assetPath);
+            BaseLoadAssetRecord asset = LocalResourcesManager.S_Instance.LoadAssetFromCache(assetPath);
             if (asset != null)
                 return asset;
             //    asset = AssetBundleManager.S_Instance.LoadAssetFromCache(assetPath);
@@ -327,9 +327,9 @@ namespace GameFramePro
         /// </summary>
         /// <param name="assetpath"></param>
         /// <returns></returns>
-        private static ILoadAssetRecord LoadAssetSync(string assetPath)
+        private static BaseLoadAssetRecord LoadAssetSync(string assetPath)
         {
-            ILoadAssetRecord record = null;
+            BaseLoadAssetRecord record = null;
 
             if (AppSetting.S_IsLoadResourcesAssetPriority)
             {
@@ -351,9 +351,9 @@ namespace GameFramePro
         /// </summary>
         /// <param name="assetpath"></param>
         /// <param name="loadCallback"></param>
-        private static void LoadAssetAsync(string assetPath, System.Action<ILoadAssetRecord> loadCallback)
+        private static void LoadAssetAsync(string assetPath, System.Action<BaseLoadAssetRecord> loadCallback)
         {
-            ILoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
+            BaseLoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
             if (assetRecord != null)
             {
                 if (loadCallback != null)
@@ -372,7 +372,7 @@ namespace GameFramePro
         /// 卸载 Resources 资源
         /// </summary>
         /// <param name="assetRecord"></param>
-        public static void UnLoadResourceAsset(ILoadAssetRecord assetRecord)
+        public static void UnLoadResourceAsset(BaseLoadAssetRecord assetRecord)
         {
             if (assetRecord == null)
             {
@@ -395,7 +395,7 @@ namespace GameFramePro
         /// </summary>
         /// <param name="assetRecord"></param>
         /// <param name="isUnloadAllLoadedObjects"></param>
-        public static void UnLoadAssetBundle(ILoadAssetRecord assetRecord, bool isUnloadAllLoadedObjects)
+        public static void UnLoadAssetBundle(BaseLoadAssetRecord assetRecord, bool isUnloadAllLoadedObjects)
         {
             if (assetRecord == null)
             {

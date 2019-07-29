@@ -9,10 +9,10 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// 管理当资源的引用为0时候,继续等待一段时间，如果再起被启用则不销毁
     /// </summary>
-    public  class AssetDelayDeleteManager:Single<AssetDelayDeleteManager>, IUpdateTimeTick
+    public class AssetDelayDeleteManager : Single<AssetDelayDeleteManager>, IUpdateTimeTick
     {
         //按照剩余存在时间排序
-        private static LinkedList<ILoadAssetRecord> s_AllDelayDeleteAssetInfor = new LinkedList<ILoadAssetRecord>();
+        private static LinkedList<BaseLoadAssetRecord> s_AllDelayDeleteAssetInfor = new LinkedList<BaseLoadAssetRecord>();
 
 
         #region IUpdateTick Interface
@@ -65,9 +65,9 @@ namespace GameFramePro.ResourcesEx
         /// 开始后台追踪这个资源的状态
         /// </summary>
         /// <param name="assetInfor"></param>
-        public static void RecycleNoReferenceLoadAssetRecord(ILoadAssetRecord assetInfor)
+        public static void RecycleNoReferenceLoadAssetRecord(BaseLoadAssetRecord assetInfor)
         {
-            LinkedListNode<ILoadAssetRecord> newNode = new LinkedListNode<ILoadAssetRecord>(assetInfor);
+            LinkedListNode<BaseLoadAssetRecord> newNode = new LinkedListNode<BaseLoadAssetRecord>(assetInfor);
             AddNode(newNode);
         }
 
@@ -75,10 +75,10 @@ namespace GameFramePro.ResourcesEx
         /// 强制回收空的加载记录
         /// </summary>
         /// <param name="assetInfor"></param>
-        public static ILoadAssetRecord TryGetILoadAssetRecord(string assetPath)
+        public static BaseLoadAssetRecord TryGetILoadAssetRecord(string assetPath)
         {
             var target = s_AllDelayDeleteAssetInfor.First;
-            while (target !=null&& target.Value.AssetUrl != assetPath)
+            while (target != null && target.Value.AssetUrl != assetPath)
             {
                 target = target.Next;
             }
@@ -107,7 +107,7 @@ namespace GameFramePro.ResourcesEx
         /// 按照剩余时间由少到多插入
         /// </summary>
         /// <param name="newNode"></param>
-        private static void AddNode(LinkedListNode<ILoadAssetRecord> newNode)
+        private static void AddNode(LinkedListNode<BaseLoadAssetRecord> newNode)
         {
             if (s_AllDelayDeleteAssetInfor.Count == 0)
             {
@@ -115,7 +115,7 @@ namespace GameFramePro.ResourcesEx
                 return;
             }//第一个元素
 
-            LinkedListNode<ILoadAssetRecord> targetNode = s_AllDelayDeleteAssetInfor.Last;
+            LinkedListNode<BaseLoadAssetRecord> targetNode = s_AllDelayDeleteAssetInfor.Last;
             while (true)
             {
                 if (targetNode.Previous == null)
@@ -133,7 +133,7 @@ namespace GameFramePro.ResourcesEx
 
         }
 
-     
+
         #endregion
 
 

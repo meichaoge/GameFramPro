@@ -11,9 +11,9 @@ namespace GameFramePro
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="component"></param>
-    /// <param name="assetRecord">定义了组件从哪里取数据，一般是用 ILoadAssetRecord 中定义的 TargetAsset 对象</param>
+    /// <param name="assetRecord">定义了组件从哪里取数据，一般是用 BaseLoadAssetRecord 中定义的 TargetAsset 对象</param>
     /// <returns>返回引用的对象实例iD.如果返回0说明没有处理，-1表示组件没有引用这个记录</returns>
-    public delegate BaseBeReferenceAssetInfor GetAssetFromRecordHandler<T>(T component, ILoadAssetRecord assetRecord) where T : Component;
+    public delegate BaseBeReferenceAssetInfor GetAssetFromRecordHandler<T>(T component, BaseLoadAssetRecord assetRecord) where T : Component;
 
     /// <summary>
     /// 定义了如何从参数 component 组件的所有引用其他资源链表 allComponentReferences 中获取满足条件的第一个引用信息
@@ -82,7 +82,7 @@ namespace GameFramePro
         #endregion
 
 
-        public abstract BaseAssetReference<T> AttachComponentReference(T component, ILoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction);
+        public abstract BaseAssetReference<T> AttachComponentReference(T component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction);
 
         /// <summary>
         /// 当切使用Resources 资源时候的操作
@@ -90,7 +90,7 @@ namespace GameFramePro
         /// <param name="component"></param>
         /// <param name="newAssetRecord"></param>
         /// <param name="getAssetFromRecordAction"></param>
-        protected virtual void ModifyToResourcesAsset(T component, ILoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction)
+        protected virtual void ModifyToResourcesAsset(T component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction)
         {
             ResourcesLoadAssetRecord modifyResourcesRecord = newAssetRecord as ResourcesLoadAssetRecord;
 
@@ -136,7 +136,7 @@ namespace GameFramePro
         /// <param name="component"></param>
         /// <param name="newAssetRecord"></param>
         /// <param name="getAssetFromRecordAction"></param>
-        protected virtual void ModifyToAssetBundleAsset(T component, ILoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction)
+        protected virtual void ModifyToAssetBundleAsset(T component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction)
         {
             AssetBundleSubAssetLoadRecord modifyAssetBundleRecord = newAssetRecord as AssetBundleSubAssetLoadRecord;
             if (CurLoadAssetRecord is ResourcesLoadAssetRecord)
