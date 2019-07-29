@@ -92,8 +92,8 @@ namespace GameFramePro
         {
             BaseBeReferenceAssetInfor referenceAssetInfor = new BaseBeReferenceAssetInfor();
 
-            referenceAssetInfor .ReferenceAssetType= typeof(Sprite);
-            if (assetRecord == null || assetRecord.TargetAsset == null)
+            referenceAssetInfor.ReferenceAssetType = typeof(Sprite);
+            if (assetRecord == null || assetRecord.LoadUnityObjectAssetInfor == null)
             {
                 //  Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Parameter is null or Asset is null");
                 component.sprite = null;
@@ -101,17 +101,20 @@ namespace GameFramePro
                 return referenceAssetInfor;
             }
 
-            SpriteRenderer spriteRender = (assetRecord.TargetAsset as GameObject).GetComponent<SpriteRenderer>();
-            if (spriteRender == null)
+          
+
+            Sprite sp = assetRecord.LoadUnityObjectAssetInfor.LoadSpriteFromSpriteRender();
+            if (sp == null)
             {
-                Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Not Contain SpriteRenderer Component of Record {0}", assetRecord.AssetUrl);
+                Debug.LogError("GetSpriteFromSpriteRender Fail, Record {0}", assetRecord.AssetUrl);
                 component.sprite = null;
                 referenceAssetInfor.ReferenceInstanceID = -1;
                 return referenceAssetInfor;
             }
-            component.sprite = spriteRender.sprite;
+
+            component.sprite = sp;
             referenceAssetInfor.ReferenceAsset = component.sprite;
-            referenceAssetInfor.ReferenceInstanceID = spriteRender.sprite.GetInstanceID();
+            referenceAssetInfor.ReferenceInstanceID = sp.GetInstanceID();
             return referenceAssetInfor;
         }
 

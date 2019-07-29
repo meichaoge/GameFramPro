@@ -14,17 +14,23 @@ namespace GameFramePro.ResourcesEx
     public class ResourcesLoadAssetRecord : BaseLoadAssetRecord
     {
 
+        public ResourceLoadUnityAssetInfor LoadResourceAssetInfor { get { return LoadUnityObjectAssetInfor as ResourceLoadUnityAssetInfor; } }
+
+
+
         #region 构造函数& 设置
         public ResourcesLoadAssetRecord()
         {
 
         }
-        public ResourcesLoadAssetRecord(string assetPath,  LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        {
-            Initial(assetPath, typeEnum, asset, manager);
-        }
 
-    
+  
+        //public ResourcesLoadAssetRecord(string assetPath,  LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        //{
+        //    Initial(assetPath, typeEnum, asset, manager);
+        //}
+
+
         #endregion
 
 

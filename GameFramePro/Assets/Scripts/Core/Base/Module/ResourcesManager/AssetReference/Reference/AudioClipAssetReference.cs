@@ -91,26 +91,26 @@ namespace GameFramePro
         {
             BaseBeReferenceAssetInfor referenceAssetInfor = new BaseBeReferenceAssetInfor();
 
-            referenceAssetInfor.ReferenceAssetType = typeof(AudioClip);
-            if (assetRecord == null || assetRecord.TargetAsset == null)
-            {
-                //  Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Parameter is null or Asset is null");
-                component.clip = null;
-                referenceAssetInfor.ReferenceInstanceID = -1;
-                return referenceAssetInfor;
-            }
+            //referenceAssetInfor.ReferenceAssetType = typeof(AudioClip);
+            //if (assetRecord == null || assetRecord.TargetAsset == null)
+            //{
+            //    //  Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Parameter is null or Asset is null");
+            //    component.clip = null;
+            //    referenceAssetInfor.ReferenceInstanceID = -1;
+            //    return referenceAssetInfor;
+            //}
 
-            AudioClip audioClip = (assetRecord.TargetAsset as AudioClip);
-            if (audioClip == null)
-            {
-                Debug.LogError("GetAudioClipFromAsset Fail,Not  AudioClip Record {0}", assetRecord.AssetUrl);
-                component.clip = null;
-                referenceAssetInfor.ReferenceInstanceID = -1;
-                return referenceAssetInfor;
-            }
-            component.clip = audioClip;
-            referenceAssetInfor.ReferenceAsset = component.clip;
-            referenceAssetInfor.ReferenceInstanceID = audioClip.GetInstanceID();
+            //AudioClip audioClip = (assetRecord.TargetAsset as AudioClip);
+            //if (audioClip == null)
+            //{
+            //    Debug.LogError("GetAudioClipFromAsset Fail,Not  AudioClip Record {0}", assetRecord.AssetUrl);
+            //    component.clip = null;
+            //    referenceAssetInfor.ReferenceInstanceID = -1;
+            //    return referenceAssetInfor;
+            //}
+            //component.clip = audioClip;
+            //referenceAssetInfor.ReferenceAsset = component.clip;
+            //referenceAssetInfor.ReferenceInstanceID = audioClip.GetInstanceID();
             return referenceAssetInfor;
         }
 

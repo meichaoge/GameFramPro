@@ -116,48 +116,43 @@ namespace GameFramePro
         /// <returns></returns>
         public static string LoadTextAssettSync(string assetPath, bool isForceReload = false)
         {
-            string reseultStr = string.Empty;
+            string resultStr = string.Empty;
             if (isForceReload == false)
             {
-                if (mAllCacheTextInfor.TryGetValue(assetPath, out reseultStr) && string.IsNullOrEmpty(reseultStr) == false)
-                    return reseultStr;
+                if (mAllCacheTextInfor.TryGetValue(assetPath, out resultStr) && string.IsNullOrEmpty(resultStr) == false)
+                    return resultStr;
             }
             BaseLoadAssetRecord assetRecord = LoadAssetSync(assetPath);
-            if (assetRecord != null && assetRecord.TargetAsset != null)
+            if (assetRecord != null && assetRecord.LoadUnityObjectAssetInfor != null)
             {
-                if (assetRecord.TargetAsset is TextAsset)
-                {
-                    reseultStr = (assetRecord.TargetAsset as TextAsset).text;
-                    mAllCacheTextInfor[assetPath] = reseultStr;
-                    return reseultStr;
-                }
+                resultStr=assetRecord.LoadUnityObjectAssetInfor.LoadTextAssetContent();
+                mAllCacheTextInfor[assetPath] = resultStr;
+                return resultStr;
             }
             Debug.LogError("获取文本 资源失败 " + assetPath);
-            return reseultStr;
+            return resultStr;
+
         }
 
         public static void LoadTextAssettAsync(string assetPath, System.Action<string> textAssetAction, bool isForceReload = false)
         {
-            string reseultStr = string.Empty;
+            string resultStr = string.Empty;
             if (isForceReload == false)
             {
-                if (mAllCacheTextInfor.TryGetValue(assetPath, out reseultStr) && string.IsNullOrEmpty(reseultStr) == false)
+                if (mAllCacheTextInfor.TryGetValue(assetPath, out resultStr) && string.IsNullOrEmpty(resultStr) == false)
                 {
-                    if (textAssetAction != null) textAssetAction(reseultStr);
+                    if (textAssetAction != null) textAssetAction(resultStr);
                     return;
                 }
             }
             LoadAssetAsync(assetPath, (assetRecord) =>
             {
-                if (assetRecord != null && assetRecord.TargetAsset != null)
+                if (assetRecord != null && assetRecord.LoadUnityObjectAssetInfor != null)
                 {
-                    if (assetRecord.TargetAsset is TextAsset)
-                    {
-                        reseultStr = (assetRecord.TargetAsset as TextAsset).text;
-                        mAllCacheTextInfor[assetPath] = reseultStr;
-                        if (textAssetAction != null) textAssetAction(reseultStr);
-                        return;
-                    }
+                    resultStr = assetRecord.LoadUnityObjectAssetInfor.LoadTextAssetContent();
+                    mAllCacheTextInfor[assetPath] = resultStr;
+                    if (textAssetAction != null) textAssetAction(resultStr);
+                    return;
                 }
                 Debug.LogError("获取文本 资源失败 " + assetPath);
                 if (textAssetAction != null) textAssetAction(null);
@@ -190,7 +185,7 @@ namespace GameFramePro
             if (string.IsNullOrEmpty(assetPath) == false)
             {
                 assetRecord = LoadAssetFromCache(assetPath);
-                if (assetRecord == null || assetRecord.TargetAsset == null)
+                if (assetRecord == null || assetRecord.LoadUnityObjectAssetInfor == null)
                     assetRecord = LoadAssetSync(assetPath);
             }
             AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
@@ -224,7 +219,7 @@ namespace GameFramePro
 
 
             BaseLoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
-            if (assetRecord != null && assetRecord.TargetAsset != null)
+            if (assetRecord != null && assetRecord.LoadUnityObjectAssetInfor!=null)
             {
                 AssetReferenceController.CreateOrAddReference<T>(targetImage, assetRecord, getAssetReference, getAssetFromRecordAction);
                 return;
@@ -268,7 +263,7 @@ namespace GameFramePro
             if (string.IsNullOrEmpty(assetPath) == false)
             {
                 assetRecord = LoadAssetFromCache(assetPath);
-                if (assetRecord == null || assetRecord.TargetAsset == null)
+                if (assetRecord == null || assetRecord.LoadUnityObjectAssetInfor == null)
                     assetRecord = LoadAssetSync(assetPath);
             }
             AssetReferenceController.CreateOrAddReference<Transform>(targetParent, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
@@ -294,7 +289,7 @@ namespace GameFramePro
             if (string.IsNullOrEmpty(assetPath) == false)
             {
                 assetRecord = LoadAssetFromCache(assetPath);
-                if (assetRecord == null || assetRecord.TargetAsset == null)
+                if (assetRecord == null || assetRecord.LoadUnityObjectAssetInfor == null)
                     assetRecord = LoadAssetSync(assetPath);
             }
             AssetReferenceController.CreateOrAddReference<AudioSource>(targetAudioSource, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
@@ -387,8 +382,7 @@ namespace GameFramePro
             }
 
             Debug.LogEditorInfor("释放Resources 资源 " + assetRecord.AssetUrl);
-            if (assetRecord.TargetAsset != null)
-                Resources.UnloadAsset(assetRecord.TargetAsset);
+           ( assetRecord.LoadUnityObjectAssetInfor as ResourceLoadUnityAssetInfor).UnLoadAsResourcesAsset();
         }
         /// <summary>
         /// 卸载 AssetBundle 资源加载
@@ -410,10 +404,7 @@ namespace GameFramePro
             }
 
             Debug.LogEditorInfor("释放 AssetBundle 资源 " + assetRecord.AssetUrl);
-            if (assetRecord.TargetAsset != null)
-            {
-                (assetRecord.TargetAsset as AssetBundle).Unload(isUnloadAllLoadedObjects);
-            }
+            (assetRecord.LoadUnityObjectAssetInfor as BundleLoadUnityAssetInfor).UnLoadAsAssetBundleAsset(isUnloadAllLoadedObjects);
         }
 
         #endregion

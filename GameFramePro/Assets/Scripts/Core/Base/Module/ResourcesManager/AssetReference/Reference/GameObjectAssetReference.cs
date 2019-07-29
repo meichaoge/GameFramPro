@@ -96,7 +96,7 @@ namespace GameFramePro
         {
             BaseBeReferenceAssetInfor referenceAssetInfor = new BaseBeReferenceAssetInfor();
             referenceAssetInfor.ReferenceAssetType = typeof(GameObject);
-            if (assetRecord == null || assetRecord.TargetAsset == null)
+            if (assetRecord == null || assetRecord.LoadUnityObjectAssetInfor == null)
             {
                 //  Debug.LogErrorFormat("GetSpriteFromSpriteRender Fail,Parameter is null or Asset is null");
                 targetParent = null;
@@ -104,18 +104,15 @@ namespace GameFramePro
                 return referenceAssetInfor;
             }
 
-            //  SpriteRenderer spriteRender = (assetRecord.TargetAsset as GameObject).GetComponent<SpriteRenderer>();
-            GameObject prefab = assetRecord.TargetAsset as GameObject;
-            GameObject go = ResourcesManager.Instantiate<GameObject>(prefab, targetParent,false) ;
+            GameObject go = assetRecord.LoadUnityObjectAssetInfor.InstantiateInstance(targetParent);
             if (go == null)
             {
                 Debug.LogError("GetGameObjectInstance Fail,Not GameObject Asset {0}", assetRecord.AssetUrl);
                 referenceAssetInfor.ReferenceInstanceID = -1;
                 return referenceAssetInfor;
             }
-            go.name = prefab.name;
             referenceAssetInfor.ReferenceAsset = go;
-            referenceAssetInfor.ReferenceInstanceID  = go.GetInstanceID();
+            referenceAssetInfor.ReferenceInstanceID = go.GetInstanceID();
             return referenceAssetInfor;
         }
 

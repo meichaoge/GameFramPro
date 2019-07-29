@@ -25,20 +25,22 @@ namespace GameFramePro.ResourcesEx
 
 #endif
 
+        public BundleLoadSubUnityAssetInfor AssetBundleLoadSubAssetInfor { get { return LoadUnityObjectAssetInfor as BundleLoadSubUnityAssetInfor; } }
+
         public string AssetBelongBundleName { get; protected set; } //资源所属的AssetBundle 名称
 
         #region 构造函数& 设置
         public AssetBundleSubAssetLoadRecord() { }
 
 
-        public AssetBundleSubAssetLoadRecord(string assetUrl, string assetBundleName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        {
-            Initial(assetUrl, assetBundleName, typeEnum, asset, manager);
-        }
+        //public AssetBundleSubAssetLoadRecord(string assetUrl, string assetBundleName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        //{
+        //    Initial(assetUrl, assetBundleName, typeEnum, asset, manager);
+        //}
 
-        public void Initial(string assetUrl, string assetBundleName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        public void Initial(string assetUrl, string assetBundleName, LoadedAssetTypeEnum typeEnum, BundleLoadSubUnityAssetInfor assetInfor, IAssetManager manager)
         {
-            base.Initial(assetUrl, typeEnum, asset, manager);
+            base.Initial(assetUrl, typeEnum, assetInfor, manager);
             AssetBelongBundleName = assetBundleName;
         }
 

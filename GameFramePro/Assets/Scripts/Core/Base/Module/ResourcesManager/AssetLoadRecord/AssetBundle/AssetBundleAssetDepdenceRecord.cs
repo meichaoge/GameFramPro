@@ -30,6 +30,7 @@ namespace GameFramePro.ResourcesEx
 
 #endif
 
+        public BundleLoadUnityAssetInfor AssetBundleLoadBundleInfor { get { return LoadUnityObjectAssetInfor as BundleLoadUnityAssetInfor; } }
         protected Dictionary<int, AssetBundleAssetDepdenceRecord> mAllDepdenceAssetBundleRecord =new Dictionary<int, AssetBundleAssetDepdenceRecord>();//当前AssetBundle 依赖的的其他AssetBundle
 
             // 所有从这里加载的 AssetBundleSubAssetLoadRecord 资源记录 key=AssetBundleSubAssetLoadRecord  的 url
@@ -38,10 +39,10 @@ namespace GameFramePro.ResourcesEx
         #region 构造函数& 设置
         public AssetBundleAssetDepdenceRecord() { }
 
-        public AssetBundleAssetDepdenceRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        {
-            Initial(assetPath, typeEnum, asset, manager);
-        }
+        //public AssetBundleAssetDepdenceRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        //{
+        //    Initial(assetPath, typeEnum, asset, manager);
+        //}
 
         #endregion
 
@@ -49,15 +50,15 @@ namespace GameFramePro.ResourcesEx
 
         public void AddDepdence(AssetBundleAssetDepdenceRecord depdence)
         {
-            if (depdence == null)
-                return;
+            //if (depdence == null)
+            //    return;
 
-            if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
-            {
-                Debug.LogError("AddDepdence Fail,Already Contain Key"+ depdence.InstanceID);
-                return;
-            }
-            mAllDepdenceAssetBundleRecord[depdence.InstanceID] = depdence;
+            //if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
+            //{
+            //    Debug.LogError("AddDepdence Fail,Already Contain Key" + depdence.InstanceID);
+            //    return;
+            //}
+            //mAllDepdenceAssetBundleRecord[depdence.InstanceID] = depdence;
         }
         public void ClearAllDepdence()
         {
@@ -70,13 +71,13 @@ namespace GameFramePro.ResourcesEx
         }
         public void ReduceDepdence(AssetBundleAssetDepdenceRecord depdence)
         {
-            if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
-            {
-                depdence.ReduceReference();
-                mAllDepdenceAssetBundleRecord.Remove(depdence.InstanceID);          
-                return;
-            }
-            Debug.LogError("ReduceDepdence Fail,Not Contain Key" + depdence.InstanceID);
+            //if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
+            //{
+            //    depdence.ReduceReference();
+            //    mAllDepdenceAssetBundleRecord.Remove(depdence.InstanceID);          
+            //    return;
+            //}
+            //Debug.LogError("ReduceDepdence Fail,Not Contain Key" + depdence.InstanceID);
         }
 
         #endregion

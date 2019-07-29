@@ -14,33 +14,33 @@ namespace GameFramePro.ResourcesEx
         None = 0,  //未知的类型
 
         Resources_UnKnown = 1, //记录时候无法判断的类型
-        Resources_Prefab,
-        Resources_Sprite,
-        Resources_Texture,
-        Resources_TextAsset,
-        Resources_Model,
-        Resources_Material,
-        Resources_Shader,
+        //Resources_Prefab,
+        //Resources_Sprite,
+        //Resources_Texture,
+        //Resources_TextAsset,
+        //Resources_Model,
+        //Resources_Material,
+        //Resources_Shader,
 
         //***本地存储的 可能是运行时记录的资源&网络下载资源&缓存资源
         LocalStore_UnKnown = 100, //记录时候无法判断的类型
-        LocalStore_Prefab,
-        LocalStore_Sprite,
-        LocalStore_Texture,
-        LocalStore_TextAsset,
-        LocalStore_Model,
-        LocalStore_Material,
-        LocalStore_Shader,
+        //LocalStore_Prefab,
+        //LocalStore_Sprite,
+        //LocalStore_Texture,
+        //LocalStore_TextAsset,
+        //LocalStore_Model,
+        //LocalStore_Material,
+        //LocalStore_Shader,
 
 
         AssetBundle_UnKnown = 200, //记录时候无法判断的类型
-        AssetBundle_Prefab,
-        AssetBundle_Sprite,
-        AssetBundle_Texture,
-        AssetBundle_TextAsset,
-        AssetBundle_Model,
-        AssetBundle_Material,
-        AssetBundle_Shader,
+        //AssetBundle_Prefab,
+        //AssetBundle_Sprite,
+        //AssetBundle_Texture,
+        //AssetBundle_TextAsset,
+        //AssetBundle_Model,
+        //AssetBundle_Material,
+        //AssetBundle_Shader,
 
     }
 
@@ -50,10 +50,11 @@ namespace GameFramePro.ResourcesEx
     /// </summary>
     public interface ILoadAssetRecord
     {
-        /// <summary>
-        /// 加载时候Unity 生成的实例ID (不可靠)
-        /// </summary>
-        int InstanceID { get; }
+        ///// <summary>
+        ///// 加载时候Unity 生成的实例ID (不可靠)
+        ///// </summary>
+        //int InstanceID { get; }
+
         /// <summary>
         /// 唯一标示一个资源的，通常赋值为加载这个资源时候使用的相对路径(相对于Resouces 目录)
         /// </summary>
@@ -80,10 +81,13 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         long MarkToDeleteTime { get;   }
 
-        /// <summary>
-        /// 加载的资源
-        /// </summary>
-        UnityEngine.Object TargetAsset { get; }
+        ///// <summary>
+        ///// 加载的资源
+        ///// </summary>
+        //UnityEngine.Object TargetAsset { get; }
+
+
+
         /// <summary>
         /// 被哪个管理器管理
         /// </summary>

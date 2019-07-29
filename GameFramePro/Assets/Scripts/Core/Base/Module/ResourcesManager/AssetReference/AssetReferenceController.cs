@@ -29,7 +29,8 @@ namespace GameFramePro
         /// <param name="targetComponent"></param>
         /// <param name="referenceAssetRecord"></param>
         /// <param name="assetReferenceAct"></param>
-        public static void CreateOrAddReference<T>(T targetComponent, BaseLoadAssetRecord referenceAssetRecord, GetCurReferenceHandler<T> getAssetReference, GetAssetFromRecordHandler<T> getAssetFromRecordAction, System.Action<UnityEngine.Object> AfterReferenceAction = null) where T : Component
+        public static void CreateOrAddReference<T>(T targetComponent, BaseLoadAssetRecord referenceAssetRecord, GetCurReferenceHandler<T> getAssetReference, 
+            GetAssetFromRecordHandler<T> getAssetFromRecordAction, System.Action<UnityEngine.Object> AfterReferenceAction = null) where T : Component
         {
             AssetReferenceController referenceController = null;
             if (mAllGameObjectReferenceController.TryGetValue(targetComponent.gameObject, out referenceController) == false)
@@ -61,6 +62,16 @@ namespace GameFramePro
             referenceController.UpdateDebugView();
 #endif
         }
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// 获取指定组件上满足条件的第一个 引用的资源信息
@@ -114,6 +125,29 @@ namespace GameFramePro
             }
             mAllComponentReferencesRecord.Clear();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

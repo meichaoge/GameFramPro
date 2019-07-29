@@ -14,10 +14,8 @@ namespace GameFramePro.ResourcesEx
 #if UNITY_EDITOR
         #region Show
         public string Debug_AssetUrl = string.Empty;
-        public int Debug_InstanceID = 0;
         public int Debug_ReferenceCount = 0;
         public LoadedAssetTypeEnum Debug_AssetLoadedType = LoadedAssetTypeEnum.None;
-        public UnityEngine.Object Debug_TargetAsset = null;
         public float Debug_RemainTimeToBeDelete = 0;
         public long Debug_MarkToDeleteTime = 0;
         public IAssetManager Debug_BelongAssetManager = null;
@@ -25,11 +23,9 @@ namespace GameFramePro.ResourcesEx
 
         public virtual void UpdateData()
         {
-            Debug_InstanceID = InstanceID;
             Debug_AssetUrl = AssetUrl;
             Debug_ReferenceCount = ReferenceCount;
             Debug_AssetLoadedType = AssetLoadedType;
-            Debug_TargetAsset = TargetAsset;
             Debug_RemainTimeToBeDelete = RemainTimeToBeDelete;
             Debug_MarkToDeleteTime = MarkToDeleteTime;
             Debug_BelongAssetManager = BelongAssetManager;
@@ -38,11 +34,14 @@ namespace GameFramePro.ResourcesEx
         #endregion
 #endif
 
-        public int InstanceID { get; protected set; } = 0;
         public string AssetUrl { get; protected set; } = string.Empty;
         public int ReferenceCount { get; protected set; } = 0;
         public LoadedAssetTypeEnum AssetLoadedType { get; protected set; } = LoadedAssetTypeEnum.None;
-        public UnityEngine.Object TargetAsset { get; protected set; } = null;
+
+        public BaseLoadUnityAssetInfor LoadUnityObjectAssetInfor { get; protected set; } //加载到的资源信息
+
+
+
         public float RemainTimeToBeDelete { get; protected set; } = 0;
         public long MarkToDeleteTime { get; protected set; } = 0;
         public IAssetManager BelongAssetManager { get; protected set; } = null;
@@ -50,17 +49,15 @@ namespace GameFramePro.ResourcesEx
 
         #region 构造函数& 设置
 
-        public virtual void Initial(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
+        public virtual void Initial(string assetPath, LoadedAssetTypeEnum typeEnum, BaseLoadUnityAssetInfor assetInfor, IAssetManager manager)
         {
             Debug.Assert(manager != null);
-            Debug.Assert(asset != null);
 
             AssetUrl = assetPath;
-            InstanceID = asset.GetInstanceID();
             ReferenceCount = 0;
             AssetLoadedType = typeEnum;
             BelongAssetManager = manager;
-            TargetAsset = asset;
+            LoadUnityObjectAssetInfor = assetInfor;
             RemainTimeToBeDelete = BelongAssetManager.MaxAliveTimeAfterNoReference;
         }
 
@@ -70,7 +67,7 @@ namespace GameFramePro.ResourcesEx
 
         public virtual void AddReference()
         {
-            if (TargetAsset == null)
+            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
             {
                 Debug.LogError("资源{0}  已经被卸载了, 无法增加引用", AssetUrl);
                 ReferenceCount = 0;
@@ -84,7 +81,7 @@ namespace GameFramePro.ResourcesEx
 
         public virtual void ReduceReference(bool isforceDelete = false)
         {
-            if (TargetAsset == null)
+            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
             {
                 Debug.LogError("资源{0}  已经被卸载了, 无法减少引用", AssetUrl);
                 ReferenceCount = 0;
@@ -103,7 +100,7 @@ namespace GameFramePro.ResourcesEx
 
         public virtual bool TimeTick(float tickTime)
         {
-            if (TargetAsset == null)
+            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
             {
                 ReferenceCount = 0;
                 NotifyReferenceChange();
@@ -117,18 +114,19 @@ namespace GameFramePro.ResourcesEx
 
         public virtual void NotifyNoReference()
         {
-            if (TargetAsset == null) return;
-            GameObject go = TargetAsset as GameObject;
-            if (go != null)
-            {
-                go.SetActive(false);
-            }
+            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
+                return;
+            //GameObject go = TargetAsset as GameObject;
+            //if (go != null)
+            //{
+            //    go.SetActive(false);
+            //}
         }
 
         public virtual bool NotifyReReference()
         {
             ReferenceCount = 1;
-            return TargetAsset != null;
+            return LoadUnityObjectAssetInfor.IsLoadAssetEnable;
         }
 
         public virtual void NotifyReleaseRecord()
@@ -138,7 +136,7 @@ namespace GameFramePro.ResourcesEx
             ReferenceCount = 0;
             AssetLoadedType = LoadedAssetTypeEnum.None;
             BelongAssetManager = null;
-            TargetAsset = null;
+            LoadUnityObjectAssetInfor.RealseAsset();
         }
 
         public virtual void NotifyReferenceChange()
