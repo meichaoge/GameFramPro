@@ -100,6 +100,34 @@ public static class Transform_Ex
         return path;
     }
 
+
+    /// <summary>
+    /// 获取所有的直接子节点
+    /// </summary>
+    /// <param name="includeInactive">是否包含不可见节点 默认包含</param>
+    /// <returns></returns>
+    public static List<Transform> GetAllChildsTrans(this Transform target, bool includeInactive=true)
+    {
+        if (target == null)
+        {
+            Debug.LogError("当前参数为null");
+            return null;
+        }
+        List<Transform> allChildTrans = new List<Transform>(target.childCount);
+        if (target.childCount == 0)
+            return allChildTrans;
+
+        for (int dex = 0; dex < target.childCount; dex++)
+        {
+            var Trans = target.GetChild(dex);
+            if (includeInactive == false && Trans.gameObject.activeSelf == false)
+                continue;
+            allChildTrans.Add(Trans);
+        }
+        return allChildTrans;
+    }
+
+
 #if UNITY_EDITOR
     /// <summary>
     /// 获取组件先后对于根节点的路径

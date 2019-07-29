@@ -279,11 +279,7 @@ namespace GameFramePro
 
         #region Sprite 加载
 
-        /// <summary>
-        /// 根据路径加载图片资源
-        /// </summary>
-        /// <param name="targetImage"></param>
-        /// <param name="assetPath"></param>
+        //根据路径加载图片资源
         public static void SetImageSpriteByPathSync(Image targetImage, string assetPath)
         {
             if (string.IsNullOrEmpty(assetPath))
@@ -323,11 +319,7 @@ namespace GameFramePro
             targetImage.sprite = sp;
         }
 
-        /// <summary>
-        ///  @FromImage 上的资源克隆到 @ToImage
-        /// </summary>
-        /// <param name="FromImage"></param>
-        /// <param name="ToImage"></param>
+        //@FromImage 上的资源克隆到 @ToImage
         public static void CloneImageSprite(Image @FromImage, Image @ToImage)
         {
             BaseAssetReference2 @fromsourceReference = AssetReferenceManager.GetObjectComponentReference(@FromImage, SpriteAssetReference.GetSpriteAssetReference2);
@@ -356,9 +348,33 @@ namespace GameFramePro
             }
         }
 
+
+
         #endregion
 
         #region GameObject加载
+
+        public static void InstantiateGameObjectFromRecordSync(Transform targetParent,BaseLoadAssetRecord assetRecord)
+        {
+            if (assetRecord == null)
+                return;
+
+            BaseAssetReference2 curReference = AssetReferenceManager.GetObjectComponentReference(targetParent, GameObjectAssetReference.GetGameObjectFromAssetReference2, assetRecord.AssetUrl);
+
+            if (curReference != null)
+                return;
+
+            GameObject go = assetRecord.LoadUnityObjectAssetInfor.InstantiateInstance(targetParent);
+            BaseAssetReference2 newReference = new BaseAssetReference2();
+            newReference.CurLoadAssetRecord = assetRecord;
+            newReference.ReferenceAssetInfor = new BaseBeReferenceAssetInfor(go, typeof(GameObject));
+
+
+            assetRecord.AddReference();
+            AssetReferenceManager.AddObjectComponentReference(targetParent, newReference);
+        }
+
+
         public static void LoadGameObjectAssetSync(string assetPath, Transform targetParent, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction = null, GetCurReferenceHandler<Transform> getAssetReference = null)
         {
             if (getAssetFromRecordAction == null)

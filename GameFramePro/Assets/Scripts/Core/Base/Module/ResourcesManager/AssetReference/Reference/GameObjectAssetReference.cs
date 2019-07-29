@@ -117,5 +117,49 @@ namespace GameFramePro
         }
 
 
+        public static BaseAssetReference2 GetGameObjectFromAssetReference2(Component component, List<BaseAssetReference2> allComponentReferences, params object[] otherParameter)
+        {
+            if (allComponentReferences.Count == 0) return null;
+            Transform targetTransformComponent = component as Transform;
+
+            if (targetTransformComponent == null || targetTransformComponent.childCount == 0)
+                return null;
+            if(otherParameter==null|| otherParameter.Length == 0)
+            {
+                Debug.LogError("GetGameObjectFromAssetReference2 至少需要传一个额外的 AssetUrl 参数");
+                return null;
+            }
+
+            string assetName = otherParameter[0].ToString().GetFileNameWithoutExtensionEx();
+            if(string.IsNullOrEmpty(assetName))
+            {
+                Debug.LogError("GetGameObjectFromAssetReference2 至少需要传一个额外的 AssetUrl 参数,且能获取到正确的格式 {0}", otherParameter[0]);
+                return null;
+            }
+
+            List<Transform> childTrans = targetTransformComponent.GetAllChildsTrans(true);
+
+            foreach (var reference in allComponentReferences)
+            {
+                if (reference.ReferenceAssetInfor == null) continue;
+                if (reference.ReferenceAssetInfor.ReferenceAsset == null) continue;
+                if (reference.ReferenceAssetInfor.ReferenceAssetType != typeof(GameObject))
+                    continue;
+
+                GameObject go = reference.ReferenceAssetInfor.ReferenceAsset as GameObject;
+                if (go == null)
+                {
+                    Debug.LogError("GetGameObjectFromAssetReference2 Fail!,当前资源 {0} 不是 GameObject ", reference.CurLoadAssetRecord.AssetUrl);
+                    continue;
+                }
+                if (go.name != assetName) continue;
+
+                if (childTrans.Contains(go.transform))
+                    return reference;
+
+            }
+            return null;
+        }
+
     }
 }

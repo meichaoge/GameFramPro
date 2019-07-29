@@ -1,4 +1,5 @@
 ﻿using GameFramePro;
+using GameFramePro.ResourcesEx;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,9 @@ public class TeslLoadPrefab : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            ResourcesManager.LoadGameObjectAssetSync(prefabPath, parent);
+            //  ResourcesManager.LoadGameObjectAssetSync(prefabPath, parent);
+            BaseLoadAssetRecord record = ResourcesManager.LoadAssetSync(prefabPath);
+            ResourcesManager.InstantiateGameObjectFromRecordSync( parent, record);
         }
     }
 }

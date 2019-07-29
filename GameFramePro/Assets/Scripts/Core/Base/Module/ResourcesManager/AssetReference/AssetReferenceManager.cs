@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+using Object = UnityEngine.Object;
 
 namespace GameFramePro.ResourcesEx
 {
@@ -12,38 +12,36 @@ namespace GameFramePro.ResourcesEx
     /// <param name="component"></param>
     /// <param name="allComponentReferences"></param>
     /// <returns></returns>
-    public delegate BaseAssetReference2 GetCurComponentReferenceHandler(Component component, List<BaseAssetReference2> allComponentReferences);
+    public delegate BaseAssetReference2 GetCurComponentReferenceHandler(Component component, List<BaseAssetReference2> allComponentReferences,params object[] otherParameter);
 
     /// <summary>
     /// 管理整个项目中加载的的资源引用其他的资源的数据
     /// </summary>
     public static class AssetReferenceManager
     {
-        //key =gameobject instanceID Value={ key=component instanceid value=引用的所有资源}
-        private static Dictionary<int, Dictionary<int, List<BaseAssetReference2>>> s_AllObjectComponentReferenceRecord = new Dictionary<int, Dictionary<int, List<BaseAssetReference2>>>();
+        //key =gameobject  Value={ key=component  value=引用的所有资源}
+        private static Dictionary<Object, Dictionary<Component, List<BaseAssetReference2>>> s_AllObjectComponentReferenceRecord = new Dictionary<Object, Dictionary<Component, List<BaseAssetReference2>>>();
 #if UNITY_EDITOR
-        public static Dictionary<int, Dictionary<int, List<BaseAssetReference2>>> AllObjectComponentReferenceRecord { get { return s_AllObjectComponentReferenceRecord; } }
+        public static Dictionary<Object, Dictionary<Component, List<BaseAssetReference2>>> AllObjectComponentReferenceRecord { get { return s_AllObjectComponentReferenceRecord; } }
 #endif
 
-        public static BaseAssetReference2 GetObjectComponentReference(Component targetComponent, GetCurComponentReferenceHandler referenceHandler)
+        public static BaseAssetReference2 GetObjectComponentReference(Component targetComponent, GetCurComponentReferenceHandler referenceHandler, params object[] otherParameter)
         {
             if (targetComponent == null)
             {
                 Debug.LogError("关联的组件参数为null");
                 return null;
             }
-            int gameObjectInstanceID = targetComponent.gameObject.GetInstanceID();
-            Dictionary<int, List<BaseAssetReference2>> gameObjectReferences = null;
-            if (s_AllObjectComponentReferenceRecord.TryGetValue(gameObjectInstanceID, out gameObjectReferences) == false)
+            Dictionary<Component, List<BaseAssetReference2>> gameObjectReferences = null;
+            if (s_AllObjectComponentReferenceRecord.TryGetValue(targetComponent.gameObject, out gameObjectReferences) == false)
             {
 #if UNITY_EDITOR
                 Debug.LogInfor("不包含对象 {0} 的引用资源记录", targetComponent.gameObject.name);
 #endif
                 return null;
             }
-            int componentInstanceID = targetComponent.GetInstanceID();
             List<BaseAssetReference2> componentReferences = null;
-            if (gameObjectReferences.TryGetValue(componentInstanceID, out componentReferences) == false)
+            if (gameObjectReferences.TryGetValue(targetComponent, out componentReferences) == false)
             {
 #if UNITY_EDITOR
                 Debug.LogInfor("不包含对象 {0} 的 组价{1} 引用资源记录", targetComponent.gameObject.name, targetComponent);
@@ -57,7 +55,7 @@ namespace GameFramePro.ResourcesEx
                 else
                     return null;
             else
-                return referenceHandler(targetComponent, componentReferences);
+                return referenceHandler(targetComponent, componentReferences, otherParameter);
         }
 
 
@@ -68,28 +66,28 @@ namespace GameFramePro.ResourcesEx
                 Debug.LogError("关联的组件参数为null" + (targetComponent == null));
                 return;
             }
-            int gameObjectInstanceID = targetComponent.gameObject.GetInstanceID();
-            int componentInstanceID = targetComponent.GetInstanceID();
-            Dictionary<int, List<BaseAssetReference2>> gameObjectReferences = null;
-            if (s_AllObjectComponentReferenceRecord.TryGetValue(gameObjectInstanceID, out gameObjectReferences) == false)
+            //int gameObjectInstanceID = targetComponent.gameObject.GetInstanceID();
+            //int componentInstanceID = targetComponent.GetInstanceID();
+            Dictionary<Component, List<BaseAssetReference2>> gameObjectReferences = null;
+            if (s_AllObjectComponentReferenceRecord.TryGetValue(targetComponent.gameObject, out gameObjectReferences) == false)
             {
                 Debug.LogInfor("不包含对象 {0} 的引用资源记录", targetComponent.gameObject.name);
-                gameObjectReferences = new Dictionary<int, List<BaseAssetReference2>>();
+                gameObjectReferences = new Dictionary<Component, List<BaseAssetReference2>>();
                 List<BaseAssetReference2> references = new List<BaseAssetReference2>();
                 references.Add(referenceRecord);
-                gameObjectReferences[componentInstanceID] = references;
-                s_AllObjectComponentReferenceRecord[gameObjectInstanceID] = gameObjectReferences;
+                gameObjectReferences[targetComponent] = references;
+                s_AllObjectComponentReferenceRecord[targetComponent.gameObject] = gameObjectReferences;
                 return;
             }
 
            
             List<BaseAssetReference2> componentReferences = null;
-            if (gameObjectReferences.TryGetValue(componentInstanceID, out componentReferences) == false)
+            if (gameObjectReferences.TryGetValue(targetComponent, out componentReferences) == false)
             {
                 componentReferences = new List<BaseAssetReference2>();
                 componentReferences.Add(referenceRecord);
-                gameObjectReferences[componentInstanceID] = componentReferences;
-                s_AllObjectComponentReferenceRecord[gameObjectInstanceID] = gameObjectReferences;
+                gameObjectReferences[targetComponent] = componentReferences;
+                s_AllObjectComponentReferenceRecord[targetComponent.gameObject] = gameObjectReferences;
 
                 Debug.LogInfor("不包含对象 {0} 的 组价{1} 引用资源记录", targetComponent.gameObject.name, targetComponent);
                 return;
@@ -123,17 +121,17 @@ namespace GameFramePro.ResourcesEx
                 return;
             }
 
-            int gameObjectInstanceID = targetComponent.gameObject.GetInstanceID();
-            Dictionary<int, List<BaseAssetReference2>> gameObjectReferences = null;
-            if (s_AllObjectComponentReferenceRecord.TryGetValue(gameObjectInstanceID, out gameObjectReferences) == false)
+         //   int gameObjectInstanceID = targetComponent.gameObject.GetInstanceID();
+            Dictionary<Component, List<BaseAssetReference2>> gameObjectReferences = null;
+            if (s_AllObjectComponentReferenceRecord.TryGetValue(targetComponent.gameObject, out gameObjectReferences) == false)
             {
                 Debug.LogError("不包含对象 {0} 的引用资源记录", targetComponent.gameObject.name);
                 return;
             }
 
-            int componentInstanceID = targetComponent.GetInstanceID();
+            //int componentInstanceID = targetComponent.GetInstanceID();
             List<BaseAssetReference2> componentReferences = null;
-            if (gameObjectReferences.TryGetValue(componentInstanceID, out componentReferences) == false)
+            if (gameObjectReferences.TryGetValue(targetComponent, out componentReferences) == false)
             {
                 Debug.LogError("不包含对象 {0} 的 组价{1} 引用资源记录", targetComponent.gameObject.name, targetComponent);
                 return;

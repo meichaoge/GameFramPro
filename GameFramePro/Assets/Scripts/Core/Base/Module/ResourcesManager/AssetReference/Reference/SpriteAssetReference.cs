@@ -120,7 +120,7 @@ namespace GameFramePro
 
 
 
-        public static BaseAssetReference2 GetSpriteAssetReference2(Component component, List<BaseAssetReference2> allComponentReferences)
+        public static BaseAssetReference2 GetSpriteAssetReference2(Component component, List<BaseAssetReference2> allComponentReferences,params object[] otherParameter)
         {
             if (allComponentReferences.Count == 0) return null;
             Image targetImageComponent = component as Image;
