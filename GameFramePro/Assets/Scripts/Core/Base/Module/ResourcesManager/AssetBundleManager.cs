@@ -505,7 +505,9 @@ namespace GameFramePro.ResourcesEx
             string assetBundlePath = AssetBundleUpgradeManager.S_Instance.GetBundleNameByAssetPath(assetPath);
             if (string.IsNullOrEmpty(assetBundlePath))
             {
-                Debug.LogError("LoadAssetSync Fail,Not Exit asset " + assetPath);
+#if UNITY_EDITOR
+                Debug.LogInfor("LoadAssetSync Fail,Not Exit asset " + assetPath);
+#endif
                 return null;
             }
 

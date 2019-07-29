@@ -47,6 +47,28 @@ namespace GameFramePro.ResourcesEx
         #endregion
 
 
+
+        public override bool isReferenceEqual(BaseLoadAssetRecord record)
+        {
+            if (record == null) return false;
+            switch (record.AssetLoadedType)
+            {
+                case LoadedAssetTypeEnum.None:
+                    Debug.LogError("无法确定的类型 " + AssetLoadedType);
+                    return false;
+                case LoadedAssetTypeEnum.Resources_UnKnown:
+                    return false;
+                case LoadedAssetTypeEnum.AssetBundle_UnKnown:
+                    if (record.AssetUrl == this.AssetUrl && (record as AssetBundleSubAssetLoadRecord).AssetBelongBundleName == this.AssetBelongBundleName)
+                        return true;
+                    return false;
+                default:
+                    Debug.LogError("没预处理的类型"+ record.AssetLoadedType);
+                    return false;
+            }
+        }
+
+
         /// <summary>
         /// 标示是否引用相同的资源
         /// </summary>

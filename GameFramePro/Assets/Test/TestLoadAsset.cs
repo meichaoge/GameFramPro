@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using GameFramePro;
+using GameFramePro.ResourcesEx;
 
 public class TestLoadAsset : MonoBehaviour
 {
@@ -16,17 +17,29 @@ public class TestLoadAsset : MonoBehaviour
     private void Update()
     {
 
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            BaseLoadAssetRecord assetRecord = ResourcesManager.LoadAssetSync(assetPath);
+            ResourcesManager.SetImageSpriteFromRecordSync(mTarget, assetRecord);
+        }
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            ResourcesManager.CloneImageSprite(mTarget, mTarget2);
+        }
+
+
         if (Input.GetKeyDown(KeyCode.C))
         {
-            ResourcesManager.LoadSpriteAssetSync(assetPath, mTarget);
+            ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath);
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            ResourcesManager.LoadSpriteAssetAsync(mTarget, mTarget2);
+            //      ResourcesManager.LoadSpriteAssetAsync(mTarget, mTarget2);
         }
 
-        
+
 
         //if (Input.GetKeyDown(KeyCode.A))
         //{
@@ -38,8 +51,6 @@ public class TestLoadAsset : MonoBehaviour
 
         //    ResourcesManager.SetSprite(mTarget, sp);
         //}
-
-
 
         //if (Input.GetKeyDown(KeyCode.B))
         //{

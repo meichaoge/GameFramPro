@@ -10,9 +10,9 @@ namespace GameFramePro
     /// <summary>
     /// 声音资源加载器
     /// </summary>
-    public class AudioClipAssetReference : BaseAssetReference<AudioSource>
+    public class AudioClipAssetReference : BaseAssetReference
     {
-        public override BaseAssetReference<AudioSource> AttachComponentReference(AudioSource component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<AudioSource> getAssetFromRecordAction)
+        public override BaseAssetReference AttachComponentReference<AudioSource>(AudioSource component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<AudioSource> getAssetFromRecordAction)
         {
             if (getAssetFromRecordAction == null)
             {

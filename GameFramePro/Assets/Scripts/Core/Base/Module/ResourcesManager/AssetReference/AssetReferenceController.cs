@@ -50,7 +50,7 @@ namespace GameFramePro
             if (assetReference == null)
                 return;
 
-            (assetReference as BaseAssetReference<T>).AttachComponentReference(targetComponent, referenceAssetRecord, getAssetFromRecordAction);
+            (assetReference as BaseAssetReference).AttachComponentReference<T>(targetComponent, referenceAssetRecord, getAssetFromRecordAction);
             //   referenceController.ModifyReference(targetComponent, gameObjectReference);
             if (assetReferencesLinkedList.Contains(assetReference) == false)
                 assetReferencesLinkedList.AddLast(assetReference);

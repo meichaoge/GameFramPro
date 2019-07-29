@@ -151,7 +151,12 @@ namespace GameFramePro.ResourcesEx
 
             UnityEngine.Object asset = Resources.Load<UnityEngine.Object>(assetpath.GetPathWithOutExtension());
             if (asset == null)
-                Debug.LogError(string.Format("LoadResourcesAssetSync Fail,AssetPath={0}  not exit", assetpath));
+            {
+#if UNITY_EDITOR
+                Debug.LogInfor(string.Format("LoadResourcesAssetSync Fail,AssetPath={0}  not exit", assetpath));
+#endif
+                return null;
+            }
 
             ResourceLoadUnityAssetInfor assetInfor = new ResourceLoadUnityAssetInfor(assetpath, asset);
             record = RecordResourcesLoadAsset(assetInfor); //当 asset==null 时候记录返回 

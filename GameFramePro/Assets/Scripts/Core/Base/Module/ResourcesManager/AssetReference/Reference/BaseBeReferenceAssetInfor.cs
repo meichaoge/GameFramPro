@@ -23,5 +23,19 @@ namespace GameFramePro.ResourcesEx
 
         public UnityEngine.Object ReferenceAsset;// { get; protected set; }
 
+
+
+        public BaseBeReferenceAssetInfor() { }
+
+        public BaseBeReferenceAssetInfor(UnityEngine.Object asset, Type type)
+        {
+            ReferenceAsset = asset;
+            ReferenceAssetType = type;
+            if (asset != null)
+                ReferenceInstanceID = asset.GetInstanceID();
+        }
+
+
+
     }
 }

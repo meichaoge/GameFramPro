@@ -10,10 +10,10 @@ namespace GameFramePro
     /// <summary>
     /// Sprite 资源被引用
     /// </summary>
-    public class SpriteAssetReference <T>: BaseAssetReference<T> where T: Image
+    public class SpriteAssetReference : BaseAssetReference
     {
 
-        public override BaseAssetReference<T> AttachComponentReference(T component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<T> getAssetFromRecordAction)
+        public override BaseAssetReference AttachComponentReference<Image>(Image component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<Image> getAssetFromRecordAction) 
         {
             if (getAssetFromRecordAction == null)
             {
@@ -60,16 +60,16 @@ namespace GameFramePro
         /// </summary>
         /// <param name="allSpriteAssetReference"></param>
         /// <returns></returns>
-        public static IAssetReference GetSpriteAssetReference(T component, LinkedList<IAssetReference> allSpriteAssetReference) 
+        public static IAssetReference GetSpriteAssetReference(Image component, LinkedList<IAssetReference> allSpriteAssetReference) 
         {
             if (allSpriteAssetReference == null || allSpriteAssetReference.Count == 0)
-                return new SpriteAssetReference<T>();
+                return new SpriteAssetReference();
 
             int curReferenceInstanceID = -1;
             if (component != null && component.sprite != null)
                 curReferenceInstanceID = component.sprite.GetInstanceID();
             if(curReferenceInstanceID==-1)
-                return new SpriteAssetReference<T>(); //说明之前没有引用资源
+                return new SpriteAssetReference(); //说明之前没有引用资源
 
             var targetNode = allSpriteAssetReference.First;
             while (targetNode!=null)
@@ -79,7 +79,7 @@ namespace GameFramePro
                 targetNode = targetNode.Next;
             }
 
-            return new SpriteAssetReference<T>(); //没有找到匹配的引用资源
+            return new SpriteAssetReference(); //没有找到匹配的引用资源
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace GameFramePro
         /// <param name="component"></param>
         /// <param name="assetRecord"></param>
         /// <returns>返回组件的实例ID .-1表示没有获取到.0 表示可能有地方没有赋值</returns>
-        public static BaseBeReferenceAssetInfor GetSpriteFromSpriteRender(T component, BaseLoadAssetRecord assetRecord) 
+        public static BaseBeReferenceAssetInfor GetSpriteFromSpriteRender(Image component, BaseLoadAssetRecord assetRecord)
         {
             BaseBeReferenceAssetInfor referenceAssetInfor = new BaseBeReferenceAssetInfor();
 
@@ -99,9 +99,7 @@ namespace GameFramePro
                 component.sprite = null;
                 referenceAssetInfor.ReferenceInstanceID = -1;
                 return referenceAssetInfor;
-            }
-
-          
+            }     
 
             Sprite sp = assetRecord.LoadUnityObjectAssetInfor.LoadSpriteFromSpriteRender();
             if (sp == null)
@@ -116,6 +114,34 @@ namespace GameFramePro
             referenceAssetInfor.ReferenceAsset = component.sprite;
             referenceAssetInfor.ReferenceInstanceID = sp.GetInstanceID();
             return referenceAssetInfor;
+        }
+
+
+
+
+
+        public static BaseAssetReference2 GetSpriteAssetReference2(Component component, List<BaseAssetReference2> allComponentReferences)
+        {
+            if (allComponentReferences.Count == 0) return null;
+            Image targetImageComponent = component as Image;
+
+            if (targetImageComponent == null || targetImageComponent.sprite == null)
+                return null;
+
+
+            foreach (var reference in allComponentReferences)
+            {
+                if (reference.ReferenceAssetInfor == null) continue;
+                if (reference.ReferenceAssetInfor.ReferenceAsset == null) continue;
+                if (reference.ReferenceAssetInfor.ReferenceAssetType != typeof(Sprite))
+                    continue;
+
+                if (reference.ReferenceAssetInfor.ReferenceAsset == targetImageComponent.sprite)
+                {
+                    return reference;
+                }
+            }
+            return null;
         }
 
 

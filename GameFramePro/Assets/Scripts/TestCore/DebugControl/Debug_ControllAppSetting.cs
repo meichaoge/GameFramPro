@@ -8,11 +8,12 @@ using GameFramePro;
 public class Debug_ControllAppSetting : MonoBehaviour
 {
     public bool IsLoadResourcesAssetPriorit = true;
-
+    public Debug.LogColorDefine ColorDefine = Debug.S_LogColorDefine;
 
     private void OnValidate()
     {
         AppSetting.S_IsLoadResourcesAssetPriority = IsLoadResourcesAssetPriorit;
+        Debug.S_LogColorDefine = ColorDefine;
     }
 
 }

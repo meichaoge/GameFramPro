@@ -9,14 +9,14 @@ namespace GameFramePro
     /// <summary>
     /// 生成预制体实例 资源引用
     /// </summary>
-    public class GameObjectAssetReference : BaseAssetReference<Transform>
+    public class GameObjectAssetReference : BaseAssetReference
     {
         /// <summary>
         /// 生成的资源的实例
         /// </summary>
         public GameObject mTargetAssetInstance { get; protected set; }
 
-        public override BaseAssetReference<Transform> AttachComponentReference(Transform component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction)
+        public override BaseAssetReference AttachComponentReference<Transform>(Transform component, BaseLoadAssetRecord newAssetRecord, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction)
         {
             if (getAssetFromRecordAction == null)
             {

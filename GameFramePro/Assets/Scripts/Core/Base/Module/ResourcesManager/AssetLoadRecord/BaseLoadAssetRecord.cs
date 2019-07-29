@@ -20,7 +20,6 @@ namespace GameFramePro.ResourcesEx
         public long Debug_MarkToDeleteTime = 0;
         public IAssetManager Debug_BelongAssetManager = null;
 
-
         public virtual void UpdateData()
         {
             Debug_AssetUrl = AssetUrl;
@@ -62,6 +61,27 @@ namespace GameFramePro.ResourcesEx
         }
 
         #endregion
+
+        #region 判断引用是否相同的资源
+        /// <summary>
+        /// 判断参数值指定的两个资源是否相同
+        /// </summary>
+        /// <param name="record1"></param>
+        /// <param name="record2"></param>
+        /// <returns></returns>
+        public virtual   bool isReferenceEqual( BaseLoadAssetRecord record)
+        {
+            //if(AssetLoadedType== LoadedAssetTypeEnum.None|| record.AssetLoadedType == LoadedAssetTypeEnum.None )
+            //{
+            //    Debug.LogError("无法确定的类型 " + AssetLoadedType);
+            //    return false;
+            //}
+            Debug.LogError("无法确定的类型!!或者错误的类型  " + AssetLoadedType);
+            return true;
+        }
+        #endregion
+
+
 
 
 

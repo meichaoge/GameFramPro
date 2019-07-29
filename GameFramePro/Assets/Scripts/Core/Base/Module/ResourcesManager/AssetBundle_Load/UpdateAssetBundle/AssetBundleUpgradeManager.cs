@@ -380,8 +380,9 @@ namespace GameFramePro.ResourcesEx
                 if (assetBundleInfor.Value.mContainAssetPathInfor.Contains(assetPath))
                     return assetBundleInfor.Value.mBundleName;
             }
-
-            Debug.LogError("GetBundleNameByAssetPath Fail,没有找到资源 " + assetPath);
+#if UNITY_EDITOR
+            Debug.LogInfor("GetBundleNameByAssetPath Fail,没有找到资源 " + assetPath);
+#endif
             return string.Empty;
         }
 
