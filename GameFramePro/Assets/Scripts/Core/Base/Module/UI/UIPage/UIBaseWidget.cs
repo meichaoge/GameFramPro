@@ -21,9 +21,9 @@ namespace GameFramePro.UI
             MaxAliveAfterInActivte = 0;
         }
 
-        public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBasePage parent, GameObject instance)
+        public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBasePage parent, ReferenceGameObjectAssetInfor referenceInstance)
         {
-            BaseUIPageInitialed(pageName, pageType, instance);
+            BaseUIPageInitialed(pageName, pageType, referenceInstance);
             SetWidgetParent(parent);
         }
 

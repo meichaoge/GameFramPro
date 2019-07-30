@@ -9,6 +9,9 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// 对加载的资源的封装 对外提供接口，隐藏加载的对象实体
     /// </summary>
+#if UNITY_EDITOR
+    [System.Serializable]
+#endif
     public abstract class BaseLoadUnityAssetInfor
     {
         /// <summary>
@@ -26,9 +29,8 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-      //  public abstract bool IsEqual(BaseLoadUnityAssetInfor infor);
-
         public abstract void RealseAsset();
+
 
         //**接口
         public abstract string LoadTextAssetContent();
@@ -36,6 +38,7 @@ namespace GameFramePro.ResourcesEx
 
         //创建一个实例
         public abstract GameObject InstantiateInstance(Transform targetParent);
+
 
 
     }

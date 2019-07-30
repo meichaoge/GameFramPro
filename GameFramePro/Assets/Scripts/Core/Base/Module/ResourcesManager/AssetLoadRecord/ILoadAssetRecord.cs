@@ -83,7 +83,6 @@ namespace GameFramePro.ResourcesEx
 
 
 
-
         /// <summary>
         /// 引用次数为0时候的处理逻辑(这时候不一定要销毁自己，后台可以存活一定的时间)
         /// </summary>
@@ -97,8 +96,6 @@ namespace GameFramePro.ResourcesEx
         /// 资源的引用次数改变时候
         /// </summary>
         void NotifyReferenceChange(); 
-
-
 
         /// <summary>
         /// 超过最大后台存活时间后释放自己

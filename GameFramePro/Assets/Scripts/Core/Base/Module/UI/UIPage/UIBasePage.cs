@@ -33,15 +33,16 @@ namespace GameFramePro.UI
         /// 现在的页面类型UI 都应该是false,使得能够回退到上一个界面
         /// </summary>
         public bool IsRealseOnDestroyPageInstance { get; protected set; } = true;
-        public bool mIsActivite { get { return ConnectPageInstance == null ? false : ConnectPageInstance.activeSelf; } }
-
-
+        public bool mIsActivite { get { return ConnectGameObjectAssetInstance == null ? false : ConnectGameObjectAssetInstance.IsActivity; } }
+        //标示是否正确的引用着预制体实例
+        public bool IsPrefabInstanceEnable { get { return ConnectGameObjectAssetInstance != null && ConnectGameObjectAssetInstance.IsReferenceAssetEnable; } }
 
         #region UI 界面相关数据
         public string PageName { get; protected set; }
         public UIPageStateEnum mUIPageState { get; protected set; } = UIPageStateEnum.None; //页面的状态
         public UIPageTypeEnum mUIPageTypeEnum { get; protected set; } = UIPageTypeEnum.None;  //界面类型 必须正确设置
-        public GameObject ConnectPageInstance { get; protected set; } //关联的预制体实例
+        public ReferenceGameObjectAssetInfor ConnectGameObjectAssetInstance { get; protected set; }//关联的预制体实例
+
         public List<UIBaseWidget> mAllContainWidgets; //所有关联属于这个页面的组件，关闭的时候会一起被关闭 可能包含多个同名组件
 
         #endregion
@@ -61,23 +62,24 @@ namespace GameFramePro.UI
             mUIPageState = UIPageStateEnum.Initialed;
         }
 
-        protected virtual void BaseUIPageInitialed(string pageName, UIPageTypeEnum pageType, GameObject instance)
+        protected virtual void BaseUIPageInitialed(string pageName, UIPageTypeEnum pageType, ReferenceGameObjectAssetInfor referenceInstance)
         {
             PageName = pageName;
             mUIPageTypeEnum = pageType;
-            ConnectPageInstance = instance;
+            ConnectGameObjectAssetInstance = referenceInstance;
+            ConnectGameObjectAssetInstance.AddReference();
             mUIPageState = UIPageStateEnum.Initialed;
 
-            UGUIComponentReference uguiComponentReference = instance.GetComponent<UGUIComponentReference>();
+            UGUIComponentReference uguiComponentReference = ConnectGameObjectAssetInstance.GetComponent<UGUIComponentReference>();
             if (uguiComponentReference != null)
-                mUGUIComponent.InitailedComponentReference(PageName, instance,uguiComponentReference);
+                mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectAssetInstance, uguiComponentReference);
             else
-                mUGUIComponent.InitailedComponentReference(PageName, instance, null);
+                mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectAssetInstance, null);
 
         }
 
 
-       
+
         #endregion
 
         #region UI界面外部控制接口
@@ -95,7 +97,7 @@ namespace GameFramePro.UI
         /// <param name="parameter"></param>
         public void ShowPage()
         {
-            if (ConnectPageInstance == null)
+            if (IsPrefabInstanceEnable == false)
             {
                 Debug.LogError(string.Format("ShowPage Page {0} 关联的预制体为null", PageName));
                 return;
@@ -109,7 +111,7 @@ namespace GameFramePro.UI
                 case UIPageStateEnum.Initialed:
                 case UIPageStateEnum.Hide:
                     OnBeforeVisible();
-                    ConnectPageInstance.SetActive(true);
+                    ConnectGameObjectAssetInstance.SetActive(true);
                     mUIPageState = UIPageStateEnum.Showing;
                     UIPageManagerUtility.S_Instance.UnRegisterUIBasePageInvisible(this);
                     OnAfterVisible();
@@ -133,7 +135,7 @@ namespace GameFramePro.UI
         /// <param name="isForceDestroyed">=true 时候会立刻销毁自身释放引用，false 时候则会等待一段时间后被回收</param>
         public void HidePage(bool isForceDestroyed)
         {
-            if (ConnectPageInstance == null)
+            if (IsPrefabInstanceEnable == false)
             {
                 Debug.LogError(string.Format("HidePage Page {0} 关联的预制体为null", PageName));
                 return;
@@ -149,7 +151,7 @@ namespace GameFramePro.UI
                     break;
                 case UIPageStateEnum.Showing:
                     OnBeforeInVisible();
-                    ConnectPageInstance.SetActive(false);
+                    ConnectGameObjectAssetInstance.SetActive(false);
                     mUIPageState = UIPageStateEnum.Hide;
                     OnAfterInVisible(isForceDestroyed);
                     break;
@@ -170,7 +172,7 @@ namespace GameFramePro.UI
         /// </summary>
         public void ResetPageForReConnectPageInstance()
         {
-            if (ConnectPageInstance != null)
+            if (IsPrefabInstanceEnable)
             {
                 Debug.LogError("ResetPage 只能在关联的预制体对象不存在时候调用");
                 return;
@@ -187,7 +189,7 @@ namespace GameFramePro.UI
         public void DestroyAndRelease()
         {
             OnBeforeDestroyed();
-            ResourcesManager.Destroy(ConnectPageInstance);
+            ConnectGameObjectAssetInstance.ReduceReference();
             mUIPageState = UIPageStateEnum.Destroyed;
             OnAfterDestroyed();
         }
@@ -396,7 +398,7 @@ namespace GameFramePro.UI
             mAllRuningCoroutine.Clear();
         }
 
-      
+
         #endregion
 
         #endregion

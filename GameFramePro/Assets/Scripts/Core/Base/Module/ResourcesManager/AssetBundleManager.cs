@@ -586,9 +586,10 @@ namespace GameFramePro.ResourcesEx
 
         #region 内部加载AssetBundle 方法，对 AssetBundle类加载方式的封装
 
-        private AssetBundle LoadAssetBundleSync(string assetBundlePath)
+        private AssetBundle LoadAssetBundleSync(string assetBundleRelativePath)
         {
-            return AssetBundle.LoadFromFile(assetBundlePath);
+            string realPath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundleRelativePath);
+            return AssetBundle.LoadFromFile(realPath);
         }
         private AssetBundle LoadAssetBundleSync(byte[] assetBundelBytes)
         {
@@ -597,9 +598,10 @@ namespace GameFramePro.ResourcesEx
 
             return AssetBundle.LoadFromMemory(assetBundelBytes);
         }
-        private AssetBundle LoadAssetBundleSync(string assetBundlePath, uint crc)
+        private AssetBundle LoadAssetBundleSync(string assetBundleRelativePath, uint crc)
         {
-            return AssetBundle.LoadFromFile(assetBundlePath, crc);
+            string realPath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundleRelativePath);
+            return AssetBundle.LoadFromFile(realPath, crc);
         }
         private AssetBundle LoadAssetBundleSync(byte[] assetBundelBytes, uint crc)
         {
@@ -610,9 +612,10 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-        private AssetBundleCreateRequest LoadAssetBundleAsync(string assetBundlePath)
+        private AssetBundleCreateRequest LoadAssetBundleAsync(string assetBundleRelativePath)
         {
-            return AssetBundle.LoadFromFileAsync(assetBundlePath);
+            string realPath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundleRelativePath);
+            return AssetBundle.LoadFromFileAsync(realPath);
         }
         private AssetBundleCreateRequest LoadAssetBundleAsync(byte[] assetBundelBytes)
         {
@@ -621,9 +624,10 @@ namespace GameFramePro.ResourcesEx
 
             return AssetBundle.LoadFromMemoryAsync(assetBundelBytes);
         }
-        private AssetBundleCreateRequest LoadAssetBundleAsync(string assetBundlePath, uint crc)
+        private AssetBundleCreateRequest LoadAssetBundleAsync(string assetBundleRelativePath, uint crc)
         {
-            return AssetBundle.LoadFromFileAsync(assetBundlePath, crc);
+            string realPath = S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundleRelativePath);
+            return AssetBundle.LoadFromFileAsync(realPath, crc);
         }
         private AssetBundleCreateRequest LoadAssetBundleAsync(byte[] assetBundelBytes, uint crc)
         {

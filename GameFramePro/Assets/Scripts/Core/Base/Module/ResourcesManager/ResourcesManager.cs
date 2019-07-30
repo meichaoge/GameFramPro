@@ -167,6 +167,32 @@ namespace GameFramePro
         }
 
 
+        public static void UnLoadAsset(UnityEngine.Object asset)
+        {
+            if (asset == null)
+            {
+                Debug.LogError("UnLoadAsset Fail!! 参数是null ");
+                return;
+            }
+
+#if UNITY_EDITOR
+            Debug.LogInfor("卸载资源  " + asset.GetType() + "  " + asset.name);
+#endif
+            Resources.UnloadAsset(asset);
+
+
+        }
+
+        public static void UnLoadAssetBundle(AssetBundle asset, bool isUnloadAllLoadedObjects)
+        {
+            if (asset == null)
+            {
+                Debug.LogError("UnLoadAsset Fail!! 参数是null ");
+                return;
+            }
+            asset.Unload(isUnloadAllLoadedObjects);
+        }
+
         /// <summary>
         /// 卸载 Resources 资源
         /// </summary>
@@ -212,11 +238,6 @@ namespace GameFramePro
         }
 
         #endregion
-
-
-   
-
-
 
         #region 资源加载接口
 
@@ -279,152 +300,139 @@ namespace GameFramePro
 
         #region Sprite 加载
 
-        //根据路径加载图片资源
-        public static void SetImageSpriteByPathSync(Image targetImage, string assetPath)
+        //根据路径加载图片资源 同步接口
+        public static ReferenceAssetInfor SetImageSpriteByPathSync(Image targetImage, string assetPath)
         {
             if (string.IsNullOrEmpty(assetPath))
-                SetImageSpriteFromRecordSync(targetImage, null);
+                return SetImageSpriteFromRecordSync(targetImage, null);
             else
-                SetImageSpriteFromRecordSync(targetImage, LoadAssetSync(assetPath));
+                return SetImageSpriteFromRecordSync(targetImage, LoadAssetSync(assetPath));
         }
-        //根据资源加载图片精灵
-        public static void SetImageSpriteFromRecordSync(Image targetImage, BaseLoadAssetRecord assetRecord)
+        //异步设置Sprite 接口
+        public static void SetImageSpriteByPathAsync(Image targetImage, string assetPath,Action<ReferenceAssetInfor> afterAttachSpriteAction)
         {
-            BaseAssetReference2 curReference = AssetReferenceManager.GetObjectComponentReference(targetImage, SpriteAssetReference.GetSpriteAssetReference2);
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                ReferenceAssetInfor assetInfor= SetImageSpriteFromRecordSync(targetImage, null);
+                if (afterAttachSpriteAction != null)
+                    afterAttachSpriteAction.Invoke(assetInfor);
+            }
+            else
+            {
+                LoadAssetAsync(assetPath, (assetRecord) =>
+                {
+                    ReferenceAssetInfor assetInfor = SetImageSpriteFromRecordSync(targetImage, assetRecord);
+                    if (afterAttachSpriteAction != null)
+                        afterAttachSpriteAction.Invoke(assetInfor);
+                });
+            }
+        }
+
+        //根据资源加载图片精灵
+        public static ReferenceAssetInfor SetImageSpriteFromRecordSync(Image targetImage, BaseLoadAssetRecord assetRecord)
+        {
+            ReferenceAssetAndRecord curReference = AssetReferenceManager.GetObjectComponentReference(targetImage, AssetReferenceManager.GetSpriteAssetReference);
             if (assetRecord == null)
             {
                 if (curReference != null)
                     AssetReferenceManager.RemoveObjectComponentReference(targetImage, curReference);
                 targetImage.sprite = null;
-                return;
+                return null;
             }
 
             if (curReference != null && curReference.CurLoadAssetRecord.isReferenceEqual(assetRecord))
-                return;
-
-
+                return null;
             Sprite sp = assetRecord.LoadUnityObjectAssetInfor.LoadSpriteFromSpriteRender();
-            BaseAssetReference2 newReference = new BaseAssetReference2();
-            newReference.CurLoadAssetRecord = assetRecord;
-            newReference.ReferenceAssetInfor = new BaseBeReferenceAssetInfor(sp, typeof(Sprite));
+            ReferenceAssetInfor referenceAssetInfor = new ReferenceAssetInfor(sp, typeof(Sprite));
+
+            ReferenceAssetAndRecord newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
 
             if (curReference != null)
                 curReference.ModifyComponentReference<Image>(targetImage, newReference);
             else
-            {
-                assetRecord.AddReference();
                 AssetReferenceManager.AddObjectComponentReference(targetImage, newReference);
-            }
 
             targetImage.sprite = sp;
+            return referenceAssetInfor;
         }
 
-        //@FromImage 上的资源克隆到 @ToImage
-        public static void CloneImageSprite(Image @FromImage, Image @ToImage)
+   
+        //fromImage 上的资源克隆到 toImage
+        public static void CloneImageSprite(Image fromImage, Image toImage)
         {
-            BaseAssetReference2 @fromsourceReference = AssetReferenceManager.GetObjectComponentReference(@FromImage, SpriteAssetReference.GetSpriteAssetReference2);
-            BaseAssetReference2 @totargetReference = AssetReferenceManager.GetObjectComponentReference(@ToImage, SpriteAssetReference.GetSpriteAssetReference2);
+            ReferenceAssetAndRecord fromsourceReference = AssetReferenceManager.GetObjectComponentReference(fromImage, AssetReferenceManager.GetSpriteAssetReference);
+            ReferenceAssetAndRecord totargetReference = AssetReferenceManager.GetObjectComponentReference(toImage, AssetReferenceManager.GetSpriteAssetReference);
 
-
-            if (@fromsourceReference == null)
+            if (fromsourceReference == null)
             {
-                if (@totargetReference != null)
-                    @totargetReference.ModifyComponentReference(@ToImage, @fromsourceReference);
-
-                @ToImage.sprite = null;
+                if (totargetReference != null)
+                    AssetReferenceManager.RemoveObjectComponentReference(toImage, totargetReference);
+                toImage.sprite = null;
             }
             else
             {
-                if (@totargetReference != null)
-                {
-                    @totargetReference.ModifyComponentReference(@ToImage, @fromsourceReference);
-                }
+                if (totargetReference != null)
+                    totargetReference.ModifyComponentReference(toImage, fromsourceReference);
                 else
-                {
-                    @fromsourceReference.CurLoadAssetRecord.AddReference();
-                    AssetReferenceManager.AddObjectComponentReference(@ToImage, @fromsourceReference);
-                }
-                @ToImage.sprite = @fromsourceReference.CurLoadAssetRecord.LoadUnityObjectAssetInfor.LoadSpriteFromSpriteRender();
+                    AssetReferenceManager.AddObjectComponentReference(toImage, fromsourceReference);
+
+                toImage.sprite = fromsourceReference.CurLoadAssetRecord.LoadUnityObjectAssetInfor.LoadSpriteFromSpriteRender();
             }
         }
-
 
 
         #endregion
 
         #region GameObject加载
 
-        public static void InstantiateGameObjectFromRecordSync(Transform targetParent,BaseLoadAssetRecord assetRecord)
+        public static ReferenceGameObjectAssetInfor InstantiateGameObjectByPathSync(Transform targetParent, string assetPath)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+                return InstantiateGameObjectFromRecordSync(targetParent, null);
+            else
+                return InstantiateGameObjectFromRecordSync(targetParent, LoadAssetSync(assetPath));
+        }
+
+        public static void InstantiateGameObjectByPathAsync(Transform targetParent, string assetPath, Action<ReferenceGameObjectAssetInfor> afterInitialedInstanceAction = null)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                ReferenceGameObjectAssetInfor gameObjectAsset = InstantiateGameObjectFromRecordSync(targetParent, null);
+                if (afterInitialedInstanceAction != null)
+                    afterInitialedInstanceAction(gameObjectAsset);
+            }
+            else
+            {
+                LoadAssetAsync(assetPath, (assetRecord) =>
+                {
+                    ReferenceGameObjectAssetInfor gameObjectAsset = InstantiateGameObjectFromRecordSync(targetParent, assetRecord);
+                    if (afterInitialedInstanceAction != null)
+                        afterInitialedInstanceAction(gameObjectAsset);
+                });
+            }
+        }
+
+        public static ReferenceGameObjectAssetInfor InstantiateGameObjectFromRecordSync(Transform targetParent, BaseLoadAssetRecord assetRecord)
         {
             if (assetRecord == null)
-                return;
+                return null;
 
-            BaseAssetReference2 curReference = AssetReferenceManager.GetObjectComponentReference(targetParent, GameObjectAssetReference.GetGameObjectFromAssetReference2, assetRecord.AssetUrl);
+            ReferenceAssetAndRecord curReference = AssetReferenceManager.GetObjectComponentReference(targetParent, AssetReferenceManager.GetGameObjectFromAssetReference, assetRecord.AssetUrl);
 
             if (curReference != null)
-                return;
+                return null;
 
             GameObject go = assetRecord.LoadUnityObjectAssetInfor.InstantiateInstance(targetParent);
-            BaseAssetReference2 newReference = new BaseAssetReference2();
-            newReference.CurLoadAssetRecord = assetRecord;
-            newReference.ReferenceAssetInfor = new BaseBeReferenceAssetInfor(go, typeof(GameObject));
+            ReferenceGameObjectAssetInfor referenceAssetInfor = new ReferenceGameObjectAssetInfor(go, typeof(GameObject));
 
-
-            assetRecord.AddReference();
+            ReferenceAssetAndRecord newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
             AssetReferenceManager.AddObjectComponentReference(targetParent, newReference);
-        }
 
-
-        public static void LoadGameObjectAssetSync(string assetPath, Transform targetParent, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<Transform> getAssetFromRecordAction = null, GetCurReferenceHandler<Transform> getAssetReference = null)
-        {
-            if (getAssetFromRecordAction == null)
-            {
-                //Debug.LogError("LoadSpriteAssetSync Fail, 必须设置如何从加载的资源中获取需要的资源的方法");
-                getAssetFromRecordAction = GameObjectAssetReference.GetGameObjectInstance;
-            }
-            if (getAssetReference == null)
-            {
-                //Debug.LogError("LoadSpriteAssetSync Fail, 必须指定如何从一个组件的所有当前资源引用中找到对应的引用的方法");
-                getAssetReference = GameObjectAssetReference.GetTransformAssetReference;
-            }
-
-            BaseLoadAssetRecord assetRecord = null;
-            if (string.IsNullOrEmpty(assetPath) == false)
-            {
-                assetRecord = LoadAssetFromCache(assetPath);
-                if (assetRecord == null || assetRecord.LoadUnityObjectAssetInfor == null)
-                    assetRecord = LoadAssetSync(assetPath);
-            }
-            AssetReferenceController.CreateOrAddReference<Transform>(targetParent, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
+            return referenceAssetInfor;
         }
 
         #endregion
 
-        #region AudioClip 加载
-        public static void LoadAudioClipAssetSync(string assetPath, AudioSource targetAudioSource, Action<UnityEngine.Object> AfterReferenceAction = null, GetAssetFromRecordHandler<AudioSource> getAssetFromRecordAction = null, GetCurReferenceHandler<AudioSource> getAssetReference = null)
-        {
-            if (getAssetFromRecordAction == null)
-            {
-                //Debug.LogError("LoadAudioClipAssetSync Fail, 必须设置如何从加载的资源中获取需要的资源的方法");
-                getAssetFromRecordAction = AudioClipAssetReference.GetAudioClipFromAsset;
-            }
-            if (getAssetReference == null)
-            {
-                //Debug.LogError("LoadAudioClipAssetSync Fail, 必须指定如何从一个组件的所有当前资源引用中找到对应的引用的方法");
-                getAssetReference = AudioClipAssetReference.GetAudioClipAssetReference;
-            }
-
-            BaseLoadAssetRecord assetRecord = null;
-            if (string.IsNullOrEmpty(assetPath) == false)
-            {
-                assetRecord = LoadAssetFromCache(assetPath);
-                if (assetRecord == null || assetRecord.LoadUnityObjectAssetInfor == null)
-                    assetRecord = LoadAssetSync(assetPath);
-            }
-            AssetReferenceController.CreateOrAddReference<AudioSource>(targetAudioSource, assetRecord, getAssetReference, getAssetFromRecordAction, AfterReferenceAction);
-        }
-
-        #endregion
 
         #endregion
 

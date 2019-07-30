@@ -427,7 +427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &720224026
 Transform:
   m_ObjectHideFlags: 0
@@ -676,7 +676,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c34d46e9df97a345a655bfbc0814322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mAllGameObjectReference: []
+  mAllGameObjectReference:
+  - mGameObject: {fileID: 0}
+    mAllComponents:
+    - mComponent: {fileID: 0}
+      mAllReference:
+      - ReferenceAsset:
+          ReferenceCount: 0
+        Debug_ResourcesLoadAssetRecord_Current:
+          Debug_AssetUrl: 
+          Debug_ReferenceCount: 0
+          Debug_AssetLoadedType: 0
+          Debug_RemainTimeToBeDelete: 0
+          Debug_MarkToDeleteTime: 0
+        Debug_AssetBundleSubAssetLoadRecord_Current:
+          Debug_AssetUrl: 
+          Debug_ReferenceCount: 0
+          Debug_AssetLoadedType: 0
+          Debug_RemainTimeToBeDelete: 0
+          Debug_MarkToDeleteTime: 0
+          Debug_AssetBelongBundleName: 
 --- !u!1 &1268209834
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,7 +772,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9a0f8d71e0b35409af73c899629786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsLoadResourcesAssetPriorit: 1
+  IsLoadResourcesAssetPriorit: 0
   ColorDefine:
     mInforLevelColor: '#5EAB15FF'
     mEditorInforLevelColor: '#E300BDFF'
@@ -864,7 +883,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1652667700
 MonoBehaviour:
   m_ObjectHideFlags: 0

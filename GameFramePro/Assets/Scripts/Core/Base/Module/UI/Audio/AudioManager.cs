@@ -12,7 +12,7 @@ namespace GameFramePro
         #region 背景音
 
         private Dictionary<string, AudioClip> mAllBackgroundAudioClips = new Dictionary<string, AudioClip>(); //背景音
-       // private AudioClip mCurBackgroundAudioClip = null; //当前的背景音
+                                                                                                              // private AudioClip mCurBackgroundAudioClip = null; //当前的背景音
         private AudioSource mCurBackgroundAudioSource; //当前的背景音 播放组件
         #endregion
 
@@ -27,7 +27,7 @@ namespace GameFramePro
 
 
         #region 播放声音接口
-        public void PlayBackgroundAudioSync(string audioPath, string audioName,float volume, bool isLoop = true, bool isForeceReplay = false)
+        public void PlayBackgroundAudioSync(string audioPath, string audioName, float volume, bool isLoop = true, bool isForeceReplay = false)
         {
             if (mCurBackgroundAudioSource.clip != null)
             {
@@ -45,10 +45,11 @@ namespace GameFramePro
             }
 
             AudioClip clip = null;
-            if (mAllBackgroundAudioClips.TryGetValue(audioPath, out clip)==false)
+            if (mAllBackgroundAudioClips.TryGetValue(audioPath, out clip) == false)
             {
                 //TODO  这里不能直接赋值
-                ResourcesManager.LoadAudioClipAssetSync(audioPath, mCurBackgroundAudioSource);
+                Debug.LogError("TODO");
+                //    ResourcesManager.LoadAudioClipAssetSync(audioPath, mCurBackgroundAudioSource);
             }
 
             PlayBackgroundAudioSync(clip, volume, isLoop, isForeceReplay);
@@ -59,7 +60,7 @@ namespace GameFramePro
         /// <param name="audioPath"></param>
         /// <param name="audioName"></param>
         /// <param name="volume"></param>
-        public void PlayBackgroundAudioSync(string audioPath, float volume,bool isLoop=true,bool isForeceReplay=false)
+        public void PlayBackgroundAudioSync(string audioPath, float volume, bool isLoop = true, bool isForeceReplay = false)
         {
             string audioName = IOUtility.GetFileNameWithoutExtensionEx(audioPath);
             PlayBackgroundAudioSync(audioPath, audioName, volume, isLoop, isForeceReplay);

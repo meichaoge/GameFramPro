@@ -62,7 +62,7 @@ namespace GameFramePro.ResourcesEx
 
         #endregion
 
-        #region 判断引用是否相同的资源
+
         /// <summary>
         /// 判断参数值指定的两个资源是否相同
         /// </summary>
@@ -79,7 +79,11 @@ namespace GameFramePro.ResourcesEx
             Debug.LogError("无法确定的类型!!或者错误的类型  " + AssetLoadedType);
             return true;
         }
-        #endregion
+
+        /// <summary>
+        /// 标示当前记录是否有效
+        /// </summary>
+        public virtual bool IsReferenceEnable { get { if (LoadUnityObjectAssetInfor == null) return false; return LoadUnityObjectAssetInfor.IsLoadAssetEnable; } }
 
 
 

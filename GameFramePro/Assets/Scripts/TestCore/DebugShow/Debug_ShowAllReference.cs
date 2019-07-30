@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using GameFramePro.ResourcesEx;
+using GameFramePro;
 
 public class Debug_ShowAllReference : MonoBehaviour
 {
+#if UNITY_EDITOR
 
     [System.Serializable]
     public class AssetReferenceInfor
@@ -17,7 +19,7 @@ public class Debug_ShowAllReference : MonoBehaviour
     public class ComponentAssetReferenceInfor
     {
         public Component mComponent;
-        public List<BaseAssetReference2> mAllReference = new List<BaseAssetReference2>();
+        public List<ReferenceAssetAndRecord> mAllReference = new List<ReferenceAssetAndRecord>();
     }
 
 
@@ -49,4 +51,5 @@ public class Debug_ShowAllReference : MonoBehaviour
         }
     }
 
+#endif
 }

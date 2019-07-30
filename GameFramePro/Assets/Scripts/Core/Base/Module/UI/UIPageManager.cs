@@ -61,25 +61,23 @@ namespace GameFramePro.UI
 
             targetPage = TryGetUIPageFromCache(pageName) as T; //首先检测缓存中的数据
             //创建界面
-            if (targetPage == null || targetPage.ConnectPageInstance == null)
+            if (targetPage == null || targetPage.IsPrefabInstanceEnable == false)
             {
-                CreateUIPageInstance(pageName, pagePath, mUIChangePage, (obj) =>
+                CreateUIPageInstance(pageName, pagePath, mUIChangePage, (gameObjectReference) =>
                 {
-                    if (obj != null)
+                    if (gameObjectReference != null)
                     {
-                        GameObject goInstance = obj as GameObject;
-
                         if (targetPage == null)
                             targetPage = new T();
                         else
                             targetPage.ResetPageForReConnectPageInstance();
 
-                        targetPage.UIPageInitialed(pageName, pagePath, UIPageTypeEnum.ChangePage, goInstance);
+                        targetPage.UIPageInitialed(pageName, pagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
                         TryCacheUIPage(pageName, targetPage);
                         targetPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                        var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
+                        var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
                         debugShowScript.Initialed(targetPage);
 #endif
 
@@ -120,20 +118,20 @@ namespace GameFramePro.UI
                     Debug.LogError("无法返回到上一个界面 {0} ，没有被记录的页面", perviousPageName);
                     return;
                 }
-                if (previouPage.ConnectPageInstance == null)
+                if (previouPage.IsPrefabInstanceEnable == false)
                 {
-                    CreateUIPageInstance(previouPage.PageName, previouPage.mPagePath, mUIChangePage, (obj) =>
+                    CreateUIPageInstance(previouPage.PageName, previouPage.mPagePath, mUIChangePage, (gameObjectReference) =>
                     {
-                        if (obj != null)
+                        if (gameObjectReference != null)
                         {
                             previouPage.ResetPageForReConnectPageInstance();
 
-                            previouPage.UIPageInitialed(previouPage.PageName, previouPage.mPagePath, UIPageTypeEnum.ChangePage, obj as GameObject);
+                            previouPage.UIPageInitialed(previouPage.PageName, previouPage.mPagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
                             TryCacheUIPage(previouPage.PageName, previouPage);
                             previouPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                            var debugShowScript = (obj as GameObject).GetAddComponentEx<Debug_ShowUIPageInfor>();
+                            var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
                             debugShowScript.Initialed(previouPage);
 #endif
                         }
@@ -141,7 +139,7 @@ namespace GameFramePro.UI
                 }
 
 
-                if (previouPage.ConnectPageInstance == null)
+                if (previouPage.IsPrefabInstanceEnable == false)
                     continue;  //说明上一个页面加载失败
 
                 if (CurUIBaseChangePage != null)
@@ -184,7 +182,7 @@ namespace GameFramePro.UI
             if (cachePage != null)
             {
                 targetPage = cachePage as T;
-                if(isBelongCurPage)
+                if (isBelongCurPage)
                     targetPage.ChangeBelongChangePage(CurUIBaseChangePage);
                 else
                     targetPage.ChangeBelongChangePage(null);
@@ -194,23 +192,23 @@ namespace GameFramePro.UI
                 return targetPage;
             } //取出打开的界面
 
-            CreateUIPageInstance(pageName, pagePath, mUIPopWindow, (obj) =>
+            CreateUIPageInstance(pageName, pagePath, mUIPopWindow, (gameObjectReference) =>
              {
-                 if (obj != null)
+                 if (gameObjectReference != null)
                  {
                      RecordPopPage(pageName, true);
                      targetPage = new T();
                      if (isBelongCurPage)
-                         targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, CurUIBaseChangePage, obj as GameObject);
+                         targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, CurUIBaseChangePage, gameObjectReference);
                      else
-                         targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, null, obj as GameObject);
+                         targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, null, gameObjectReference);
 
                      TryCacheUIPage(pageName, targetPage);
                      targetPage.InstantiatePage(); //初始化
 
                      targetPage.ShowPage();
 #if UNITY_EDITOR
-                     var debugShowScript = (obj as GameObject).GetAddComponentEx<Debug_ShowUIPageInfor>();
+                     var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
                      debugShowScript.Initialed(targetPage);
 #endif
                  }
@@ -230,7 +228,7 @@ namespace GameFramePro.UI
                 return;
             }
 
-            if (s_AllAcivityPopWIndows.Contains(pageName)==false)
+            if (s_AllAcivityPopWIndows.Contains(pageName) == false)
             {
 #if UNITY_EDITOR
                 Debug.LogError("弹窗{0} 已经关闭了 ，并不需要重复关闭", pageName);
@@ -325,9 +323,9 @@ namespace GameFramePro.UI
         /// <param name="pagePath"></param>
         /// <param name="parentPage"></param>
         /// <returns></returns>
-        public static T CreateWidgetInstance<T>(string pageName, string pagePath,UIBasePage parentPage,Transform parentTrans) where T : UIBaseWidget, new()
+        public static T CreateWidgetInstance<T>(string pageName, string pagePath, UIBasePage parentPage, Transform parentTrans) where T : UIBaseWidget, new()
         {
-            if (string.IsNullOrEmpty(pageName)|| string.IsNullOrEmpty(pageName))
+            if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
             {
                 Debug.LogError("CreateWidgetPage Fail,Parameter is null");
                 return null;
@@ -335,19 +333,18 @@ namespace GameFramePro.UI
 
             T targetWidget = null;
 
-            CreateUIPageInstance(pageName, pagePath, parentTrans, (obj) =>
+            CreateUIPageInstance(pageName, pagePath, parentTrans, (gameObjectReference) =>
             {
-                if (obj != null)
+                if (gameObjectReference != null)
                 {
-                    GameObject goInstance = obj as GameObject;
                     targetWidget = new T();
 
-                    targetWidget.UIPageInitialed(pageName, UIPageTypeEnum.Widget, parentPage, goInstance);
+                    targetWidget.UIPageInitialed(pageName, UIPageTypeEnum.Widget, parentPage, gameObjectReference);
                     TryCacheUIPage(pageName, targetWidget);
                     targetWidget.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                    var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
+                    var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
                     debugShowScript.Initialed(targetWidget);
 #endif
 
@@ -363,9 +360,11 @@ namespace GameFramePro.UI
         #region 辅助工具
 
         //创建页面实例
-        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<UnityEngine.Object> afterInitialedInstanceAction)
+        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<ReferenceGameObjectAssetInfor> afterInitialedInstanceAction)
         {
-            ResourcesManager.LoadGameObjectAssetSync(pagePath, parent, afterInitialedInstanceAction);
+            ReferenceGameObjectAssetInfor gameObjectAssetInfor = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath);
+            if (afterInitialedInstanceAction != null)
+                afterInitialedInstanceAction.Invoke(gameObjectAssetInfor);
         }
 
         #endregion
@@ -399,9 +398,9 @@ namespace GameFramePro.UI
         public static void RemoUIPageCacheRecord(string pageName)
         {
             UIBasePage page = null;
-            if(s_AllAliveUIPages.TryGetValue(pageName,out page)&&page!=null)
+            if (s_AllAliveUIPages.TryGetValue(pageName, out page) && page != null)
             {
-                if(page.IsRealseOnDestroyPageInstance)
+                if (page.IsRealseOnDestroyPageInstance)
                 {
                     page.DestroyAndRelease();
                     page = null;

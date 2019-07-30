@@ -15,10 +15,10 @@ namespace GameFramePro.UI
         /// 节点名称和路径的映射关系 用于根据名字查找对象
         /// </summary>
         Dictionary<string, string> NamePathMapInfor { get; }
-        /// <summary>
-        /// 关联的对象
-        /// </summary>
-        Transform ConnectTrans { get; }
+        ///// <summary>
+        ///// 关联的对象
+        ///// </summary>
+        //Transform ConnectTrans { get; }
 
         T GetComponentByName<T>(string gameObjectName) where T : Component;
         T GetComponentByPath<T>(string gameObjectName, string path) where T : Component;

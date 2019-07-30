@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using GameFramePro.UI;
+using GameFramePro;
 
 public class Debug_ShowUIPageInfor :MonoBehaviour
 {
+#if UNITY_EDITOR
+
     public UIPageStateEnum mUIPageState;
     public UIPageTypeEnum mUIPageTypeEnum;
     public string PageName;
-    public GameObject ConnectPageInstance;
+    public ReferenceGameObjectAssetInfor ConnectPageInstance;
     public float RecordInvisibleRealTime;
     public float MaxAliveAfterInActivte;
 
@@ -39,7 +42,7 @@ public class Debug_ShowUIPageInfor :MonoBehaviour
         mUIPageState = mTarget.mUIPageState;
         mUIPageTypeEnum = mTarget.mUIPageTypeEnum;
         PageName = mTarget.PageName;
-        ConnectPageInstance = mTarget.ConnectPageInstance;
+        ConnectPageInstance = mTarget.ConnectGameObjectAssetInstance;
         RecordInvisibleRealTime = mTarget.RecordInvisibleRealTime;
         MaxAliveAfterInActivte = mTarget.MaxAliveAfterInActivte;
         mAllContainWidgets.Clear();
@@ -57,6 +60,6 @@ public class Debug_ShowUIPageInfor :MonoBehaviour
 
     }
 
-
+#endif
 
 }
