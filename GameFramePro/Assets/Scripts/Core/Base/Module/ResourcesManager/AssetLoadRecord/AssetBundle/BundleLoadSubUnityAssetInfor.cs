@@ -73,6 +73,27 @@ namespace GameFramePro.ResourcesEx
             }
             return renderer.sprite;
         }
+
+
+        public override AudioClip LoadAudioClip()
+        {
+            if (IsLoadAssetEnable == false) return null;
+            return mLoadUnityAsset as AudioClip;
+
+            //AudioClip go = ;
+            //if (go == null)
+            //{
+            //    Debug.LogError("当前资源{0} 不是GameObject 资源");
+            //    return null;
+            //}
+            //SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
+            //if (renderer == null)
+            //{
+            //    Debug.LogError("当前资源{0} 不是 没有组件 SpriteRenderer ");
+            //    return null;
+            //}
+            //return renderer.sprite;
+        }
         public override GameObject InstantiateInstance(Transform targetParent)
         {
             if (IsLoadAssetEnable == false) return null;

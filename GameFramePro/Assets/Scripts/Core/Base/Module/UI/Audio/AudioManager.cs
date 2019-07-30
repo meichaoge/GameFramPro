@@ -11,7 +11,7 @@ namespace GameFramePro
     {
         #region 背景音
 
-        private Dictionary<string, AudioClip> mAllBackgroundAudioClips = new Dictionary<string, AudioClip>(); //背景音
+        private Dictionary<string, ReferenceAssetInfor> mAllBackgroundAudioClips = new Dictionary<string, ReferenceAssetInfor>(); //背景音
                                                                                                               // private AudioClip mCurBackgroundAudioClip = null; //当前的背景音
         private AudioSource mCurBackgroundAudioSource; //当前的背景音 播放组件
         #endregion
@@ -44,15 +44,16 @@ namespace GameFramePro
                 }//当前正在播放这个背景音
             }
 
-            AudioClip clip = null;
-            if (mAllBackgroundAudioClips.TryGetValue(audioPath, out clip) == false)
+            ReferenceAssetInfor clipAsset = null;
+            if (mAllBackgroundAudioClips.TryGetValue(audioPath, out clipAsset) == false)
             {
                 //TODO  这里不能直接赋值
                 Debug.LogError("TODO");
-                //    ResourcesManager.LoadAudioClipAssetSync(audioPath, mCurBackgroundAudioSource);
+                clipAsset = ResourcesManager.GetAudioClipByPathSync(mCurBackgroundAudioSource, audioPath);
+                //audioClipAsset.SetAudioClip(mCurBackgroundAudioSource);
             }
 
-            PlayBackgroundAudioSync(clip, volume, isLoop, isForeceReplay);
+            PlayBackgroundAudioSync(clipAsset, volume, isLoop, isForeceReplay);
         }
         /// <summary>
         /// 播放背景音
@@ -65,11 +66,11 @@ namespace GameFramePro
             string audioName = IOUtility.GetFileNameWithoutExtensionEx(audioPath);
             PlayBackgroundAudioSync(audioPath, audioName, volume, isLoop, isForeceReplay);
         }
-        private void PlayBackgroundAudioSync(AudioClip clip, float volume, bool isLoop = true, bool isForeceReplay = false)
+        private void PlayBackgroundAudioSync(ReferenceAssetInfor clipAsset, float volume, bool isLoop = true, bool isForeceReplay = false)
         {
             if (mCurBackgroundAudioSource.clip != null)
             {
-                if (mCurBackgroundAudioSource.clip.name == clip.name)
+                if (mCurBackgroundAudioSource.clip.name == clipAsset.AssetName)
                 {
                     mCurBackgroundAudioSource.volume = volume;
                     mCurBackgroundAudioSource.loop = isLoop;
@@ -86,7 +87,8 @@ namespace GameFramePro
                 }//结束当前的背景音
             }
 
-            mCurBackgroundAudioSource.clip = clip;
+            // mCurBackgroundAudioSource.clip = clip;
+            clipAsset.SetAudioClip(mCurBackgroundAudioSource);
             mCurBackgroundAudioSource.volume = volume;
             mCurBackgroundAudioSource.loop = isLoop;
             mCurBackgroundAudioSource.Play();

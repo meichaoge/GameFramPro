@@ -186,6 +186,28 @@ namespace GameFramePro.ResourcesEx
             return null;
         }
 
+        //获取指定的 AudioSource 组件 AudioClip 引用
+        public static ReferenceAssetAndRecord GetSAudioClipAssetReference(Component component, List<ReferenceAssetAndRecord> allComponentReferences, params object[] otherParameter)
+        {
+            if (allComponentReferences.Count == 0) return null;
+            AudioSource targetAudioSourcesComponent = component as AudioSource;
+
+            if (targetAudioSourcesComponent == null || targetAudioSourcesComponent.clip == null)
+                return null;
+
+            foreach (var reference in allComponentReferences)
+            {
+                if (reference.ReferenceAsset == null) continue;
+                if (reference.ReferenceAsset.IsReferenceAssetEnable == false) continue;
+                if (reference.ReferenceAsset.ReferenceAssetType != typeof(AudioClip))
+                    continue;
+
+                if (reference.ReferenceAsset.IsReferenceEqual(targetAudioSourcesComponent.clip))
+                    return reference;
+            }
+            return null;
+        }
+
         //根据指定的参数中的对象名获取引用的对象
         public static ReferenceAssetAndRecord GetGameObjectFromAssetReference(Component component, List<ReferenceAssetAndRecord> allComponentReferences, params object[] otherParameter)
         {

@@ -35,6 +35,8 @@ namespace GameFramePro.ResourcesEx
         //**接口
         public abstract string LoadTextAssetContent();
         public abstract Sprite LoadSpriteFromSpriteRender();
+        //音效
+        public abstract AudioClip LoadAudioClip();
 
         //创建一个实例
         public abstract GameObject InstantiateInstance(Transform targetParent);

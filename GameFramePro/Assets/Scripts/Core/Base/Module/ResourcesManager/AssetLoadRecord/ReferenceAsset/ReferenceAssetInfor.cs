@@ -116,7 +116,16 @@ namespace GameFramePro
             mReferenceAsset.name = newGameObjectName;
         }
 
-      
+
+        #endregion
+
+        #region 资源设置接口
+        public void SetAudioClip(AudioSource audioSource)
+        {
+            if (IsReferenceAssetEnable == false) return;
+            if (mReferenceAsset is AudioClip)
+                audioSource.clip = mReferenceAsset as AudioClip;
+        }
         #endregion
 
     }

@@ -16,7 +16,7 @@ public static class Transform_Ex
             Debug.LogError("GetAddComponent  Fail,Target Transform Is Null");
             return null;
         }
-
+        Debug.Log(typeof(T));
         T result = target.GetComponent<T>();
         if (result == null)
             result = target.gameObject.AddComponent<T>();

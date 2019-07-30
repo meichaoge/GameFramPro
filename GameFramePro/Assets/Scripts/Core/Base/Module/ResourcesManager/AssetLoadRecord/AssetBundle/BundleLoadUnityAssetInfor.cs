@@ -93,6 +93,11 @@ namespace GameFramePro.ResourcesEx
             Debug.LogError("AssetBundle 资源不支持直接获取资源", AssetUrl);
             return null;
         }
+        public override AudioClip LoadAudioClip()
+        {
+            Debug.LogError("AssetBundle 资源不支持直接获取资源", AssetUrl);
+            return null;
+        }
         public override GameObject InstantiateInstance(Transform targetParent)
         {
             Debug.LogError("AssetBundle 资源不支持直接获取资源", AssetUrl);

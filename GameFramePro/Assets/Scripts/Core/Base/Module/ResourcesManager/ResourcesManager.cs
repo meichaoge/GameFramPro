@@ -308,26 +308,6 @@ namespace GameFramePro
             else
                 return SetImageSpriteFromRecordSync(targetImage, LoadAssetSync(assetPath));
         }
-        //异步设置Sprite 接口
-        public static void SetImageSpriteByPathAsync(Image targetImage, string assetPath,Action<ReferenceAssetInfor> afterAttachSpriteAction)
-        {
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                ReferenceAssetInfor assetInfor= SetImageSpriteFromRecordSync(targetImage, null);
-                if (afterAttachSpriteAction != null)
-                    afterAttachSpriteAction.Invoke(assetInfor);
-            }
-            else
-            {
-                LoadAssetAsync(assetPath, (assetRecord) =>
-                {
-                    ReferenceAssetInfor assetInfor = SetImageSpriteFromRecordSync(targetImage, assetRecord);
-                    if (afterAttachSpriteAction != null)
-                        afterAttachSpriteAction.Invoke(assetInfor);
-                });
-            }
-        }
-
         //根据资源加载图片精灵
         public static ReferenceAssetInfor SetImageSpriteFromRecordSync(Image targetImage, BaseLoadAssetRecord assetRecord)
         {
@@ -355,8 +335,27 @@ namespace GameFramePro
             targetImage.sprite = sp;
             return referenceAssetInfor;
         }
+        //异步设置Sprite 接口
+        public static void SetImageSpriteByPathAsync(Image targetImage, string assetPath, Action<ReferenceAssetInfor> afterAttachSpriteAction)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                ReferenceAssetInfor assetInfor = SetImageSpriteFromRecordSync(targetImage, null);
+                if (afterAttachSpriteAction != null)
+                    afterAttachSpriteAction.Invoke(assetInfor);
+            }
+            else
+            {
+                LoadAssetAsync(assetPath, (assetRecord) =>
+                {
+                    ReferenceAssetInfor assetInfor = SetImageSpriteFromRecordSync(targetImage, assetRecord);
+                    if (afterAttachSpriteAction != null)
+                        afterAttachSpriteAction.Invoke(assetInfor);
+                });
+            }
+        }
 
-   
+
         //fromImage 上的资源克隆到 toImage
         public static void CloneImageSprite(Image fromImage, Image toImage)
         {
@@ -433,6 +432,41 @@ namespace GameFramePro
 
         #endregion
 
+        #region Audio 加载
+
+        public static ReferenceAssetInfor GetAudioClipByPathSync(AudioSource targetAudioSources,string assetPath )
+        {
+            if (string.IsNullOrEmpty(assetPath))
+                return GetAudioClipFromRecordSync(targetAudioSources, null);
+            else
+                return GetAudioClipFromRecordSync(targetAudioSources, LoadAssetSync(assetPath));
+        }
+
+        public static ReferenceAssetInfor GetAudioClipFromRecordSync(AudioSource targetAudioSources, BaseLoadAssetRecord assetRecord)
+        {
+            ReferenceAssetAndRecord curReference = AssetReferenceManager.GetObjectComponentReference(targetAudioSources, AssetReferenceManager.GetSAudioClipAssetReference);
+            if (assetRecord == null)
+            {
+                if (curReference != null)
+                    AssetReferenceManager.RemoveObjectComponentReference(targetAudioSources, curReference);
+                return null;
+            }
+
+            if (curReference != null && curReference.CurLoadAssetRecord.isReferenceEqual(assetRecord))
+                return null;
+            AudioClip clip = assetRecord.LoadUnityObjectAssetInfor.LoadAudioClip();
+            ReferenceAssetInfor referenceAssetInfor = new ReferenceAssetInfor(clip, typeof(AudioClip));
+            ReferenceAssetAndRecord newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
+
+            if (curReference != null)
+                curReference.ModifyComponentReference<AudioSource>(targetAudioSources, newReference);
+            else
+                AssetReferenceManager.AddObjectComponentReference(targetAudioSources, newReference);
+
+         
+            return referenceAssetInfor;
+        }
+        #endregion
 
         #endregion
 
