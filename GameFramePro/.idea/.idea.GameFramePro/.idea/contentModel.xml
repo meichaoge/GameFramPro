@@ -30,10 +30,16 @@
               </e>
               <e p="BuildAssetBundle_Win.cs" t="Include" />
               <e p="BuildAssetBundleTool.cs" t="Include" />
-              <e p="BuildAssetBundleTotalRecord_2019_07_18_17_11.txt" t="Include" />
+              <e p="BuildAssetBundleTotalRecord_2019_07_24_15_15.txt" t="Include" />
+              <e p="BuildAssetBundleTotalRecord_2019_07_30_13_25.txt" t="Include" />
             </e>
+            <e p="AutoImportTagOrLayer.cs" t="Include" />
             <e p="EditorApplicationSetting.cs" t="Include" />
             <e p="EditorHelperUtility.cs" t="Include" />
+            <e p="EditorPlayerPrefsKeyDefine.cs" t="Include" />
+            <e p="Localization" t="Include">
+              <e p="LocalizationConfig_Win.cs" t="Include" />
+            </e>
             <e p="ResoureEditor" t="Include">
               <e p="SpriteAltsEditor.cs" t="Include" />
               <e p="TextureAssetEditor.cs" t="Include" />
@@ -43,11 +49,42 @@
                 <e p="AssetDirectoryTreeView.cs" t="Include" />
                 <e p="AssetStateNodeInfor.cs" t="Include" />
               </e>
+              <e p="Excel" t="Include">
+                <e p="ExcelUtility" t="Include">
+                  <e p="ExcelToCsvUtility.cs" t="Include" />
+                  <e p="ExcelToJsonUtility.cs" t="Include" />
+                  <e p="ExcelToLuaUtility.cs" t="Include" />
+                  <e p="ExcelToXmlUtility.cs" t="Include" />
+                  <e p="ExcelUtility.cs" t="Include" />
+                </e>
+              </e>
+            </e>
+            <e p="UI" t="Include">
+              <e p="CreateUIWithNotRaycastTarget.cs" t="Include" />
+              <e p="Template" t="Include">
+                <e p="UIBaseChangePage.tpl.txt" t="Include" />
+                <e p="UIBasePageViewEditor.cs" t="Include" />
+                <e p="UIBasePopWindow.tpl.txt" t="Include" />
+                <e p="UIBaseWidget.tpl.txt" t="Include" />
+              </e>
+              <e p="UIGraphicRaycastCheck.cs" t="Include" />
+            </e>
+            <e p="XLua" t="Include">
+              <e p="XluaConfig.cs" t="Include" />
+            </e>
+          </e>
+          <e p="CustomerEditor" t="Include">
+            <e p="Component" t="Include">
+              <e p="UGUIComponentReferenceEditor.cs" t="Include" />
+              <e p="UGUIComponentSerializationInforPropertyDrawer.cs" t="Include" />
+            </e>
+            <e p="ReferenceAsset" t="Include">
+              <e p="ReferenceAssetAndRecordDrawer.cs" t="Include" />
             </e>
           </e>
           <e p="EditorExpand" t="Include">
-            <e p="CustomerHeaderAttribute.cs" t="Include" />
             <e p="CustomerHeaderAttributeDrawer.cs" t="Include" />
+            <e p="FlagEnumAttributeDrawer.cs" t="Include" />
             <e p="ScriptableObjectUtility.cs" t="Include" />
           </e>
           <e p="totalNeedUpdateAssetBundle.txt" t="Include" />
@@ -66,11 +103,13 @@
               <e p="Expand&amp;Utility" t="Include">
                 <e p="ColorExpand.cs" t="Include" />
                 <e p="DateTime_Ex.cs" t="Include" />
+                <e p="EnumUtility.cs" t="Include" />
                 <e p="FormatUtility.cs" t="Include" />
                 <e p="IOUtility.cs" t="Include" />
                 <e p="MathfUtility.cs" t="Include" />
                 <e p="StringUtility.cs" t="Include" />
                 <e p="Unity_buildIn" t="Include">
+                  <e p="ComponentUtility.cs" t="Include" />
                   <e p="GameObject_Ex.cs" t="Include" />
                   <e p="Rect_Ex.cs" t="Include" />
                   <e p="RectTransform_Ex.cs" t="Include" />
@@ -80,7 +119,19 @@
               <e p="Module" t="Include">
                 <e p="AppManager.cs" t="Include" />
                 <e p="AsyncManager.cs" t="Include" />
-                <e p="IUpdateTick.cs" t="Include" />
+                <e p="Localization" t="Include">
+                  <e p="ExportFormatEnum.cs" t="Include" />
+                  <e p="Language.cs" t="Include" />
+                  <e p="LocalizationManager.cs" t="Include" />
+                  <e p="LocalizationUtility.cs" t="Include" />
+                </e>
+                <e p="Lua" t="Include">
+                  <e p="XluaManager.cs" t="Include" />
+                </e>
+                <e p="MessageCenter" t="Include">
+                  <e p="EventTrigger.cs" t="Include" />
+                  <e p="HandlerRecord.cs" t="Include" />
+                </e>
                 <e p="NetWork" t="Include">
                   <e p="Download" t="Include">
                     <e p="Downloader" t="Include">
@@ -105,6 +156,9 @@
                   </e>
                   <e p="ITaskProcess.cs" t="Include" />
                 </e>
+                <e p="PlayerPrefs" t="Include">
+                  <e p="PlayerPrefsManager.cs" t="Include" />
+                </e>
                 <e p="PoolManager" t="Include">
                   <e p="NativePool" t="Include">
                     <e p="INativeObjectPool.cs" t="Include" />
@@ -121,25 +175,40 @@
                   </e>
                 </e>
                 <e p="ResourcesManager" t="Include">
-                  <e p="AssetBundle" t="Include">
-                    <e p="LoadAssetBundle" t="Include">
-                      <e p="AssetBundleAssetDepdenceRecord.cs" t="Include" />
-                      <e p="AssetBundleManager.cs" t="Include" />
-                      <e p="AssetBundleSubAssetLoadRecord.cs" t="Include" />
-                    </e>
+                  <e p="AssetBundle_Load" t="Include">
                     <e p="UpdateAssetBundle" t="Include">
                       <e p="AssetBundleAssetTotalInfor.cs" t="Include" />
                       <e p="AssetBundleUpgradeManager.cs" t="Include" />
                     </e>
                   </e>
+                  <e p="AssetBundleManager.cs" t="Include" />
                   <e p="AssetDelayDeleteManager.cs" t="Include" />
-                  <e p="IAssetManager.cs" t="Include" />
-                  <e p="ILoadAssetRecord.cs" t="Include" />
-                  <e p="ResourcesManager.cs" t="Include" />
-                  <e p="Resourcs" t="Include">
-                    <e p="LocalResourcesManager.cs" t="Include" />
-                    <e p="ResourcesLoadAssetRecord.cs" t="Include" />
+                  <e p="AssetLoadRecord" t="Include">
+                    <e p="AssetBundle" t="Include">
+                      <e p="AssetBundleAssetDepdenceRecord.cs" t="Include" />
+                      <e p="AssetBundleSubAssetLoadRecord.cs" t="Include" />
+                      <e p="BundleLoadSubUnityAssetInfor.cs" t="Include" />
+                      <e p="BundleLoadUnityAssetInfor.cs" t="Include" />
+                    </e>
+                    <e p="BaseLoadAssetRecord.cs" t="Include" />
+                    <e p="BaseLoadUnityAssetInfor.cs" t="Include" />
+                    <e p="ILoadAssetRecord.cs" t="Include" />
+                    <e p="ReferenceAsset" t="Include">
+                      <e p="ReferenceAssetInfor.cs" t="Include" />
+                      <e p="ReferenceGameObjectAssetInfor.cs" t="Include" />
+                    </e>
+                    <e p="Resources" t="Include">
+                      <e p="ResourceLoadUnityAssetInfor.cs" t="Include" />
+                      <e p="ResourcesLoadAssetRecord.cs" t="Include" />
+                    </e>
                   </e>
+                  <e p="AssetReference" t="Include">
+                    <e p="AssetReferenceManager.cs" t="Include" />
+                    <e p="ReferenceAssetAndRecord.cs" t="Include" />
+                  </e>
+                  <e p="IAssetManager.cs" t="Include" />
+                  <e p="LocalResourcesManager.cs" t="Include" />
+                  <e p="ResourcesManager.cs" t="Include" />
                 </e>
                 <e p="ThreadPool" t="Include">
                   <e p="Loom.cs" t="Include" />
@@ -149,12 +218,36 @@
                   <e p="ResourcesTracker.cs" t="Include" />
                   <e p="ResourcesTracker_Native.cs" t="Include" />
                 </e>
+                <e p="UI" t="Include">
+                  <e p="Audio" t="Include">
+                    <e p="AudioManager.cs" t="Include" />
+                  </e>
+                  <e p="UIComponent" t="Include">
+                    <e p="IUIComponent.cs" t="Include" />
+                    <e p="UGUIComponent.cs" t="Include" />
+                    <e p="UGUIComponentReference.cs" t="Include" />
+                  </e>
+                  <e p="UIPage" t="Include">
+                    <e p="UIBaseChangePage.cs" t="Include" />
+                    <e p="UIBasePage.cs" t="Include" />
+                    <e p="UIBasePopWindow.cs" t="Include" />
+                    <e p="UIBaseWidget.cs" t="Include" />
+                  </e>
+                  <e p="UIPageManager.cs" t="Include" />
+                  <e p="UIPageManagerUtility.cs" t="Include" />
+                </e>
+                <e p="UpdateTick" t="Include">
+                  <e p="IUpdateCountTick.cs" t="Include" />
+                  <e p="IUpdateTick.cs" t="Include" />
+                  <e p="IUpdateTimeTick.cs" t="Include" />
+                </e>
               </e>
               <e p="Setting" t="Include">
                 <e p="AppPlatformManager.cs" t="Include" />
                 <e p="AppSetting.cs" t="Include" />
                 <e p="AppUrlManager.cs" t="Include" />
                 <e p="ConstDefine.cs" t="Include" />
+                <e p="Define.cs" t="Include" />
               </e>
               <e p="Single" t="Include">
                 <e p="Single.cs" t="Include" />
@@ -184,18 +277,35 @@
                 </e>
               </e>
             </e>
-            <e p="Lua" t="Include">
-              <e p="XluaManager.cs" t="Include" />
-            </e>
             <e p="说明.txt" t="Include" />
+          </e>
+          <e p="Expand" t="Include">
+            <e p="CustomerHeaderAttribute.cs" t="Include" />
+            <e p="FlagEnumAttribute.cs" t="Include" />
           </e>
           <e p="TestCore" t="Include">
             <e p="DebugControl" t="Include">
               <e p="Debug_ControllAppSetting.cs" t="Include" />
             </e>
             <e p="DebugShow" t="Include">
+              <e p="Debug_ShowAllReference.cs" t="Include" />
               <e p="Debug_ShowAllTraceResources.cs" t="Include" />
+              <e p="Debug_ShowUIPageInfor.cs" t="Include" />
             </e>
+          </e>
+          <e p="UI" t="Include">
+            <e p="Home" t="Include">
+              <e p="UIHomeChangePage.cs" t="Include" />
+            </e>
+            <e p="Login" t="Include">
+              <e p="UILoginChangePage.cs" t="Include" />
+              <e p="UILoginTipPopWindow.cs" t="Include" />
+              <e p="UITipInforWidget.cs" t="Include" />
+            </e>
+          </e>
+          <e p="UnityEditor" t="Include">
+            <e p="LayerAndTagManager.cs" t="Include" />
+            <e p="Prefab_Ex.cs" t="Include" />
           </e>
         </e>
         <e p="SDK" t="Include">
@@ -613,6 +723,7 @@
               <e p="08_Hotfix" t="Include">
                 <e p="HotfixTest.cs" t="Include" />
                 <e p="HotfixTest2.cs" t="Include" />
+                <e p="HotfixTest2_Ex.cs" t="Include" />
                 <e p="StatefullTest.cs" t="Include" />
               </e>
               <e p="09_GenericMethod" t="Include">
@@ -633,7 +744,6 @@
                   <e p="BuildFromCLI.cs" t="Include" />
                 </e>
               </e>
-              <e p="ExampleGenConfig.cs" t="Include" />
             </e>
             <e p="Resources" t="Include">
               <e p="perf" t="Include">
@@ -722,11 +832,57 @@
           </e>
         </e>
         <e p="Test" t="Include">
+          <e p="TeslLoadPrefab.cs" t="Include" />
+          <e p="TestAudioClip.cs" t="Include" />
           <e p="TestCourtinue.cs" t="Include" />
-          <e p="TestDiff.cs" t="Include" />
-          <e p="TestLinkList.cs" t="Include" />
           <e p="TestLoadAsset.cs" t="Include" />
           <e p="TestPath.cs" t="Include" />
+          <e p="TestTextAsset.cs" t="Include" />
+          <e p="TestUILoad.cs" t="Include" />
+        </e>
+        <e p="ThirdParty" t="Include">
+          <e p="LuaPerfect" t="Include">
+            <e p="Editor" t="Include">
+              <e p="ApiGenerator.cs" t="Include" />
+            </e>
+            <e p="ObjectFormater.cs" t="Include" />
+          </e>
+        </e>
+        <e p="TODO.txt" t="Include" />
+        <e p="XLua" t="Include">
+          <e p="Gen" t="Include">
+            <e p="DelegatesGensBridge.cs" t="Include" />
+            <e p="EnumWrap.cs" t="Include" />
+            <e p="link.xml" t="Include" />
+            <e p="LuaPerfectObjectFormaterWrap.cs" t="Include" />
+            <e p="LuaPerfectObjectItemWrap.cs" t="Include" />
+            <e p="LuaPerfectObjectRefWrap.cs" t="Include" />
+            <e p="PackUnpack.cs" t="Include" />
+            <e p="Resources" t="Include">
+              <e p="hotfix_id_map.lua.txt" t="Include" />
+            </e>
+            <e p="TutorialBaseClassWrap.cs" t="Include" />
+            <e p="TutorialCSCallLuaItfDBridge.cs" t="Include" />
+            <e p="TutorialDerivedClassExtensionsWrap.cs" t="Include" />
+            <e p="TutorialDerivedClassWrap.cs" t="Include" />
+            <e p="TutorialICalcWrap.cs" t="Include" />
+            <e p="UnityEngineWaitForSecondsWrap.cs" t="Include" />
+            <e p="WrapPusher.cs" t="Include" />
+            <e p="XLuaGenAutoRegister.cs" t="Include" />
+            <e p="XLuaTestBaseTestWrap.cs" t="Include" />
+            <e p="XLuaTestFoo1ChildWrap.cs" t="Include" />
+            <e p="XLuaTestFoo1ParentWrap.cs" t="Include" />
+            <e p="XLuaTestFoo2ChildWrap.cs" t="Include" />
+            <e p="XLuaTestFoo2ParentWrap.cs" t="Include" />
+            <e p="XLuaTestFooExtensionWrap.cs" t="Include" />
+            <e p="XLuaTestFooWrap.cs" t="Include" />
+            <e p="XLuaTestIExchangerBridge.cs" t="Include" />
+            <e p="XLuaTestInvokeLuaICalcBridge.cs" t="Include" />
+            <e p="XLuaTestLuaBehaviourWrap.cs" t="Include" />
+            <e p="XLuaTestMyStructWrap.cs" t="Include" />
+            <e p="XLuaTestNoGcWrap.cs" t="Include" />
+            <e p="XLuaTestPeddingWrap.cs" t="Include" />
+          </e>
         </e>
       </e>
       <e p="GameFramePro.sln" t="IncludeFlat" />

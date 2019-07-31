@@ -13,6 +13,7 @@
       <Path>Export</Path>
       <Path>General</Path>
       <Path>Library</Path>
+      <Path>Localization</Path>
       <Path>Logs</Path>
       <Path>Temp</Path>
       <Path>Test</Path>
@@ -20,6 +21,7 @@
       <Path>WebGLPlugins</Path>
       <Path>build</Path>
       <Path>docs</Path>
+      <Path>ex</Path>
       <Path>lua</Path>
       <Path>obj</Path>
       <Path>uisprites</Path>
