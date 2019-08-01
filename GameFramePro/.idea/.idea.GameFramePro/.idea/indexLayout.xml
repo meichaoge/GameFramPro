@@ -8,7 +8,6 @@
     </explicitIncludes>
     <explicitExcludes>
       <Path>.idea</Path>
-      <Path>.vs</Path>
       <Path>DebugEX</Path>
       <Path>Export</Path>
       <Path>General</Path>

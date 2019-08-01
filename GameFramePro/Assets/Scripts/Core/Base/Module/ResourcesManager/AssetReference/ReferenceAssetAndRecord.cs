@@ -18,7 +18,10 @@ namespace GameFramePro
         public ReferenceAssetInfor ReferenceAsset;
 
         #region 构造函数
-        public ReferenceAssetAndRecord() { }
+
+        public ReferenceAssetAndRecord()
+        {
+        }
 
         public ReferenceAssetAndRecord(BaseLoadAssetRecord record, ReferenceAssetInfor referenceAsset)
         {
@@ -32,16 +35,14 @@ namespace GameFramePro
         #region   编辑器下显示数据
 
 #if UNITY_EDITOR
-        [SerializeField]
-        private ResourcesLoadAssetRecord Debug_ResourcesLoadAssetRecord_Current;
-        [SerializeField]
-        private AssetBundleSubAssetLoadRecord Debug_AssetBundleSubAssetLoadRecord_Current;
+        [SerializeField] private ResourcesLoadAssetRecord Debug_ResourcesLoadAssetRecord_Current;
+        [SerializeField] private AssetBundleSubAssetLoadRecord Debug_AssetBundleSubAssetLoadRecord_Current;
 
         public void UpdateView()
         {
             if (CurLoadAssetRecord != null)
             {
-                if(CurLoadAssetRecord is ResourcesLoadAssetRecord)
+                if (CurLoadAssetRecord is ResourcesLoadAssetRecord)
                 {
                     Debug_ResourcesLoadAssetRecord_Current = CurLoadAssetRecord as ResourcesLoadAssetRecord;
                     Debug_AssetBundleSubAssetLoadRecord_Current = null;
@@ -65,6 +66,7 @@ namespace GameFramePro
 
 
         #region 引用计数接口
+
         /// <summary>
         /// 标示当前资源是否有效
         /// </summary>
@@ -84,16 +86,18 @@ namespace GameFramePro
             CurLoadAssetRecord.AddReference();
             ReferenceAsset.AddReference();
         }
+
         public void ReduceReference(bool isforceDelete = false)
         {
             if (IsReferenceEnable == false) return;
             CurLoadAssetRecord.ReduceReference(isforceDelete);
             ReferenceAsset.ReduceReference(isforceDelete);
         }
+
         #endregion
 
 
-        public virtual ReferenceAssetAndRecord ModifyComponentReference<T>(T component, ReferenceAssetAndRecord newAssetRecord) where T : Component
+        public virtual ReferenceAssetAndRecord ModifyComponentReference<T>(T component, ReferenceAssetAndRecord newAssetRecord, bool isAuotAddReference = true) where T : Component
         {
             if (newAssetRecord == null)
             {
@@ -101,24 +105,24 @@ namespace GameFramePro
                 CurLoadAssetRecord = null;
                 ReferenceAsset = null;
                 return this;
-            }//重定向引用空
+            } //重定向引用空
 
             if (CurLoadAssetRecord == null)
             {
                 CurLoadAssetRecord = newAssetRecord.CurLoadAssetRecord;
                 ReferenceAsset = newAssetRecord.ReferenceAsset;
-                AddReference();
+                if (isAuotAddReference)
+                    AddReference();
                 return this;
-            }//第一次赋值
+            } //第一次赋值
 
             if (newAssetRecord.CurLoadAssetRecord is ResourcesLoadAssetRecord)
-                ModifyToResourcesAsset(component, newAssetRecord);
+                ModifyToResourcesAsset(component, newAssetRecord, isAuotAddReference);
             else if (newAssetRecord.CurLoadAssetRecord is AssetBundleSubAssetLoadRecord)
-                ModifyToAssetBundleAsset(component, newAssetRecord);
+                ModifyToAssetBundleAsset(component, newAssetRecord, isAuotAddReference);
             else
-            {
                 Debug.LogError("AttachComponentReference Fail,Not Define AssetType", newAssetRecord.GetType());
-            }
+
             return this;
         }
 
@@ -128,9 +132,9 @@ namespace GameFramePro
         /// <param name="component"></param>
         /// <param name="newAssetRecord"></param>
         /// <param name="getAssetFromRecordAction"></param>
-        protected virtual void ModifyToResourcesAsset<T>(T component, ReferenceAssetAndRecord newAssetRecord) where T : Component
+        protected virtual void ModifyToResourcesAsset<T>(T component, ReferenceAssetAndRecord newAssetRecord, bool isAuotAddReference = true) where T : Component
         {
-            ResourcesLoadAssetRecord modifyResourcesRecord = newAssetRecord.CurLoadAssetRecord as ResourcesLoadAssetRecord;
+            var modifyResourcesRecord = newAssetRecord.CurLoadAssetRecord as ResourcesLoadAssetRecord;
 
             if (CurLoadAssetRecord is AssetBundleSubAssetLoadRecord)
             {
@@ -143,9 +147,10 @@ namespace GameFramePro
 
                 CurLoadAssetRecord = modifyResourcesRecord;
                 ReferenceAsset = newAssetRecord.ReferenceAsset;
-                AddReference();
+                if (isAuotAddReference)
+                    AddReference();
                 return;
-            }//上一次使用的是AssetBundle 资源
+            } //上一次使用的是AssetBundle 资源
 
             if (CurLoadAssetRecord.AssetUrl == modifyResourcesRecord.AssetUrl)
             {
@@ -159,21 +164,23 @@ namespace GameFramePro
             CurLoadAssetRecord = modifyResourcesRecord;
 
             ReferenceAsset = newAssetRecord.ReferenceAsset;
-            AddReference();
+            if (isAuotAddReference)
+                AddReference();
 #if UNITY_EDITOR
             Debug.LogInfor("AttachComponentReference 修改了资源引用 新的{0}", CurLoadAssetRecord.AssetUrl);
 #endif
             return;
         }
+
         /// <summary>
         /// 当使用到AssetBundle 资源时候的操作
         /// </summary>
         /// <param name="component"></param>
         /// <param name="newAssetRecord"></param>
         /// <param name="getAssetFromRecordAction"></param>
-        protected virtual void ModifyToAssetBundleAsset<T>(T component, ReferenceAssetAndRecord newAssetRecord) where T : Component
+        protected virtual void ModifyToAssetBundleAsset<T>(T component, ReferenceAssetAndRecord newAssetRecord, bool isAuotAddReference = true) where T : Component
         {
-            AssetBundleSubAssetLoadRecord modifyAssetBundleRecord = newAssetRecord.CurLoadAssetRecord as AssetBundleSubAssetLoadRecord;
+            var modifyAssetBundleRecord = newAssetRecord.CurLoadAssetRecord as AssetBundleSubAssetLoadRecord;
             if (CurLoadAssetRecord is ResourcesLoadAssetRecord)
             {
                 var CurResourcesLoadAssetRecord = CurLoadAssetRecord as ResourcesLoadAssetRecord;
@@ -184,9 +191,10 @@ namespace GameFramePro
                 ReduceReference(); //释放当前引用资源
                 CurLoadAssetRecord = modifyAssetBundleRecord;
                 ReferenceAsset = newAssetRecord.ReferenceAsset;
-                AddReference();
+                if (isAuotAddReference)
+                    AddReference();
                 return;
-            }//上一次使用的是AssetBundle 资源
+            } //上一次使用的是AssetBundle 资源
 
 
             var CurAssetBundleLoadAssetRecord = CurLoadAssetRecord as AssetBundleSubAssetLoadRecord;
@@ -202,13 +210,13 @@ namespace GameFramePro
             ReduceReference(); //释放当前引用资源
             CurLoadAssetRecord = modifyAssetBundleRecord;
             ReferenceAsset = newAssetRecord.ReferenceAsset;
-            AddReference();
+            if (isAuotAddReference)
+                AddReference();
 
 #if UNITY_EDITOR
             Debug.LogInfor("ModifyToAssetBundleAsset 修改了资源引用! 新的{0}", CurLoadAssetRecord.AssetUrl);
 #endif
             return;
         }
-
     }
 }

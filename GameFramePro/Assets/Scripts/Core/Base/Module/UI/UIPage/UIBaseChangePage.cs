@@ -12,7 +12,7 @@ namespace GameFramePro.UI
     public class UIBaseChangePage : UIBasePage
     {
         public HashSet<string> mAllContainSubPopWindows { get; protected set; } //所有关联属于这个页面的弹窗，关闭的时候会一起呗关闭
-        public string mPagePath { get; protected set; } = string.Empty; //页面创建时候的路径 需要记录以便于返回时候能够创建出来
+        public string mPagePath { get; private set; } = string.Empty; //页面创建时候的路径 需要记录以便于返回时候能够创建出来
 
         #region 初始化
 
@@ -20,14 +20,14 @@ namespace GameFramePro.UI
         {
             mUIPageTypeEnum = UIPageTypeEnum.ChangePage;
             MaxAliveAfterInActivte = 10;
-            IsRealseOnDestroyPageInstance = false; //页面不能释放 UIBasePage 对象
+            IsReleaseOnDestroyPageInstance = false; //页面不能释放 UIBasePage 对象
         }
 
         public virtual void UIPageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, ReferenceGameObjectAssetInfor referenceInstance)
         {
             BaseUIPageInitialed(pageName, pageType, referenceInstance);
             mPagePath = pagePath;
-            IsRealseOnDestroyPageInstance = false;
+            IsReleaseOnDestroyPageInstance = false;
         }
 
 

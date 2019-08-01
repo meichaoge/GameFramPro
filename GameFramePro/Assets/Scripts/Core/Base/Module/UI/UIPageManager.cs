@@ -400,7 +400,7 @@ namespace GameFramePro.UI
             UIBasePage page = null;
             if (s_AllAliveUIPages.TryGetValue(pageName, out page) && page != null)
             {
-                if (page.IsRealseOnDestroyPageInstance)
+                if (page.IsReleaseOnDestroyPageInstance)
                 {
                     page.DestroyAndRelease();
                     page = null;

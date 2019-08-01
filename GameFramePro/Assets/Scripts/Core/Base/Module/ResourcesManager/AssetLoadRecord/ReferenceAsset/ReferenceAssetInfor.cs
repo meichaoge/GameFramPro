@@ -62,6 +62,8 @@ namespace GameFramePro
         #endregion
 
         #region 当前对象引用操作
+        
+        
         //增加引用
         public void AddReference()
         {
@@ -72,7 +74,6 @@ namespace GameFramePro
             }
             ++ReferenceCount;
         }
-
         //减少引用
         public virtual void ReduceReference(bool isforceDelete = false)
         {
@@ -88,8 +89,6 @@ namespace GameFramePro
             if (ReferenceCount <= 0)
                 ReleaseReference();
     }
-
-
 
 
         public virtual void ReleaseReference()
@@ -124,7 +123,10 @@ namespace GameFramePro
         {
             if (IsReferenceAssetEnable == false) return;
             if (mReferenceAsset is AudioClip)
+            {
                 audioSource.clip = mReferenceAsset as AudioClip;
+                AddReference();
+            }
         }
         #endregion
 

@@ -118,7 +118,10 @@
               </e>
               <e p="Module" t="Include">
                 <e p="AppManager.cs" t="Include" />
-                <e p="AsyncManager.cs" t="Include" />
+                <e p="AsyncManager" t="Include">
+                  <e p="AsyncManager.cs" t="Include" />
+                  <e p="CoroutineEx.cs" t="Include" />
+                </e>
                 <e p="Localization" t="Include">
                   <e p="ExportFormatEnum.cs" t="Include" />
                   <e p="Language.cs" t="Include" />
@@ -228,6 +231,9 @@
                     <e p="UGUIComponentReference.cs" t="Include" />
                   </e>
                   <e p="UIPage" t="Include">
+                    <e p="Tools" t="Include">
+                      <e p="AudioController.cs" t="Include" />
+                    </e>
                     <e p="UIBaseChangePage.cs" t="Include" />
                     <e p="UIBasePage.cs" t="Include" />
                     <e p="UIBasePopWindow.cs" t="Include" />
@@ -835,6 +841,7 @@
           <e p="TeslLoadPrefab.cs" t="Include" />
           <e p="TestAudioClip.cs" t="Include" />
           <e p="TestCourtinue.cs" t="Include" />
+          <e p="TestIEnumerater.cs" t="Include" />
           <e p="TestLoadAsset.cs" t="Include" />
           <e p="TestPath.cs" t="Include" />
           <e p="TestTextAsset.cs" t="Include" />

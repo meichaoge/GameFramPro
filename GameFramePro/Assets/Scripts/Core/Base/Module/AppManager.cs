@@ -16,6 +16,8 @@ namespace GameFramePro
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
+        
+        
         public float CurrentRealTime { get { return Time.realtimeSinceStartup; } } //启动到现在的时间
 
         private IEnumerator Start()
@@ -48,7 +50,6 @@ namespace GameFramePro
             DownloadManager.S_Instance.UpdateTick(realtimeSinceStartup);
             AssetDelayDeleteManager.S_Instance.UpdateTick(realtimeSinceStartup);
             UIPageManagerUtility.S_Instance.UpdateTick(realtimeSinceStartup);
-
             //foreach (var updateTick in mAllControllUpdateTicks)
             //{
             //    updateTick.Tick(realtimeSinceStartup);

@@ -164,6 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mAudioClipPath: Audio/globalBG
+  mIsReleaseClicp: 0
 --- !u!1 &156965977
 GameObject:
   m_ObjectHideFlags: 0
@@ -817,7 +818,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9a0f8d71e0b35409af73c899629786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsLoadResourcesAssetPriorit: 0
+  IsLoadResourcesAssetPriorit: 1
   ColorDefine:
     mInforLevelColor: '#5EAB15FF'
     mEditorInforLevelColor: '#E300BDFF'

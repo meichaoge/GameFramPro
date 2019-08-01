@@ -8,7 +8,7 @@ using System.Linq;
 namespace GameFramePro
 {
     /// <summary>
-    /// ÓÃÀ´¿ØÖÆ×ÓÏß³Ìµ½Unity Ïß³ÌµÄÌø×ª
+    /// ç”¨æ¥æ§åˆ¶å­çº¿ç¨‹åˆ°Unity çº¿ç¨‹çš„è·³è½¬
     /// </summary>
     public class Loom : Single<Loom> , IUpdateCountTick
     {
@@ -28,15 +28,15 @@ namespace GameFramePro
         List<DelayedQueueItem> _currentDelayed = new List<DelayedQueueItem>();
   
 
-        #region IUpdateTick ½Ó¿Ú
-        protected int curUpdateCount = 0; //µ±Ç°µÄÖ¡»ùÊı
+        #region IUpdateTick æ¥å£
+        protected int curUpdateCount = 0; //å½“å‰çš„å¸§åŸºæ•°
         public uint TickPerUpdateCount { get; protected set; } = 1;
 
         public bool CheckIfNeedUpdateTick()
         {
             //++curUpdateCount;
             //if (curUpdateCount == 1)
-            //    return true;  //È·±£µÚÒ»´Î±»µ÷ÓÃ
+            //    return true;  //ç¡®ä¿ç¬¬ä¸€æ¬¡è¢«è°ƒç”¨
             //if (curUpdateCount < TickPerUpdateCount)
             //    return false;
             //curUpdateCount = 0;
