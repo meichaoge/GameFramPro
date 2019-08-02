@@ -93,5 +93,14 @@ namespace GameFramePro
 
         #endregion
 
+
+        #region 事件检测系统
+
+        
+
+        #endregion
+        
+        
+        
     }
 }
