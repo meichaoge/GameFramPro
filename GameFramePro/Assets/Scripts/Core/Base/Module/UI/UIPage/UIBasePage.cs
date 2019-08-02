@@ -238,7 +238,7 @@ namespace GameFramePro.UI
         protected virtual void OnBeforeInVisible()
         {
             if(mAudioController!=null)
-                mAudioController.StopAllAudios();
+                mAudioController.StopAllAudios(false);  //背景音保留
             if (mAllContainWidgets != null && mAllContainWidgets.Count != 0)
             {
                 foreach (var widget in mAllContainWidgets)

@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 938693333
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ea3b382587a0140b273dc0d64a6d650f
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Resources/Localization/Localization_zh_CN.csv
+- Assets/Resources/Localization/Localization_zh_HK.csv
+- Assets/Resources/Localization/Localization_en_US.csv
+- Assets/Resources/Localization/Localization_en_GB.csv
+Dependencies: []
