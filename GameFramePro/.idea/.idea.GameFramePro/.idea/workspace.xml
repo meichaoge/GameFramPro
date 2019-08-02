@@ -5,20 +5,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/contentModel.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameFramePro/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Test.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AppManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AppManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetLoadRecord/ReferenceAsset/ReferenceAssetInfor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetLoadRecord/ReferenceAsset/ReferenceAssetInfor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/AssetReferenceManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/AssetReferenceManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/ReferenceAssetAndRecord.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/ReferenceAssetAndRecord.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ThreadPool/Loom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ThreadPool/Loom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/Audio/AudioManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/Audio/AudioManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBaseChangePage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBaseChangePage.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBasePage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBasePage.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPageManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPageManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Test/TestAudioClip.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Test/TestAudioClip.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/UIEffects.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TODO.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TODO.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/XLua.meta" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -42,515 +31,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="174">
-              <caret line="111" column="42" selection-start-line="111" selection-start-column="42" selection-end-line="111" selection-end-column="42" />
-              <folding>
-                <marker date="1564649131076" expanded="false" signature="6:187" ph="..." />
-                <marker date="1564649131076" expanded="true" signature="213:19502" ph="{...}" />
-                <marker date="1564649131076" expanded="true" signature="222:297" ph="/// 这里只有ResourcesManger 提供的对外访问接口和实现 ... " />
-                <marker date="1564649131076" expanded="true" signature="359:19499" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="376:3505" ph="对象的创建和销毁逻辑（实例化对象 (这里对内部的GameObject.Instantiate&lt;T&gt; 做了一层封装，主要是想后期能够监控对象的创建TODO)）" />
-                <marker date="1564649131076" expanded="false" signature="545:734" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="823:1091" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="863:1005" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="1153:1274" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="1345:1475" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="1566:1794" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="1903:2099" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="2229:2437" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="2585:2967" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="2631:2755" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="3101:3483" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="3147:3271" ph="{...}" />
-                <marker date="1564649131076" expanded="true" signature="3519:8924" ph="资源加载&amp;释放接口" />
-                <marker date="1564649131076" expanded="true" signature="3643:3796" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="3895:4033" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="4083:4266" ph="/// 缓存中加载资源 ... " />
-                <marker date="1564649131076" expanded="false" signature="4347:4671" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="4683:4821" ph="/// 同步下载资源接口 ... " />
-                <marker date="1564649131076" expanded="false" signature="4896:5552" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="5017:5255" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="5273:5511" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="5564:5719" ph="/// 异步下载资源的接口 ... " />
-                <marker date="1564649131076" expanded="false" signature="5829:6387" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="5956:6102" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="6457:6778" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="6500:6619" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="6876:7104" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="6919:7038" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="7116:7230" ph="/// 卸载 Resources 资源 ... " />
-                <marker date="1564649131076" expanded="false" signature="7311:7938" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="7360:7487" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="7578:7738" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="7950:8129" ph="/// 卸载 AssetBundle 资源加载 ... " />
-                <marker date="1564649131076" expanded="false" signature="8239:8902" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="8288:8413" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="8429:8675" ph="/* if (assetRecord.AssetLoadedType &lt;= LoadedAssetTypeEnum.LocalStore_UnKnown) ... */" />
-                <marker date="1564649131076" expanded="false" signature="8936:19482" ph="资源加载接口" />
-                <marker date="1564649131076" expanded="false" signature="8962:11343" ph="TextAsset/lua 文件的加载" />
-                <marker date="1564649131076" expanded="false" signature="9123:9277" ph="/// 文本资源的加载(一般是配置文件或者lua 文件) ... " />
-                <marker date="1564649131076" expanded="false" signature="9372:10139" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="9470:9662" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="9824:10040" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="10274:11321" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="10372:10670" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="10510:10655" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="10742:11308" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="10834:11138" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="11355:15238" ph="Sprite 加载" />
-                <marker date="1564649131076" expanded="false" signature="11506:11762" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="11910:13153" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="12122:12371" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="13324:14029" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="13385:13633" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="13651:14018" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="13744:14001" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="14147:15216" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="14538:14759" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="14777:15205" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="15250:17625" ph="GameObject加载" />
-                <marker date="1564649131076" expanded="false" signature="15399:15671" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="15851:16618" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="15912:16191" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="16209:16607" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="16302:16590" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="16766:17603" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="17637:19460" ph="Audio 加载" />
-                <marker date="1564649131076" expanded="false" signature="17796:18102" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="18264:19438" ph="{...}" />
-                <marker date="1564649131076" expanded="false" signature="18487:18699" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBasePage.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="371">
-              <caret line="240" column="41" selection-start-line="240" selection-start-column="41" selection-end-line="240" selection-end-column="41" />
-              <folding>
-                <marker date="1564661448292" expanded="false" signature="6:92" ph="..." />
-                <marker date="1564661448292" expanded="true" signature="119:14287" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="166:318" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="363:493" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="499:547" ph="/// UI界面的基类 ... " />
-                <marker date="1564661448292" expanded="true" signature="575:14285" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="590:717" ph="/// 标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。 ... " />
-                <marker date="1564661448292" expanded="false" signature="833:972" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="1042:1186" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="1196:1701" ph="UI 界面相关数据" />
-                <marker date="1564661448292" expanded="true" signature="1712:2247" ph="辅助功能扩展功能（协程+UI组件引用+延迟销毁+音效控制组件）" />
-                <marker date="1564661448292" expanded="false" signature="2257:3257" ph="构造函数和初始化 和 IDisposable 接口" />
-                <marker date="1564661448292" expanded="false" signature="2319:2393" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="2536:3237" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="3267:7123" ph="UI界面外部控制接口" />
-                <marker date="1564661448292" expanded="false" signature="3295:3367" ph="/// 被实例化创建后调用 除非被销毁否则只会调用一次 ... " />
-                <marker date="1564661448292" expanded="false" signature="3405:3452" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="3462:3576" ph="/// 只能由 UIPageManager 调用 ... " />
-                <marker date="1564661448292" expanded="false" signature="3607:4845" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="3666:3808" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="3843:4835" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="4855:5001" ph="/// 关闭界面  ... " />
-                <marker date="1564661448292" expanded="false" signature="5053:6321" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="5112:5254" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="5289:6311" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="6331:6433" ph="/// 当UIBasePage 关联的对象不存在时候，恢复到初始的状态 进行数据重置然后重新关联新创建的预制体实例 ... " />
-                <marker date="1564661448292" expanded="false" signature="6489:6780" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="6539:6655" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="6791:6862" ph="///  释放引用的对象和UIbasePage 对象 ... " />
-                <marker date="1564661448292" expanded="false" signature="6902:7103" ph="{...}" />
-                <marker date="1564661448292" expanded="true" signature="7134:9972" ph="UI 界面内部实现接口" />
-                <marker date="1564661448292" expanded="false" signature="7163:7230" ph="/// 每次界面关联的的预制体被创建时候调用 ... " />
-                <marker date="1564661448292" expanded="false" signature="7275:7295" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="7305:7378" ph="/// 调用SetActive(true )之前调用这个 ... " />
-                <marker date="1564661448292" expanded="false" signature="7427:7447" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="7457:7530" ph="/// 调用SetActive(true )之后调用这个 ... " />
-                <marker date="1564661448292" expanded="false" signature="7578:7598" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="7608:7682" ph="/// 调用SetActive(false )之前调用这个 ... " />
-                <marker date="1564661448292" expanded="true" signature="7733:8530" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="7909:8520" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="7982:8506" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="8167:8417" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="8540:8614" ph="/// 调用SetActive(false )之后调用这个 ... " />
-                <marker date="1564661448292" expanded="false" signature="8685:9024" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="8729:8794" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="8811:9014" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="9034:9094" ph="/// 在被销毁前时候释放自身 ... " />
-                <marker date="1564661448292" expanded="false" signature="9145:9816" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="9318:9648" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="9391:9589" ph="{...}" />
-                <marker date="1564661448292" expanded="true" signature="9697:9806" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="9826:9882" ph="/// 在被销毁后执行 ... " />
-                <marker date="1564661448292" expanded="false" signature="9932:9952" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="9982:12154" ph="子组件" />
-                <marker date="1564661448292" expanded="false" signature="10003:10176" ph="/// 由于考虑到有多个同名的  UIBaseWidget 这里不会检测是否存在 ... " />
-                <marker date="1564661448292" expanded="false" signature="10254:11682" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="10471:11672" ph="/* UIBaseWidget recordWidget = null; ... */" />
-                <marker date="1564661448292" expanded="false" signature="11745:12134" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="11884:12124" ph="/* UIBaseWidget widget = null; ... */" />
-                <marker date="1564661448292" expanded="true" signature="12165:14279" ph="辅助功能接口" />
-                <marker date="1564661448292" expanded="false" signature="12189:13507" ph="根据对象名或者路径获取对象" />
-                <marker date="1564661448292" expanded="false" signature="12296:12509" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="12608:12827" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="12900:13148" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="13233:13487" ph="{...}" />
-                <marker date="1564661448292" expanded="true" signature="13517:14259" ph="协程相关" />
-                <marker date="1564661448292" expanded="false" signature="13597:13705" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="13772:13903" ph="{...}" />
-                <marker date="1564661448292" expanded="false" signature="13954:14239" ph="{...}" />
-                <marker date="1564661448292" expanded="true" signature="14021:14187" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Test/TestAudioClip.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="17" column="9" lean-forward="true" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
-              <folding>
-                <marker date="1564650132048" expanded="false" signature="6:135" ph="..." />
-                <marker date="1564650132048" expanded="true" signature="179:596" ph="{...}" />
-                <marker date="1564650132048" expanded="true" signature="283:593" ph="{...}" />
-                <marker date="1564650132048" expanded="true" signature="330:443" ph="{...}" />
-                <marker date="1564650132048" expanded="true" signature="493:587" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Test/TeslLoadPrefab.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="26" column="4" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
-              <folding>
-                <marker date="1564449993427" expanded="false" signature="6:130" ph="..." />
-                <marker date="1564449993427" expanded="true" signature="175:707" ph="{...}" />
-                <marker date="1564449993427" expanded="false" signature="307:328" ph="{...}" />
-                <marker date="1564449993427" expanded="true" signature="386:705" ph="{...}" />
-                <marker date="1564449993427" expanded="true" signature="433:699" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Test/TestUILoad.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
-              <folding>
-                <marker date="1564398802164" expanded="false" signature="6:135" ph="..." />
-                <marker date="1564398802164" expanded="true" signature="175:1074" ph="{...}" />
-                <marker date="1564398802164" expanded="true" signature="204:1071" ph="{...}" />
-                <marker date="1564398802164" expanded="true" signature="251:404" ph="{...}" />
-                <marker date="1564398802164" expanded="true" signature="446:613" ph="{...}" />
-                <marker date="1564398802164" expanded="true" signature="655:813" ph="{...}" />
-                <marker date="1564398802164" expanded="true" signature="855:959" ph="{...}" />
-                <marker date="1564398802164" expanded="true" signature="1001:1065" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/Audio/AudioManager.cs">
+        <entry file="file://$PROJECT_DIR$/Assets/TODO.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="33">
-              <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
-              <folding>
-                <marker date="1564662545040" expanded="false" signature="6:92" ph="..." />
-                <marker date="1564662545040" expanded="true" signature="116:13245" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="123:169" ph="/// 音效管理器 ... " />
-                <marker date="1564662545040" expanded="true" signature="266:13243" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="281:527" ph="背景音" />
-                <marker date="1564662545040" expanded="true" signature="537:843" ph="普通的声音" />
-                <marker date="1564662545040" expanded="false" signature="884:1055" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="1090:1137" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="1148:1794" ph="IUpdateTick 接口" />
-                <marker date="1564662545040" expanded="false" signature="1334:1603" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="1655:1774" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="1805:6003" ph="播放 &amp; 停止  背景声音接口" />
-                <marker date="1564662545040" expanded="false" signature="1838:2102" ph="/// 播放背景音 ... " />
-                <marker date="1564662545040" expanded="true" signature="2226:3454" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="2534:3039" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="2618:3011" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="2799:2959" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="3594:4664" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="3771:4408" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="3865:4258" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="4046:4206" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="4293:4383" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="4674:4796" ph="///  停止当前背景 ... " />
-                <marker date="1564662545040" expanded="true" signature="4864:5255" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="5075:5245" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="5265:5431" ph="/// 停止播放背景 ... " />
-                <marker date="1564662545040" expanded="false" signature="5518:5983" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="5803:5973" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="6013:8519" ph="普通的音效" />
-                <marker date="1564662545040" expanded="false" signature="6036:6287" ph="/// 普通的音效播放 ... " />
-                <marker date="1564662545040" expanded="true" signature="6387:7586" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="6712:6927" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="6761:6883" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="7175:7332" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="7349:7576" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="7596:7764" ph="/// 停止播放一个音效 ... " />
-                <marker date="1564662545040" expanded="true" signature="7846:8499" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="8283:8433" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="8530:13237" ph="辅助" />
-                <marker date="1564662545040" expanded="false" signature="8550:8676" ph="/// 根据指定的参数个数 初始化对应参数个数的普通的声音播放组件 ... " />
-                <marker date="1564662545040" expanded="true" signature="8748:9224" ph="{...}" />
-                <marker date="1564662545040" expanded="true" signature="8965:9214" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="9234:9294" ph="/// 定时检测哪些任务完成了 ... " />
-                <marker date="1564662545040" expanded="false" signature="9343:9986" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="9528:9976" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="9598:9730" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="9997:10142" ph="/// 实例化获取一个 AudioSources组件对象 ... " />
-                <marker date="1564662545040" expanded="true" signature="10214:10425" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="10435:10529" ph="/// 获取一个可用的普通音效组件 ... " />
-                <marker date="1564662545040" expanded="true" signature="10587:11393" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="10692:11200" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="10800:11186" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="10860:11013" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="11038:11168" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="11403:11507" ph="/// 回收一个可用的普通音效组件 ... " />
-                <marker date="1564662545040" expanded="false" signature="11573:11900" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="11657:11801" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="11910:12051" ph="/// 是否正在播放参数指定的普通音效 ... " />
-                <marker date="1564662545040" expanded="false" signature="12144:13217" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="12372:13180" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="12450:13103" ph="{...}" />
-                <marker date="1564662545040" expanded="false" signature="12528:12677" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8D698932-951A-4E31-9934-E354A7F087B4/ca/763ebbbe/AudioSource.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="213">
-              <caret line="148" column="30" lean-forward="true" selection-start-line="148" selection-start-column="30" selection-end-line="148" selection-end-column="30" />
-              <folding>
-                <marker date="1564650699598" expanded="false" signature="0:333" ph="/* Decompiled with JetBrains decompiler ... */" />
-                <marker date="1564650699598" expanded="false" signature="341:535" ph="..." />
-                <marker date="1564650699598" expanded="true" signature="558:22058" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="563:655" ph="///   &lt;para&gt;A representation of audio sources in 3D.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="true" signature="821:22056" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="830:941" ph="///   &lt;para&gt;PanLevel has been deprecated. Use spatialBlend instead.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="1154:1252" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="1170:1220" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="1230:1246" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="1258:1361" ph="///   &lt;para&gt;Pan has been deprecated. Use panStereo instead.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="1558:1653" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="1574:1621" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="1631:1647" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="3170:3270" ph="///   &lt;para&gt;The volume of the audio source (0.0 to 1.0).&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="3411:3497" ph="///   &lt;para&gt;The pitch of the audio source.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="3520:3670" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="3536:3595" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="3605:3664" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="3676:3761" ph="///   &lt;para&gt;Playback position in seconds.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="3936:4025" ph="///   &lt;para&gt;Playback position in PCM samples.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="4278:4364" ph="///   &lt;para&gt;The default AudioClip to play.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="4541:4663" ph="///   &lt;para&gt;The target group to which the AudioSource should route its signal.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="true" signature="4869:4922" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="4928:5174" ph="///   &lt;para&gt;Plays the clip.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="5228:5283" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="5289:5638" ph="///   &lt;para&gt;Plays the clip with a delay specified in seconds. Users are advised to use this function instead of t ... " />
-                <marker date="1564650699598" expanded="false" signature="5679:5755" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="5761:6070" ph="///   &lt;para&gt;Plays the clip at a specific time on the absolute time-line that AudioSettings.dspTime reads from.&lt;/p ... " />
-                <marker date="1564650699598" expanded="false" signature="6113:6168" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="6174:6430" ph="///   &lt;para&gt;Plays an AudioClip, and scales the AudioSource volume by volumeScale.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="6496:6542" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="6548:6804" ph="///   &lt;para&gt;Plays an AudioClip, and scales the AudioSource volume by volumeScale.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="6890:7103" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="7109:7302" ph="///   &lt;para&gt;Changes the time at which a sound that has already been scheduled to play will start.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="7416:7691" ph="///   &lt;para&gt;Changes the time at which a sound that has already been scheduled to play will end. Notice that depen ... " />
-                <marker date="1564650699598" expanded="false" signature="7803:7882" ph="///   &lt;para&gt;Stops playing the clip.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="7905:7940" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="7946:8026" ph="///   &lt;para&gt;Pauses playing the clip.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="8113:8217" ph="///   &lt;para&gt;Unpause the paused playback of this AudioSource.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="8306:8404" ph="///   &lt;para&gt;Is the clip playing right now (Read Only)?&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="8531:8730" ph="///   &lt;para&gt;True if all sounds played by the AudioSource (main sound started by Play() or playOnAwake as well as  ... " />
-                <marker date="1564650699598" expanded="false" signature="8858:9169" ph="///   &lt;para&gt;Plays an AudioClip at a given position in world space.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="9264:9331" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="9337:9648" ph="///   &lt;para&gt;Plays an AudioClip at a given position in world space.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="9758:10236" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="10242:10324" ph="///   &lt;para&gt;Is the audio clip looping?&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="10462:10601" ph="///   &lt;para&gt;This makes the audio source not take into account the volume of the audio listener.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="10755:10886" ph="///   &lt;para&gt;If set to true, the audio source will automatically start playing on awake.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="11031:11240" ph="///   &lt;para&gt;Allows AudioSource to play even though AudioListener.pause is set to true. This is useful for the men ... " />
-                <marker date="1564650699598" expanded="false" signature="11393:11523" ph="///   &lt;para&gt;Whether the Audio Source should be updated in the fixed or dynamic update.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="11694:11856" ph="///   &lt;para&gt;Pans a playing sound in a stereo way (left or right). This only applies to sounds that are Mono or St ... " />
-                <marker date="1564650699598" expanded="false" signature="12034:12245" ph="///   &lt;para&gt;Sets how much this AudioSource is affected by 3D spatialisation calculations (attenuation, doppler et ... " />
-                <marker date="1564650699598" expanded="false" signature="12432:12523" ph="///   &lt;para&gt;Enables or disables spatialization.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="12667:12807" ph="///   &lt;para&gt;Determines if the spatializer effect is inserted before or after the effect filters.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="12962:13238" ph="///   &lt;para&gt;Set the custom curve for the given AudioSourceCurveType.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="13318:13389" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="13395:13698" ph="///   &lt;para&gt;Get the current custom curve for the given AudioSourceCurveType.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="13766:13837" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="13843:14021" ph="///   &lt;para&gt;The amount by which the signal from the AudioSource will be mixed into the global reverb associated w ... " />
-                <marker date="1564650699598" expanded="false" signature="14169:14300" ph="///   &lt;para&gt;Bypass effects (Applied from filter components or global listener filters).&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="14447:14682" ph="///   &lt;para&gt;When set global effects on the AudioListener will not be applied to the audio signal generated by the ... " />
-                <marker date="1564650699598" expanded="false" signature="14837:14999" ph="///   &lt;para&gt;When set doesn't route the signal from an AudioSource into the global reverb associated with reverb z ... " />
-                <marker date="1564650699598" expanded="false" signature="15150:15250" ph="///   &lt;para&gt;Sets the Doppler scale for this AudioSource.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="15397:15542" ph="///   &lt;para&gt;Sets the spread angle (in degrees) of a 3d stereo or multichannel sound in speaker space.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="15683:15776" ph="///   &lt;para&gt;Sets the priority of the AudioSource.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="15917:16062" ph="///   &lt;para&gt;Un- / Mutes the AudioSource. Mute sets the volume=0, Un-Mute restore the original volume.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="16200:16332" ph="///   &lt;para&gt;Within the Min distance the AudioSource will cease to grow louder in volume.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="16478:16613" ph="///   &lt;para&gt;(Logarithmic rolloff) MaxDistance is the distance a sound stops attenuating at.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="16759:16870" ph="///   &lt;para&gt;Sets/Gets how the AudioSource attenuates over distance.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="17027:17246" ph="///   &lt;para&gt;Deprecated Version. Returns a block of the currently playing source's output data.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="17433:17577" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="17583:17881" ph="///   &lt;para&gt;Provides a block of the currently playing source's output data.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="17941:18016" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="18022:18404" ph="///   &lt;para&gt;Deprecated Version. Returns a block of the currently playing source's spectrum data.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="18615:18769" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="18775:19159" ph="///   &lt;para&gt;Provides a block of the currently playing audio source's spectrum data.&lt;/para&gt; ... " />
-                <marker date="1564650699598" expanded="false" signature="19239:19324" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="19459:19782" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="19475:19631" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="19641:19776" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="19917:20240" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="19933:20089" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="20099:20234" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="20383:20714" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="20399:20559" ph="{...}" />
-                <marker date="1564650699598" expanded="true" signature="20569:20708" ph="{...}" />
-                <marker date="1564650699598" expanded="false" signature="20720:21136" ph="///   &lt;para&gt;Sets a user-defined parameter of a custom spatializer effect that is attached to an AudioSource.&lt;/par ... " />
-                <marker date="1564650699598" expanded="false" signature="21508:21930" ph="///   &lt;para&gt;Sets a user-defined parameter of a custom ambisonic decoder effect that is attached to an AudioSource ... " />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager/AsyncManager.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-10">
-              <caret line="35" column="61" selection-start-line="35" selection-start-column="61" selection-end-line="35" selection-end-column="61" />
-              <folding>
-                <marker date="1564658818059" expanded="false" signature="6:92" ph="..." />
-                <marker date="1564658818059" expanded="true" signature="117:4962" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="124:173" ph="/// 异步&amp;协程管理器 ... " />
-                <marker date="1564658818059" expanded="true" signature="226:4960" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="861:1026" ph="Data" />
-                <marker date="1564658818059" expanded="true" signature="1037:2295" ph="对外 Interface" />
-                <marker date="1564658818059" expanded="false" signature="1067:1167" ph="/// 开启一个协程任务 ... " />
-                <marker date="1564658818059" expanded="false" signature="1229:1563" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="1573:1671" ph="/// 停止一个协程 ... " />
-                <marker date="1564658818059" expanded="true" signature="1730:2027" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="2163:2275" ph="{...}" />
-                <marker date="1564658818059" expanded="true" signature="2306:4927" ph="内部实现" />
-                <marker date="1564658818059" expanded="false" signature="2397:3221" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="2442:2569" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="2659:3119" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="2736:2930" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="3301:3824" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="3346:3475" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="3549:3674" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="3984:4544" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="4052:4534" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="4100:4283" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="4332:4476" ph="{...}" />
-                <marker date="1564658818059" expanded="false" signature="4554:4654" ph="/// 协程完成回调 ... " />
-                <marker date="1564658818059" expanded="false" signature="4720:4899" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/AssetReferenceManager.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="273">
-              <caret line="174" column="28" selection-start-line="174" selection-start-column="28" selection-end-line="174" selection-end-column="28" />
-              <folding>
-                <marker date="1564650060388" expanded="false" signature="6:154" ph="..." />
-                <marker date="1564650060388" expanded="true" signature="192:13623" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="201:439" ph="/// 定义了如何从参数 component 组件的所有引用其他资源 allComponentReferences 中获取满足条件的第一个引用信息 ... " />
-                <marker date="1564650060388" expanded="false" signature="632:698" ph="/// 管理整个项目中加载的的资源引用其他的资源的数据 ... " />
-                <marker date="1564650060388" expanded="true" signature="745:13620" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="1190:1277" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="1491:2627" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="1544:1653" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="1788:1961" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="2069:2266" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="2639:2932" ph="/// 记录指定的组件的引用资源请求  ... " />
-                <marker date="1564650060388" expanded="false" signature="3088:5644" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="3168:3300" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="3435:4094" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="4202:4782" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="4862:5490" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="4995:5120" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="5312:5475" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="5773:7196" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="5853:5985" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="6121:6263" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="6373:6539" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="6617:7185" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="6752:6877" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="6986:7170" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="7207:7323" ph="/// 释放一个组件所有的资源引用 ... " />
-                <marker date="1564650060388" expanded="true" signature="7409:8402" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="7463:7595" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="7743:7887" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="7997:8165" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="8226:8349" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="8413:8526" ph="/// 释放一个资源所有引用的资源 ... " />
-                <marker date="1564650060388" expanded="false" signature="8597:9458" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="8648:8777" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="8911:9041" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="9113:9404" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="9198:9337" ph="{...}" />
-                <marker date="1564650060388" expanded="true" signature="9490:13613" ph="从多个引用中获取各种类型的指定引用 接口" />
-                <marker date="1564650060388" expanded="false" signature="9733:10526" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="10054:10487" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="10755:11587" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="11107:11548" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="11806:13591" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="12154:12306" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="12452:12638" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="12703:13552" ph="{...}" />
-                <marker date="1564650060388" expanded="false" signature="13266:13419" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/Tools/AudioController.cs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="46" column="46" selection-start-line="46" selection-start-column="46" selection-end-line="46" selection-end-column="46" />
-              <folding>
-                <marker date="1564661179247" expanded="false" signature="6:130" ph="..." />
-                <marker date="1564661179247" expanded="true" signature="155:2907" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="162:238" ph="/// 作为一个组件 组合在其他模块中，提供访问AudioManger 的功能 ... " />
-                <marker date="1564661179247" expanded="true" signature="271:2905" ph="{...}" />
-                <marker date="1564661179247" expanded="false" signature="411:645" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="437:635" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="747:1337" ph="背景音" />
-                <marker date="1564661179247" expanded="false" signature="878:1140" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="937:1034" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="1225:1317" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="1347:2430" ph="普通音效" />
-                <marker date="1564661179247" expanded="false" signature="1476:2097" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="1535:1632" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="1728:2087" ph="{...}" />
-                <marker date="1564661179247" expanded="false" signature="1813:1959" ph="{...}" />
-                <marker date="1564661179247" expanded="false" signature="1980:2073" ph="{...}" />
-                <marker date="1564661179247" expanded="false" signature="2197:2410" ph="{...}" />
-                <marker date="1564661179247" expanded="true" signature="2440:2555" ph="/// 停止当前管理器管理的所有音效 ... " />
-                <marker date="1564661179247" expanded="true" signature="2619:2890" ph="{...}" />
-              </folding>
+            <state relative-caret-position="34">
+              <caret line="2" column="8" lean-forward="true" selection-start-line="2" selection-start-column="8" selection-end-line="2" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -574,32 +59,27 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Setting/AppSetting.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBasePage.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/Tools/AudioController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBaseChangePage.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager/AsyncManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ThreadPool/Loom.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetLoadRecord/ReferenceAsset/ReferenceAssetInfor.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/39/b14ecfaf/Coroutine.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Test/TestUILoad.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/44/4db8027f/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Test/TeslLoadPrefab.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Test/TestAudioClip.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/TestCore/DebugShow/Debug_ShowAllTraceResources.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/eb/734bdf01/YieldInstruction.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8D698932-951A-4E31-9934-E354A7F087B4/ca/763ebbbe/AudioSource.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AppManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/ReferenceAssetAndRecord.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/AssetReferenceManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Test/TestIEnumerater.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Test/TeslLoadPrefab.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Setting/AppSetting.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Test/TestAudioClip.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/ReferenceAssetAndRecord.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/NetWork/Download/DownloadManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AppManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPageManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/Tools/AudioController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Test/TestLoadAsset.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/05/0c9b433b/Transform.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Test/TestUILoad.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager/CoroutineEx.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetLoadRecord/ReferenceAsset/ReferenceAssetInfor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/TestCore/DebugShow/Debug_ShowAllTraceResources.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/AssetReferenceManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/Audio/AudioManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBasePage.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -637,34 +117,26 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1925" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="210" />
+    <option name="y" value="126" />
+    <option name="width" value="1260" />
+    <option name="height" value="758" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
-    <navigator currentView="UnityExplorer" proportions="" version="1">
+    <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="UnityExplorer">
-        <option name="show-hidden-items" value="false" />
-        <option name="show-project-names" value="true" />
-      </pane>
-      <pane id="AssemblyExplorer" />
-      <pane id="FileSystemExplorer" />
-      <pane id="SolutionExplorer">
-        <option name="show-all-files" value="false" />
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="Discover.Launch.Via.Unity" value="true" />
     <property name="Rider.DefaultBreakpoints.AreToggled" value="true" />
     <property name="Rider.ProjectViewActivator.IsNotFirstRun" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="settings.editor.selected.configurable" value="CodeLensConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -713,11 +185,12 @@
       <workItem from="1564549013735" duration="3316000" />
       <workItem from="1564628380740" duration="10097000" />
       <workItem from="1564650229680" duration="10879000" />
+      <workItem from="1564670596414" duration="342000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25853000" />
+    <option name="totallyTimeSpent" value="26195000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -729,8 +202,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
     <layout>
       <window_info id="Structure" order="0" side_tool="true" weight="0.1326585" />
       <window_info id="Favorites" order="1" side_tool="true" />
@@ -790,14 +262,7 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8D698932-951A-4E31-9934-E354A7F087B4/ca/763ebbbe/AudioSource.cs</url>
           <line>148</line>
-          <properties documentPath="$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8D698932-951A-4E31-9934-E354A7F087B4/ca/763ebbbe/AudioSource.cs" initialLine="148">
-            <startOffsets>
-              <option value="4882" />
-            </startOffsets>
-            <endOffsets>
-              <option value="4916" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8D698932-951A-4E31-9934-E354A7F087B4/ca/763ebbbe/AudioSource.cs" initialLine="148" />
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
@@ -819,31 +284,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetBundle/UpdateAssetBundle/AssetBundleUpgradeManager.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Test/TestLinkList.cs" />
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/TestCore/DebugShow/Debug_ShowAllTraceResources.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
-          <folding>
-            <marker date="1564549447422" expanded="false" signature="6:124" ph="..." />
-            <marker date="1564549447422" expanded="false" signature="143:189" ph="/// 编辑器下显示所有追踪的资源 ... " />
-            <marker date="1564549447422" expanded="true" signature="246:1528" ph="{...}" />
-            <marker date="1564549447422" expanded="true" signature="667:1526" ph="{...}" />
-            <marker date="1564549447422" expanded="true" signature="682:957" ph="Resources" />
-            <marker date="1564549447422" expanded="true" signature="839:937" ph="{...}" />
-            <marker date="1564549447422" expanded="true" signature="967:1520" ph="AssetBundle" />
-            <marker date="1564549447422" expanded="true" signature="1128:1227" ph="{...}" />
-            <marker date="1564549447422" expanded="true" signature="1390:1500" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/05/0c9b433b/Transform.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/05/0c9b433b/Transform.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Test/TestLoadAsset.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -958,13 +399,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="11" column="29" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/NetWork/Download/DownloadManager.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="276">
@@ -1079,22 +514,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/39/b14ecfaf/Coroutine.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="20" column="50" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="50" />
-          <folding>
-            <marker date="1564653112996" expanded="false" signature="0:329" ph="/* Decompiled with JetBrains decompiler ... */" />
-            <marker date="1564653112996" expanded="false" signature="337:478" ph="..." />
-            <marker date="1564653112996" expanded="true" signature="501:1209" ph="{...}" />
-            <marker date="1564653112996" expanded="false" signature="506:729" ph="///   &lt;para&gt;MonoBehaviour.StartCoroutine returns a Coroutine. Instances of this class are only used to reference  ... " />
-            <marker date="1564653112996" expanded="true" signature="890:1207" ph="{...}" />
-            <marker date="1564653112996" expanded="false" signature="946:958" ph="{...}" />
-            <marker date="1564653112996" expanded="false" signature="976:1034" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/39/b14ecfaf/Coroutine.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBaseChangePage.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
@@ -1117,50 +537,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/44/4db8027f/MonoBehaviour.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="103" column="31" selection-start-line="103" selection-start-column="31" selection-end-line="103" selection-end-column="31" />
-          <folding>
-            <marker date="1564652124295" expanded="false" signature="0:333" ph="/* Decompiled with JetBrains decompiler ... */" />
-            <marker date="1564652124295" expanded="false" signature="341:498" ph="..." />
-            <marker date="1564652124295" expanded="true" signature="521:9152" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="526:648" ph="///   &lt;para&gt;MonoBehaviour is the base class from which every Unity script derives.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="true" signature="849:9150" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="880:945" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="951:1051" ph="///   &lt;para&gt;Is any invoke pending on this MonoBehaviour?&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="1080:1149" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="1155:1258" ph="///   &lt;para&gt;Cancels all Invoke calls on this MonoBehaviour.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="1289:1353" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="1359:1539" ph="///   &lt;para&gt;Invokes the method methodName in time seconds.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="1593:1670" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="1676:1940" ph="///   &lt;para&gt;Invokes the method methodName in time seconds, then repeatedly every repeatRate seconds.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="2021:2277" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="2283:2445" ph="///   &lt;para&gt;Cancels all Invoke calls with name methodName on this behaviour.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="2493:2557" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="2563:2697" ph="///   &lt;para&gt;Is any invoke on methodName pending?&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="2743:2812" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="2818:2989" ph="///   &lt;para&gt;Starts a coroutine named methodName.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="3066:3163" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="3169:3340" ph="///   &lt;para&gt;Starts a coroutine named methodName.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="3432:3774" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="3780:3894" ph="///   &lt;para&gt;Starts a coroutine.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="3951:4255" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="4490:4545" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="4551:4862" ph="///   &lt;para&gt;Stops the first coroutine named methodName, or the coroutine stored in routine running on this behavi ... " />
-            <marker date="1564652124295" expanded="false" signature="4913:5222" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="5228:5539" ph="///   &lt;para&gt;Stops the first coroutine named methodName, or the coroutine stored in routine running on this behavi ... " />
-            <marker date="1564652124295" expanded="false" signature="5588:5883" ph="{...}" />
-            <marker date="1564652124295" expanded="false" signature="5889:6200" ph="///   &lt;para&gt;Stops the first coroutine named methodName, or the coroutine stored in routine running on this behavi ... " />
-            <marker date="1564652124295" expanded="false" signature="6312:6415" ph="///   &lt;para&gt;Stops all coroutines running on this behaviour.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="6514:6620" ph="///   &lt;para&gt;Disabling this lets you skip the GUI layout phase.&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="6766:6918" ph="///   &lt;para&gt;Allow a specific instance of a MonoBehaviour to run in edit mode (only available in the editor).&lt;/par ... " />
-            <marker date="1564652124295" expanded="false" signature="7171:7325" ph="///   &lt;para&gt;Logs message to the Unity Console (identical to Debug.Log).&lt;/para&gt; ... " />
-            <marker date="1564652124295" expanded="false" signature="7370:7408" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/44/4db8027f/MonoBehaviour.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ThreadPool/Loom.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="278">
@@ -1192,9 +569,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/eb/734bdf01/YieldInstruction.cs">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/C0EF81E1-639B-423A-B35C-E0E4C08B5B7A/eb/734bdf01/YieldInstruction.cs" />
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager/CoroutineEx.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="756">
@@ -1225,89 +600,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="111" column="42" selection-start-line="111" selection-start-column="42" selection-end-line="111" selection-end-column="42" />
-          <folding>
-            <marker date="1564649131076" expanded="false" signature="6:187" ph="..." />
-            <marker date="1564649131076" expanded="true" signature="213:19502" ph="{...}" />
-            <marker date="1564649131076" expanded="true" signature="222:297" ph="/// 这里只有ResourcesManger 提供的对外访问接口和实现 ... " />
-            <marker date="1564649131076" expanded="true" signature="359:19499" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="376:3505" ph="对象的创建和销毁逻辑（实例化对象 (这里对内部的GameObject.Instantiate&lt;T&gt; 做了一层封装，主要是想后期能够监控对象的创建TODO)）" />
-            <marker date="1564649131076" expanded="false" signature="545:734" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="823:1091" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="863:1005" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="1153:1274" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="1345:1475" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="1566:1794" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="1903:2099" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="2229:2437" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="2585:2967" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="2631:2755" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="3101:3483" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="3147:3271" ph="{...}" />
-            <marker date="1564649131076" expanded="true" signature="3519:8924" ph="资源加载&amp;释放接口" />
-            <marker date="1564649131076" expanded="true" signature="3643:3796" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="3895:4033" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="4083:4266" ph="/// 缓存中加载资源 ... " />
-            <marker date="1564649131076" expanded="false" signature="4347:4671" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="4683:4821" ph="/// 同步下载资源接口 ... " />
-            <marker date="1564649131076" expanded="false" signature="4896:5552" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="5017:5255" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="5273:5511" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="5564:5719" ph="/// 异步下载资源的接口 ... " />
-            <marker date="1564649131076" expanded="false" signature="5829:6387" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="5956:6102" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="6457:6778" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="6500:6619" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="6876:7104" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="6919:7038" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="7116:7230" ph="/// 卸载 Resources 资源 ... " />
-            <marker date="1564649131076" expanded="false" signature="7311:7938" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="7360:7487" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="7578:7738" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="7950:8129" ph="/// 卸载 AssetBundle 资源加载 ... " />
-            <marker date="1564649131076" expanded="false" signature="8239:8902" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="8288:8413" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="8429:8675" ph="/* if (assetRecord.AssetLoadedType &lt;= LoadedAssetTypeEnum.LocalStore_UnKnown) ... */" />
-            <marker date="1564649131076" expanded="false" signature="8936:19482" ph="资源加载接口" />
-            <marker date="1564649131076" expanded="false" signature="8962:11343" ph="TextAsset/lua 文件的加载" />
-            <marker date="1564649131076" expanded="false" signature="9123:9277" ph="/// 文本资源的加载(一般是配置文件或者lua 文件) ... " />
-            <marker date="1564649131076" expanded="false" signature="9372:10139" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="9470:9662" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="9824:10040" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="10274:11321" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="10372:10670" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="10510:10655" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="10742:11308" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="10834:11138" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="11355:15238" ph="Sprite 加载" />
-            <marker date="1564649131076" expanded="false" signature="11506:11762" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="11910:13153" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="12122:12371" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="13324:14029" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="13385:13633" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="13651:14018" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="13744:14001" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="14147:15216" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="14538:14759" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="14777:15205" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="15250:17625" ph="GameObject加载" />
-            <marker date="1564649131076" expanded="false" signature="15399:15671" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="15851:16618" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="15912:16191" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="16209:16607" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="16302:16590" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="16766:17603" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="17637:19460" ph="Audio 加载" />
-            <marker date="1564649131076" expanded="false" signature="17796:18102" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="18264:19438" ph="{...}" />
-            <marker date="1564649131076" expanded="false" signature="18487:18699" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Test/TestIEnumerater.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
@@ -1326,413 +618,425 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/AssetReferenceManager.cs">
+    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8D698932-951A-4E31-9934-E354A7F087B4/ca/763ebbbe/AudioSource.cs" />
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/ResourcesManager.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="174" column="28" selection-start-line="174" selection-start-column="28" selection-end-line="174" selection-end-column="28" />
+        <state relative-caret-position="-30">
+          <caret line="111" column="42" selection-start-line="111" selection-start-column="42" selection-end-line="111" selection-end-column="42" />
           <folding>
-            <marker date="1564650060388" expanded="false" signature="6:154" ph="..." />
-            <marker date="1564650060388" expanded="true" signature="192:13623" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="201:439" ph="/// 定义了如何从参数 component 组件的所有引用其他资源 allComponentReferences 中获取满足条件的第一个引用信息 ... " />
-            <marker date="1564650060388" expanded="false" signature="632:698" ph="/// 管理整个项目中加载的的资源引用其他的资源的数据 ... " />
-            <marker date="1564650060388" expanded="true" signature="745:13620" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="1190:1277" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="1491:2627" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="1544:1653" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="1788:1961" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="2069:2266" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="2639:2932" ph="/// 记录指定的组件的引用资源请求  ... " />
-            <marker date="1564650060388" expanded="false" signature="3088:5644" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="3168:3300" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="3435:4094" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="4202:4782" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="4862:5490" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="4995:5120" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="5312:5475" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="5773:7196" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="5853:5985" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="6121:6263" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="6373:6539" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="6617:7185" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="6752:6877" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="6986:7170" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="7207:7323" ph="/// 释放一个组件所有的资源引用 ... " />
-            <marker date="1564650060388" expanded="true" signature="7409:8402" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="7463:7595" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="7743:7887" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="7997:8165" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="8226:8349" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="8413:8526" ph="/// 释放一个资源所有引用的资源 ... " />
-            <marker date="1564650060388" expanded="false" signature="8597:9458" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="8648:8777" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="8911:9041" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="9113:9404" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="9198:9337" ph="{...}" />
-            <marker date="1564650060388" expanded="true" signature="9490:13613" ph="从多个引用中获取各种类型的指定引用 接口" />
-            <marker date="1564650060388" expanded="false" signature="9733:10526" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="10054:10487" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="10755:11587" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="11107:11548" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="11806:13591" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="12154:12306" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="12452:12638" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="12703:13552" ph="{...}" />
-            <marker date="1564650060388" expanded="false" signature="13266:13419" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="6:187" ph="..." />
+            <marker date="1564670199916" expanded="true" signature="213:19502" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="222:297" ph="/// 这里只有ResourcesManger 提供的对外访问接口和实现 ... " />
+            <marker date="1564670199916" expanded="true" signature="359:19499" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="376:3505" ph="对象的创建和销毁逻辑（实例化对象 (这里对内部的GameObject.Instantiate&lt;T&gt; 做了一层封装，主要是想后期能够监控对象的创建TODO)）" />
+            <marker date="1564670199916" expanded="false" signature="545:734" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="823:1091" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="863:1005" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="1153:1274" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="1345:1475" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="1566:1794" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="1903:2099" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="2229:2437" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="2585:2967" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="2631:2755" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="3101:3483" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="3147:3271" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="3519:8924" ph="资源加载&amp;释放接口" />
+            <marker date="1564670199916" expanded="true" signature="3643:3796" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="3895:4033" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="4083:4266" ph="/// 缓存中加载资源 ... " />
+            <marker date="1564670199916" expanded="false" signature="4347:4671" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="4683:4821" ph="/// 同步下载资源接口 ... " />
+            <marker date="1564670199916" expanded="false" signature="4896:5552" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="5017:5255" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="5273:5511" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="5564:5719" ph="/// 异步下载资源的接口 ... " />
+            <marker date="1564670199916" expanded="false" signature="5829:6387" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="5956:6102" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="6457:6778" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="6500:6619" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="6876:7104" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="6919:7038" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="7116:7230" ph="/// 卸载 Resources 资源 ... " />
+            <marker date="1564670199916" expanded="false" signature="7311:7938" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="7360:7487" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="7578:7738" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="7950:8129" ph="/// 卸载 AssetBundle 资源加载 ... " />
+            <marker date="1564670199916" expanded="false" signature="8239:8902" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="8288:8413" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="8429:8675" ph="/* if (assetRecord.AssetLoadedType &lt;= LoadedAssetTypeEnum.LocalStore_UnKnown) ... */" />
+            <marker date="1564670199916" expanded="false" signature="8936:19482" ph="资源加载接口" />
+            <marker date="1564670199916" expanded="false" signature="8962:11343" ph="TextAsset/lua 文件的加载" />
+            <marker date="1564670199916" expanded="false" signature="9123:9277" ph="/// 文本资源的加载(一般是配置文件或者lua 文件) ... " />
+            <marker date="1564670199916" expanded="false" signature="9372:10139" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="9470:9662" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="9824:10040" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="10274:11321" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="10372:10670" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="10510:10655" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="10742:11308" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="10834:11138" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="11355:15238" ph="Sprite 加载" />
+            <marker date="1564670199916" expanded="false" signature="11506:11762" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="11910:13153" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="12122:12371" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="13324:14029" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="13385:13633" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="13651:14018" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="13744:14001" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="14147:15216" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="14538:14759" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="14777:15205" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="15250:17625" ph="GameObject加载" />
+            <marker date="1564670199916" expanded="false" signature="15399:15671" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="15851:16618" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="15912:16191" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="16209:16607" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="16302:16590" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="16766:17603" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="17637:19460" ph="Audio 加载" />
+            <marker date="1564670199916" expanded="false" signature="17796:18102" ph="{...}" />
+            <marker date="1564670199916" expanded="false" signature="18264:19438" ph="{...}" />
+            <marker date="1564670199916" expanded="true" signature="18487:18699" ph="{...}" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/UIBasePage.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="371">
+        <state relative-caret-position="-150">
           <caret line="240" column="41" selection-start-line="240" selection-start-column="41" selection-end-line="240" selection-end-column="41" />
           <folding>
-            <marker date="1564661448292" expanded="false" signature="6:92" ph="..." />
-            <marker date="1564661448292" expanded="true" signature="119:14287" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="166:318" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="363:493" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="499:547" ph="/// UI界面的基类 ... " />
-            <marker date="1564661448292" expanded="true" signature="575:14285" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="590:717" ph="/// 标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。 ... " />
-            <marker date="1564661448292" expanded="false" signature="833:972" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="1042:1186" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="1196:1701" ph="UI 界面相关数据" />
-            <marker date="1564661448292" expanded="true" signature="1712:2247" ph="辅助功能扩展功能（协程+UI组件引用+延迟销毁+音效控制组件）" />
-            <marker date="1564661448292" expanded="false" signature="2257:3257" ph="构造函数和初始化 和 IDisposable 接口" />
-            <marker date="1564661448292" expanded="false" signature="2319:2393" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="2536:3237" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="3267:7123" ph="UI界面外部控制接口" />
-            <marker date="1564661448292" expanded="false" signature="3295:3367" ph="/// 被实例化创建后调用 除非被销毁否则只会调用一次 ... " />
-            <marker date="1564661448292" expanded="false" signature="3405:3452" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="3462:3576" ph="/// 只能由 UIPageManager 调用 ... " />
-            <marker date="1564661448292" expanded="false" signature="3607:4845" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="3666:3808" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="3843:4835" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="4855:5001" ph="/// 关闭界面  ... " />
-            <marker date="1564661448292" expanded="false" signature="5053:6321" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="5112:5254" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="5289:6311" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="6331:6433" ph="/// 当UIBasePage 关联的对象不存在时候，恢复到初始的状态 进行数据重置然后重新关联新创建的预制体实例 ... " />
-            <marker date="1564661448292" expanded="false" signature="6489:6780" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="6539:6655" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="6791:6862" ph="///  释放引用的对象和UIbasePage 对象 ... " />
-            <marker date="1564661448292" expanded="false" signature="6902:7103" ph="{...}" />
-            <marker date="1564661448292" expanded="true" signature="7134:9972" ph="UI 界面内部实现接口" />
-            <marker date="1564661448292" expanded="false" signature="7163:7230" ph="/// 每次界面关联的的预制体被创建时候调用 ... " />
-            <marker date="1564661448292" expanded="false" signature="7275:7295" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="7305:7378" ph="/// 调用SetActive(true )之前调用这个 ... " />
-            <marker date="1564661448292" expanded="false" signature="7427:7447" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="7457:7530" ph="/// 调用SetActive(true )之后调用这个 ... " />
-            <marker date="1564661448292" expanded="false" signature="7578:7598" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="7608:7682" ph="/// 调用SetActive(false )之前调用这个 ... " />
-            <marker date="1564661448292" expanded="true" signature="7733:8530" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="7909:8520" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="7982:8506" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="8167:8417" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="8540:8614" ph="/// 调用SetActive(false )之后调用这个 ... " />
-            <marker date="1564661448292" expanded="false" signature="8685:9024" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="8729:8794" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="8811:9014" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="9034:9094" ph="/// 在被销毁前时候释放自身 ... " />
-            <marker date="1564661448292" expanded="false" signature="9145:9816" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="9318:9648" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="9391:9589" ph="{...}" />
-            <marker date="1564661448292" expanded="true" signature="9697:9806" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="9826:9882" ph="/// 在被销毁后执行 ... " />
-            <marker date="1564661448292" expanded="false" signature="9932:9952" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="9982:12154" ph="子组件" />
-            <marker date="1564661448292" expanded="false" signature="10003:10176" ph="/// 由于考虑到有多个同名的  UIBaseWidget 这里不会检测是否存在 ... " />
-            <marker date="1564661448292" expanded="false" signature="10254:11682" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="10471:11672" ph="/* UIBaseWidget recordWidget = null; ... */" />
-            <marker date="1564661448292" expanded="false" signature="11745:12134" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="11884:12124" ph="/* UIBaseWidget widget = null; ... */" />
-            <marker date="1564661448292" expanded="true" signature="12165:14279" ph="辅助功能接口" />
-            <marker date="1564661448292" expanded="false" signature="12189:13507" ph="根据对象名或者路径获取对象" />
-            <marker date="1564661448292" expanded="false" signature="12296:12509" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="12608:12827" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="12900:13148" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="13233:13487" ph="{...}" />
-            <marker date="1564661448292" expanded="true" signature="13517:14259" ph="协程相关" />
-            <marker date="1564661448292" expanded="false" signature="13597:13705" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="13772:13903" ph="{...}" />
-            <marker date="1564661448292" expanded="false" signature="13954:14239" ph="{...}" />
-            <marker date="1564661448292" expanded="true" signature="14021:14187" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/Tools/AudioController.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="46" column="46" selection-start-line="46" selection-start-column="46" selection-end-line="46" selection-end-column="46" />
-          <folding>
-            <marker date="1564661179247" expanded="false" signature="6:130" ph="..." />
-            <marker date="1564661179247" expanded="true" signature="155:2907" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="162:238" ph="/// 作为一个组件 组合在其他模块中，提供访问AudioManger 的功能 ... " />
-            <marker date="1564661179247" expanded="true" signature="271:2905" ph="{...}" />
-            <marker date="1564661179247" expanded="false" signature="411:645" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="437:635" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="747:1337" ph="背景音" />
-            <marker date="1564661179247" expanded="false" signature="878:1140" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="937:1034" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="1225:1317" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="1347:2430" ph="普通音效" />
-            <marker date="1564661179247" expanded="false" signature="1476:2097" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="1535:1632" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="1728:2087" ph="{...}" />
-            <marker date="1564661179247" expanded="false" signature="1813:1959" ph="{...}" />
-            <marker date="1564661179247" expanded="false" signature="1980:2073" ph="{...}" />
-            <marker date="1564661179247" expanded="false" signature="2197:2410" ph="{...}" />
-            <marker date="1564661179247" expanded="true" signature="2440:2555" ph="/// 停止当前管理器管理的所有音效 ... " />
-            <marker date="1564661179247" expanded="true" signature="2619:2890" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager/AsyncManager.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-10">
-          <caret line="35" column="61" selection-start-line="35" selection-start-column="61" selection-end-line="35" selection-end-column="61" />
-          <folding>
-            <marker date="1564658818059" expanded="false" signature="6:92" ph="..." />
-            <marker date="1564658818059" expanded="true" signature="117:4962" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="124:173" ph="/// 异步&amp;协程管理器 ... " />
-            <marker date="1564658818059" expanded="true" signature="226:4960" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="861:1026" ph="Data" />
-            <marker date="1564658818059" expanded="true" signature="1037:2295" ph="对外 Interface" />
-            <marker date="1564658818059" expanded="false" signature="1067:1167" ph="/// 开启一个协程任务 ... " />
-            <marker date="1564658818059" expanded="false" signature="1229:1563" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="1573:1671" ph="/// 停止一个协程 ... " />
-            <marker date="1564658818059" expanded="true" signature="1730:2027" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="2163:2275" ph="{...}" />
-            <marker date="1564658818059" expanded="true" signature="2306:4927" ph="内部实现" />
-            <marker date="1564658818059" expanded="false" signature="2397:3221" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="2442:2569" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="2659:3119" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="2736:2930" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="3301:3824" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="3346:3475" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="3549:3674" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="3984:4544" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="4052:4534" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="4100:4283" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="4332:4476" ph="{...}" />
-            <marker date="1564658818059" expanded="false" signature="4554:4654" ph="/// 协程完成回调 ... " />
-            <marker date="1564658818059" expanded="false" signature="4720:4899" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8D698932-951A-4E31-9934-E354A7F087B4/ca/763ebbbe/AudioSource.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="213">
-          <caret line="148" column="30" lean-forward="true" selection-start-line="148" selection-start-column="30" selection-end-line="148" selection-end-column="30" />
-          <folding>
-            <marker date="1564650699598" expanded="false" signature="0:333" ph="/* Decompiled with JetBrains decompiler ... */" />
-            <marker date="1564650699598" expanded="false" signature="341:535" ph="..." />
-            <marker date="1564650699598" expanded="true" signature="558:22058" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="563:655" ph="///   &lt;para&gt;A representation of audio sources in 3D.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="true" signature="821:22056" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="830:941" ph="///   &lt;para&gt;PanLevel has been deprecated. Use spatialBlend instead.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="1154:1252" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="1170:1220" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="1230:1246" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="1258:1361" ph="///   &lt;para&gt;Pan has been deprecated. Use panStereo instead.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="1558:1653" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="1574:1621" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="1631:1647" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="3170:3270" ph="///   &lt;para&gt;The volume of the audio source (0.0 to 1.0).&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="3411:3497" ph="///   &lt;para&gt;The pitch of the audio source.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="3520:3670" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="3536:3595" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="3605:3664" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="3676:3761" ph="///   &lt;para&gt;Playback position in seconds.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="3936:4025" ph="///   &lt;para&gt;Playback position in PCM samples.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="4278:4364" ph="///   &lt;para&gt;The default AudioClip to play.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="4541:4663" ph="///   &lt;para&gt;The target group to which the AudioSource should route its signal.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="true" signature="4869:4922" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="4928:5174" ph="///   &lt;para&gt;Plays the clip.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="5228:5283" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="5289:5638" ph="///   &lt;para&gt;Plays the clip with a delay specified in seconds. Users are advised to use this function instead of t ... " />
-            <marker date="1564650699598" expanded="false" signature="5679:5755" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="5761:6070" ph="///   &lt;para&gt;Plays the clip at a specific time on the absolute time-line that AudioSettings.dspTime reads from.&lt;/p ... " />
-            <marker date="1564650699598" expanded="false" signature="6113:6168" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="6174:6430" ph="///   &lt;para&gt;Plays an AudioClip, and scales the AudioSource volume by volumeScale.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="6496:6542" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="6548:6804" ph="///   &lt;para&gt;Plays an AudioClip, and scales the AudioSource volume by volumeScale.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="6890:7103" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="7109:7302" ph="///   &lt;para&gt;Changes the time at which a sound that has already been scheduled to play will start.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="7416:7691" ph="///   &lt;para&gt;Changes the time at which a sound that has already been scheduled to play will end. Notice that depen ... " />
-            <marker date="1564650699598" expanded="false" signature="7803:7882" ph="///   &lt;para&gt;Stops playing the clip.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="7905:7940" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="7946:8026" ph="///   &lt;para&gt;Pauses playing the clip.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="8113:8217" ph="///   &lt;para&gt;Unpause the paused playback of this AudioSource.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="8306:8404" ph="///   &lt;para&gt;Is the clip playing right now (Read Only)?&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="8531:8730" ph="///   &lt;para&gt;True if all sounds played by the AudioSource (main sound started by Play() or playOnAwake as well as  ... " />
-            <marker date="1564650699598" expanded="false" signature="8858:9169" ph="///   &lt;para&gt;Plays an AudioClip at a given position in world space.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="9264:9331" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="9337:9648" ph="///   &lt;para&gt;Plays an AudioClip at a given position in world space.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="9758:10236" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="10242:10324" ph="///   &lt;para&gt;Is the audio clip looping?&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="10462:10601" ph="///   &lt;para&gt;This makes the audio source not take into account the volume of the audio listener.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="10755:10886" ph="///   &lt;para&gt;If set to true, the audio source will automatically start playing on awake.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="11031:11240" ph="///   &lt;para&gt;Allows AudioSource to play even though AudioListener.pause is set to true. This is useful for the men ... " />
-            <marker date="1564650699598" expanded="false" signature="11393:11523" ph="///   &lt;para&gt;Whether the Audio Source should be updated in the fixed or dynamic update.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="11694:11856" ph="///   &lt;para&gt;Pans a playing sound in a stereo way (left or right). This only applies to sounds that are Mono or St ... " />
-            <marker date="1564650699598" expanded="false" signature="12034:12245" ph="///   &lt;para&gt;Sets how much this AudioSource is affected by 3D spatialisation calculations (attenuation, doppler et ... " />
-            <marker date="1564650699598" expanded="false" signature="12432:12523" ph="///   &lt;para&gt;Enables or disables spatialization.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="12667:12807" ph="///   &lt;para&gt;Determines if the spatializer effect is inserted before or after the effect filters.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="12962:13238" ph="///   &lt;para&gt;Set the custom curve for the given AudioSourceCurveType.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="13318:13389" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="13395:13698" ph="///   &lt;para&gt;Get the current custom curve for the given AudioSourceCurveType.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="13766:13837" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="13843:14021" ph="///   &lt;para&gt;The amount by which the signal from the AudioSource will be mixed into the global reverb associated w ... " />
-            <marker date="1564650699598" expanded="false" signature="14169:14300" ph="///   &lt;para&gt;Bypass effects (Applied from filter components or global listener filters).&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="14447:14682" ph="///   &lt;para&gt;When set global effects on the AudioListener will not be applied to the audio signal generated by the ... " />
-            <marker date="1564650699598" expanded="false" signature="14837:14999" ph="///   &lt;para&gt;When set doesn't route the signal from an AudioSource into the global reverb associated with reverb z ... " />
-            <marker date="1564650699598" expanded="false" signature="15150:15250" ph="///   &lt;para&gt;Sets the Doppler scale for this AudioSource.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="15397:15542" ph="///   &lt;para&gt;Sets the spread angle (in degrees) of a 3d stereo or multichannel sound in speaker space.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="15683:15776" ph="///   &lt;para&gt;Sets the priority of the AudioSource.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="15917:16062" ph="///   &lt;para&gt;Un- / Mutes the AudioSource. Mute sets the volume=0, Un-Mute restore the original volume.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="16200:16332" ph="///   &lt;para&gt;Within the Min distance the AudioSource will cease to grow louder in volume.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="16478:16613" ph="///   &lt;para&gt;(Logarithmic rolloff) MaxDistance is the distance a sound stops attenuating at.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="16759:16870" ph="///   &lt;para&gt;Sets/Gets how the AudioSource attenuates over distance.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="17027:17246" ph="///   &lt;para&gt;Deprecated Version. Returns a block of the currently playing source's output data.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="17433:17577" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="17583:17881" ph="///   &lt;para&gt;Provides a block of the currently playing source's output data.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="17941:18016" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="18022:18404" ph="///   &lt;para&gt;Deprecated Version. Returns a block of the currently playing source's spectrum data.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="18615:18769" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="18775:19159" ph="///   &lt;para&gt;Provides a block of the currently playing audio source's spectrum data.&lt;/para&gt; ... " />
-            <marker date="1564650699598" expanded="false" signature="19239:19324" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="19459:19782" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="19475:19631" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="19641:19776" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="19917:20240" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="19933:20089" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="20099:20234" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="20383:20714" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="20399:20559" ph="{...}" />
-            <marker date="1564650699598" expanded="true" signature="20569:20708" ph="{...}" />
-            <marker date="1564650699598" expanded="false" signature="20720:21136" ph="///   &lt;para&gt;Sets a user-defined parameter of a custom spatializer effect that is attached to an AudioSource.&lt;/par ... " />
-            <marker date="1564650699598" expanded="false" signature="21508:21930" ph="///   &lt;para&gt;Sets a user-defined parameter of a custom ambisonic decoder effect that is attached to an AudioSource ... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Test/TeslLoadPrefab.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="26" column="4" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
-          <folding>
-            <marker date="1564449993427" expanded="false" signature="6:130" ph="..." />
-            <marker date="1564449993427" expanded="true" signature="175:707" ph="{...}" />
-            <marker date="1564449993427" expanded="false" signature="307:328" ph="{...}" />
-            <marker date="1564449993427" expanded="true" signature="386:705" ph="{...}" />
-            <marker date="1564449993427" expanded="true" signature="433:699" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Test/TestUILoad.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
-          <folding>
-            <marker date="1564398802164" expanded="false" signature="6:135" ph="..." />
-            <marker date="1564398802164" expanded="true" signature="175:1074" ph="{...}" />
-            <marker date="1564398802164" expanded="true" signature="204:1071" ph="{...}" />
-            <marker date="1564398802164" expanded="true" signature="251:404" ph="{...}" />
-            <marker date="1564398802164" expanded="true" signature="446:613" ph="{...}" />
-            <marker date="1564398802164" expanded="true" signature="655:813" ph="{...}" />
-            <marker date="1564398802164" expanded="true" signature="855:959" ph="{...}" />
-            <marker date="1564398802164" expanded="true" signature="1001:1065" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="6:92" ph="..." />
+            <marker date="1564670199995" expanded="true" signature="119:14287" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="166:318" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="363:493" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="499:547" ph="/// UI界面的基类 ... " />
+            <marker date="1564670199995" expanded="true" signature="575:14285" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="590:717" ph="/// 标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。 ... " />
+            <marker date="1564670199995" expanded="false" signature="833:972" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="1042:1186" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="1196:1701" ph="UI 界面相关数据" />
+            <marker date="1564670199995" expanded="false" signature="1712:2247" ph="辅助功能扩展功能（协程+UI组件引用+延迟销毁+音效控制组件）" />
+            <marker date="1564670199995" expanded="false" signature="2257:3257" ph="构造函数和初始化 和 IDisposable 接口" />
+            <marker date="1564670199995" expanded="false" signature="2319:2393" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="2536:3237" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="3267:7123" ph="UI界面外部控制接口" />
+            <marker date="1564670199995" expanded="false" signature="3295:3367" ph="/// 被实例化创建后调用 除非被销毁否则只会调用一次 ... " />
+            <marker date="1564670199995" expanded="false" signature="3405:3452" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="3462:3576" ph="/// 只能由 UIPageManager 调用 ... " />
+            <marker date="1564670199995" expanded="false" signature="3607:4845" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="3666:3808" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="3843:4835" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="4855:5001" ph="/// 关闭界面  ... " />
+            <marker date="1564670199995" expanded="false" signature="5053:6321" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="5112:5254" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="5289:6311" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="6331:6433" ph="/// 当UIBasePage 关联的对象不存在时候，恢复到初始的状态 进行数据重置然后重新关联新创建的预制体实例 ... " />
+            <marker date="1564670199995" expanded="false" signature="6489:6780" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="6539:6655" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="6791:6862" ph="///  释放引用的对象和UIbasePage 对象 ... " />
+            <marker date="1564670199995" expanded="false" signature="6902:7103" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="7134:9972" ph="UI 界面内部实现接口" />
+            <marker date="1564670199995" expanded="false" signature="7163:7230" ph="/// 每次界面关联的的预制体被创建时候调用 ... " />
+            <marker date="1564670199995" expanded="false" signature="7275:7295" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="7305:7378" ph="/// 调用SetActive(true )之前调用这个 ... " />
+            <marker date="1564670199995" expanded="false" signature="7427:7447" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="7457:7530" ph="/// 调用SetActive(true )之后调用这个 ... " />
+            <marker date="1564670199995" expanded="false" signature="7578:7598" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="7608:7682" ph="/// 调用SetActive(false )之前调用这个 ... " />
+            <marker date="1564670199995" expanded="true" signature="7733:8530" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="7909:8520" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="7982:8506" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="8167:8417" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="8540:8614" ph="/// 调用SetActive(false )之后调用这个 ... " />
+            <marker date="1564670199995" expanded="false" signature="8685:9024" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="8729:8794" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="8811:9014" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="9034:9094" ph="/// 在被销毁前时候释放自身 ... " />
+            <marker date="1564670199995" expanded="false" signature="9145:9816" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="9318:9648" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="9391:9589" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="9697:9806" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="9826:9882" ph="/// 在被销毁后执行 ... " />
+            <marker date="1564670199995" expanded="false" signature="9932:9952" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="9982:12154" ph="子组件" />
+            <marker date="1564670199995" expanded="false" signature="10003:10176" ph="/// 由于考虑到有多个同名的  UIBaseWidget 这里不会检测是否存在 ... " />
+            <marker date="1564670199995" expanded="false" signature="10254:11682" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="10471:11672" ph="/* UIBaseWidget recordWidget = null; ... */" />
+            <marker date="1564670199995" expanded="false" signature="11745:12134" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="11884:12124" ph="/* UIBaseWidget widget = null; ... */" />
+            <marker date="1564670199995" expanded="false" signature="12165:14279" ph="辅助功能接口" />
+            <marker date="1564670199995" expanded="false" signature="12189:13507" ph="根据对象名或者路径获取对象" />
+            <marker date="1564670199995" expanded="false" signature="12296:12509" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="12608:12827" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="12900:13148" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="13233:13487" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="13517:14259" ph="协程相关" />
+            <marker date="1564670199995" expanded="false" signature="13597:13705" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="13772:13903" ph="{...}" />
+            <marker date="1564670199995" expanded="false" signature="13954:14239" ph="{...}" />
+            <marker date="1564670199995" expanded="true" signature="14021:14187" ph="{...}" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Test/TestAudioClip.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="17" column="9" lean-forward="true" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
+        <state relative-caret-position="-30">
+          <caret line="17" column="9" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
           <folding>
-            <marker date="1564650132048" expanded="false" signature="6:135" ph="..." />
-            <marker date="1564650132048" expanded="true" signature="179:596" ph="{...}" />
-            <marker date="1564650132048" expanded="true" signature="283:593" ph="{...}" />
-            <marker date="1564650132048" expanded="true" signature="330:443" ph="{...}" />
-            <marker date="1564650132048" expanded="true" signature="493:587" ph="{...}" />
+            <marker date="1564670200073" expanded="false" signature="6:135" ph="..." />
+            <marker date="1564670200073" expanded="true" signature="179:595" ph="{...}" />
+            <marker date="1564670200073" expanded="true" signature="283:592" ph="{...}" />
+            <marker date="1564670200073" expanded="true" signature="330:442" ph="{...}" />
+            <marker date="1564670200073" expanded="true" signature="492:586" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Test/TestUILoad.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
+          <folding>
+            <marker date="1564409661792" expanded="false" signature="6:135" ph="..." />
+            <marker date="1564409661792" expanded="true" signature="175:1074" ph="{...}" />
+            <marker date="1564409661792" expanded="true" signature="204:1071" ph="{...}" />
+            <marker date="1564409661792" expanded="true" signature="251:404" ph="{...}" />
+            <marker date="1564409661792" expanded="true" signature="446:613" ph="{...}" />
+            <marker date="1564409661792" expanded="true" signature="655:813" ph="{...}" />
+            <marker date="1564409661792" expanded="true" signature="855:959" ph="{...}" />
+            <marker date="1564409661792" expanded="true" signature="1001:1065" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/ResourcesManager/AssetReference/AssetReferenceManager.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="174" column="28" selection-start-line="174" selection-start-column="28" selection-end-line="174" selection-end-column="28" />
+          <folding>
+            <marker date="1564670199885" expanded="false" signature="6:154" ph="..." />
+            <marker date="1564670199885" expanded="true" signature="192:13623" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="201:439" ph="/// 定义了如何从参数 component 组件的所有引用其他资源 allComponentReferences 中获取满足条件的第一个引用信息 ... " />
+            <marker date="1564670199885" expanded="false" signature="632:698" ph="/// 管理整个项目中加载的的资源引用其他的资源的数据 ... " />
+            <marker date="1564670199885" expanded="true" signature="745:13620" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="1190:1277" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="1491:2627" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="1544:1653" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="1788:1961" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="2069:2266" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="2639:2932" ph="/// 记录指定的组件的引用资源请求  ... " />
+            <marker date="1564670199885" expanded="false" signature="3088:5644" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="3168:3300" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="3435:4094" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="4202:4782" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="4862:5490" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="4995:5120" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="5312:5475" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="5773:7196" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="5853:5985" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="6121:6263" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="6373:6539" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="6617:7185" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="6752:6877" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="6986:7170" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="7207:7323" ph="/// 释放一个组件所有的资源引用 ... " />
+            <marker date="1564670199885" expanded="false" signature="7409:8402" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="7463:7595" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="7743:7887" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="7997:8165" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="8226:8349" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="8413:8526" ph="/// 释放一个资源所有引用的资源 ... " />
+            <marker date="1564670199885" expanded="false" signature="8597:9458" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="8648:8777" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="8911:9041" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="9113:9404" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="9198:9337" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="9490:13613" ph="从多个引用中获取各种类型的指定引用 接口" />
+            <marker date="1564670199885" expanded="false" signature="9733:10526" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="10054:10487" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="10755:11587" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="11107:11548" ph="{...}" />
+            <marker date="1564670199885" expanded="false" signature="11806:13591" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="12154:12306" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="12452:12638" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="12703:13552" ph="{...}" />
+            <marker date="1564670199885" expanded="true" signature="13266:13419" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/UIPage/Tools/AudioController.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="46" column="46" selection-start-line="46" selection-start-column="46" selection-end-line="46" selection-end-column="46" />
+          <folding>
+            <marker date="1564670199979" expanded="false" signature="6:130" ph="..." />
+            <marker date="1564670199979" expanded="true" signature="155:2907" ph="{...}" />
+            <marker date="1564670199979" expanded="false" signature="162:238" ph="/// 作为一个组件 组合在其他模块中，提供访问AudioManger 的功能 ... " />
+            <marker date="1564670199979" expanded="true" signature="271:2905" ph="{...}" />
+            <marker date="1564670199979" expanded="false" signature="411:645" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="437:635" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="747:1337" ph="背景音" />
+            <marker date="1564670199979" expanded="false" signature="878:1140" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="937:1034" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="1225:1317" ph="{...}" />
+            <marker date="1564670199979" expanded="false" signature="1347:2430" ph="普通音效" />
+            <marker date="1564670199979" expanded="false" signature="1476:2097" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="1535:1632" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="1728:2087" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="1813:1959" ph="{...}" />
+            <marker date="1564670199979" expanded="true" signature="1980:2073" ph="{...}" />
+            <marker date="1564670199979" expanded="false" signature="2197:2410" ph="{...}" />
+            <marker date="1564670199979" expanded="false" signature="2440:2555" ph="/// 停止当前管理器管理的所有音效 ... " />
+            <marker date="1564670199979" expanded="false" signature="2619:2890" ph="{...}" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/UI/Audio/AudioManager.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="33">
-          <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
+        <state relative-caret-position="330">
+          <caret line="69" selection-start-line="69" selection-end-line="69" />
           <folding>
-            <marker date="1564662545040" expanded="false" signature="6:92" ph="..." />
-            <marker date="1564662545040" expanded="true" signature="116:13245" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="123:169" ph="/// 音效管理器 ... " />
-            <marker date="1564662545040" expanded="true" signature="266:13243" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="281:527" ph="背景音" />
-            <marker date="1564662545040" expanded="true" signature="537:843" ph="普通的声音" />
-            <marker date="1564662545040" expanded="false" signature="884:1055" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="1090:1137" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="1148:1794" ph="IUpdateTick 接口" />
-            <marker date="1564662545040" expanded="false" signature="1334:1603" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="1655:1774" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="1805:6003" ph="播放 &amp; 停止  背景声音接口" />
-            <marker date="1564662545040" expanded="false" signature="1838:2102" ph="/// 播放背景音 ... " />
-            <marker date="1564662545040" expanded="true" signature="2226:3454" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="2534:3039" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="2618:3011" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="2799:2959" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="3594:4664" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="3771:4408" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="3865:4258" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="4046:4206" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="4293:4383" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="4674:4796" ph="///  停止当前背景 ... " />
-            <marker date="1564662545040" expanded="true" signature="4864:5255" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="5075:5245" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="5265:5431" ph="/// 停止播放背景 ... " />
-            <marker date="1564662545040" expanded="false" signature="5518:5983" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="5803:5973" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="6013:8519" ph="普通的音效" />
-            <marker date="1564662545040" expanded="false" signature="6036:6287" ph="/// 普通的音效播放 ... " />
-            <marker date="1564662545040" expanded="true" signature="6387:7586" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="6712:6927" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="6761:6883" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="7175:7332" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="7349:7576" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="7596:7764" ph="/// 停止播放一个音效 ... " />
-            <marker date="1564662545040" expanded="true" signature="7846:8499" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="8283:8433" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="8530:13237" ph="辅助" />
-            <marker date="1564662545040" expanded="false" signature="8550:8676" ph="/// 根据指定的参数个数 初始化对应参数个数的普通的声音播放组件 ... " />
-            <marker date="1564662545040" expanded="true" signature="8748:9224" ph="{...}" />
-            <marker date="1564662545040" expanded="true" signature="8965:9214" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="9234:9294" ph="/// 定时检测哪些任务完成了 ... " />
-            <marker date="1564662545040" expanded="false" signature="9343:9986" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="9528:9976" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="9598:9730" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="9997:10142" ph="/// 实例化获取一个 AudioSources组件对象 ... " />
-            <marker date="1564662545040" expanded="true" signature="10214:10425" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="10435:10529" ph="/// 获取一个可用的普通音效组件 ... " />
-            <marker date="1564662545040" expanded="true" signature="10587:11393" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="10692:11200" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="10800:11186" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="10860:11013" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="11038:11168" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="11403:11507" ph="/// 回收一个可用的普通音效组件 ... " />
-            <marker date="1564662545040" expanded="false" signature="11573:11900" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="11657:11801" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="11910:12051" ph="/// 是否正在播放参数指定的普通音效 ... " />
-            <marker date="1564662545040" expanded="false" signature="12144:13217" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="12372:13180" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="12450:13103" ph="{...}" />
-            <marker date="1564662545040" expanded="false" signature="12528:12677" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="6:92" ph="..." />
+            <marker date="1564670199932" expanded="true" signature="116:13245" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="123:169" ph="/// 音效管理器 ... " />
+            <marker date="1564670199932" expanded="true" signature="266:13243" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="281:527" ph="背景音" />
+            <marker date="1564670199932" expanded="false" signature="537:843" ph="普通的声音" />
+            <marker date="1564670199932" expanded="false" signature="884:1055" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="1090:1137" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="1148:1794" ph="IUpdateTick 接口" />
+            <marker date="1564670199932" expanded="false" signature="1334:1603" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="1655:1774" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="1805:6003" ph="播放 &amp; 停止  背景声音接口" />
+            <marker date="1564670199932" expanded="false" signature="1838:2102" ph="/// 播放背景音 ... " />
+            <marker date="1564670199932" expanded="false" signature="2226:3454" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="2534:3039" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="2618:3011" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="2799:2959" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="3594:4664" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="3771:4408" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="3865:4258" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="4046:4206" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="4293:4383" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="4674:4796" ph="///  停止当前背景 ... " />
+            <marker date="1564670199932" expanded="false" signature="4864:5255" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="5075:5245" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="5265:5431" ph="/// 停止播放背景 ... " />
+            <marker date="1564670199932" expanded="false" signature="5518:5983" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="5803:5973" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="6013:8519" ph="普通的音效" />
+            <marker date="1564670199932" expanded="false" signature="6036:6287" ph="/// 普通的音效播放 ... " />
+            <marker date="1564670199932" expanded="false" signature="6387:7586" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="6712:6927" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="6761:6883" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="7175:7332" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="7349:7576" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="7596:7764" ph="/// 停止播放一个音效 ... " />
+            <marker date="1564670199932" expanded="false" signature="7846:8499" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="8283:8433" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="8530:13237" ph="辅助" />
+            <marker date="1564670199932" expanded="false" signature="8550:8676" ph="/// 根据指定的参数个数 初始化对应参数个数的普通的声音播放组件 ... " />
+            <marker date="1564670199932" expanded="false" signature="8748:9224" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="8965:9214" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="9234:9294" ph="/// 定时检测哪些任务完成了 ... " />
+            <marker date="1564670199932" expanded="false" signature="9343:9986" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="9528:9976" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="9598:9730" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="9997:10142" ph="/// 实例化获取一个 AudioSources组件对象 ... " />
+            <marker date="1564670199932" expanded="false" signature="10214:10425" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="10435:10529" ph="/// 获取一个可用的普通音效组件 ... " />
+            <marker date="1564670199932" expanded="false" signature="10587:11393" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="10692:11200" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="10800:11186" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="10860:11013" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="11038:11168" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="11403:11507" ph="/// 回收一个可用的普通音效组件 ... " />
+            <marker date="1564670199932" expanded="false" signature="11573:11900" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="11657:11801" ph="{...}" />
+            <marker date="1564670199932" expanded="false" signature="11910:12051" ph="/// 是否正在播放参数指定的普通音效 ... " />
+            <marker date="1564670199932" expanded="false" signature="12144:13217" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="12372:13180" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="12450:13103" ph="{...}" />
+            <marker date="1564670199932" expanded="true" signature="12528:12677" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/TestCore/DebugShow/Debug_ShowAllTraceResources.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="21" column="21" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="21" />
+          <folding>
+            <marker date="1564670200026" expanded="false" signature="6:124" ph="..." />
+            <marker date="1564670200026" expanded="false" signature="143:189" ph="/// 编辑器下显示所有追踪的资源 ... " />
+            <marker date="1564670200026" expanded="true" signature="246:1528" ph="{...}" />
+            <marker date="1564670200026" expanded="true" signature="667:1526" ph="{...}" />
+            <marker date="1564670200026" expanded="true" signature="682:957" ph="Resources" />
+            <marker date="1564670200026" expanded="true" signature="839:937" ph="{...}" />
+            <marker date="1564670200026" expanded="false" signature="967:1520" ph="AssetBundle" />
+            <marker date="1564670200026" expanded="true" signature="1128:1227" ph="{...}" />
+            <marker date="1564670200026" expanded="true" signature="1390:1500" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Core/Base/Module/AsyncManager/AsyncManager.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="35" column="61" selection-start-line="35" selection-start-column="61" selection-end-line="35" selection-end-column="61" />
+          <folding>
+            <marker date="1564670199729" expanded="false" signature="6:92" ph="..." />
+            <marker date="1564670199729" expanded="true" signature="117:4962" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="124:173" ph="/// 异步&amp;协程管理器 ... " />
+            <marker date="1564670199729" expanded="true" signature="226:4960" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="861:1026" ph="Data" />
+            <marker date="1564670199729" expanded="true" signature="1037:2295" ph="对外 Interface" />
+            <marker date="1564670199729" expanded="false" signature="1067:1167" ph="/// 开启一个协程任务 ... " />
+            <marker date="1564670199729" expanded="false" signature="1229:1563" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="1573:1671" ph="/// 停止一个协程 ... " />
+            <marker date="1564670199729" expanded="false" signature="1730:2027" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="2163:2275" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="2306:4927" ph="内部实现" />
+            <marker date="1564670199729" expanded="false" signature="2397:3221" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="2442:2569" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="2659:3119" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="2736:2930" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="3301:3824" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="3346:3475" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="3549:3674" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="3984:4544" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="4052:4534" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="4100:4283" ph="{...}" />
+            <marker date="1564670199729" expanded="true" signature="4332:4476" ph="{...}" />
+            <marker date="1564670199729" expanded="false" signature="4554:4654" ph="/// 协程完成回调 ... " />
+            <marker date="1564670199729" expanded="false" signature="4720:4899" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Test/TeslLoadPrefab.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="26" column="4" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
+          <folding>
+            <marker date="1564412543420" expanded="false" signature="6:130" ph="..." />
+            <marker date="1564412543420" expanded="true" signature="175:707" ph="{...}" />
+            <marker date="1564412543420" expanded="false" signature="307:328" ph="{...}" />
+            <marker date="1564412543420" expanded="true" signature="386:705" ph="{...}" />
+            <marker date="1564412543420" expanded="true" signature="433:699" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/TODO.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="8" lean-forward="true" selection-start-line="2" selection-start-column="8" selection-end-line="2" selection-end-column="8" />
         </state>
       </provider>
     </entry>
