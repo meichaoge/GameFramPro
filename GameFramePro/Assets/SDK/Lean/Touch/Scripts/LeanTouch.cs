@@ -581,8 +581,7 @@ namespace Lean.Touch
 				if (inactiveFinger.Expired == false && inactiveFinger.Age > TapThreshold)
 				{
 					inactiveFinger.Expired = true;
-
-					if (OnFingerExpired != null) OnFingerExpired(inactiveFinger);
+					OnFingerExpired?.Invoke(inactiveFinger);
 				}
 			}
 
@@ -595,7 +594,8 @@ namespace Lean.Touch
 				if (finger.Up == true)
 				{
 					// Make finger inactive
-					Fingers.RemoveAt(i); InactiveFingers.Add(finger);
+					Fingers.RemoveAt(i); 
+					InactiveFingers.Add(finger);
 
 					// Reset age so we can time how long it's been inactive
 					finger.Age = 0.0f;
@@ -724,11 +724,11 @@ namespace Lean.Touch
 				{
 					var finger = Fingers[i];
 					
-					if (finger.Tap   == true && OnFingerTap   != null) OnFingerTap(finger);
-					if (finger.Swipe == true && OnFingerSwipe != null) OnFingerSwipe(finger);
-					if (finger.Down  == true && OnFingerDown  != null) OnFingerDown(finger);
-					if (finger.Set   == true && OnFingerSet   != null) OnFingerSet(finger);
-					if (finger.Up    == true && OnFingerUp    != null) OnFingerUp(finger);
+					if (finger.Tap   == true) OnFingerTap?.Invoke(finger);
+					if (finger.Swipe == true) OnFingerSwipe?.Invoke(finger);
+					if (finger.Down  == true) OnFingerDown?.Invoke(finger);
+					if (finger.Set   == true) OnFingerSet?.Invoke(finger);
+					if (finger.Up    == true) OnFingerUp?.Invoke(finger);
 				}
 
 				if (OnGesture != null)

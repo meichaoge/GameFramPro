@@ -25,10 +25,8 @@ namespace Lean.Touch
 			var center = default(Vector3);
 			var count  = 0;
 
-			for (var i = 0; i < LeanSelectable.Instances.Count; i++)
+			foreach (var selectable in LeanSelectable.Instances)
 			{
-				var selectable = LeanSelectable.Instances[i];
-
 				if (selectable.IsSelected == true)
 				{
 					center += selectable.transform.position;
