@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro.ResourcesEx;
 
 
-namespace GameFramePro.ResourcesEx
+namespace GameFramePro
 {
 #if UNITY_EDITOR
     [System.Serializable]

@@ -100,7 +100,6 @@ namespace GameFramePro
         }
 
 
-
         //设置显示或者隐藏
         public void SetActive(bool isActivity)
         {
@@ -110,6 +109,15 @@ namespace GameFramePro
 
         #endregion
 
+        #region 设置相关的Transform 属性
+
+        public void SetLocalPosition(Vector3 localPos)
+        {
+            if (IsReferenceAssetEnable == false) return;
+            transform.localPosition = localPos;
+        }
+
+        #endregion
 
     }
 }

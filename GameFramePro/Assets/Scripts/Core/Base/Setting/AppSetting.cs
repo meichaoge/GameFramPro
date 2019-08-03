@@ -91,6 +91,9 @@ namespace GameFramePro
         /// Localization 本地化语言表的配置格式
         /// </summary>
         public static ExportFormatEnum S_LocalizationExportFormatType = ExportFormatEnum.Csv;
+        
+        /// <summary>/// 当前目标分辨率/// </summary>
+        public  static  Vector2 S_ReferenceResolution=new Vector2(640,1134);
 
 
 

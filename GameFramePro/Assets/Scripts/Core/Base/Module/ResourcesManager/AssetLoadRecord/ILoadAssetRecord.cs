@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro.ResourcesEx;
 
 
-namespace GameFramePro.ResourcesEx
+namespace GameFramePro
 {
     /// <summary>
     /// 资源加载时候的类型状态(Resources&LocalStore&AssetBundle) 后面可能对不同的类型进行处理
