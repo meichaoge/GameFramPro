@@ -16,8 +16,6 @@ namespace GameFramePro
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
-        
-        
         public float CurrentRealTime { get { return Time.realtimeSinceStartup; } } //启动到现在的时间
 
         private IEnumerator Start()
@@ -45,6 +43,7 @@ namespace GameFramePro
         #region 总的刷新控制
         private void UpdateTick(float realtimeSinceStartup)
         {
+            ScreenClickManager.S_Instance.UpdateTick(realtimeSinceStartup); //屏幕点击特效
             Loom.S_Instance.UpdateTick(realtimeSinceStartup);
             XluaManager.S_Instance.UpdateTick(realtimeSinceStartup);
             DownloadManager.S_Instance.UpdateTick(realtimeSinceStartup);

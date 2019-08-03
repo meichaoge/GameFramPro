@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\chaoge\.Rider2019.1\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\chaoge\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_GameFramePro.188589317.00" t="ExcludeRecursive" />
-    <e p="E:\WorkSpace\UnitySynch\UnityGameFramePro\GameFramePro" t="IncludeRecursive">
+    <e p="C:\Users\38658\.Rider2019.1\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\38658\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_GameFramePro.-306517418.00" t="ExcludeRecursive" />
+    <e p="E:\GameFraneWorkSpace\GameFramePro" t="IncludeRecursive">
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
@@ -2003,7 +2003,11 @@
                   <e p="CoroutineEx.cs" t="Include" />
                 </e>
                 <e p="EventSystem" t="Include">
+                  <e p="IInputManager.cs" t="Include" />
                   <e p="InputEventManager.cs" t="Include" />
+                  <e p="InputEventSetting.cs" t="Include" />
+                  <e p="MobileInputManager.cs" t="Include" />
+                  <e p="StandoneInputManager.cs" t="Include" />
                 </e>
                 <e p="Localization" t="Include">
                   <e p="ExportFormatEnum.cs" t="Include" />
@@ -2172,6 +2176,13 @@
             <e p="CustomerHeaderAttribute.cs" t="Include" />
             <e p="FlagEnumAttribute.cs" t="Include" />
           </e>
+          <e p="LeanTouch" t="Include">
+            <e p="LeanFinger.cs" t="Include" />
+            <e p="LeanGesture.cs" t="Include" />
+            <e p="LeanSnapshot.cs" t="Include" />
+            <e p="LeanTouch.cs" t="Include" />
+            <e p="LeanTouchUtility.cs" t="Include" />
+          </e>
           <e p="TestCore" t="Include">
             <e p="DebugControl" t="Include">
               <e p="Debug_ControllAppSetting.cs" t="Include" />
@@ -2202,72 +2213,6 @@
           </e>
         </e>
         <e p="SDK" t="Include">
-          <e p="Lean" t="Include">
-            <e p="Common" t="Include">
-              <e p="Examples" t="Include">
-                <e p="Fonts" t="Include">
-                  <e p="OFL.txt" t="Include" />
-                </e>
-                <e p="Scripts" t="Include">
-                  <e p="LeanCircuit.cs" t="Include" />
-                  <e p="LeanDocumentation.cs" t="Include" />
-                  <e p="LeanMarker.cs" t="Include" />
-                  <e p="LeanOpenUrl.cs" t="Include" />
-                </e>
-                <e p="Shaders" t="Include">
-                  <e p="Alpha.shader" t="Include" />
-                  <e p="Object.shader" t="Include" />
-                  <e p="Skybox.shader" t="Include" />
-                </e>
-              </e>
-              <e p="Scripts" t="Include">
-                <e p="LeanHelper.cs" t="Include" />
-                <e p="LeanInspector.cs" t="Include" />
-              </e>
-            </e>
-            <e p="READ ME.txt" t="Include" />
-            <e p="Touch" t="Include">
-              <e p="Examples" t="Include">
-                <e p="Scripts" t="Include">
-                  <e p="LeanCameraMove.cs" t="Include" />
-                  <e p="LeanCameraZoom.cs" t="Include" />
-                  <e p="LeanCanvasArrow.cs" t="Include" />
-                  <e p="LeanDestroy.cs" t="Include" />
-                  <e p="LeanFingerData.cs" t="Include" />
-                  <e p="LeanFingerDown.cs" t="Include" />
-                  <e p="LeanFingerHeld.cs" t="Include" />
-                  <e p="LeanFingerLine.cs" t="Include" />
-                  <e p="LeanFingerSet.cs" t="Include" />
-                  <e p="LeanFingerSwipe.cs" t="Include" />
-                  <e p="LeanFingerTap.cs" t="Include" />
-                  <e p="LeanFingerTrail.cs" t="Include" />
-                  <e p="LeanFingerUp.cs" t="Include" />
-                  <e p="LeanOpenUrl.cs" t="Include" />
-                  <e p="LeanPath.cs" t="Include" />
-                  <e p="LeanPlane.cs" t="Include" />
-                  <e p="LeanRotate.cs" t="Include" />
-                  <e p="LeanRotateCustomAxis.cs" t="Include" />
-                  <e p="LeanScale.cs" t="Include" />
-                  <e p="LeanScreenDepth.cs" t="Include" />
-                  <e p="LeanSelect.cs" t="Include" />
-                  <e p="LeanSelectable.cs" t="Include" />
-                  <e p="LeanSelectableBehaviour.cs" t="Include" />
-                  <e p="LeanSelectableGraphicColor.cs" t="Include" />
-                  <e p="LeanSelectableRendererColor.cs" t="Include" />
-                  <e p="LeanSelectableSpriteRendererColor.cs" t="Include" />
-                  <e p="LeanSpawn.cs" t="Include" />
-                  <e p="LeanTouchEvents.cs" t="Include" />
-                  <e p="LeanTranslate.cs" t="Include" />
-                </e>
-              </e>
-              <e p="Scripts" t="Include">
-                <e p="LeanFinger.cs" t="Include" />
-                <e p="LeanGesture.cs" t="Include" />
-                <e p="LeanSnapshot.cs" t="Include" />
-                <e p="LeanTouch.cs" t="Include" />
-              </e>
-            </e>
-          </e>
           <e p="LitJson" t="Include">
             <e p="IJsonWrapper.cs" t="Include" />
             <e p="JsonData.cs" t="Include" />
@@ -2809,6 +2754,41 @@
           </e>
         </e>
         <e p="TODO.txt" t="Include" />
+        <e p="XLua" t="Include">
+          <e p="Gen" t="Include">
+            <e p="DelegatesGensBridge.cs" t="Include" />
+            <e p="EnumWrap.cs" t="Include" />
+            <e p="link.xml" t="Include" />
+            <e p="LuaPerfectObjectFormaterWrap.cs" t="Include" />
+            <e p="LuaPerfectObjectItemWrap.cs" t="Include" />
+            <e p="LuaPerfectObjectRefWrap.cs" t="Include" />
+            <e p="PackUnpack.cs" t="Include" />
+            <e p="Resources" t="Include">
+              <e p="hotfix_id_map.lua.txt" t="Include" />
+            </e>
+            <e p="TutorialBaseClassWrap.cs" t="Include" />
+            <e p="TutorialCSCallLuaItfDBridge.cs" t="Include" />
+            <e p="TutorialDerivedClassExtensionsWrap.cs" t="Include" />
+            <e p="TutorialDerivedClassWrap.cs" t="Include" />
+            <e p="TutorialICalcWrap.cs" t="Include" />
+            <e p="UnityEngineWaitForSecondsWrap.cs" t="Include" />
+            <e p="WrapPusher.cs" t="Include" />
+            <e p="XLuaGenAutoRegister.cs" t="Include" />
+            <e p="XLuaTestBaseTestWrap.cs" t="Include" />
+            <e p="XLuaTestFoo1ChildWrap.cs" t="Include" />
+            <e p="XLuaTestFoo1ParentWrap.cs" t="Include" />
+            <e p="XLuaTestFoo2ChildWrap.cs" t="Include" />
+            <e p="XLuaTestFoo2ParentWrap.cs" t="Include" />
+            <e p="XLuaTestFooExtensionWrap.cs" t="Include" />
+            <e p="XLuaTestFooWrap.cs" t="Include" />
+            <e p="XLuaTestIExchangerBridge.cs" t="Include" />
+            <e p="XLuaTestInvokeLuaICalcBridge.cs" t="Include" />
+            <e p="XLuaTestLuaBehaviourWrap.cs" t="Include" />
+            <e p="XLuaTestMyStructWrap.cs" t="Include" />
+            <e p="XLuaTestNoGcWrap.cs" t="Include" />
+            <e p="XLuaTestPeddingWrap.cs" t="Include" />
+          </e>
+        </e>
       </e>
       <e p="GameFramePro.sln" t="IncludeFlat" />
       <e p="obj" t="ExcludeRecursive" />

@@ -9,26 +9,24 @@ namespace GameFramePro.EventSystemEx
     /// <summary>
     /// 输入事件系统
     /// </summary>
-    public class InputEventManager
+    public class InputEventManager : Single<InputEventManager>
     {
-        private void InputCheck()
+        private IInputManager mCurrentIInputManager;  //当前的输入输出事件检测系统
+
+
+        protected override void InitialSingleton()
         {
-            // if (Input.anyKey)
-        }
-
-
-        private void CheckLeftButtonClick()
-        {
-            bool isClick = false;
-
-
+            base.InitialSingleton();
 #if UNITY_EDITOR|| UNITY_STANDALONE_WIN
-            isClick = Input.GetMouseButtonDown(0);
+            mCurrentIInputManager = new StandonInputManager();
 #endif
 
 #if UNITY_EDITOR && UNITY_ANDROID
-            isClick = Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
+             mCurrentIInputManager = new MobileInputManager();
 #endif
         }
+
+
+
     }
 }

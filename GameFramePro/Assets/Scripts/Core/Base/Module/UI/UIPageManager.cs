@@ -10,16 +10,14 @@ namespace GameFramePro.UI
     /// </summary>
     public static class UIPageManager
     {
-        #region UI 页面父节点
-        private static Camera s_UICamera;
+        //****UI 页面的属性
         private static Transform mUIChangePage;
         private static Transform mUIPopWindow;
-
-        #endregion
+        public static Camera S_UICamera { get; private set; }
 
         public static void InitialedPageManager()
         {
-            s_UICamera = GameObject.Find("UICamera").GetComponent<Camera>();
+            S_UICamera = GameObject.Find("UICamera").GetComponent<Camera>();
             mUIChangePage = GameObject.Find("UIChangePage").transform;
             mUIPopWindow = GameObject.Find("UIPopWindow").transform;
         }

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 1028269863}
   - component: {fileID: 1028269862}
   - component: {fileID: 1028269861}
-  - component: {fileID: 4644098367949655680}
   m_Layer: 5
   m_Name: TopScreenEffect
   m_TagString: Untagged
@@ -99,19 +98,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &4644098367949655680
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1028269859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8573d128d77f2ac45aff190543484288, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  effect: {fileID: 1000012897183312, guid: ba6bf3a88d1a06046ab4629ce361a773, type: 3}
 --- !u!1 &5257649675488558851
 GameObject:
   m_ObjectHideFlags: 0
