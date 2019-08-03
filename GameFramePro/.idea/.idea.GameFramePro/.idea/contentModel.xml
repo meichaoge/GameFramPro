@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\38658\.Rider2019.1\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\38658\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_GameFramePro.-306517418.00" t="ExcludeRecursive" />
-    <e p="E:\GameFraneWorkSpace\GameFramePro" t="IncludeRecursive">
+    <e p="C:\Users\chaoge\.Rider2019.1\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\chaoge\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_GameFramePro.15163949.00" t="ExcludeRecursive" />
+    <e p="E:\WorkSpace\UnitySynch\GameFramePro\UnityGameFramePro\GameFramePro" t="IncludeRecursive">
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
@@ -929,41 +929,6 @@
           </e>
         </e>
         <e p="TODO.txt" t="Include" />
-        <e p="XLua" t="Include">
-          <e p="Gen" t="Include">
-            <e p="DelegatesGensBridge.cs" t="Include" />
-            <e p="EnumWrap.cs" t="Include" />
-            <e p="link.xml" t="Include" />
-            <e p="LuaPerfectObjectFormaterWrap.cs" t="Include" />
-            <e p="LuaPerfectObjectItemWrap.cs" t="Include" />
-            <e p="LuaPerfectObjectRefWrap.cs" t="Include" />
-            <e p="PackUnpack.cs" t="Include" />
-            <e p="Resources" t="Include">
-              <e p="hotfix_id_map.lua.txt" t="Include" />
-            </e>
-            <e p="TutorialBaseClassWrap.cs" t="Include" />
-            <e p="TutorialCSCallLuaItfDBridge.cs" t="Include" />
-            <e p="TutorialDerivedClassExtensionsWrap.cs" t="Include" />
-            <e p="TutorialDerivedClassWrap.cs" t="Include" />
-            <e p="TutorialICalcWrap.cs" t="Include" />
-            <e p="UnityEngineWaitForSecondsWrap.cs" t="Include" />
-            <e p="WrapPusher.cs" t="Include" />
-            <e p="XLuaGenAutoRegister.cs" t="Include" />
-            <e p="XLuaTestBaseTestWrap.cs" t="Include" />
-            <e p="XLuaTestFoo1ChildWrap.cs" t="Include" />
-            <e p="XLuaTestFoo1ParentWrap.cs" t="Include" />
-            <e p="XLuaTestFoo2ChildWrap.cs" t="Include" />
-            <e p="XLuaTestFoo2ParentWrap.cs" t="Include" />
-            <e p="XLuaTestFooExtensionWrap.cs" t="Include" />
-            <e p="XLuaTestFooWrap.cs" t="Include" />
-            <e p="XLuaTestIExchangerBridge.cs" t="Include" />
-            <e p="XLuaTestInvokeLuaICalcBridge.cs" t="Include" />
-            <e p="XLuaTestLuaBehaviourWrap.cs" t="Include" />
-            <e p="XLuaTestMyStructWrap.cs" t="Include" />
-            <e p="XLuaTestNoGcWrap.cs" t="Include" />
-            <e p="XLuaTestPeddingWrap.cs" t="Include" />
-          </e>
-        </e>
       </e>
       <e p="GameFramePro.sln" t="IncludeFlat" />
       <e p="obj" t="ExcludeRecursive" />
