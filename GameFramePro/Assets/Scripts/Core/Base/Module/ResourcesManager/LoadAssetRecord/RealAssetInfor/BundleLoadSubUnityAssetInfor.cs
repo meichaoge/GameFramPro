@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 
-namespace GameFramePro.ResourcesEx
+namespace GameFramePro
 {
     /// <summary>
     /// AssetBundle 中加载的资源

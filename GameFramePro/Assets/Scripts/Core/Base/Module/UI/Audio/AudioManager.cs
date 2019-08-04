@@ -101,7 +101,7 @@ namespace GameFramePro
             }
 
             if (mAllBackgroundAudioClips.TryGetValue(audioPath, out var clipAsset) == false)
-                clipAsset = ResourcesManager.GetAudioClipByPathSync(mCurBackgroundAudioSource, audioPath, false);
+                clipAsset = ResourcesManager.GetAudioClipByPathSync(mCurBackgroundAudioSource, audioPath, false,false);
 
             if (clipAsset == null || clipAsset.IsReferenceAssetEnable == false)
                 return false;
@@ -209,7 +209,7 @@ namespace GameFramePro
             }
 
             curAudioSource = GetNextAvailableAudioSource();
-            var assetInfor = ResourcesManager.GetAudioClipByPathSync(curAudioSource, audioPath, false);
+            var assetInfor = ResourcesManager.GetAudioClipByPathSync(curAudioSource, audioPath, false,false);
 
             if (assetInfor == null || assetInfor.IsReferenceAssetEnable == false)
             {

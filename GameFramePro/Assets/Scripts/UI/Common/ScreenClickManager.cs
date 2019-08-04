@@ -73,6 +73,10 @@ namespace GameFramePro
 
         #region Reference
 
+        private Camera mUICamera
+        {
+            get { return UIPageManager.S_UICamera; }
+        }
         private Transform mScreenEffectCanvasTrans; //最上层屏幕点击特效层
         private List<ScreenEffectInfor> mAllScreenEffectItems = new List<ScreenEffectInfor>(5); //所有的粒子特效 
 
@@ -158,7 +162,7 @@ namespace GameFramePro
             if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
             {
                 Vector3 position = Input.mousePosition;
-                ClickPositionInWorld = Camera.main.ScreenToWorldPoint(position);
+                ClickPositionInWorld =mUICamera.ScreenToWorldPoint(position);
                 EffectLocalPos = mScreenEffectCanvasTrans.InverseTransformPoint(ClickPositionInWorld);
                 EffectLocalPos.z = 0;
                 lastClickTime = Time.time;
@@ -177,7 +181,7 @@ namespace GameFramePro
                 if (needCreateItem)
                 {
                     ScreenEffectInfor infor = new ScreenEffectInfor();
-                    ReferenceGameObjectAssetInfor assetInfor = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath);
+                    ReferenceGameObjectAssetInfor assetInfor = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath,true);
                     if (assetInfor == null)
                     {
                         Debug.LogError("获取资源为null ");

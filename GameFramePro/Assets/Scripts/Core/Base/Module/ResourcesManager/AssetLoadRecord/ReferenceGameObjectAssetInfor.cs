@@ -6,9 +6,7 @@ using System;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 被引用的资源是实例化的GameObject 对象
-    /// </summary>
+    /// <summary>/// 被引用的资源是实例化的GameObject 对象/// </summary>
     [System.Serializable]
     public class ReferenceGameObjectAssetInfor : ReferenceAssetInfor
     {
@@ -26,8 +24,7 @@ namespace GameFramePro
 
         public ReferenceGameObjectAssetInfor() { }
         // 被真正引用的资源 可能是CurLoadAssetRecord 中资源的某个组件或者实例化的对象
-        public ReferenceGameObjectAssetInfor(UnityEngine.Object asset, Type referenceType)
-           : base(asset, referenceType)
+        public ReferenceGameObjectAssetInfor(UnityEngine.Object asset, Type referenceType) : base(asset, referenceType)
         {
             if (referenceType != typeof(GameObject))
             {

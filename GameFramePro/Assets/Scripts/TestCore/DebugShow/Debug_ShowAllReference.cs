@@ -28,27 +28,27 @@ public class Debug_ShowAllReference : MonoBehaviour
     private void Update()
     {
         mAllGameObjectReference.Clear();
-        foreach (var assetReference in AssetReferenceManager.AllObjectComponentReferenceRecord)
-        {
-            AssetReferenceInfor assetReferenceInfor = new AssetReferenceInfor();
-            assetReferenceInfor.mGameObject = assetReference.Key as GameObject;
-
-            foreach (var item in assetReference.Value)
-            {
-                ComponentAssetReferenceInfor componentInfor = new ComponentAssetReferenceInfor();
-                componentInfor.mComponent = item.Key;
-
-                foreach (var baseReference in item.Value)
-                {
-                    baseReference.UpdateView();
-                    componentInfor.mAllReference.Add(baseReference);
-                }
-
-                assetReferenceInfor.mAllComponents.Add(componentInfor);
-            }
-
-            mAllGameObjectReference.Add(assetReferenceInfor);
-        }
+//        foreach (var assetReference in AssetReferenceManager.AllObjectComponentReferenceRecord)
+//        {
+//            AssetReferenceInfor assetReferenceInfor = new AssetReferenceInfor();
+//            assetReferenceInfor.mGameObject = assetReference.Key as GameObject;
+//
+//            foreach (var item in assetReference.Value)
+//            {
+//                ComponentAssetReferenceInfor componentInfor = new ComponentAssetReferenceInfor();
+//                componentInfor.mComponent = item.Key;
+//
+//                foreach (var baseReference in item.Value)
+//                {
+//                    baseReference.UpdateView();
+//                    componentInfor.mAllReference.Add(baseReference);
+//                }
+//
+//                assetReferenceInfor.mAllComponents.Add(componentInfor);
+//            }
+//
+//            mAllGameObjectReference.Add(assetReferenceInfor);
+//        }
     }
 
 #endif

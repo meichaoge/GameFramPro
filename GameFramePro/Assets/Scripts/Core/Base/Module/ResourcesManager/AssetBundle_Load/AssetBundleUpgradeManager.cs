@@ -119,7 +119,6 @@ namespace GameFramePro.ResourcesEx
             }, UnityTaskPriorityEnum.Immediately);
         }
 
-
         private void OnCompleteGetServerAssetBundleConfig(UnityWebRequest webRequset, bool isSuccess, string url, System.Action<bool> onCompleteDownloadConfig)
         {
             if (isSuccess == false)
@@ -135,6 +134,7 @@ namespace GameFramePro.ResourcesEx
             if (onCompleteDownloadConfig != null)
                 onCompleteDownloadConfig(true);
         }
+        
         #endregion
 
 

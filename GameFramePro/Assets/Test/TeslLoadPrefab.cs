@@ -22,7 +22,7 @@ public class TeslLoadPrefab : MonoBehaviour
         {
             //  ResourcesManager.LoadGameObjectAssetSync(prefabPath, parent);
             BaseLoadAssetRecord record = ResourcesManager.LoadAssetSync(prefabPath);
-            ResourcesManager.InstantiateGameObjectFromRecordSync( parent, record);
+            ResourcesManager.InstantiateGameObjectFromRecordSync( parent, record,false);
         }
     }
 }

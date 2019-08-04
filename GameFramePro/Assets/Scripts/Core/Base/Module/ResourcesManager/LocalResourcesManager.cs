@@ -50,7 +50,7 @@ namespace GameFramePro.ResourcesEx
 
         public float MaxAliveTimeAfterNoReference { get { return 60; } } //最多存在1分钟
 
-        public void NotifyAssetRelease(ILoadAssetRecord record)
+        public void NotifyAssetRelease(BaseLoadAssetRecord record)
         {
             if (record == null) return;
             if (record is ResourcesLoadAssetRecord)
@@ -65,7 +65,7 @@ namespace GameFramePro.ResourcesEx
             }
             Debug.LogError("NotifyAssetRelease Fail,无法处理的类型 " + record.GetType());
         }
-        public void NotifyAssetReferenceChange(ILoadAssetRecord record)
+        public void NotifyAssetReferenceChange(BaseLoadAssetRecord record)
         {
             if (record == null) return;
             if (record is ResourcesLoadAssetRecord)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro;
 using GameFramePro.ResourcesEx;
 
 #if UNITY_EDITOR

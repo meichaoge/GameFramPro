@@ -33,11 +33,6 @@ namespace GameFramePro.ResourcesEx
         public AssetBundleSubAssetLoadRecord() { }
 
 
-        //public AssetBundleSubAssetLoadRecord(string assetUrl, string assetBundleName, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        //{
-        //    Initial(assetUrl, assetBundleName, typeEnum, asset, manager);
-        //}
-
         public void Initial(string assetUrl, string assetBundleName, LoadedAssetTypeEnum typeEnum, BundleLoadSubUnityAssetInfor assetInfor, IAssetManager manager)
         {
             base.Initial(assetUrl, typeEnum, assetInfor, manager);
@@ -63,7 +58,7 @@ namespace GameFramePro.ResourcesEx
                         return true;
                     return false;
                 default:
-                    Debug.LogError("没预处理的类型"+ record.AssetLoadedType);
+                    Debug.LogError("没预处理的类型" + record.AssetLoadedType);
                     return false;
             }
         }

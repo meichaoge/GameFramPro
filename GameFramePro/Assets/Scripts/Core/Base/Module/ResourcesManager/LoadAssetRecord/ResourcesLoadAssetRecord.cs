@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro.ResourcesEx;
 
-namespace GameFramePro.ResourcesEx
+namespace GameFramePro
 {
     /// <summary>
     /// 加载Resources 时候的记录
@@ -24,19 +25,11 @@ namespace GameFramePro.ResourcesEx
 
         }
 
-
-        //public ResourcesLoadAssetRecord(string assetPath,  LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        //{
-        //    Initial(assetPath, typeEnum, asset, manager);
-        //}
-
-
         #endregion
 
         public override bool isReferenceEqual(BaseLoadAssetRecord record)
         {
             if (record == null) return false;
-
 
             switch (record.AssetLoadedType)
             {

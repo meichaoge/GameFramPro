@@ -6,15 +6,11 @@ using System;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 加载的资源被处理后真正引用的资源或者组件
-    /// </summary>
+    /// <summary>/// 加载的资源被处理后真正引用的资源或者组件/// </summary>
     [System.Serializable]
     public class ReferenceAssetInfor
     {
-        /// <summary>
-        ///  被引用的资源的类型
-        /// </summary>
+        /// <summary>///  被引用的资源的类型/// </summary>
         public Type ReferenceAssetType;// { get; protected set; }
 
         //被引用的次数

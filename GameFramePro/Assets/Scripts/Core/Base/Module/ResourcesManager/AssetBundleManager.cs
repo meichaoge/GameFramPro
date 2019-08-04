@@ -87,7 +87,7 @@ namespace GameFramePro.ResourcesEx
         /// 释放资源
         /// </summary>
         /// <param name="record"></param>
-        public void NotifyAssetRelease(ILoadAssetRecord record)
+        public void NotifyAssetRelease(BaseLoadAssetRecord record)
         {
             if (record is AssetBundleSubAssetLoadRecord)
             {
@@ -115,7 +115,7 @@ namespace GameFramePro.ResourcesEx
 
 
 
-        public void NotifyAssetReferenceChange(ILoadAssetRecord record)
+        public void NotifyAssetReferenceChange(BaseLoadAssetRecord record)
         {
             if (record == null) return;
             if (record is AssetBundleSubAssetLoadRecord)
@@ -274,8 +274,7 @@ namespace GameFramePro.ResourcesEx
             string[] depdenceAssetBundle = AssetBundleUpgradeManager.S_Instance.GetAllDependencies(assetBundlePath);
             foreach (var depdence in depdenceAssetBundle)
             {
-                AssetBundleAssetDepdenceRecord depdenceRecord = null;
-                LoadAssetBundleSync(depdence, out depdenceRecord);
+                LoadAssetBundleSync(depdence, out var depdenceRecord);
                 assetBundleRecord.AddDepdence(depdenceRecord);
             }
 
@@ -477,8 +476,7 @@ namespace GameFramePro.ResourcesEx
                 return null;
             }
 
-            AssetBundleAssetDepdenceRecord record = null;
-            BundleLoadUnityAssetInfor assetBundle = LoadAssetBundleSync(assetBundlePath, out record);
+            BundleLoadUnityAssetInfor assetBundle = LoadAssetBundleSync(assetBundlePath, out var record);
             if (assetBundle != null)
             {
                 BundleLoadSubUnityAssetInfor assetInfor = assetBundle.LoadAssetBundleSubAsset(assetName);

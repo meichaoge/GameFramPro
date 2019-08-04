@@ -360,7 +360,7 @@ namespace GameFramePro.UI
         //创建页面实例
         private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<ReferenceGameObjectAssetInfor> afterInitialedInstanceAction)
         {
-            ReferenceGameObjectAssetInfor gameObjectAssetInfor = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath);
+            ReferenceGameObjectAssetInfor gameObjectAssetInfor = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath,false);
             if (afterInitialedInstanceAction != null)
                 afterInitialedInstanceAction.Invoke(gameObjectAssetInfor);
         }

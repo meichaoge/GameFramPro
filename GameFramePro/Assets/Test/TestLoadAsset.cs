@@ -20,7 +20,7 @@ public class TestLoadAsset : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             BaseLoadAssetRecord assetRecord = ResourcesManager.LoadAssetSync(assetPath);
-            ResourcesManager.SetImageSpriteFromRecordSync(mTarget, assetRecord);
+            ResourcesManager.SetImageSpriteFromRecordSync(mTarget, assetRecord,false);
         }
 
         if (Input.GetKeyDown(KeyCode.B))
@@ -31,7 +31,7 @@ public class TestLoadAsset : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath);
+            ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath,false);
         }
 
         if (Input.GetKeyDown(KeyCode.D))

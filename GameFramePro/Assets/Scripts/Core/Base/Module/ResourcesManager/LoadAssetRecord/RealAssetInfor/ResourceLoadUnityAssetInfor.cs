@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 
-namespace GameFramePro.ResourcesEx
+namespace GameFramePro
 {
     /// <summary>
     /// Reosuces 加载的Unity 资源
@@ -16,8 +16,7 @@ namespace GameFramePro.ResourcesEx
 
 
 
-        public ResourceLoadUnityAssetInfor(string assetUrl, UnityEngine.Object asset)
-            :base(assetUrl, LoadedAssetTypeEnum.Resources_UnKnown)
+        public ResourceLoadUnityAssetInfor(string assetUrl, UnityEngine.Object asset) :base(assetUrl, LoadedAssetTypeEnum.Resources_UnKnown)
         {
             mLoadUnityAsset = asset;
         }
@@ -84,20 +83,6 @@ namespace GameFramePro.ResourcesEx
         {
             if (IsLoadAssetEnable == false) return null;
             return mLoadUnityAsset as AudioClip;
-
-            //AudioClip go = ;
-            //if (go == null)
-            //{
-            //    Debug.LogError("当前资源{0} 不是GameObject 资源");
-            //    return null;
-            //}
-            //SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
-            //if (renderer == null)
-            //{
-            //    Debug.LogError("当前资源{0} 不是 没有组件 SpriteRenderer ");
-            //    return null;
-            //}
-            //return renderer.sprite;
         }
 
         public override GameObject InstantiateInstance(Transform targetParent)

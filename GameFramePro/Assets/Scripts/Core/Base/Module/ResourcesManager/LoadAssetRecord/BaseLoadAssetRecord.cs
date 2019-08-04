@@ -7,13 +7,31 @@ using GameFramePro.ResourcesEx;
 
 namespace GameFramePro
 {
+    /// <summary>
+    /// 资源加载时候的类型状态(Resources&LocalStore&AssetBundle) 后面可能对不同的类型进行处理
+    /// </summary>
+    public enum LoadedAssetTypeEnum
+    {
+        None = 0, //未知的类型
+
+        Resources_UnKnown = 1, //记录时候无法判断的类型
+
+        ////***本地存储的 可能是运行时记录的资源&网络下载资源&缓存资源
+        //LocalStore_UnKnown = 100, //记录时候无法判断的类型
+
+        AssetBundle_UnKnown = 200, //记录时候无法判断的类型
+    }
+
+
 #if UNITY_EDITOR
     [System.Serializable]
 #endif
-    public class BaseLoadAssetRecord : ILoadAssetRecord
+    public class BaseLoadAssetRecord
     {
 #if UNITY_EDITOR
+
         #region Show
+
         public string Debug_AssetUrl = string.Empty;
         public int Debug_ReferenceCount = 0;
         public LoadedAssetTypeEnum Debug_AssetLoadedType = LoadedAssetTypeEnum.None;
@@ -32,6 +50,7 @@ namespace GameFramePro
         }
 
         #endregion
+
 #endif
 
         public string AssetUrl { get; protected set; } = string.Empty;
@@ -39,7 +58,6 @@ namespace GameFramePro
         public LoadedAssetTypeEnum AssetLoadedType { get; protected set; } = LoadedAssetTypeEnum.None;
 
         public BaseLoadUnityAssetInfor LoadUnityObjectAssetInfor { get; protected set; } //加载到的资源信息
-
 
 
         public float RemainTimeToBeDelete { get; protected set; } = 0;
@@ -64,13 +82,8 @@ namespace GameFramePro
         #endregion
 
 
-        /// <summary>
-        /// 判断参数值指定的两个资源是否相同
-        /// </summary>
-        /// <param name="record1"></param>
-        /// <param name="record2"></param>
-        /// <returns></returns>
-        public virtual   bool isReferenceEqual( BaseLoadAssetRecord record)
+        /// <summary>/// 判断参数值指定的两个资源是否相同/// </summary>
+        public virtual bool isReferenceEqual(BaseLoadAssetRecord record)
         {
             //if(AssetLoadedType== LoadedAssetTypeEnum.None|| record.AssetLoadedType == LoadedAssetTypeEnum.None )
             //{
@@ -81,13 +94,15 @@ namespace GameFramePro
             return true;
         }
 
-        /// <summary>
-        /// 标示当前记录是否有效
-        /// </summary>
-        public virtual bool IsReferenceEnable { get { if (LoadUnityObjectAssetInfor == null) return false; return LoadUnityObjectAssetInfor.IsLoadAssetEnable; } }
-
-
-
+        /// <summary>/// 标示当前记录是否有效/// </summary>
+        public virtual bool IsReferenceEnable
+        {
+            get
+            {
+                if (LoadUnityObjectAssetInfor == null) return false;
+                return LoadUnityObjectAssetInfor.IsLoadAssetEnable;
+            }
+        }
 
 
         public virtual void AddReference()
@@ -98,9 +113,8 @@ namespace GameFramePro
                 ReferenceCount = 0;
             }
             else
-            {
                 ++ReferenceCount;
-            }
+
             NotifyReferenceChange();
         }
 
@@ -120,6 +134,7 @@ namespace GameFramePro
                 if (ReferenceCount == 0)
                     MarkToDeleteTime = DateTime.UtcNow.ToTimestamp_Millisecond();
             }
+
             NotifyReferenceChange();
         }
 
@@ -141,11 +156,6 @@ namespace GameFramePro
         {
             if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
                 return;
-            //GameObject go = TargetAsset as GameObject;
-            //if (go != null)
-            //{
-            //    go.SetActive(false);
-            //}
         }
 
         public virtual bool NotifyReReference()
@@ -168,6 +178,5 @@ namespace GameFramePro
         {
             BelongAssetManager.NotifyAssetReferenceChange(this);
         }
-
     }
 }

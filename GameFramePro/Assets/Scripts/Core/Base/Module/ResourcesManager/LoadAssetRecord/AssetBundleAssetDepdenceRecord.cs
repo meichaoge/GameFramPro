@@ -16,6 +16,8 @@ namespace GameFramePro.ResourcesEx
     {
 #if UNITY_EDITOR
 
+        #region Show
+
         public List<AssetBundleAssetDepdenceRecord> Debug_AllDepdenceAssetBundleRecord = new List<AssetBundleAssetDepdenceRecord>();
         public List<string> Debug_mAllBeReferenceAssetRecord = new List<string>();
 
@@ -28,21 +30,18 @@ namespace GameFramePro.ResourcesEx
             Debug_mAllBeReferenceAssetRecord.AddRange(mAllBeReferenceAssetRecord);
         }
 
+        #endregion
+
 #endif
 
         public BundleLoadUnityAssetInfor AssetBundleLoadBundleInfor { get { return LoadUnityObjectAssetInfor as BundleLoadUnityAssetInfor; } }
-        protected Dictionary<int, AssetBundleAssetDepdenceRecord> mAllDepdenceAssetBundleRecord =new Dictionary<int, AssetBundleAssetDepdenceRecord>();//当前AssetBundle 依赖的的其他AssetBundle
+        protected Dictionary<int, AssetBundleAssetDepdenceRecord> mAllDepdenceAssetBundleRecord = new Dictionary<int, AssetBundleAssetDepdenceRecord>();//当前AssetBundle 依赖的的其他AssetBundle
 
-            // 所有从这里加载的 AssetBundleSubAssetLoadRecord 资源记录 key=AssetBundleSubAssetLoadRecord  的 url
+        // 所有从这里加载的 AssetBundleSubAssetLoadRecord 资源记录 key=AssetBundleSubAssetLoadRecord  的 url
         protected HashSet<string> mAllBeReferenceAssetRecord = new HashSet<string>();
 
         #region 构造函数& 设置
         public AssetBundleAssetDepdenceRecord() { }
-
-        //public AssetBundleAssetDepdenceRecord(string assetPath, LoadedAssetTypeEnum typeEnum, UnityEngine.Object asset, IAssetManager manager)
-        //{
-        //    Initial(assetPath, typeEnum, asset, manager);
-        //}
 
         #endregion
 
@@ -74,7 +73,7 @@ namespace GameFramePro.ResourcesEx
             //if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
             //{
             //    depdence.ReduceReference();
-            //    mAllDepdenceAssetBundleRecord.Remove(depdence.InstanceID);          
+            //    mAllDepdenceAssetBundleRecord.Remove(depdence.InstanceID);
             //    return;
             //}
             //Debug.LogError("ReduceDepdence Fail,Not Contain Key" + depdence.InstanceID);
@@ -95,7 +94,7 @@ namespace GameFramePro.ResourcesEx
 
         public void ReduceSubAssetReference(AssetBundleSubAssetLoadRecord record)
         {
-            if (record.ReferenceCount == 0 )
+            if (record.ReferenceCount == 0)
             {
                 if (mAllBeReferenceAssetRecord.Contains(record.AssetUrl))
                 {
@@ -108,7 +107,7 @@ namespace GameFramePro.ResourcesEx
             if (ReferenceCount == 0)
             {
                 ResourcesManager.UnLoadAssetBundle(this, true);
-              //  Debug.LogError("TODO  卸载AssetBundle " + AssetUrl);
+                //  Debug.LogError("TODO  卸载AssetBundle " + AssetUrl);
             }
         }
 

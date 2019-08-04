@@ -20,13 +20,13 @@ namespace GameFramePro.ResourcesEx
         /// 管理的资源引用次数改变
         /// </summary>
         /// <param name="record"></param>
-        void NotifyAssetReferenceChange(ILoadAssetRecord record);
+        void NotifyAssetReferenceChange(BaseLoadAssetRecord record);
 
         /// <summary>
         /// 一个资源没有被引用一段时间后彻底释放自己 需要删除记录
         /// </summary>
         /// <param name="record"></param>
-        void NotifyAssetRelease (ILoadAssetRecord record);
+        void NotifyAssetRelease (BaseLoadAssetRecord record);
 
     }
 }
