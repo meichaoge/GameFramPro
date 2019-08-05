@@ -12,7 +12,7 @@ public class Debug_ShowUIPageInfor :MonoBehaviour
     public UIPageStateEnum mUIPageState;
     public UIPageTypeEnum mUIPageTypeEnum;
     public string PageName;
-    public ReferenceGameObjectAssetInfor ConnectPageInstance;
+    public BaseBeReferenceGameObjectInformation ConnectPageInstance;
     public float RecordInvisibleRealTime;
     public float MaxAliveAfterInActivte;
 
@@ -42,7 +42,7 @@ public class Debug_ShowUIPageInfor :MonoBehaviour
         mUIPageState = mTarget.mUIPageState;
         mUIPageTypeEnum = mTarget.mUIPageTypeEnum;
         PageName = mTarget.PageName;
-        ConnectPageInstance = mTarget.ConnectGameObjectAssetInstance;
+        ConnectPageInstance = mTarget.ConnectGameObjectInstance;
         RecordInvisibleRealTime = mTarget.RecordInvisibleRealTime;
         MaxAliveAfterInActivte = mTarget.MaxAliveAfterInActivte;
         mAllContainWidgets.Clear();

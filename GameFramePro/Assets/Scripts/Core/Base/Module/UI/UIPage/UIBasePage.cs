@@ -37,13 +37,13 @@ namespace GameFramePro.UI
 
         public bool mIsActivite
         {
-            get { return ConnectGameObjectAssetInstance == null ? false : ConnectGameObjectAssetInstance.IsActivity; }
+            get { return ConnectGameObjectInstance == null ? false : ConnectGameObjectInstance.IsActivity; }
         }
 
         //标示是否正确的引用着预制体实例
         public bool IsPrefabInstanceEnable
         {
-            get { return ConnectGameObjectAssetInstance != null && ConnectGameObjectAssetInstance.IsReferenceAssetEnable; }
+            get { return ConnectGameObjectInstance != null && ConnectGameObjectInstance.IsReferenceAssetEnable; }
         }
 
         #region UI 界面相关数据
@@ -51,7 +51,7 @@ namespace GameFramePro.UI
         public string PageName { get; protected set; }
         public UIPageStateEnum mUIPageState { get; protected set; } = UIPageStateEnum.None; //页面的状态
         public UIPageTypeEnum mUIPageTypeEnum { get; protected set; } = UIPageTypeEnum.None; //界面类型 必须正确设置
-        public ReferenceGameObjectAssetInfor ConnectGameObjectAssetInstance { get; protected set; } //关联的预制体实例
+        public BaseBeReferenceGameObjectInformation ConnectGameObjectInstance { get; protected set; } //关联的预制体实例
 
         public List<UIBaseWidget> mAllContainWidgets; //所有关联属于这个页面的组件，关闭的时候会一起被关闭 可能包含多个同名组件
 
@@ -76,19 +76,19 @@ namespace GameFramePro.UI
             mUIPageState = UIPageStateEnum.Initialed;
         }
 
-        protected virtual void BaseUIPageInitialed(string pageName, UIPageTypeEnum pageType, ReferenceGameObjectAssetInfor referenceInstance)
+        protected virtual void BaseUIPageInitialed(string pageName, UIPageTypeEnum pageType, BaseBeReferenceGameObjectInformation baseBeReferenceInstance)
         {
             PageName = pageName;
             mUIPageTypeEnum = pageType;
-            ConnectGameObjectAssetInstance = referenceInstance;
-            ConnectGameObjectAssetInstance.AddReference();
+            ConnectGameObjectInstance = baseBeReferenceInstance;
+            ConnectGameObjectInstance.AddReference();
             mUIPageState = UIPageStateEnum.Initialed;
 
-            UGUIComponentReference uguiComponentReference = ConnectGameObjectAssetInstance.GetComponent<UGUIComponentReference>();
+            UGUIComponentReference uguiComponentReference = ConnectGameObjectInstance.GetComponent<UGUIComponentReference>();
             if (uguiComponentReference != null)
-                mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectAssetInstance, uguiComponentReference);
+                mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectInstance, uguiComponentReference);
             else
-                mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectAssetInstance, null);
+                mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectInstance, null);
         }
 
         #endregion
@@ -123,7 +123,7 @@ namespace GameFramePro.UI
                 case UIPageStateEnum.Initialed:
                 case UIPageStateEnum.Hide:
                     OnBeforeVisible();
-                    ConnectGameObjectAssetInstance.SetActive(true);
+                    ConnectGameObjectInstance.SetActive(true);
                     mUIPageState = UIPageStateEnum.Showing;
                     UIPageManagerUtility.S_Instance.UnRegisterUIBasePageInvisible(this);
                     OnAfterVisible();
@@ -162,7 +162,7 @@ namespace GameFramePro.UI
                     break;
                 case UIPageStateEnum.Showing:
                     OnBeforeInVisible();
-                    ConnectGameObjectAssetInstance.SetActive(false);
+                    ConnectGameObjectInstance.SetActive(false);
                     mUIPageState = UIPageStateEnum.Hide;
                     OnAfterInVisible(isForceDestroyed);
                     break;
@@ -201,7 +201,7 @@ namespace GameFramePro.UI
         public void DestroyAndRelease()
         {
             OnBeforeDestroyed();
-            ConnectGameObjectAssetInstance.ReduceReference();
+            ConnectGameObjectInstance.ReduceReference();
             mUIPageState = UIPageStateEnum.Destroyed;
             OnAfterDestroyed();
         }

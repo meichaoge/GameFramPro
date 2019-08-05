@@ -23,9 +23,9 @@ namespace GameFramePro.UI
             IsReleaseOnDestroyPageInstance = false; //页面不能释放 UIBasePage 对象
         }
 
-        public virtual void UIPageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, ReferenceGameObjectAssetInfor referenceInstance)
+        public virtual void UIPageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, BaseBeReferenceGameObjectInformation baseBeReferenceInstance)
         {
-            BaseUIPageInitialed(pageName, pageType, referenceInstance);
+            BaseUIPageInitialed(pageName, pageType, baseBeReferenceInstance);
             mPagePath = pagePath;
             IsReleaseOnDestroyPageInstance = false;
         }

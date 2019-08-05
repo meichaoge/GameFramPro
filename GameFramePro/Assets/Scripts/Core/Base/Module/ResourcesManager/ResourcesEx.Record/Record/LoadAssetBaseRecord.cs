@@ -4,8 +4,7 @@ using UnityEngine;
 using System;
 using GameFramePro.ResourcesEx;
 
-
-namespace GameFramePro
+namespace GameFramePro.ResourcesEx
 {
     /// <summary>/// 资源加载时候的类型状态(Resources&LocalStore&AssetBundle) 后面可能对不同的类型进行处理/// </summary>
     public enum LoadedAssetTypeEnum
@@ -23,17 +22,16 @@ namespace GameFramePro
     }
 
 
-#if UNITY_EDITOR
+    /// <summary>/// 资源加载时候的类型状态(Resources&LocalStore&AssetBundle) 后面可能对不同的类型进行处理/// </summary>
     [System.Serializable]
-#endif
-    public class BaseLoadAssetRecord
+    public class LoadAssetBaseRecord : IReference
     {
 #if UNITY_EDITOR
 
         #region Show
 
         public string Debug_AssetUrl = string.Empty;
-        public int Debug_ReferenceCount = 0;
+        public int Debug_ReferenceCount;
         public LoadedAssetTypeEnum Debug_AssetLoadedType = LoadedAssetTypeEnum.None;
         public float Debug_RemainTimeToBeDelete = 0;
         public long Debug_MarkToDeleteTime = 0;
@@ -54,34 +52,25 @@ namespace GameFramePro
 #endif
 
         public string AssetUrl { get; protected set; } = string.Empty;
-        
-        public int ReferenceCount { get; protected set; } = 0;
+
         public LoadedAssetTypeEnum AssetLoadedType { get; protected set; } = LoadedAssetTypeEnum.None;
 
-        /// <summary>/// 加载到的资源信息/// </summary>
-        public BaseLoadUnityAssetInfor LoadUnityObjectAssetInfor { get; protected set; } 
+
         /// <summary>/// 标示当前记录是否有效/// </summary>
         public virtual bool IsReferenceEnable
         {
-            get
-            {
-                return LoadUnityObjectAssetInfor != null ? LoadUnityObjectAssetInfor.IsLoadAssetEnable : false;
-            }
+            get { return true; }
         }
+
         /// <summary>/// 判断参数值指定的两个资源是否相同/// </summary>
-        public virtual bool isReferenceEqual(BaseLoadAssetRecord record)
+        public virtual bool isReferenceEqual(LoadAssetBaseRecord record)
         {
-            if (record == null) return false;
-            if (record.LoadUnityObjectAssetInfor.IsLoadAssetEnable == false) return false;
-            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false) return false;
-            if (record.LoadUnityObjectAssetInfor.LoadAssetType != LoadUnityObjectAssetInfor.LoadAssetType) return false;
-
-            return record.LoadUnityObjectAssetInfor.AssetUrl == LoadUnityObjectAssetInfor.AssetUrl;
+            return false;
         }
 
-        protected int InstanceID
+        protected virtual int InstanceID
         {
-            get { return IsReferenceEnable ? LoadUnityObjectAssetInfor.InstanceID : 0; }
+            get { return 0; }
         }
 
 
@@ -92,27 +81,26 @@ namespace GameFramePro
 
         #region 构造函数& 设置
 
-        public virtual void Initial(string assetPath, LoadedAssetTypeEnum typeEnum, BaseLoadUnityAssetInfor assetInfor, IAssetManager manager)
+        protected virtual void Initial(string assetUrl, LoadedAssetTypeEnum typeEnum, IAssetManager manager)
         {
             Debug.Assert(manager != null);
 
-            AssetUrl = assetPath;
-            ReferenceCount = 0;
+            AssetUrl = assetUrl;
             AssetLoadedType = typeEnum;
             BelongAssetManager = manager;
-            LoadUnityObjectAssetInfor = assetInfor;
             RemainTimeToBeDelete = BelongAssetManager.MaxAliveTimeAfterNoReference;
         }
 
         #endregion
 
 
-     
+        #region IReference 接口
 
+        public int ReferenceCount { get; protected set; } = 0;
 
         public virtual void AddReference()
         {
-            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
+            if (IsReferenceEnable == false)
             {
                 Debug.LogError("资源{0}  已经被卸载了, 无法增加引用", AssetUrl);
                 ReferenceCount = 0;
@@ -123,16 +111,16 @@ namespace GameFramePro
             NotifyReferenceChange();
         }
 
-        public virtual void ReduceReference(bool isforceDelete = false)
+        public virtual void ReduceReference(bool isForceDelete = false)
         {
-            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
+            if (IsReferenceEnable == false)
             {
                 Debug.LogError("资源{0}  已经被卸载了, 无法减少引用", AssetUrl);
                 ReferenceCount = 0;
             }
             else
             {
-                if (isforceDelete)
+                if (isForceDelete)
                     ReferenceCount = 0;
                 else
                     --ReferenceCount;
@@ -143,9 +131,12 @@ namespace GameFramePro
             NotifyReferenceChange();
         }
 
+        #endregion
+
+
         public virtual bool TimeTick(float tickTime)
         {
-            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
+            if (IsReferenceEnable == false)
             {
                 ReferenceCount = 0;
                 NotifyReferenceChange();
@@ -156,20 +147,14 @@ namespace GameFramePro
             return RemainTimeToBeDelete > 0f;
         }
 
-        public virtual bool NotifyReReference()
-        {
-            ReferenceCount = 1;
-            return LoadUnityObjectAssetInfor.IsLoadAssetEnable;
-        }
 
         public virtual void NotifyReleaseRecord()
         {
-            BelongAssetManager.NotifyAssetRelease(this);
             AssetUrl = null;
             ReferenceCount = 0;
             AssetLoadedType = LoadedAssetTypeEnum.None;
             BelongAssetManager = null;
-            LoadUnityObjectAssetInfor.ReleaseAsset();
+            BelongAssetManager.NotifyAssetRelease(this);
         }
 
         protected virtual void NotifyReferenceChange()

@@ -4,13 +4,13 @@ using UnityEngine;
 using System;
 
 
-namespace GameFramePro
+namespace GameFramePro.ResourcesEx
 {
     /// <summary>/// 对加载的资源的封装 对外提供接口，隐藏加载的对象实体/// </summary>
 #if UNITY_EDITOR
     [System.Serializable]
 #endif
-    public class BaseLoadUnityAssetInfor
+    public sealed class LoadBasicAssetInfor
     {
         /// <summary>/// 唯一标示一个资源的，通常赋值为加载这个资源时候使用的相对路径(相对于Resouces 目录)/// </summary>
         public string AssetUrl { get; protected set; }
@@ -19,8 +19,9 @@ namespace GameFramePro
         {
             get { return mLoadUnityAsset ? mLoadUnityAsset.GetInstanceID() : 0; }
         }
+
         public LoadedAssetTypeEnum LoadAssetType { get; protected set; } = LoadedAssetTypeEnum.None;
-        protected readonly UnityEngine.Object mLoadUnityAsset = null; //实际上加载的资源对象
+        private readonly UnityEngine.Object mLoadUnityAsset = null; //实际上加载的资源对象
 
         public bool IsLoadAssetEnable
         {
@@ -29,7 +30,7 @@ namespace GameFramePro
 
         #region 构造函数
 
-        public BaseLoadUnityAssetInfor(string assetUrl, UnityEngine.Object asset, LoadedAssetTypeEnum assetType)
+        public LoadBasicAssetInfor(string assetUrl, UnityEngine.Object asset, LoadedAssetTypeEnum assetType)
         {
             AssetUrl = assetUrl;
             mLoadUnityAsset = asset;
@@ -41,14 +42,14 @@ namespace GameFramePro
 
         #region 其他接口
 
-        public bool IsEqual(BaseLoadUnityAssetInfor infor)
+        public bool IsEqual(LoadBasicAssetInfor infor)
         {
             if (IsLoadAssetEnable == false) return false;
             if (infor.IsLoadAssetEnable == false) return false;
             return mLoadUnityAsset.Equals(infor.mLoadUnityAsset);
         }
 
-        public virtual void ReleaseAsset()
+        public void ReleaseAsset()
         {
             if (IsLoadAssetEnable == false) return;
             Resources.UnloadAsset(mLoadUnityAsset);
@@ -59,7 +60,7 @@ namespace GameFramePro
 
         #region 接口实现
 
-        public virtual string LoadTextAssetContent()
+        public string LoadTextAssetContent()
         {
             if (IsLoadAssetEnable == false) return string.Empty;
             if (mLoadUnityAsset is TextAsset)
@@ -69,7 +70,7 @@ namespace GameFramePro
             return string.Empty;
         }
 
-        public virtual Sprite LoadSpriteFromSpriteRender()
+        public Sprite LoadSpriteFromSpriteRender()
         {
             if (IsLoadAssetEnable == false) return null;
             GameObject go = mLoadUnityAsset as GameObject;
@@ -90,13 +91,13 @@ namespace GameFramePro
         }
 
 
-        public virtual AudioClip LoadAudioClip()
+        public AudioClip LoadAudioClip()
         {
             if (IsLoadAssetEnable == false) return null;
             return mLoadUnityAsset as AudioClip;
         }
 
-        public virtual GameObject InstantiateInstance(Transform targetParent)
+        public GameObject InstantiateInstance(Transform targetParent)
         {
             if (IsLoadAssetEnable == false) return null;
             GameObject prefab = mLoadUnityAsset as GameObject;

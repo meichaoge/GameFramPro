@@ -24,9 +24,9 @@ namespace GameFramePro.UI
         }
 
 
-        public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBaseChangePage belongChangePage, ReferenceGameObjectAssetInfor referenceInstance)
+        public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBaseChangePage belongChangePage, BaseBeReferenceGameObjectInformation baseBeReferenceInstance)
         {
-            BaseUIPageInitialed(pageName, pageType, referenceInstance);
+            BaseUIPageInitialed(pageName, pageType, baseBeReferenceInstance);
             ChangeBelongChangePage(belongChangePage);
         }
 

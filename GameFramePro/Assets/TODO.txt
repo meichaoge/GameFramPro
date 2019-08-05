@@ -1,3 +1,4 @@
-2 点击效果
+2 点击效果 （Done）
 3 UI优化方案
 4 网络 -https
+5 验证AssetBundle 加载的资源逻辑，是否有增加和减少AssetBundle 引用次数

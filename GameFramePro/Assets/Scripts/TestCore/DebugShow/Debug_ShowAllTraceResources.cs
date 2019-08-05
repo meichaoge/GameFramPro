@@ -11,13 +11,11 @@ using GameFramePro.ResourcesEx;
 /// </summary>
 public class Debug_ShowAllTraceResources : MonoBehaviour
 {
-    public List<BaseLoadAssetRecord> mAllResourcesLoadAssets = new List<BaseLoadAssetRecord>();
+    public List<LoadAssetResourcesAssetRecord> mAllResourcesLoadAssets = new List<LoadAssetResourcesAssetRecord>();
 
-    [Header("AssetBundle")]
-    public List<AssetBundleDependenceRecord> mAllLoadAssetBundleCache = new List<AssetBundleDependenceRecord>();
+    [Header("AssetBundle")] public List<LoadAssetBundleAssetRecord> mAllLoadAssetBundleCache = new List<LoadAssetBundleAssetRecord>();
 
-    public List<AssetBundleSubAssetLoadRecord> mAllLoadedAssetBundleSubAssetRecord =
-        new List<AssetBundleSubAssetLoadRecord>();
+    public List<LoadAssetBundleSubAssetRecord> mAllLoadedAssetBundleSubAssetRecord = new List<LoadAssetBundleSubAssetRecord>();
 
 
     private void Update()

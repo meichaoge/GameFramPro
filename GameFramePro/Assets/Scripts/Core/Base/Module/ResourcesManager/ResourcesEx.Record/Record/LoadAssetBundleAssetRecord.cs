@@ -3,58 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-
 namespace GameFramePro.ResourcesEx
 {
-    /// <summary>
-    /// 加载的AssetBundle 包资源
-    /// </summary>
-#if UNITY_EDITOR
-    [System.Serializable]
-#endif
-    public class AssetBundleDependenceRecord : BaseLoadAssetRecord
+    /// <summary>/// 加载的AssetBundle 资源/// </summary>
+    public sealed class LoadAssetBundleAssetRecord : LoadAssetBaseRecord
     {
-#if UNITY_EDITOR
+        public LoadAssetBundleInfor LoadAssetBundleInformation { get; protected set; }
 
-        #region Show
-
-        public List<AssetBundleDependenceRecord> Debug_AllDepdenceAssetBundleRecord = new List<AssetBundleDependenceRecord>();
-        public List<string> Debug_mAllBeReferenceAssetRecord = new List<string>();
-
-        public override void UpdateData()
+        public override bool IsReferenceEnable
         {
-            base.UpdateData();
-            Debug_AllDepdenceAssetBundleRecord.Clear();
-            Debug_AllDepdenceAssetBundleRecord.AddRange(mAllDependenceAssetBundleRecord.Values);
-            Debug_mAllBeReferenceAssetRecord.Clear();
-            Debug_mAllBeReferenceAssetRecord.AddRange(mAllBeReferenceAssetRecord);
+            get { return LoadAssetBundleInformation != null; }
         }
 
-        #endregion
-
-#endif
-
-        public BundleLoadUnityAssetInfor AssetBundleLoadBundleInfor
-        {
-            get { return LoadUnityObjectAssetInfor as BundleLoadUnityAssetInfor; }
-        }
-
-        protected readonly Dictionary<int, AssetBundleDependenceRecord> mAllDependenceAssetBundleRecord = new Dictionary<int, AssetBundleDependenceRecord>(); //当前AssetBundle 依赖的的其他AssetBundle
+        protected readonly Dictionary<int, LoadAssetBundleAssetRecord> mAllDependenceAssetBundleRecord = new Dictionary<int, LoadAssetBundleAssetRecord>(); //当前AssetBundle 依赖的的其他AssetBundle
 
         // 所有从这里加载的 AssetBundleSubAssetLoadRecord 资源记录 key=AssetBundleSubAssetLoadRecord  的 url
         protected HashSet<string> mAllBeReferenceAssetRecord = new HashSet<string>();
 
         #region 构造函数& 设置
 
-        public AssetBundleDependenceRecord()
+        public LoadAssetBundleAssetRecord()
         {
+        }
+
+        public LoadAssetBundleAssetRecord(string assetUrl, LoadAssetBundleInfor assetBundle, IAssetManager manager)
+        {
+            Initial(assetUrl, LoadedAssetTypeEnum.AssetBundle_UnKnown, assetBundle, manager);
+        }
+
+        public void Initial(string assetUrl, LoadedAssetTypeEnum typeEnum, LoadAssetBundleInfor assetBundle, IAssetManager manager)
+        {
+            base.Initial(assetUrl, typeEnum, manager);
+            LoadAssetBundleInformation = assetBundle;
         }
 
         #endregion
 
         #region 管理对其他的AssetBundle 依赖
 
-        public void AddDependence(AssetBundleDependenceRecord dependence)
+        public void AddDependence(LoadAssetBundleAssetRecord dependence)
         {
             if (dependence == null)
                 return;
@@ -78,7 +65,7 @@ namespace GameFramePro.ResourcesEx
             mAllDependenceAssetBundleRecord.Clear();
         }
 
-        public void ReduceDependence(AssetBundleDependenceRecord dependence)
+        public void ReduceDependence(LoadAssetBundleAssetRecord dependence)
         {
             if (mAllDependenceAssetBundleRecord.ContainsKey(dependence.InstanceID))
             {
@@ -94,7 +81,7 @@ namespace GameFramePro.ResourcesEx
 
         #region 加载的资源对当前AssetBundle 依赖
 
-        public void AddSubAssetReference(AssetBundleSubAssetLoadRecord record)
+        public void AddSubAssetReference(LoadAssetBundleSubAssetRecord record)
         {
             if (mAllBeReferenceAssetRecord.Contains(record.AssetUrl) == false)
             {
@@ -104,7 +91,7 @@ namespace GameFramePro.ResourcesEx
             }
         }
 
-        public void ReduceSubAssetReference(AssetBundleSubAssetLoadRecord record)
+        public void ReduceSubAssetReference(LoadAssetBundleSubAssetRecord record)
         {
             if (record.ReferenceCount == 0)
             {
@@ -125,22 +112,14 @@ namespace GameFramePro.ResourcesEx
 
         #endregion
 
-
-        public override void AddReference()
-        {
-            Debug.LogError("AssetBundleDependenceRecord 不需要实现这个接口 AddReference");
-        }
-
-        public override void ReduceReference(bool isforceDelete = false)
-        {
-            Debug.LogError("AssetBundleDependenceRecord 不需要实现这个接口 ReduceReference");
-        }
-
+        #region 基类重写
 
         public override void NotifyReleaseRecord()
         {
-            mAllDependenceAssetBundleRecord.Clear();
             base.NotifyReleaseRecord();
+            LoadAssetBundleInformation.UnLoadAsAssetBundleAsset(true);
         }
+
+        #endregion
     }
 }

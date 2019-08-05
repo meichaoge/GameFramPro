@@ -15,16 +15,16 @@ namespace GameFramePro
         //屏幕特效的信息
         private class ScreenEffectInfor
         {
-            private ReferenceGameObjectAssetInfor EffectItem;
+            private BaseBeReferenceGameObjectInformation EffectItem;
             public float RemainTime { get; private set; } //剩余可以显示的时间
             public bool IsShowing { get; private set; } = false;
 
             private ParticleSystem[] mAllParticleSystems;
 
-            public void SetEffetctItem(ReferenceGameObjectAssetInfor assetInfor)
+            public void SetEffetctItem(BaseBeReferenceGameObjectInformation information)
             {
-                EffectItem = assetInfor;
-                mAllParticleSystems = assetInfor.GetComponentsInChildren<ParticleSystem>(true);
+                EffectItem = information;
+                mAllParticleSystems = information.GetComponentsInChildren<ParticleSystem>(true);
             }
 
             //Update 中调用 用于刷新每个特效项的存活时间
@@ -180,23 +180,23 @@ namespace GameFramePro
 
                 if (needCreateItem)
                 {
-                    ScreenEffectInfor infor = new ScreenEffectInfor();
-                    ReferenceGameObjectAssetInfor assetInfor = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath,true);
-                    if (assetInfor == null)
+                    ScreenEffectInfor effectInfor = new ScreenEffectInfor();
+                    BaseBeReferenceGameObjectInformation information = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath,true);
+                    if (information == null)
                     {
                         Debug.LogError("获取资源为null ");
                         return;
                     }
 
-                    if (assetInfor.IsReferenceAssetEnable == false)
+                    if (information.IsReferenceAssetEnable == false)
                     {
-                        assetInfor.ReduceReference();
+                        information.ReduceReference();
                         return;
                     }
 
-                    infor.SetEffetctItem(assetInfor);
-                    infor.PlayEffect(EffectLocalPos, maxShowTime);
-                    mAllScreenEffectItems.Add(infor);
+                    effectInfor.SetEffetctItem(information);
+                    effectInfor.PlayEffect(EffectLocalPos, maxShowTime);
+                    mAllScreenEffectItems.Add(effectInfor);
                 } //新建特效
             }
         }

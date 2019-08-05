@@ -8,7 +8,7 @@ namespace GameFramePro
     /// <summary>/// 缓存组件与  GameObjectReferenceAssetInfor 之间的关系，避免GetComponent/// </summary>
     public static class ReferenceAssetUtility
     {
-        private  static readonly  Dictionary<UnityEngine.Object, GameObjectReferenceAssetInfor> mAllCacheComponentReferenceAssetInfors = new Dictionary<UnityEngine.Object, GameObjectReferenceAssetInfor>();
+        private  static readonly  Dictionary<UnityEngine.Object, GameObjectReferenceAssetInformation> mAllCacheComponentReferenceAssetInfors = new Dictionary<UnityEngine.Object, GameObjectReferenceAssetInformation>();
 
         public static void ReleaseGameObjectReference(UnityEngine.GameObject targetObject)
         {
@@ -22,7 +22,7 @@ namespace GameFramePro
 
             if (mAllCacheComponentReferenceAssetInfors.TryGetValue(targetObject, out var assetInfor) == false)
             {
-                assetInfor = targetObject  .GetComponent<GameObjectReferenceAssetInfor>();
+                assetInfor = targetObject  .GetComponent<GameObjectReferenceAssetInformation>();
                 if (assetInfor == null)
                 {
 #if UNITY_EDITOR
@@ -49,7 +49,7 @@ namespace GameFramePro
 
             if (mAllCacheComponentReferenceAssetInfors.TryGetValue(targetComponent, out var assetInfor) == false)
             {
-                assetInfor = targetComponent.gameObject.GetComponent<GameObjectReferenceAssetInfor>();
+                assetInfor = targetComponent.gameObject.GetComponent<GameObjectReferenceAssetInformation>();
                 if (assetInfor == null)
                 {
 #if UNITY_EDITOR
@@ -75,7 +75,7 @@ namespace GameFramePro
 
             if (mAllCacheComponentReferenceAssetInfors.TryGetValue(targetComponent, out var assetInfor) == false)
             {
-                assetInfor = targetComponent.gameObject.GetComponent<GameObjectReferenceAssetInfor>();
+                assetInfor = targetComponent.gameObject.GetComponent<GameObjectReferenceAssetInformation>();
                 if (assetInfor == null)
                 {
 #if UNITY_EDITOR
@@ -93,7 +93,7 @@ namespace GameFramePro
         
         /// <summary>/// 记录指定的组件的引用资源请求 /// </summary>
         /// <param name="isAuotAddReference">默认=true,标示对否在调用这个方法时候 组件已经引用了这个资源，如果不是自动关联资源的，请设置为false并在真正使用的时候添加引用</param>
-        public static void AddObjectComponentReference(Component targetComponent, ReferenceAssetAndRecord referenceRecord, bool isAutoAddReference = true)
+        public static void AddObjectComponentReference(Component targetComponent, ReferenceAssetAndRecord referenceRecord, bool isAutoAttachReferenceAsset = true)
         {
             if (targetComponent == null || referenceRecord == null)
             {
@@ -103,7 +103,7 @@ namespace GameFramePro
 
             if (mAllCacheComponentReferenceAssetInfors.TryGetValue(targetComponent, out var assetInfor) == false)
             {
-                assetInfor = targetComponent.gameObject. GetAddComponentEx <GameObjectReferenceAssetInfor>();
+                assetInfor = targetComponent.gameObject. GetAddComponentEx <GameObjectReferenceAssetInformation>();
                 if (assetInfor == null)
                 {
 #if UNITY_EDITOR
@@ -115,7 +115,7 @@ namespace GameFramePro
                 mAllCacheComponentReferenceAssetInfors[targetComponent] = assetInfor;
             }
             
-            assetInfor.AddObjectComponentReference(targetComponent,referenceRecord,isAutoAddReference);
+            assetInfor.AddObjectComponentReference(targetComponent,referenceRecord,isAutoAttachReferenceAsset);
         }
 
         public static ReferenceAssetAndRecord GetComponentReference(Component targetComponent, GetCurComponentReferenceHandler referenceHandler,bool isForceCreateInstance, params object[] otherParameter)
@@ -128,7 +128,7 @@ namespace GameFramePro
 
             if (mAllCacheComponentReferenceAssetInfors.TryGetValue(targetComponent, out var assetInfor) == false)
             {
-                assetInfor = targetComponent.gameObject.GetComponent<GameObjectReferenceAssetInfor>();
+                assetInfor = targetComponent.gameObject.GetComponent<GameObjectReferenceAssetInformation>();
                 if (assetInfor == null)
                 {
 #if UNITY_EDITOR

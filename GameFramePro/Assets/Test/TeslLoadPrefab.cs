@@ -20,9 +20,7 @@ public class TeslLoadPrefab : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            //  ResourcesManager.LoadGameObjectAssetSync(prefabPath, parent);
-            BaseLoadAssetRecord record = ResourcesManager.LoadAssetSync(prefabPath);
-            ResourcesManager.InstantiateGameObjectFromRecordSync( parent, record,false);
+            ResourcesManager.InstantiateGameObjectByPathSync( parent, prefabPath,false);
         }
     }
 }

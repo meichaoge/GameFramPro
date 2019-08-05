@@ -2066,34 +2066,39 @@
                   </e>
                 </e>
                 <e p="ResourcesManager" t="Include">
-                  <e p="AssetBundle_Load" t="Include">
+                  <e p="BeReference" t="Include">
+                    <e p="BaseBeReferenceGameObjectInformation.cs" t="Include" />
+                    <e p="BaseBeReferenceInformation.cs" t="Include" />
+                    <e p="FindAssetReferenceUtility.cs" t="Include" />
+                    <e p="GameObjectReferenceAssetInformation.cs" t="Include" />
+                    <e p="ReferenceAssetUtility.cs" t="Include" />
+                  </e>
+                  <e p="IReference.cs" t="Include" />
+                  <e p="ReferenceAssetAndRecord.cs" t="Include" />
+                  <e p="ResourcesEx.Record" t="Include">
+                    <e p="LoadAssetInfor" t="Include">
+                      <e p="LoadAssetBundleInfor.cs" t="Include" />
+                      <e p="LoadBasicAssetInfor.cs" t="Include" />
+                    </e>
+                    <e p="Manager" t="Include">
+                      <e p="AssetBundleManager.cs" t="Include" />
+                      <e p="AssetDelayDeleteManager.cs" t="Include" />
+                      <e p="IAssetManager.cs" t="Include" />
+                      <e p="LocalResourcesManager.cs" t="Include" />
+                    </e>
+                    <e p="Record" t="Include">
+                      <e p="LoadAssetAssetRecord.cs" t="Include" />
+                      <e p="LoadAssetBaseRecord.cs" t="Include" />
+                      <e p="LoadAssetBundleAssetRecord.cs" t="Include" />
+                      <e p="LoadAssetBundleSubAssetRecord.cs" t="Include" />
+                      <e p="LoadAssetResourcesAssetRecord.cs" t="Include" />
+                    </e>
+                  </e>
+                  <e p="ResourcesManager.cs" t="Include" />
+                  <e p="UpgradeAssetBundle" t="Include">
                     <e p="AssetBundleAssetTotalInfor.cs" t="Include" />
                     <e p="AssetBundleUpgradeManager.cs" t="Include" />
                   </e>
-                  <e p="AssetBundleManager.cs" t="Include" />
-                  <e p="AssetDelayDeleteManager.cs" t="Include" />
-                  <e p="AssetLoadRecord" t="Include">
-                    <e p="ReferenceAssetInfor.cs" t="Include" />
-                    <e p="ReferenceGameObjectAssetInfor.cs" t="Include" />
-                  </e>
-                  <e p="AssetReference" t="Include">
-                    <e p="AssetReferenceManager.cs" t="Include" />
-                    <e p="GameObjectReferenceAssetInfor.cs" t="Include" />
-                    <e p="ReferenceAssetAndRecord.cs" t="Include" />
-                    <e p="ReferenceAssetUtility.cs" t="Include" />
-                  </e>
-                  <e p="IAssetManager.cs" t="Include" />
-                  <e p="LoadAssetRecord" t="Include">
-                    <e p="AssetBundleDependenceRecord.cs" t="Include" />
-                    <e p="AssetBundleSubAssetLoadRecord.cs" t="Include" />
-                    <e p="BaseLoadAssetRecord.cs" t="Include" />
-                    <e p="RealAssetInfor" t="Include">
-                      <e p="BaseLoadUnityAssetInfor.cs" t="Include" />
-                      <e p="BundleLoadUnityAssetInfor.cs" t="Include" />
-                    </e>
-                  </e>
-                  <e p="LocalResourcesManager.cs" t="Include" />
-                  <e p="ResourcesManager.cs" t="Include" />
                 </e>
                 <e p="ThreadPool" t="Include">
                   <e p="Loom.cs" t="Include" />

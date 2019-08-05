@@ -17,7 +17,7 @@ namespace GameFramePro.UI
 
         public Dictionary<string, string> NamePathMapInfor { get; protected set; } //缓存映射关系
     
-        public ReferenceGameObjectAssetInfor ConnectTransReference { get; protected set; }
+        public BaseBeReferenceGameObjectInformation ConnectTransBaseBeReference { get; protected set; }
         //{
         //    get
         //    {
@@ -33,11 +33,11 @@ namespace GameFramePro.UI
 
         private UGUIComponentReference mUGUIComponentReference;
         private string mConnectUIBasePageName;
-        public void InitailedComponentReference(string uiBasePageName, ReferenceGameObjectAssetInfor connectPageInstance, UGUIComponentReference uguiComponenentReference)
+        public void InitailedComponentReference(string uiBasePageName, BaseBeReferenceGameObjectInformation connectPageInstance, UGUIComponentReference uguiComponenentReference)
         {
             mUGUIComponentReference = uguiComponenentReference;
             mConnectUIBasePageName = uiBasePageName;
-            ConnectTransReference = connectPageInstance;
+            ConnectTransBaseBeReference = connectPageInstance;
         }
 
         #region 接口实现
@@ -57,7 +57,7 @@ namespace GameFramePro.UI
             //最后找到映射的路径查找引用
             if (mIsInitialed == false)
             {
-                NamePathMapInfor = ComponentUtility.GetGameObjectNamePathMap(ConnectTransReference); //生成映射
+                NamePathMapInfor = ComponentUtility.GetGameObjectNamePathMap(ConnectTransBaseBeReference); //生成映射
                 mIsInitialed = true;
             }
 
@@ -91,7 +91,7 @@ namespace GameFramePro.UI
 
         public void ReleaseReference(bool isReleaseNamePathMap)
         {
-            ConnectTransReference.ReduceReference();
+            ConnectTransBaseBeReference.ReduceReference();
             mAllReferenceComponent.Clear();
             if (isReleaseNamePathMap)
             {
@@ -108,7 +108,7 @@ namespace GameFramePro.UI
         #region 辅助
         public T FindComponentByPath<T>(string gameObjectName, string path) where T : Component
         {
-            T result = ConnectTransReference.FindChildComponentByPath<T>(path);
+            T result = ConnectTransBaseBeReference.FindChildComponentByPath<T>(path);
             if (result == null)
             {
                 Debug.LogError("获取UI界面节点路径映射失败,指定路径不存在子节点 " + path);

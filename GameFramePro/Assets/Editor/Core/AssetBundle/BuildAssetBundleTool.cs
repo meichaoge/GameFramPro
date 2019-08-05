@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using UnityEditor;
 using System.Text;
+using GameFramePro.ResourcesEx;
 using Newtonsoft.Json;
 
 namespace GameFramePro.EditorEx

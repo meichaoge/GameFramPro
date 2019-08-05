@@ -358,11 +358,11 @@ namespace GameFramePro.UI
         #region 辅助工具
 
         //创建页面实例
-        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<ReferenceGameObjectAssetInfor> afterInitialedInstanceAction)
+        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<BaseBeReferenceGameObjectInformation> afterInitialedInstanceAction)
         {
-            ReferenceGameObjectAssetInfor gameObjectAssetInfor = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath,false);
+            BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath,false);
             if (afterInitialedInstanceAction != null)
-                afterInitialedInstanceAction.Invoke(gameObjectAssetInfor);
+                afterInitialedInstanceAction.Invoke(gameObjectInformation);
         }
 
         #endregion
