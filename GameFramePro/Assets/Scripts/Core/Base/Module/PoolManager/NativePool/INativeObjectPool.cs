@@ -11,7 +11,7 @@ namespace GameFramePro.ResourcesEx
     /// </summary>
     public interface INativeObjectPool<T>  where T :  new()
     {
-        System.Action<T> BeforGetAction { get; }
+        System.Action<T> BeforeGetAction { get; }
         System.Action<T> BeforeRecycleAction { get; }
         Stack<T> PoolContainer { get; }
 
@@ -27,7 +27,7 @@ namespace GameFramePro.ResourcesEx
         ///// <summary>
         /// 不需要时候清理自己
         /// </summary>
-        void ReleasPool();
+        void ReleasePool();
 
         /// <summary>
         /// 获取对象

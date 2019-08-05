@@ -11,28 +11,21 @@ namespace GameFramePro
     /// </summary>
     public class NativeObjectPool<T> : INativeObjectPool<T> where T : new()
     {
-        public System.Action<T> BeforGetAction { get; protected set; } = null;
+        public System.Action<T> BeforeGetAction { get; protected set; } = null;
         public System.Action<T> BeforeRecycleAction { get; protected set; } = null;
         public Stack<T> PoolContainer { get; protected set; } = null;
 
 
-        public NativeObjectPool(int capacity, System.Action<T> beforGetAction, System.Action<T> beforeRecycleAction)
+        public NativeObjectPool(int capacity, System.Action<T> beforeGetAction, System.Action<T> beforeeRecycleAction)
         {
-            BeforGetAction = beforGetAction;
-            BeforeRecycleAction = beforeRecycleAction;
+            BeforeGetAction = beforeGetAction;
+            BeforeRecycleAction = beforeeRecycleAction;
             PoolContainer = new Stack<T>(capacity);
             PoolObjectManager.TrackPoolManager(typeof(T), this);
         }
-        //public void InitialedPool(int capacity, System.Action<T> beforGetAction, System.Action<T> beforeRecycleAction)
-        //{
-        //    BeforGetAction = beforGetAction;
-        //    BeforeRecycleAction = beforeRecycleAction;
-        //    PoolContainer = new Stack<T>(capacity);
-        //    PoolObjectManager.TrackPoolManager(typeof(T), this);
-        //}
 
 
-        public void ReleasPool()
+        public void ReleasePool()
         {
             if (PoolContainer.Count > 0)
             {
@@ -40,12 +33,11 @@ namespace GameFramePro
                 while (PoolContainer.Count>0)
                 {
                     target = PoolContainer.Pop();
-                    if (BeforeRecycleAction != null)
-                        BeforeRecycleAction(target);
+                    BeforeRecycleAction?.Invoke(target);
                 }
             }
             PoolContainer = null;
-            BeforGetAction = BeforeRecycleAction = null;
+            BeforeGetAction = BeforeRecycleAction = null;
 
             PoolObjectManager.UnTrackPoolManager(this);
         }
@@ -65,8 +57,7 @@ namespace GameFramePro
                 result = new T();
 
 
-            if (BeforGetAction != null)
-                BeforGetAction(result);
+            BeforeGetAction?.Invoke(result);
 
             return result;
         }
@@ -79,8 +70,7 @@ namespace GameFramePro
                 return;
             }
 
-            if (BeforeRecycleAction != null)
-                BeforeRecycleAction(item);
+            BeforeRecycleAction?.Invoke(item);
             PoolContainer.Push(item);
         }
 

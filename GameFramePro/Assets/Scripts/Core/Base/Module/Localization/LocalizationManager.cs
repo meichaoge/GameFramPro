@@ -169,7 +169,7 @@ namespace GameFramePro
         private string LoadLocalizationConfig(Language language)
         {
             string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(AppSetting.S_LocalizationExportFormatType, language));
-            string content = ResourcesManager.LoadTextAssettSync(filePath.GetPathWithOutExtension());
+            string content = ResourcesManager.LoadTextAssetSync(filePath.GetPathWithOutExtension());
 
             GetLocalizationConfigByFormat(content, language, AppSetting.S_LocalizationExportFormatType);
 

@@ -7,18 +7,18 @@ using GameFramePro.ResourcesEx;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 资源加载时候的类型状态(Resources&LocalStore&AssetBundle) 后面可能对不同的类型进行处理
-    /// </summary>
+    /// <summary>/// 资源加载时候的类型状态(Resources&LocalStore&AssetBundle) 后面可能对不同的类型进行处理/// </summary>
     public enum LoadedAssetTypeEnum
     {
         None = 0, //未知的类型
 
+        // ReSharper disable once InconsistentNaming
         Resources_UnKnown = 1, //记录时候无法判断的类型
 
         ////***本地存储的 可能是运行时记录的资源&网络下载资源&缓存资源
         //LocalStore_UnKnown = 100, //记录时候无法判断的类型
 
+        // ReSharper disable once InconsistentNaming
         AssetBundle_UnKnown = 200, //记录时候无法判断的类型
     }
 
@@ -54,10 +54,35 @@ namespace GameFramePro
 #endif
 
         public string AssetUrl { get; protected set; } = string.Empty;
+        
         public int ReferenceCount { get; protected set; } = 0;
         public LoadedAssetTypeEnum AssetLoadedType { get; protected set; } = LoadedAssetTypeEnum.None;
 
-        public BaseLoadUnityAssetInfor LoadUnityObjectAssetInfor { get; protected set; } //加载到的资源信息
+        /// <summary>/// 加载到的资源信息/// </summary>
+        public BaseLoadUnityAssetInfor LoadUnityObjectAssetInfor { get; protected set; } 
+        /// <summary>/// 标示当前记录是否有效/// </summary>
+        public virtual bool IsReferenceEnable
+        {
+            get
+            {
+                return LoadUnityObjectAssetInfor != null ? LoadUnityObjectAssetInfor.IsLoadAssetEnable : false;
+            }
+        }
+        /// <summary>/// 判断参数值指定的两个资源是否相同/// </summary>
+        public virtual bool isReferenceEqual(BaseLoadAssetRecord record)
+        {
+            if (record == null) return false;
+            if (record.LoadUnityObjectAssetInfor.IsLoadAssetEnable == false) return false;
+            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false) return false;
+            if (record.LoadUnityObjectAssetInfor.LoadAssetType != LoadUnityObjectAssetInfor.LoadAssetType) return false;
+
+            return record.LoadUnityObjectAssetInfor.AssetUrl == LoadUnityObjectAssetInfor.AssetUrl;
+        }
+
+        protected int InstanceID
+        {
+            get { return IsReferenceEnable ? LoadUnityObjectAssetInfor.InstanceID : 0; }
+        }
 
 
         public float RemainTimeToBeDelete { get; protected set; } = 0;
@@ -82,27 +107,7 @@ namespace GameFramePro
         #endregion
 
 
-        /// <summary>/// 判断参数值指定的两个资源是否相同/// </summary>
-        public virtual bool isReferenceEqual(BaseLoadAssetRecord record)
-        {
-            //if(AssetLoadedType== LoadedAssetTypeEnum.None|| record.AssetLoadedType == LoadedAssetTypeEnum.None )
-            //{
-            //    Debug.LogError("无法确定的类型 " + AssetLoadedType);
-            //    return false;
-            //}
-            Debug.LogError("无法确定的类型!!或者错误的类型  " + AssetLoadedType);
-            return true;
-        }
-
-        /// <summary>/// 标示当前记录是否有效/// </summary>
-        public virtual bool IsReferenceEnable
-        {
-            get
-            {
-                if (LoadUnityObjectAssetInfor == null) return false;
-                return LoadUnityObjectAssetInfor.IsLoadAssetEnable;
-            }
-        }
+     
 
 
         public virtual void AddReference()
@@ -151,13 +156,6 @@ namespace GameFramePro
             return RemainTimeToBeDelete > 0f;
         }
 
-
-        public virtual void NotifyNoReference()
-        {
-            if (LoadUnityObjectAssetInfor.IsLoadAssetEnable == false)
-                return;
-        }
-
         public virtual bool NotifyReReference()
         {
             ReferenceCount = 1;
@@ -171,10 +169,10 @@ namespace GameFramePro
             ReferenceCount = 0;
             AssetLoadedType = LoadedAssetTypeEnum.None;
             BelongAssetManager = null;
-            LoadUnityObjectAssetInfor.RealseAsset();
+            LoadUnityObjectAssetInfor.ReleaseAsset();
         }
 
-        public virtual void NotifyReferenceChange()
+        protected virtual void NotifyReferenceChange()
         {
             BelongAssetManager.NotifyAssetReferenceChange(this);
         }

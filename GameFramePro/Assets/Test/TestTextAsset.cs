@@ -17,7 +17,7 @@ public class TestTextAsset : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.D))
         {
-            mTextAsset = ResourcesManager.LoadTextAssettSync(mPath);
+            mTextAsset = ResourcesManager.LoadTextAssetSync(mPath);
             Debug.Log("加载配置文件成功");
         }
     }

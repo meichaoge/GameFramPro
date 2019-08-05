@@ -8,9 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 这里只有ResourcesManger 提供的对外访问接口和实现
-    /// </summary>
+    /// <summary>/// 这里有ResourcesManger 提供的对外访问接口和实现/// </summary>
     public class ResourcesManager : Single<ResourcesManager>
     {
         #region 对象的创建和销毁逻辑（实例化对象 (这里对内部的GameObject.Instantiate<T> 做了一层封装，主要是想后期能够监控对象的创建TODO)）
@@ -38,13 +36,17 @@ namespace GameFramePro
 
         public static void Destroy(UnityEngine.Object obj)
         {
+            if (obj == null) return;
             ResourcesTracker.UnRegisterTraceResources(obj);
+            ReleaseComponentReference(obj);
             GameObject.Destroy(obj);
         }
 
         public static void DestroyImmediate(UnityEngine.Object obj)
         {
+            if (obj == null) return;
             ResourcesTracker.UnRegisterTraceResources(obj);
+            ReleaseComponentReference(obj);
             GameObject.DestroyImmediate(obj);
         }
 
@@ -105,43 +107,29 @@ namespace GameFramePro
 
         #region 资源加载&释放接口
 
-        //释放一个组件上的所有引用
-        public static void ReleaseComponentReference(Component targetComponent)
-        {
-            if (targetComponent == null) return; 
-            
-            ReferenceAssetUtility.ReleaseComponentReference(targetComponent);
-        }
 
-        //释放一个对象上的所有引用
+        //释放一个对象& 组件(根据类型判断) 上的所有引用
         public static void ReleaseComponentReference(Object targetObject)
         {
             if (targetObject == null) return;
-            ReferenceAssetUtility.ReleaseGameObjectReference(targetObject as GameObject);
+             if (targetObject is Component)
+                ReferenceAssetUtility.ReleaseComponentReference(targetObject as Component);
+             else  if (targetObject is GameObject)
+                ReferenceAssetUtility.ReleaseGameObjectReference(targetObject as GameObject);
         }
 
 
-        /// <summary>
-        /// 缓存中加载资源
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="assetpath"></param>
-        /// <returns></returns>
+        /// <summary>/// 缓存中加载资源/// </summary>
         private static BaseLoadAssetRecord LoadAssetFromCache(string assetPath)
         {
             BaseLoadAssetRecord asset = LocalResourcesManager.S_Instance.LoadAssetFromCache(assetPath);
             if (asset != null)
                 return asset;
-            else
-                asset = AssetBundleManager.S_Instance.LoadSubAssetFromCache(assetPath);
+            asset = AssetBundleManager.S_Instance.LoadSubAssetFromCache(assetPath);
             return asset;
         }
 
-        /// <summary>
-        /// 同步下载资源接口
-        /// </summary>
-        /// <param name="assetpath"></param>
-        /// <returns></returns>
+        /// <summary>/// 同步下载资源接口/// </summary>
         public static BaseLoadAssetRecord LoadAssetSync(string assetPath)
         {
             BaseLoadAssetRecord record = null;
@@ -162,11 +150,7 @@ namespace GameFramePro
             return record;
         }
 
-        /// <summary>
-        /// 异步下载资源的接口
-        /// </summary>
-        /// <param name="assetpath"></param>
-        /// <param name="loadCallback"></param>
+        /// <summary>/// 异步下载资源的接口/// </summary>
         public static void LoadAssetAsync(string assetPath, System.Action<BaseLoadAssetRecord> loadCallback)
         {
             BaseLoadAssetRecord assetRecord = LoadAssetFromCache(assetPath);
@@ -209,10 +193,7 @@ namespace GameFramePro
             asset.Unload(isUnloadAllLoadedObjects);
         }
 
-        /// <summary>
-        /// 卸载 Resources 资源
-        /// </summary>
-        /// <param name="assetRecord"></param>
+        /// <summary>/// 卸载 Resources 资源   /// </summary>
         public static void UnLoadResourceAsset(BaseLoadAssetRecord assetRecord)
         {
             if (assetRecord == null)
@@ -228,14 +209,10 @@ namespace GameFramePro
             }
 
             Debug.LogEditorInfor("释放Resources 资源 " + assetRecord.AssetUrl);
-            (assetRecord.LoadUnityObjectAssetInfor as ResourceLoadUnityAssetInfor).UnLoadAsResourcesAsset();
+            assetRecord.LoadUnityObjectAssetInfor.ReleaseAsset();
         }
 
-        /// <summary>
-        /// 卸载 AssetBundle 资源加载
-        /// </summary>
-        /// <param name="assetRecord"></param>
-        /// <param name="isUnloadAllLoadedObjects"></param>
+        /// <summary>/// 卸载 AssetBundle 资源加载/// </summary>
         public static void UnLoadAssetBundle(BaseLoadAssetRecord assetRecord, bool isUnloadAllLoadedObjects)
         {
             if (assetRecord == null)
@@ -254,14 +231,10 @@ namespace GameFramePro
 
         #region TextAsset/lua 文件的加载
 
-        private static Dictionary<string, string> mAllCacheTextInfor = new Dictionary<string, string>(); //缓存所有加载的文本资源
+        private static readonly Dictionary<string, string> mAllCacheTextInfor = new Dictionary<string, string>(); //缓存所有加载的文本资源
 
-        /// <summary>
-        /// 文本资源的加载(一般是配置文件或者lua 文件)
-        /// </summary>
-        /// <param name="assetPath"></param>
-        /// <returns></returns>
-        public static string LoadTextAssettSync(string assetPath, bool isForceReload = false)
+        /// <summary>/// 文本资源的加载(一般是配置文件或者lua 文件)/// </summary>
+        public static string LoadTextAssetSync(string assetPath, bool isForceReload = false)
         {
             string resultStr = string.Empty;
             if (isForceReload == false)
@@ -271,7 +244,7 @@ namespace GameFramePro
             }
 
             BaseLoadAssetRecord assetRecord = LoadAssetSync(assetPath);
-            if (assetRecord != null && assetRecord.LoadUnityObjectAssetInfor != null)
+            if (assetRecord != null && assetRecord.IsReferenceEnable)
             {
                 resultStr = assetRecord.LoadUnityObjectAssetInfor.LoadTextAssetContent();
                 mAllCacheTextInfor[assetPath] = resultStr;
@@ -289,24 +262,23 @@ namespace GameFramePro
             {
                 if (mAllCacheTextInfor.TryGetValue(assetPath, out resultStr) && string.IsNullOrEmpty(resultStr) == false)
                 {
-                    if (textAssetAction != null) textAssetAction(resultStr);
+                    textAssetAction?.Invoke(resultStr);
                     return;
                 }
             }
 
             LoadAssetAsync(assetPath, (assetRecord) =>
             {
-                if (assetRecord != null && assetRecord.LoadUnityObjectAssetInfor != null)
+                if (assetRecord != null && assetRecord.IsReferenceEnable)
                 {
                     resultStr = assetRecord.LoadUnityObjectAssetInfor.LoadTextAssetContent();
                     mAllCacheTextInfor[assetPath] = resultStr;
-                    if (textAssetAction != null) textAssetAction(resultStr);
+                    textAssetAction?.Invoke(resultStr);
                     return;
                 }
 
                 Debug.LogError("获取文本 资源失败 " + assetPath);
-                if (textAssetAction != null) textAssetAction(null);
-                return;
+                textAssetAction?.Invoke(null);
             });
         }
 
@@ -315,18 +287,17 @@ namespace GameFramePro
         #region Sprite 加载
 
         //根据路径加载图片资源 同步接口
-        public static ReferenceAssetInfor SetImageSpriteByPathSync(Image targetImage, string assetPath,bool isForceCreateInstance)
+        public static ReferenceAssetInfor SetImageSpriteByPathSync(Image targetImage, string assetPath, bool isForceCreateInstance)
         {
             if (string.IsNullOrEmpty(assetPath))
-                return SetImageSpriteFromRecordSync(targetImage, null,isForceCreateInstance);
-            else
-                return SetImageSpriteFromRecordSync(targetImage, LoadAssetSync(assetPath),isForceCreateInstance);
+                return SetImageSpriteFromRecordSync(targetImage, null, isForceCreateInstance);
+            return SetImageSpriteFromRecordSync(targetImage, LoadAssetSync(assetPath), isForceCreateInstance);
         }
 
         //根据资源加载图片精灵
-        public static ReferenceAssetInfor SetImageSpriteFromRecordSync(Image targetImage, BaseLoadAssetRecord assetRecord,bool isForceCreateInstance)
+        public static ReferenceAssetInfor SetImageSpriteFromRecordSync(Image targetImage, BaseLoadAssetRecord assetRecord, bool isForceCreateInstance)
         {
-            ReferenceAssetAndRecord curReference = ReferenceAssetUtility.GetComponentReference(targetImage, AssetReferenceManager.GetSpriteAssetReference,isForceCreateInstance);
+            var curReference = ReferenceAssetUtility.GetComponentReference(targetImage, AssetReferenceManager.GetSpriteAssetReference, isForceCreateInstance);
             if (assetRecord == null)
             {
                 if (curReference != null)
@@ -352,21 +323,19 @@ namespace GameFramePro
         }
 
         //异步设置Sprite 接口
-        public static void SetImageSpriteByPathAsync(Image targetImage, string assetPath,bool isForceCreateInstance, Action<ReferenceAssetInfor> afterAttachSpriteAction)
+        public static void SetImageSpriteByPathAsync(Image targetImage, string assetPath, bool isForceCreateInstance, Action<ReferenceAssetInfor> afterAttachSpriteAction)
         {
             if (string.IsNullOrEmpty(assetPath))
             {
-                ReferenceAssetInfor assetInfor = SetImageSpriteFromRecordSync(targetImage, null,isForceCreateInstance);
-                if (afterAttachSpriteAction != null)
-                    afterAttachSpriteAction.Invoke(assetInfor);
+                var assetInfor = SetImageSpriteFromRecordSync(targetImage, null, isForceCreateInstance);
+                afterAttachSpriteAction?.Invoke(assetInfor);
             }
             else
             {
                 LoadAssetAsync(assetPath, (assetRecord) =>
                 {
-                    ReferenceAssetInfor assetInfor = SetImageSpriteFromRecordSync(targetImage, assetRecord,isForceCreateInstance);
-                    if (afterAttachSpriteAction != null)
-                        afterAttachSpriteAction.Invoke(assetInfor);
+                    var assetInfor = SetImageSpriteFromRecordSync(targetImage, assetRecord, isForceCreateInstance);
+                    afterAttachSpriteAction?.Invoke(assetInfor);
                 });
             }
         }
@@ -375,8 +344,8 @@ namespace GameFramePro
         //fromImage 上的资源克隆到 toImage
         public static void CloneImageSprite(Image fromImage, Image toImage)
         {
-            ReferenceAssetAndRecord fromsourceReference = ReferenceAssetUtility.GetComponentReference(fromImage, AssetReferenceManager.GetSpriteAssetReference,false);
-            ReferenceAssetAndRecord totargetReference = ReferenceAssetUtility.GetComponentReference(toImage, AssetReferenceManager.GetSpriteAssetReference,false);
+            var fromsourceReference = ReferenceAssetUtility.GetComponentReference(fromImage, AssetReferenceManager.GetSpriteAssetReference, false);
+            var totargetReference = ReferenceAssetUtility.GetComponentReference(toImage, AssetReferenceManager.GetSpriteAssetReference, false);
 
             if (fromsourceReference == null)
             {
@@ -399,47 +368,44 @@ namespace GameFramePro
 
         #region GameObject加载
 
-        public static ReferenceGameObjectAssetInfor InstantiateGameObjectByPathSync(Transform targetParent, string assetPath,bool isForceCreateInstance)
+        public static ReferenceGameObjectAssetInfor InstantiateGameObjectByPathSync(Transform targetParent, string assetPath, bool isForceCreateInstance)
         {
             if (string.IsNullOrEmpty(assetPath))
-                return InstantiateGameObjectFromRecordSync(targetParent, null,isForceCreateInstance);
-            else
-                return InstantiateGameObjectFromRecordSync(targetParent, LoadAssetSync(assetPath),isForceCreateInstance);
+                return InstantiateGameObjectFromRecordSync(targetParent, null, isForceCreateInstance);
+            return InstantiateGameObjectFromRecordSync(targetParent, LoadAssetSync(assetPath), isForceCreateInstance);
         }
 
-        public static void InstantiateGameObjectByPathAsync(Transform targetParent, string assetPath,bool isForceCreateInstance, Action<ReferenceGameObjectAssetInfor> afterInitialedInstanceAction = null)
+        public static void InstantiateGameObjectByPathAsync(Transform targetParent, string assetPath, bool isForceCreateInstance, Action<ReferenceGameObjectAssetInfor> afterInitialedInstanceAction = null)
         {
             if (string.IsNullOrEmpty(assetPath))
             {
-                ReferenceGameObjectAssetInfor gameObjectAsset = InstantiateGameObjectFromRecordSync(targetParent, null,isForceCreateInstance);
-                if (afterInitialedInstanceAction != null)
-                    afterInitialedInstanceAction(gameObjectAsset);
+                ReferenceGameObjectAssetInfor gameObjectAsset = InstantiateGameObjectFromRecordSync(targetParent, null, isForceCreateInstance);
+                afterInitialedInstanceAction?.Invoke(gameObjectAsset);
             }
             else
             {
                 LoadAssetAsync(assetPath, (assetRecord) =>
                 {
-                    ReferenceGameObjectAssetInfor gameObjectAsset = InstantiateGameObjectFromRecordSync(targetParent, assetRecord,isForceCreateInstance);
-                    if (afterInitialedInstanceAction != null)
-                        afterInitialedInstanceAction(gameObjectAsset);
+                    ReferenceGameObjectAssetInfor gameObjectAsset = InstantiateGameObjectFromRecordSync(targetParent, assetRecord, isForceCreateInstance);
+                    afterInitialedInstanceAction?.Invoke(gameObjectAsset);
                 });
             }
         }
 
-        public static ReferenceGameObjectAssetInfor InstantiateGameObjectFromRecordSync(Transform targetParent, BaseLoadAssetRecord assetRecord,bool isForceCreateInstance)
+        public static ReferenceGameObjectAssetInfor InstantiateGameObjectFromRecordSync(Transform targetParent, BaseLoadAssetRecord assetRecord, bool isForceCreateInstance)
         {
             if (assetRecord == null)
                 return null;
 
-            ReferenceAssetAndRecord curReference = ReferenceAssetUtility.GetComponentReference(targetParent, AssetReferenceManager.GetGameObjectFromAssetReference,isForceCreateInstance, assetRecord.AssetUrl);
+            var curReference = ReferenceAssetUtility.GetComponentReference(targetParent, AssetReferenceManager.GetGameObjectFromAssetReference, isForceCreateInstance, assetRecord.AssetUrl);
 
             if (curReference != null)
                 return null;
 
             GameObject go = assetRecord.LoadUnityObjectAssetInfor.InstantiateInstance(targetParent);
-            ReferenceGameObjectAssetInfor referenceAssetInfor = new ReferenceGameObjectAssetInfor(go, typeof(GameObject));
+            var referenceAssetInfor = new ReferenceGameObjectAssetInfor(go, typeof(GameObject));
 
-            ReferenceAssetAndRecord newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
+            var newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
             ReferenceAssetUtility.AddObjectComponentReference(targetParent, newReference);
 
             return referenceAssetInfor;
@@ -449,17 +415,16 @@ namespace GameFramePro
 
         #region Audio 加载
 
-        public static ReferenceAssetInfor GetAudioClipByPathSync(AudioSource targetAudioSources, string assetPath, bool isAuotAddReference,bool isForceCreateInstance)
+        public static ReferenceAssetInfor GetAudioClipByPathSync(AudioSource targetAudioSources, string assetPath, bool isAuotAddReference, bool isForceCreateInstance)
         {
             if (string.IsNullOrEmpty(assetPath))
-                return GetAudioClipFromRecordSync(targetAudioSources, null, isAuotAddReference,isForceCreateInstance);
-            else
-                return GetAudioClipFromRecordSync(targetAudioSources, LoadAssetSync(assetPath), isAuotAddReference,isForceCreateInstance);
+                return GetAudioClipFromRecordSync(targetAudioSources, null, isAuotAddReference, isForceCreateInstance);
+            return GetAudioClipFromRecordSync(targetAudioSources, LoadAssetSync(assetPath), isAuotAddReference, isForceCreateInstance);
         }
 
-        public static ReferenceAssetInfor GetAudioClipFromRecordSync(AudioSource targetAudioSources, BaseLoadAssetRecord assetRecord, bool isAuotAddReference,bool isForceCreateInstance)
+        public static ReferenceAssetInfor GetAudioClipFromRecordSync(AudioSource targetAudioSources, BaseLoadAssetRecord assetRecord, bool isAuotAddReference, bool isForceCreateInstance)
         {
-            ReferenceAssetAndRecord curReference = ReferenceAssetUtility.GetComponentReference(targetAudioSources, AssetReferenceManager.GetSAudioClipAssetReference,isForceCreateInstance);
+            var curReference = ReferenceAssetUtility.GetComponentReference(targetAudioSources, AssetReferenceManager.GetSAudioClipAssetReference, isForceCreateInstance);
             if (assetRecord == null)
             {
                 if (curReference != null)
@@ -474,7 +439,7 @@ namespace GameFramePro
             var newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
 
             if (curReference != null)
-                curReference.ModifyComponentReference<AudioSource>(targetAudioSources, newReference);
+                curReference.ModifyComponentReference(targetAudioSources, newReference);
             else
                 ReferenceAssetUtility.AddObjectComponentReference(targetAudioSources, newReference, isAuotAddReference);
 

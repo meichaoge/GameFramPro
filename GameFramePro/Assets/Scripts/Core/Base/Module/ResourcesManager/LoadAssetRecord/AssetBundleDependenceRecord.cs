@@ -12,20 +12,20 @@ namespace GameFramePro.ResourcesEx
 #if UNITY_EDITOR
     [System.Serializable]
 #endif
-    public class AssetBundleAssetDepdenceRecord : BaseLoadAssetRecord
+    public class AssetBundleDependenceRecord : BaseLoadAssetRecord
     {
 #if UNITY_EDITOR
 
         #region Show
 
-        public List<AssetBundleAssetDepdenceRecord> Debug_AllDepdenceAssetBundleRecord = new List<AssetBundleAssetDepdenceRecord>();
+        public List<AssetBundleDependenceRecord> Debug_AllDepdenceAssetBundleRecord = new List<AssetBundleDependenceRecord>();
         public List<string> Debug_mAllBeReferenceAssetRecord = new List<string>();
 
         public override void UpdateData()
         {
             base.UpdateData();
             Debug_AllDepdenceAssetBundleRecord.Clear();
-            Debug_AllDepdenceAssetBundleRecord.AddRange(mAllDepdenceAssetBundleRecord.Values);
+            Debug_AllDepdenceAssetBundleRecord.AddRange(mAllDependenceAssetBundleRecord.Values);
             Debug_mAllBeReferenceAssetRecord.Clear();
             Debug_mAllBeReferenceAssetRecord.AddRange(mAllBeReferenceAssetRecord);
         }
@@ -34,54 +34,66 @@ namespace GameFramePro.ResourcesEx
 
 #endif
 
-        public BundleLoadUnityAssetInfor AssetBundleLoadBundleInfor { get { return LoadUnityObjectAssetInfor as BundleLoadUnityAssetInfor; } }
-        protected Dictionary<int, AssetBundleAssetDepdenceRecord> mAllDepdenceAssetBundleRecord = new Dictionary<int, AssetBundleAssetDepdenceRecord>();//当前AssetBundle 依赖的的其他AssetBundle
+        public BundleLoadUnityAssetInfor AssetBundleLoadBundleInfor
+        {
+            get { return LoadUnityObjectAssetInfor as BundleLoadUnityAssetInfor; }
+        }
+
+        protected readonly Dictionary<int, AssetBundleDependenceRecord> mAllDependenceAssetBundleRecord = new Dictionary<int, AssetBundleDependenceRecord>(); //当前AssetBundle 依赖的的其他AssetBundle
 
         // 所有从这里加载的 AssetBundleSubAssetLoadRecord 资源记录 key=AssetBundleSubAssetLoadRecord  的 url
         protected HashSet<string> mAllBeReferenceAssetRecord = new HashSet<string>();
 
         #region 构造函数& 设置
-        public AssetBundleAssetDepdenceRecord() { }
+
+        public AssetBundleDependenceRecord()
+        {
+        }
 
         #endregion
 
         #region 管理对其他的AssetBundle 依赖
 
-        public void AddDepdence(AssetBundleAssetDepdenceRecord depdence)
+        public void AddDependence(AssetBundleDependenceRecord dependence)
         {
-            //if (depdence == null)
-            //    return;
+            if (dependence == null)
+                return;
 
-            //if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
-            //{
-            //    Debug.LogError("AddDepdence Fail,Already Contain Key" + depdence.InstanceID);
-            //    return;
-            //}
-            //mAllDepdenceAssetBundleRecord[depdence.InstanceID] = depdence;
-        }
-        public void ClearAllDepdence()
-        {
-            foreach (var depdence in mAllDepdenceAssetBundleRecord)
+            if (mAllDependenceAssetBundleRecord.ContainsKey(dependence.InstanceID))
             {
-                if (depdence.Value != null)
-                    depdence.Value.ReduceReference();
+                Debug.LogError("AddDependence Fail,Already Contain Key" + dependence.InstanceID);
+                return;
             }
-            mAllDepdenceAssetBundleRecord.Clear();
+
+            mAllDependenceAssetBundleRecord[dependence.InstanceID] = dependence;
         }
-        public void ReduceDepdence(AssetBundleAssetDepdenceRecord depdence)
+
+        public void ClearAllDependence()
         {
-            //if (mAllDepdenceAssetBundleRecord.ContainsKey(depdence.InstanceID))
-            //{
-            //    depdence.ReduceReference();
-            //    mAllDepdenceAssetBundleRecord.Remove(depdence.InstanceID);
-            //    return;
-            //}
-            //Debug.LogError("ReduceDepdence Fail,Not Contain Key" + depdence.InstanceID);
+            foreach (var dependence in mAllDependenceAssetBundleRecord)
+            {
+                dependence.Value?.ReduceReference();
+            }
+
+            mAllDependenceAssetBundleRecord.Clear();
+        }
+
+        public void ReduceDependence(AssetBundleDependenceRecord dependence)
+        {
+            if (mAllDependenceAssetBundleRecord.ContainsKey(dependence.InstanceID))
+            {
+                dependence.ReduceReference();
+                mAllDependenceAssetBundleRecord.Remove(dependence.InstanceID);
+                return;
+            }
+
+            Debug.LogError("ReduceDependence Fail,Not Contain Key" + dependence.InstanceID);
         }
 
         #endregion
 
         #region 加载的资源对当前AssetBundle 依赖
+
         public void AddSubAssetReference(AssetBundleSubAssetLoadRecord record)
         {
             if (mAllBeReferenceAssetRecord.Contains(record.AssetUrl) == false)
@@ -116,20 +128,19 @@ namespace GameFramePro.ResourcesEx
 
         public override void AddReference()
         {
-            Debug.LogError("AssetBundleAssetDepdenceRecord 不需要实现这个接口 AddReference");
+            Debug.LogError("AssetBundleDependenceRecord 不需要实现这个接口 AddReference");
         }
 
         public override void ReduceReference(bool isforceDelete = false)
         {
-            Debug.LogError("AssetBundleAssetDepdenceRecord 不需要实现这个接口 ReduceReference");
+            Debug.LogError("AssetBundleDependenceRecord 不需要实现这个接口 ReduceReference");
         }
 
 
         public override void NotifyReleaseRecord()
         {
-            mAllDepdenceAssetBundleRecord.Clear();
+            mAllDependenceAssetBundleRecord.Clear();
             base.NotifyReleaseRecord();
         }
-
     }
 }

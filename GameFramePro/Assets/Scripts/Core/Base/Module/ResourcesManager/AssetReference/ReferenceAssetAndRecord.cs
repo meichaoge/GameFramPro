@@ -35,16 +35,16 @@ namespace GameFramePro
         #region   编辑器下显示数据
 
 #if UNITY_EDITOR
-        [SerializeField] private ResourcesLoadAssetRecord Debug_ResourcesLoadAssetRecord_Current;
+        [SerializeField] private BaseLoadAssetRecord Debug_ResourcesLoadAssetRecord_Current;
         [SerializeField] private AssetBundleSubAssetLoadRecord Debug_AssetBundleSubAssetLoadRecord_Current;
 
         public void UpdateView()
         {
             if (CurLoadAssetRecord != null)
             {
-                if (CurLoadAssetRecord is ResourcesLoadAssetRecord)
+                if (CurLoadAssetRecord is BaseLoadAssetRecord)
                 {
-                    Debug_ResourcesLoadAssetRecord_Current = CurLoadAssetRecord as ResourcesLoadAssetRecord;
+                    Debug_ResourcesLoadAssetRecord_Current = CurLoadAssetRecord as BaseLoadAssetRecord;
                     Debug_AssetBundleSubAssetLoadRecord_Current = null;
                 }
 
@@ -116,7 +116,7 @@ namespace GameFramePro
                 return this;
             } //第一次赋值
 
-            if (newAssetRecord.CurLoadAssetRecord is ResourcesLoadAssetRecord)
+            if (newAssetRecord.CurLoadAssetRecord is BaseLoadAssetRecord)
                 ModifyToResourcesAsset(component, newAssetRecord, isAuotAddReference);
             else if (newAssetRecord.CurLoadAssetRecord is AssetBundleSubAssetLoadRecord)
                 ModifyToAssetBundleAsset(component, newAssetRecord, isAuotAddReference);
@@ -134,7 +134,7 @@ namespace GameFramePro
         /// <param name="getAssetFromRecordAction"></param>
         protected virtual void ModifyToResourcesAsset<T>(T component, ReferenceAssetAndRecord newAssetRecord, bool isAuotAddReference = true) where T : Component
         {
-            var modifyResourcesRecord = newAssetRecord.CurLoadAssetRecord as ResourcesLoadAssetRecord;
+            var modifyResourcesRecord = newAssetRecord.CurLoadAssetRecord as BaseLoadAssetRecord;
 
             if (CurLoadAssetRecord is AssetBundleSubAssetLoadRecord)
             {
@@ -181,9 +181,9 @@ namespace GameFramePro
         protected virtual void ModifyToAssetBundleAsset<T>(T component, ReferenceAssetAndRecord newAssetRecord, bool isAuotAddReference = true) where T : Component
         {
             var modifyAssetBundleRecord = newAssetRecord.CurLoadAssetRecord as AssetBundleSubAssetLoadRecord;
-            if (CurLoadAssetRecord is ResourcesLoadAssetRecord)
+            if (CurLoadAssetRecord is BaseLoadAssetRecord)
             {
-                var CurResourcesLoadAssetRecord = CurLoadAssetRecord as ResourcesLoadAssetRecord;
+                var CurResourcesLoadAssetRecord = CurLoadAssetRecord as BaseLoadAssetRecord;
 #if UNITY_EDITOR
                 Debug.LogEditorInfor(string.Format(" 物体{0} 上 组件 {1} 从Resouces资源{2}到AssetBundle 资源{3}转换", component.gameObject.name, component.GetType(),
                     CurResourcesLoadAssetRecord.AssetUrl, modifyAssetBundleRecord.AssetUrl));

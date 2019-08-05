@@ -6,88 +6,85 @@ using Object = UnityEngine.Object;
 
 namespace GameFramePro.ResourcesEx
 {
-    /// <summary>
-    /// 专用于从 Resources 加载和管理资源
-    /// </summary>
+    /// <summary> /// 专用于从 Resources 加载和管理资源  /// </summary>
     public class LocalResourcesManager : Single<LocalResourcesManager>, IAssetManager
     {
         #region Data
+
         //key  =assetpath 
-        private Dictionary<string, ResourcesLoadAssetRecord> mAllLoadedAssetRecord = new Dictionary<string, ResourcesLoadAssetRecord>(200); //Cache 所有加载的资源
-                                                                                                                                            //     private Dictionary<int, string> mAllResoucesLoadAssetInstanceIds = new Dictionary<int, string>();
-        private NativeObjectPool<ResourcesLoadAssetRecord> mResourcesLoadAssetRecordPoolMgr;
+        private readonly Dictionary<string, BaseLoadAssetRecord> mAllLoadedAssetRecord = new Dictionary<string, BaseLoadAssetRecord>(200); //Cache 所有加载的资源
+        private NativeObjectPool<BaseLoadAssetRecord> mResourcesLoadAssetRecordPoolMgr;
 #if UNITY_EDITOR
-        public Dictionary<string, ResourcesLoadAssetRecord> Debug_mAllLoadedAssetRecord { get { return mAllLoadedAssetRecord; } }
-        //        public Dictionary<int, string> Debug_mAllResoucesLoadAssetInstanceIds { get { return mAllResoucesLoadAssetInstanceIds; } }
+        public Dictionary<string, BaseLoadAssetRecord> Debug_mAllLoadedAssetRecord
+        {
+            get { return mAllLoadedAssetRecord; }
+        }
 #endif
+
         #endregion
 
 
         protected override void InitialSingleton()
         {
             base.InitialSingleton();
-            InitialedRsourcesLoad();
+            InitialedResourcesLoad();
         }
 
         #region IAssetManager 接口实现
 
-        private void InitialedRsourcesLoad()
+        private void InitialedResourcesLoad()
         {
-            mResourcesLoadAssetRecordPoolMgr = new NativeObjectPool<ResourcesLoadAssetRecord>(50, OnBeforGetResourcesLoadAssetRecord, OnBeforRecycleResourcesLoadAssetRecord);
+            mResourcesLoadAssetRecordPoolMgr = new NativeObjectPool<BaseLoadAssetRecord>(50, OnBeforeGetResourcesLoadAssetRecord, OnBeforeRecycleResourcesLoadAssetRecord);
         }
 
-        private void OnBeforGetResourcesLoadAssetRecord(ResourcesLoadAssetRecord record)
+        private void OnBeforeGetResourcesLoadAssetRecord(BaseLoadAssetRecord record)
         {
-
         }
 
-        private void OnBeforRecycleResourcesLoadAssetRecord(ResourcesLoadAssetRecord record)
+        private void OnBeforeRecycleResourcesLoadAssetRecord(BaseLoadAssetRecord record)
         {
             record.NotifyReleaseRecord(); //回收时候销毁引用
         }
 
 
-
-        public float MaxAliveTimeAfterNoReference { get { return 60; } } //最多存在1分钟
+        public float MaxAliveTimeAfterNoReference
+        {
+            get { return 60; }
+        } //最多存在1分钟
 
         public void NotifyAssetRelease(BaseLoadAssetRecord record)
         {
             if (record == null) return;
-            if (record is ResourcesLoadAssetRecord)
-            {
-                if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
-                    mAllLoadedAssetRecord.Remove(record.AssetUrl);
-                else
-                    Debug.LogError("NotifyAssetRelease Error  不存在这个资源 {0}的记录", record.AssetUrl);
 
-                ResourcesManager.UnLoadResourceAsset(record as ResourcesLoadAssetRecord);
-                return;
-            }
-            Debug.LogError("NotifyAssetRelease Fail,无法处理的类型 " + record.GetType());
+            if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
+                mAllLoadedAssetRecord.Remove(record.AssetUrl);
+            else
+                Debug.LogError("NotifyAssetRelease Error  不存在这个资源 {0}的记录", record.AssetUrl);
+
+            if (record.IsReferenceEnable)
+                record.LoadUnityObjectAssetInfor.ReleaseAsset();
         }
+
         public void NotifyAssetReferenceChange(BaseLoadAssetRecord record)
         {
             if (record == null) return;
-            if (record is ResourcesLoadAssetRecord)
-            {
-                #region 处理Resources 资源加载和释放
-                if (record.ReferenceCount == 0)
-                {
-                    if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
-                        AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record as ResourcesLoadAssetRecord);
-                    else
-                        Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
-                } //资源没有引用时候 释放资源
-                else
-                {
-                    if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl) == false)
-                        mAllLoadedAssetRecord[record.AssetUrl] = record as ResourcesLoadAssetRecord;
-                }
 
-                #endregion
-                return;
+            #region 处理Resources 资源加载和释放
+
+            if (record.ReferenceCount == 0)
+            {
+                if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
+                    AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record );
+                else
+                    Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
+            } //资源没有引用时候 释放资源
+            else
+            {
+                if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl) == false)
+                    mAllLoadedAssetRecord[record.AssetUrl] = record ;
             }
-            Debug.LogError("NotifyAssetReferenceChange Fail,无法处理的类型 " + record.GetType());
+
+            #endregion
         }
 
         #endregion
@@ -95,23 +92,11 @@ namespace GameFramePro.ResourcesEx
 
         #region 加载缓存资源
 
-
-
-        /// <summary>
-        ///  从缓存中加载一个资源 可能返回null(标示没有加载过这个资源，或者这个资源已经被释放了)
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="assetpath"></param>
-        /// <returns></returns>
-        public ResourcesLoadAssetRecord LoadAssetFromCache(string assetpath)
+        /// <summary>///  从缓存中加载一个资源 可能返回null(标示没有加载过这个资源，或者这个资源已经被释放了)/// </summary>
+        public BaseLoadAssetRecord LoadAssetFromCache(string assetpath)
         {
-            ResourcesLoadAssetRecord infor = null;
-            if (mAllLoadedAssetRecord.TryGetValue(assetpath, out infor))
-            {
-                //if (infor != null)
-                //    infor.AddReference();
+            if (mAllLoadedAssetRecord.TryGetValue(assetpath, out var infor))
                 return infor;
-            }
             return null;
         }
 
@@ -120,32 +105,31 @@ namespace GameFramePro.ResourcesEx
         #region 同步& 异步 加载资源 (注意加载路径中不能带有扩展名否则加载失败)
 
         //Resources 同步加载资源
-        public void LoadAssetSync(string assetpath, System.Action<ResourcesLoadAssetRecord> loadCallback)
+        public void LoadAssetSync(string assetpath, System.Action<BaseLoadAssetRecord> loadCallback)
         {
-            ResourcesLoadAssetRecord record = LoadAssetFromCache(assetpath);
-            if (record != null && record.LoadResourceAssetInfor.IsLoadAssetEnable)
+            BaseLoadAssetRecord record = LoadAssetFromCache(assetpath);
+            if (record != null && record.LoadUnityObjectAssetInfor.IsLoadAssetEnable)
             {
-                RecordResourcesLoadAsset(record.LoadResourceAssetInfor); //当 asset==null 时候记录返回 
-                if (loadCallback != null)
-                    loadCallback(record);
+                RecordResourcesLoadAsset(record.LoadUnityObjectAssetInfor); //当 asset==null 时候记录返回 
+                loadCallback?.Invoke(record);
                 return;
             }
+
             Object asset = Resources.Load<UnityEngine.Object>(assetpath.GetPathWithOutExtension());
             if (asset == null)
                 Debug.LogError(string.Format("LoadResourcesAssetSync Fail,AssetPath={0}  not exit", assetpath));
 
-            ResourceLoadUnityAssetInfor assetInfor = new ResourceLoadUnityAssetInfor(assetpath, asset);
+            var assetInfor = new BaseLoadUnityAssetInfor(assetpath, asset, LoadedAssetTypeEnum.Resources_UnKnown);
             record = RecordResourcesLoadAsset(assetInfor); //当 asset==null 时候记录返回 
-
-            if (loadCallback != null)
-                loadCallback(record);
+            loadCallback?.Invoke(record);
         }
-        public ResourcesLoadAssetRecord LoadAssetSync(string assetpath)
+
+        public BaseLoadAssetRecord LoadAssetSync(string assetpath)
         {
-            ResourcesLoadAssetRecord record = LoadAssetFromCache(assetpath);
+            BaseLoadAssetRecord record = LoadAssetFromCache(assetpath);
             if (record != null && record.LoadUnityObjectAssetInfor.IsLoadAssetEnable)
             {
-                record = RecordResourcesLoadAsset(record.LoadResourceAssetInfor); //当 asset==null 时候记录返回 
+                record = RecordResourcesLoadAsset(record.LoadUnityObjectAssetInfor); //当 asset==null 时候记录返回 
                 return record;
             }
 
@@ -158,21 +142,20 @@ namespace GameFramePro.ResourcesEx
                 return null;
             }
 
-            ResourceLoadUnityAssetInfor assetInfor = new ResourceLoadUnityAssetInfor(assetpath, asset);
+            var assetInfor = new BaseLoadUnityAssetInfor(assetpath, asset, LoadedAssetTypeEnum.Resources_UnKnown);
             record = RecordResourcesLoadAsset(assetInfor); //当 asset==null 时候记录返回 
             return record;
         }
 
 
         //Resources 异步加载资源
-        public void ResourcesLoadAssetAsync(string assetpath, System.Action<ResourcesLoadAssetRecord> loadCallback, System.Action<string, float> procressCallback)
+        public void ResourcesLoadAssetAsync(string assetpath, System.Action<BaseLoadAssetRecord> loadCallback, System.Action<string, float> procressCallback)
         {
-            ResourcesLoadAssetRecord assetRecord = LoadAssetFromCache(assetpath);
+            BaseLoadAssetRecord assetRecord = LoadAssetFromCache(assetpath);
             if (assetRecord != null && assetRecord.LoadUnityObjectAssetInfor.IsLoadAssetEnable)
             {
-                assetRecord = RecordResourcesLoadAsset(assetRecord.LoadResourceAssetInfor); //当 asset==null 时候记录返回 
-                if (loadCallback != null)
-                    loadCallback(assetRecord);
+                assetRecord = RecordResourcesLoadAsset(assetRecord.LoadUnityObjectAssetInfor); //当 asset==null 时候记录返回 
+                loadCallback?.Invoke(assetRecord);
                 return;
             }
 
@@ -180,51 +163,44 @@ namespace GameFramePro.ResourcesEx
             ResourceRequest request = Resources.LoadAsync(assetpath.GetPathWithOutExtension());
             if (procressCallback != null)
             {
-                AsyncManager.S_Instance.StartAsyncOperation(request as AsyncOperation, (async) =>
+                AsyncManager.S_Instance.StartAsyncOperation(request, (async) =>
                 {
-                    assetRecord = RecordResourcesLoadAsset(new ResourceLoadUnityAssetInfor(assetpath, (async as ResourceRequest).asset)); //当 asset==null 时候记录返回 
-                    if (loadCallback != null)
-                        loadCallback.Invoke(assetRecord);
+                    assetRecord = RecordResourcesLoadAsset(new BaseLoadUnityAssetInfor(assetpath, (async as ResourceRequest).asset, LoadedAssetTypeEnum.Resources_UnKnown)); //当 asset==null 时候记录返回 
+                    loadCallback?.Invoke(assetRecord);
                 }, (procress) =>
                 {
                     if (procressCallback != null)
                         procressCallback(assetpath, procress);
                 });
-            }//返回加载进度
+            } //返回加载进度
             else
             {
-                AsyncManager.S_Instance.StartAsyncOperation(request as AsyncOperation, (async) =>
+                AsyncManager.S_Instance.StartAsyncOperation(request, completeCallback: (async) =>
                 {
-                    assetRecord = RecordResourcesLoadAsset(new ResourceLoadUnityAssetInfor(assetpath, (async as ResourceRequest).asset)); //当 asset==null 时候记录返回 
-                    if (loadCallback != null)
-                        loadCallback.Invoke(assetRecord);
+                    assetRecord = RecordResourcesLoadAsset(new BaseLoadUnityAssetInfor(assetpath, (async as ResourceRequest).asset, LoadedAssetTypeEnum.Resources_UnKnown)); //当 asset==null 时候记录返回 
+                    loadCallback?.Invoke(assetRecord);
                 }, null);
-            }//不考虑加载进度
+            } //不考虑加载进度
         }
+
         #endregion
 
         #region 辅助记录
 
-        /// <summary>
-        /// / 记录加载的资源
-        /// </summary>
-        /// <param name="loadAssetInfor"></param>
-        /// <returns></returns>
-        public ResourcesLoadAssetRecord RecordResourcesLoadAsset(ResourceLoadUnityAssetInfor loadAssetInfor)
+        /// <summary>/// / 记录加载的资源/// </summary>
+        public BaseLoadAssetRecord RecordResourcesLoadAsset(BaseLoadUnityAssetInfor loadAssetInfor)
         {
             if (loadAssetInfor == null)
                 return null;
-            ResourcesLoadAssetRecord infor = null;
-            if (mAllLoadedAssetRecord.TryGetValue(loadAssetInfor.AssetUrl, out infor))
+            if (mAllLoadedAssetRecord.TryGetValue(loadAssetInfor.AssetUrl, out var infor))
             {
-                if (infor.LoadResourceAssetInfor.IsEqual(loadAssetInfor))
-                {
+                if (infor.LoadUnityObjectAssetInfor.IsEqual(loadAssetInfor))
                     return infor;
-                }
                 Debug.LogError(string.Format("RecordLoadAsset Fail,Already Exit Asset at path={0} Not Equal", loadAssetInfor.AssetUrl));
                 return infor;
             }
-            infor = AssetDelayDeleteManager.TryGetILoadAssetRecord(loadAssetInfor.AssetUrl) as ResourcesLoadAssetRecord;
+
+            infor = AssetDelayDeleteManager.TryGetILoadAssetRecord(loadAssetInfor.AssetUrl);
             if (infor == null)
                 infor = mResourcesLoadAssetRecordPoolMgr.GetItemFromPool();
 
@@ -233,12 +209,8 @@ namespace GameFramePro.ResourcesEx
             return infor;
         }
 
-        /// <summary>
-        /// 减少对象的引用 如果 isforceDelete =true,则会强制删除这个对象
-        /// </summary>
-        /// <param name="asset"></param>
-        /// <param name="isforceDelete"></param>
-        public void UnRecordResourcesLoadAsset(ResourceLoadUnityAssetInfor loadAssetInfor, bool isforceDelete)
+        /// <summary>/// 减少对象的引用 如果 isforceDelete =true,则会强制删除这个对象/// </summary>
+        public void UnRecordResourcesLoadAsset(BaseLoadUnityAssetInfor loadAssetInfor, bool isforceDelete)
         {
             if (loadAssetInfor == null || loadAssetInfor.IsLoadAssetEnable == false)
                 return;
@@ -246,7 +218,7 @@ namespace GameFramePro.ResourcesEx
             string assetpath = string.Empty;
             foreach (var item in mAllLoadedAssetRecord)
             {
-                if (item.Value.LoadResourceAssetInfor.IsEqual(loadAssetInfor))
+                if (item.Value.LoadUnityObjectAssetInfor.IsEqual(loadAssetInfor))
                 {
                     assetpath = item.Key;
                     break;
@@ -263,14 +235,6 @@ namespace GameFramePro.ResourcesEx
             Debug.LogError(string.Format("UnRecordLoadAsset Fail,Not Exit asset={0}", loadAssetInfor.AssetUrl));
         }
 
-
-
-
-
-
-
         #endregion
-
-
     }
 }
