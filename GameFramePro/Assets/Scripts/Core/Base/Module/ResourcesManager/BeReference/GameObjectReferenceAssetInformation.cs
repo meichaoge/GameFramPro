@@ -19,7 +19,7 @@ namespace GameFramePro
         private class ComponentReferenceAsset
         {
             public Component mTargetComponent;
-            public List<ReferenceAssetAndRecord> mReferenceAssetRecords = new List<ReferenceAssetAndRecord>(3);
+            public List<BaseBeReferenceInformation> mReferenceAssetRecords = new List<BaseBeReferenceInformation>(3);
         }
 
         [SerializeField] private List<ComponentReferenceAsset> Debug_AllComponentsReferenceAssets = new List<ComponentReferenceAsset>(5);
@@ -31,10 +31,10 @@ namespace GameFramePro
             {
                 ComponentReferenceAsset componentReference = new ComponentReferenceAsset();
                 componentReference.mTargetComponent = componentsReferenceAsset.Key;
-                foreach (var Reference in componentsReferenceAsset.Value)
+                foreach (var reference in componentsReferenceAsset.Value)
                 {
-                    Reference.UpdateView();
-                    componentReference.mReferenceAssetRecords.Add(Reference);
+                    reference.UpdateDebugView();
+                    componentReference.mReferenceAssetRecords.Add(reference);
                 }
 
                 Debug_AllComponentsReferenceAssets.Add(componentReference);
@@ -44,14 +44,15 @@ namespace GameFramePro
         #endregion
 
 
-        /// <summary>/// 所有组件 引用的资源/// </summary>
-        private readonly Dictionary<Component, List<ReferenceAssetAndRecord>> mAllComponentsReferenceAssets = new Dictionary<Component, List<ReferenceAssetAndRecord>>();
+        #region 重写扩展
 
+        /// <summary>/// 所有组件 引用的资源/// </summary>
+        private readonly Dictionary<Component, List<BaseBeReferenceInformation>> mAllComponentsReferenceAssets = new Dictionary<Component, List<BaseBeReferenceInformation>>();
 
         #region 对外接口
 
         /// <summary>/// 获得指定的组件的引用资源信息/// </summary>
-        public ReferenceAssetAndRecord GetComponentReference(Component targetComponent, GetCurComponentReferenceHandler referenceHandler, bool isForceCreateInstance, params object[] otherParameter)
+        public BaseBeReferenceInformation GetComponentReference(Component targetComponent, GetCurComponentReferenceHandler referenceHandler, bool isForceCreateInstance, params object[] otherParameter)
         {
             if (targetComponent == null)
             {
@@ -83,7 +84,7 @@ namespace GameFramePro
 
         /// <summary>/// 记录指定的组件的引用资源请求 /// </summary>
         /// <param name="isAuotAddReference">默认=true,标示对否在调用这个方法时候 组件已经引用了这个资源，如果不是自动关联资源的，请设置为false并在真正使用的时候添加引用</param>
-        public void AddObjectComponentReference(Component targetComponent, ReferenceAssetAndRecord referenceRecord, bool isAutoAddReference = true)
+        public void AddObjectComponentReference(Component targetComponent, BaseBeReferenceInformation referenceRecord, bool isAutoAddReference = true)
         {
             if (targetComponent == null || referenceRecord == null)
             {
@@ -93,13 +94,13 @@ namespace GameFramePro
 
             if (mAllComponentsReferenceAssets.TryGetValue(targetComponent, out var componentReferences) == false)
             {
-                componentReferences = new List<ReferenceAssetAndRecord>();
+                componentReferences = new List<BaseBeReferenceInformation>();
                 if (isAutoAddReference)
                     referenceRecord.AddReference();
                 componentReferences.Add(referenceRecord);
                 mAllComponentsReferenceAssets[targetComponent] = componentReferences;
 #if UNITY_EDITOR
-                Debug.LogInfor("不包含对象 {0} 的 组价{1} 引用资源记录", gameObject.name, targetComponent);
+                Debug.LogInfor($"不包含对象 {gameObject.name} 的 组价{targetComponent} 引用资源记录");
 #endif
                 return;
             }
@@ -108,13 +109,13 @@ namespace GameFramePro
             for (int dex = componentReferences.Count - 1; dex >= 0; --dex)
             {
                 var reference = componentReferences[dex];
-                if (reference.IsReferenceEnable == false)
+                if (reference.IsReferenceAssetEnable == false)
                 {
                     componentReferences.RemoveAt(dex);
                     continue;
                 }
 
-                if (reference.CurLoadAssetRecord.AssetUrl == referenceRecord.CurLoadAssetRecord.AssetUrl && reference.BeReferenceAsset.IsReferenceEqual(referenceRecord))
+                if (reference.IsReferenceEqual(referenceRecord))
                 {
                     if (isAutoAddReference)
                         reference.AddReference();
@@ -128,7 +129,7 @@ namespace GameFramePro
         }
 
         /// <summary>/// 释放一个组件所有的资源引用/// </summary>
-        public void RemoveObjectComponentReference(Component targetComponent, ReferenceAssetAndRecord referenceRecord)
+        public void RemoveObjectComponentReference(Component targetComponent, BaseBeReferenceInformation referenceRecord)
         {
             if (targetComponent == null || referenceRecord == null)
             {
@@ -148,7 +149,7 @@ namespace GameFramePro
             {
                 var reference = componentReferences[dex];
 
-                if (reference.IsReferenceEnable == false)
+                if (reference.IsReferenceAssetEnable == false)
                 {
                     componentReferences.RemoveAt(dex);
                     continue;
@@ -179,10 +180,7 @@ namespace GameFramePro
             }
 
             foreach (var reference in componentReferences)
-            {
-                if (reference != null)
-                    reference.ReduceReference();
-            }
+                reference?.ReduceReference();
 
             componentReferences.Clear();
             mAllComponentsReferenceAssets.Remove(targetComponent);
@@ -200,6 +198,8 @@ namespace GameFramePro
 
             mAllComponentsReferenceAssets.Clear();
         }
+
+        #endregion
 
         #endregion
     }

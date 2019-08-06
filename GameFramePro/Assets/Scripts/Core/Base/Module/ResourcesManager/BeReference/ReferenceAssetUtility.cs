@@ -25,9 +25,9 @@ namespace GameFramePro
                 assetInfor = targetObject  .GetComponent<GameObjectReferenceAssetInformation>();
                 if (assetInfor == null)
                 {
-#if UNITY_EDITOR
-                    Debug.LogEditorError($"当前组件 {targetObject} 的对象{targetObject.name} 没有引用其他加载的资源");
-#endif
+//#if UNITY_EDITOR
+//                    Debug.LogEditorError($"当前组件 {targetObject} 的对象{targetObject.name} 没有引用其他加载的资源");
+//#endif
                     return;
                 }
 
@@ -63,7 +63,7 @@ namespace GameFramePro
 
             assetInfor.RemoveObjectComponentReference(targetComponent);
         }
-        public static void ReleaseComponentReference(Component targetComponent, ReferenceAssetAndRecord referenceRecord)
+        public static void ReleaseComponentReference(Component targetComponent, BaseBeReferenceInformation referenceRecord)
         {
             if (targetComponent == null || referenceRecord == null)
             {
@@ -93,7 +93,7 @@ namespace GameFramePro
         
         /// <summary>/// 记录指定的组件的引用资源请求 /// </summary>
         /// <param name="isAuotAddReference">默认=true,标示对否在调用这个方法时候 组件已经引用了这个资源，如果不是自动关联资源的，请设置为false并在真正使用的时候添加引用</param>
-        public static void AddObjectComponentReference(Component targetComponent, ReferenceAssetAndRecord referenceRecord, bool isAutoAttachReferenceAsset = true)
+        public static void AddObjectComponentReference(Component targetComponent, BaseBeReferenceInformation referenceRecord, bool isAutoAttachReferenceAsset = true)
         {
             if (targetComponent == null || referenceRecord == null)
             {
@@ -118,7 +118,7 @@ namespace GameFramePro
             assetInfor.AddObjectComponentReference(targetComponent,referenceRecord,isAutoAttachReferenceAsset);
         }
 
-        public static ReferenceAssetAndRecord GetComponentReference(Component targetComponent, GetCurComponentReferenceHandler referenceHandler,bool isForceCreateInstance, params object[] otherParameter)
+        public static BaseBeReferenceInformation GetComponentReference(Component targetComponent, GetCurComponentReferenceHandler referenceHandler,bool isForceCreateInstance, params object[] otherParameter)
         {
             if (targetComponent == null )
             {
@@ -131,9 +131,9 @@ namespace GameFramePro
                 assetInfor = targetComponent.gameObject.GetComponent<GameObjectReferenceAssetInformation>();
                 if (assetInfor == null)
                 {
-#if UNITY_EDITOR
-                    Debug.LogEditorError($"当前组件 {targetComponent} 的对象{targetComponent.gameObject.name} 没有引用其他加载的资源");
-#endif
+//#if UNITY_EDITOR
+//                    Debug.LogEditorError($"当前组件 {targetComponent} 的对象{targetComponent.gameObject.name} 没有引用其他加载的资源");
+//#endif
                     return null;
                 }
                 mAllCacheComponentReferenceAssetInfors[targetComponent] = assetInfor;

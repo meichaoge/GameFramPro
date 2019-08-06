@@ -15,11 +15,12 @@ public class Debug_ShowAllReference : MonoBehaviour
         public GameObject mGameObject;
         public List<ComponentAssetReferenceInfor> mAllComponents = new List<ComponentAssetReferenceInfor>();
     }
+
     [System.Serializable]
     public class ComponentAssetReferenceInfor
     {
         public Component mComponent;
-        public List<ReferenceAssetAndRecord> mAllReference = new List<ReferenceAssetAndRecord>();
+        public List<BaseBeReferenceInformation> mAllReference = new List<BaseBeReferenceInformation>();
     }
 
 

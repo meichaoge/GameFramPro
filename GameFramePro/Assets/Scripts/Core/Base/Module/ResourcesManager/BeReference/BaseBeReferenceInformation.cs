@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using GameFramePro.ResourcesEx;
 using UnityEngine.UI;
-
 
 namespace GameFramePro
 {
@@ -12,41 +9,37 @@ namespace GameFramePro
     [System.Serializable]
     public class BaseBeReferenceInformation
     {
-        /// <summary>///  被引用的资源的类型/// </summary>
-        public Type ReferenceAssetType; // { get; protected set; }
+        #region 编辑器显示
 
-        //被引用的次数
-        public int ReferenceCount = 0; // { get; protected set; }
+#if UNITY_EDITOR
+        [SerializeField] protected LoadAssetAssetRecord Debug_ParentReferenceAssetRecord;
+        [SerializeField] protected string Debug_ReferenceAssetType;
+        [SerializeField] protected int Debug_ReferenceCount;
+        [SerializeField] protected UnityEngine.Object Debug_mReferenceAsset;
 
-        //对外提供访问接口
-        protected UnityEngine.Object mReferenceAsset = null;
-
-        protected LoadAssetAssetRecord referenceAssetRecord { get; private set; } //源资源的记录
-
-
-        #region 构造函数
-
-        public BaseBeReferenceInformation()
+        public void UpdateDebugView()
         {
+            Debug_ParentReferenceAssetRecord = ParentReferenceAssetRecord;
+            Debug_ReferenceAssetType = ReferenceAssetType.Name;
+            Debug_mReferenceAsset = mReferenceAsset;
+            Debug_ReferenceCount = ReferenceCount;
         }
 
-        // 被真正引用的资源 可能是CurLoadAssetRecord 中资源的某个组件或者实例化的对象
-        public BaseBeReferenceInformation(UnityEngine.Object asset, Type referenceType, LoadAssetAssetRecord assetRecord)
-        {
-            InitialedBeReferenceInformation(asset, referenceType, assetRecord);
-        }
-
-        public void InitialedBeReferenceInformation(UnityEngine.Object asset, Type referenceType, LoadAssetAssetRecord assetRecord)
-        {
-            ReferenceAssetType = referenceType;
-            mReferenceAsset = asset;
-            referenceAssetRecord = assetRecord;
-        }
+#endif
 
         #endregion
 
-        #region 状态判断接口
 
+        /// <summary>///  被引用的资源的类型/// </summary>
+        public Type ReferenceAssetType { get; protected set; }
+
+        //被引用的次数
+        public int ReferenceCount { get; protected set; } = 0;
+
+        //对外只 提供访问接口
+        protected UnityEngine.Object mReferenceAsset = null;
+
+        /// <summary>/// 标示引用的资源是否有效/// </summary>
         public virtual bool IsReferenceAssetEnable
         {
             get { return mReferenceAsset != null; }
@@ -56,6 +49,43 @@ namespace GameFramePro
         {
             get { return IsReferenceAssetEnable ? mReferenceAsset.name : string.Empty; }
         }
+
+        public LoadAssetAssetRecord ParentReferenceAssetRecord { get; set; } //源资源的记录 (用于通知父级的)
+
+
+        #region 构造函数
+
+        public BaseBeReferenceInformation()
+        {
+        }
+
+
+        public BaseBeReferenceInformation(BaseBeReferenceInformation sources)
+        {
+            if (sources != null)
+                InitialedBeReferenceInformation(sources.mReferenceAsset, sources.ReferenceAssetType, sources.ParentReferenceAssetRecord);
+        }
+
+        // 被真正引用的资源 可能是CurLoadAssetRecord 中资源的某个组件或者实例化的对象
+        public BaseBeReferenceInformation(UnityEngine.Object asset, Type referenceType, LoadAssetAssetRecord assetRecord)
+        {
+            InitialedBeReferenceInformation(asset, referenceType, assetRecord);
+        }
+
+
+        public void InitialedBeReferenceInformation(UnityEngine.Object asset, Type referenceType, LoadAssetAssetRecord assetRecord)
+        {
+            ReferenceAssetType = referenceType;
+            mReferenceAsset = asset;
+            ParentReferenceAssetRecord = assetRecord;
+
+            if (ParentReferenceAssetRecord == null)
+                Debug.LogError("当前资源引用的源资源为null");
+        }
+
+        #endregion
+
+        #region 状态判断接口
 
         public bool IsNameEqual(string goName)
         {
@@ -71,12 +101,12 @@ namespace GameFramePro
             return mReferenceAsset.Equals(asset);
         }
 
-        public virtual bool IsReferenceEqual(ReferenceAssetAndRecord reference)
+        public virtual bool IsReferenceEqual(BaseBeReferenceInformation reference)
         {
             if (reference == null) return false;
             if (IsReferenceAssetEnable == false) return false;
-            if (reference.BeReferenceAsset.IsReferenceAssetEnable == false) return false;
-            return mReferenceAsset.Equals(reference.BeReferenceAsset.mReferenceAsset);
+            if (reference.IsReferenceAssetEnable == false) return false;
+            return mReferenceAsset.Equals(reference.mReferenceAsset);
         }
 
         #endregion
@@ -93,6 +123,7 @@ namespace GameFramePro
             }
 
             ++ReferenceCount;
+            ParentReferenceAssetRecord.AddBeReferenceInformation(this);
         }
 
         //减少引用
@@ -108,6 +139,14 @@ namespace GameFramePro
             if (isForceDelete)
                 ReferenceCount = 0;
 
+            if (ParentReferenceAssetRecord != null)
+                ParentReferenceAssetRecord.ReduceBeReferenceInformation(this);
+#if UNITY_EDITOR
+            else
+            {
+                Debug.LogError("SetAudioClip Fail,referenceAssetRecord 没有赋值");
+            }
+#endif
             if (ReferenceCount <= 0)
                 ReleaseReference();
         }
@@ -124,10 +163,7 @@ namespace GameFramePro
 
         #region 资源修改接口
 
-        /// <summary>
-        /// 重新定义对象名
-        /// </summary>
-        /// <param name="newGameObjectName"></param>
+        /// <summary>/// 重新定义对象名/// </summary>
         public void ModifyGameObjectName(string newGameObjectName)
         {
             if (IsReferenceAssetEnable == false) return;
@@ -143,16 +179,7 @@ namespace GameFramePro
             if (IsReferenceAssetEnable == false) return;
             if (mReferenceAsset is AudioClip)
             {
-                audioSource.clip = mReferenceAsset as AudioClip;
-                AddReference();
-                if (referenceAssetRecord != null)
-                    referenceAssetRecord.AddReference();
-                else
-                {
-#if UNITY_EDITOR
-                    Debug.LogError("SetAudioClip Fail,referenceAssetRecioRecord 没有赋值");
-#endif
-                }
+                ResourcesManager.SettAudioClipFromRecord(audioSource, this);
             }
         }
 
@@ -162,16 +189,7 @@ namespace GameFramePro
             if (IsReferenceAssetEnable == false) return;
             if (mReferenceAsset is Sprite)
             {
-                targetImage.sprite = mReferenceAsset as Sprite;
-                AddReference();
-                if (referenceAssetRecord != null)
-                    referenceAssetRecord.AddReference();
-                else
-                {
-#if UNITY_EDITOR
-                    Debug.LogError("SetAudioClip Fail,referenceAssetRecord 没有赋值");
-#endif
-                }
+                ResourcesManager.SetImageSpriteFromRecord(targetImage, this);
             }
         }
 

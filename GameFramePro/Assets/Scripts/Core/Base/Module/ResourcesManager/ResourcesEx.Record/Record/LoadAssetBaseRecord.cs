@@ -62,11 +62,6 @@ namespace GameFramePro.ResourcesEx
             get { return true; }
         }
 
-        /// <summary>/// 判断参数值指定的两个资源是否相同/// </summary>
-        public virtual bool isReferenceEqual(LoadAssetBaseRecord record)
-        {
-            return false;
-        }
 
         protected virtual int InstanceID
         {

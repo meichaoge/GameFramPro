@@ -12,7 +12,7 @@ namespace GameFramePro.ResourcesEx
 #endif
     public sealed class LoadBasicAssetInfor
     {
-        /// <summary>/// 唯一标示一个资源的，通常赋值为加载这个资源时候使用的相对路径(相对于Resouces 目录)/// </summary>
+        /// <summary>/// 唯一标示一个资源的，通常赋值为加载这个资源时候使用的相对路径(相对于Resources 目录)/// </summary>
         public string AssetUrl { get; protected set; }
 
         public int InstanceID

@@ -293,36 +293,52 @@ namespace GameFramePro
         }
 
         /// <summary>/// 真实的赋值操作， 根据资源加载图片精灵  .isAutoAttachReferenceAsset=true标示默认关联指定的图片资源；isForceCreateInstance=false 则标示 优先引用已经存在的引用资源/// </summary>
-        private static BaseBeReferenceInformation SetImageSpriteFromRecord(Image targetImage, LoadAssetAssetRecord assetRecord, bool isAutoAttachReferenceAsset = true, bool isForceCreateInstance = false)
+        public static BaseBeReferenceInformation SetImageSpriteFromRecord(Image targetImage, LoadAssetAssetRecord assetRecord, bool isAutoAttachReferenceAsset = true, bool isForceCreateInstance = false)
         {
             var curReference = ReferenceAssetUtility.GetComponentReference(targetImage, FindAssetReferenceUtility.GetSpriteAssetReference, isForceCreateInstance);
+            if (curReference != null)
+            {
+                if (isAutoAttachReferenceAsset)
+                    ReferenceAssetUtility.ReleaseComponentReference(targetImage, curReference); //释放当前引用资源 以及删除对象引用记录
+            }
+
+
             if (assetRecord == null)
             {
-                if (curReference != null)
-                    ReferenceAssetUtility.ReleaseComponentReference(targetImage, curReference);
-
                 if (isAutoAttachReferenceAsset)
                     targetImage.sprite = null;
                 return null;
             }
 
-            if (curReference != null && curReference.CurLoadAssetRecord.isReferenceEqual(assetRecord))
-                return null;
             Sprite sp = assetRecord.LoadBasicObjectAssetInfor.LoadSpriteFromSpriteRender();
             BaseBeReferenceInformation baseBeReferenceInformation = new BaseBeReferenceInformation(sp, typeof(Sprite), assetRecord);
-
-            ReferenceAssetAndRecord newReference = new ReferenceAssetAndRecord(assetRecord, baseBeReferenceInformation);
-
-            if (curReference != null)
-                curReference.ModifyComponentReference(targetImage, newReference);
-            else
-                ReferenceAssetUtility.AddObjectComponentReference(targetImage, newReference, isAutoAttachReferenceAsset);
+            ReferenceAssetUtility.AddObjectComponentReference(targetImage, baseBeReferenceInformation, isAutoAttachReferenceAsset);
 
             if (isAutoAttachReferenceAsset)
                 targetImage.sprite = sp;
             return baseBeReferenceInformation;
         }
 
+        public static BaseBeReferenceInformation SetImageSpriteFromRecord(Image targetImage, BaseBeReferenceInformation newRerenceInformation)
+        {
+            var curReference = ReferenceAssetUtility.GetComponentReference(targetImage, FindAssetReferenceUtility.GetSpriteAssetReference, false);
+            if (curReference != null)
+                ReferenceAssetUtility.ReleaseComponentReference(targetImage, curReference); //释放当前引用资源 以及删除对象引用记录
+
+
+            if (newRerenceInformation == null || newRerenceInformation.IsReferenceAssetEnable == false)
+            {
+                targetImage.sprite = null;
+                return null;
+            }
+
+            Sprite sp = newRerenceInformation.ParentReferenceAssetRecord.LoadBasicObjectAssetInfor.LoadSpriteFromSpriteRender();
+            BaseBeReferenceInformation baseBeReferenceInformation = new BaseBeReferenceInformation(newRerenceInformation);
+            ReferenceAssetUtility.AddObjectComponentReference(targetImage, baseBeReferenceInformation, true);
+
+            targetImage.sprite = sp;
+            return baseBeReferenceInformation;
+        }
 
         /// <summary>/// 从 fromImage 上获取引用的的资源克隆到 toImage/// </summary>
         public static BaseBeReferenceInformation CloneImageSprite(Image fromImage, Image toImage, bool isAutoAttachReferenceAsset = true)
@@ -330,7 +346,15 @@ namespace GameFramePro
             var fromsourceReference = ReferenceAssetUtility.GetComponentReference(fromImage, FindAssetReferenceUtility.GetSpriteAssetReference, false);
             var totargetReference = ReferenceAssetUtility.GetComponentReference(toImage, FindAssetReferenceUtility.GetSpriteAssetReference, false);
 
-            if (fromsourceReference == null || fromsourceReference.IsReferenceEnable == false)
+
+            if (totargetReference != null)
+            {
+                if (isAutoAttachReferenceAsset)
+                    ReferenceAssetUtility.ReleaseComponentReference(toImage, totargetReference); //释放当前引用资源 以及删除对象引用记录
+            }
+
+
+            if (fromsourceReference == null || fromsourceReference.IsReferenceAssetEnable == false)
             {
                 if (isAutoAttachReferenceAsset)
                 {
@@ -342,16 +366,14 @@ namespace GameFramePro
                 return null;
             }
 
-            if (isAutoAttachReferenceAsset)
-            {
-                if (totargetReference != null)
-                    totargetReference.ModifyComponentReference(toImage, fromsourceReference);
-                else
-                    ReferenceAssetUtility.AddObjectComponentReference(toImage, fromsourceReference, isAutoAttachReferenceAsset);
-                toImage.sprite = fromsourceReference.CurLoadAssetRecord.LoadBasicObjectAssetInfor.LoadSpriteFromSpriteRender();
-            }
+            //注意这里第二个参数是创建一个新的对象 而不是直接使用源对象，避免由于源对象设置为null 导致的异常
+            BaseBeReferenceInformation newBeReferenceInformation = new BaseBeReferenceInformation(fromsourceReference);
+            ReferenceAssetUtility.AddObjectComponentReference(toImage, newBeReferenceInformation, isAutoAttachReferenceAsset);
 
-            return fromsourceReference.BeReferenceAsset;
+            if (isAutoAttachReferenceAsset)
+                toImage.sprite = fromImage.sprite;
+
+            return newBeReferenceInformation;
         }
 
         #endregion
@@ -386,11 +408,14 @@ namespace GameFramePro
             }
         }
 
-        //内部操作  根据给定的路径 实例化一个对象在 指定的父节点上/
+        /// <summary>/// 内部操作  根据给定的路径 实例化一个对象在 指定的父节点上/// </summary>
         private static BaseBeReferenceGameObjectInformation InstantiateGameObjectFromRecord(Transform targetParent, LoadAssetAssetRecord assetRecord, bool isForceCreateInstance)
         {
-            if (assetRecord == null)
+            if (assetRecord == null || assetRecord.IsReferenceEnable == false)
+            {
+                Debug.LogError("InstantiateGameObjectFromRecord 失败 ，参数不可用");
                 return null;
+            }
 
             var curReference = ReferenceAssetUtility.GetComponentReference(targetParent, FindAssetReferenceUtility.GetGameObjectFromAssetReference, isForceCreateInstance, assetRecord.AssetUrl);
 
@@ -400,8 +425,7 @@ namespace GameFramePro
             GameObject go = assetRecord.LoadBasicObjectAssetInfor.InstantiateInstance(targetParent);
             var referenceAssetInfor = new BaseBeReferenceGameObjectInformation(go, typeof(GameObject), assetRecord);
 
-            var newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
-            ReferenceAssetUtility.AddObjectComponentReference(targetParent, newReference);
+            ReferenceAssetUtility.AddObjectComponentReference(targetParent, referenceAssetInfor, true);
 
             return referenceAssetInfor;
         }
@@ -418,26 +442,26 @@ namespace GameFramePro
             return GetAudioClipFromRecord(targetAudioSources, LoadAssetSync(assetPath), isAutoAttachReferenceAsset, isForceCreateInstance);
         }
 
-        private static BaseBeReferenceInformation GetAudioClipFromRecord(AudioSource targetAudioSources, LoadAssetAssetRecord assetRecord, bool isAutoAttachReferenceAsset, bool isForceCreateInstance = false)
+        public static BaseBeReferenceInformation GetAudioClipFromRecord(AudioSource targetAudioSources, LoadAssetAssetRecord assetRecord, bool isAutoAttachReferenceAsset, bool isForceCreateInstance = false)
         {
             var curReference = ReferenceAssetUtility.GetComponentReference(targetAudioSources, FindAssetReferenceUtility.GetSAudioClipAssetReference, isForceCreateInstance);
+            if (curReference != null)
+            {
+                if (isAutoAttachReferenceAsset)
+                    ReferenceAssetUtility.ReleaseComponentReference(targetAudioSources, curReference);
+            }
+
             if (assetRecord == null)
             {
-                if (curReference != null)
-                    ReferenceAssetUtility.ReleaseComponentReference(targetAudioSources, curReference);
+                if (isAutoAttachReferenceAsset)
+                    targetAudioSources.clip = null;
                 return null;
             }
 
-            if (curReference != null && curReference.CurLoadAssetRecord.isReferenceEqual(assetRecord))
-                return null;
             var clip = assetRecord.LoadBasicObjectAssetInfor.LoadAudioClip();
             var referenceAssetInfor = new BaseBeReferenceInformation(clip, typeof(AudioClip), assetRecord);
-            var newReference = new ReferenceAssetAndRecord(assetRecord, referenceAssetInfor);
 
-            if (curReference != null)
-                curReference.ModifyComponentReference(targetAudioSources, newReference);
-            else
-                ReferenceAssetUtility.AddObjectComponentReference(targetAudioSources, newReference, isAutoAttachReferenceAsset);
+            ReferenceAssetUtility.AddObjectComponentReference(targetAudioSources, referenceAssetInfor, isAutoAttachReferenceAsset);
 
             if (isAutoAttachReferenceAsset)
                 targetAudioSources.clip = clip;
@@ -445,9 +469,29 @@ namespace GameFramePro
             return referenceAssetInfor;
         }
 
+        public static BaseBeReferenceInformation SettAudioClipFromRecord(AudioSource targetAudioSources, BaseBeReferenceInformation references)
+        {
+            var curReference = ReferenceAssetUtility.GetComponentReference(targetAudioSources, FindAssetReferenceUtility.GetSAudioClipAssetReference, false);
+            if (curReference != null)
+                ReferenceAssetUtility.ReleaseComponentReference(targetAudioSources, curReference);
+
+            if (references == null || references.IsReferenceAssetEnable == false)
+            {
+                targetAudioSources.clip = null;
+                return null;
+            }
+
+            var clip = references.ParentReferenceAssetRecord.LoadBasicObjectAssetInfor.LoadAudioClip();
+            var referenceAssetInfor = new BaseBeReferenceInformation(references);
+
+            ReferenceAssetUtility.AddObjectComponentReference(targetAudioSources, referenceAssetInfor, true);
+
+            targetAudioSources.clip = clip;
+            return referenceAssetInfor;
+        }
+
         #endregion
 
         #endregion
-        
     }
 }
