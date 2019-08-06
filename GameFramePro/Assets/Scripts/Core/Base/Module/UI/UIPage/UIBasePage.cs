@@ -29,10 +29,7 @@ namespace GameFramePro.UI
     /// </summary>
     public class UIBasePage
     {
-        /// <summary>
-        /// 标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。
-        /// 现在的页面类型UI 都应该是false,使得能够回退到上一个界面
-        /// </summary>
+        /// <summary>/// 标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。现在的页面类型UI 都应该是false,使得能够回退到上一个界面/// </summary>
         public bool IsReleaseOnDestroyPageInstance { get; protected set; } = true;
 
         public bool mIsActivite
@@ -81,7 +78,6 @@ namespace GameFramePro.UI
             PageName = pageName;
             mUIPageTypeEnum = pageType;
             ConnectGameObjectInstance = baseBeReferenceInstance;
-            ConnectGameObjectInstance.AddReference();
             mUIPageState = UIPageStateEnum.Initialed;
 
             UGUIComponentReference uguiComponentReference = ConnectGameObjectInstance.GetComponent<UGUIComponentReference>();

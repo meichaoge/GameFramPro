@@ -7,9 +7,7 @@ using GameFramePro.ResourcesEx;
 
 namespace GameFramePro.ResourcesEx
 {
-    /// <summary>
-    /// 通过AssetBundle  或者Resources 加载的真实资源 (非AssetBundle 资源)
-    /// </summary>
+    /// <summary>/// 通过AssetBundle  或者Resources 加载的真实资源 (非AssetBundle 资源)/// </summary>
     [System.Serializable]
     public class LoadAssetAssetRecord : LoadAssetBaseRecord
     {

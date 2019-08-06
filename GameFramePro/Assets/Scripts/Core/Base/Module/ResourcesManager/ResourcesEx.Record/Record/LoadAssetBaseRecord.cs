@@ -104,11 +104,13 @@ namespace GameFramePro.ResourcesEx
             {
                 Debug.LogError("资源{0}  已经被卸载了, 无法增加引用", AssetUrl);
                 ReferenceCount = 0;
+                NotifyReferenceChange(false);
             }
             else
+            {
                 ++ReferenceCount;
-
-            NotifyReferenceChange();
+                NotifyReferenceChange(true);
+            }
         }
 
         public virtual void ReduceReference(bool isForceDelete = false)
@@ -128,7 +130,7 @@ namespace GameFramePro.ResourcesEx
                     MarkToDeleteTime = DateTime.UtcNow.ToTimestamp_Millisecond();
             }
 
-            NotifyReferenceChange();
+            NotifyReferenceChange(false);
         }
 
         #endregion
@@ -139,7 +141,7 @@ namespace GameFramePro.ResourcesEx
             if (IsReferenceEnable == false)
             {
                 ReferenceCount = 0;
-                NotifyReferenceChange();
+                NotifyReferenceChange(false);
                 return false;
             }
 
@@ -157,9 +159,9 @@ namespace GameFramePro.ResourcesEx
             BelongAssetManager.NotifyAssetRelease(this);
         }
 
-        protected virtual void NotifyReferenceChange()
+        protected virtual void NotifyReferenceChange(bool isAddReference)
         {
-            BelongAssetManager.NotifyAssetReferenceChange(this);
+            BelongAssetManager.NotifyAssetReferenceChange(this, isAddReference);
         }
     }
 }

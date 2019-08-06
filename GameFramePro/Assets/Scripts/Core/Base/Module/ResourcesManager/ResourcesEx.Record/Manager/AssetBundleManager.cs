@@ -119,20 +119,20 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-        public void NotifyAssetReferenceChange(LoadAssetBaseRecord record)
+        public void NotifyAssetReferenceChange(LoadAssetBaseRecord record,bool isAddReference)
         {
             if (record == null) return;
             if (record is LoadAssetBundleSubAssetRecord)
             {
                 var subAssetRecord = record as LoadAssetBundleSubAssetRecord;
-                OnAssetBundleSubAssetReferenceChange(subAssetRecord);
+                OnAssetBundleSubAssetReferenceChange(subAssetRecord,isAddReference);
                 return;
             }
 
             if (record is LoadAssetBundleAssetRecord)
             {
                 var dependenceAssetRecord = record as LoadAssetBundleAssetRecord;
-                OnAssetBundleDependenceReferenceChange(dependenceAssetRecord);
+                OnAssetBundleDependenceReferenceChange(dependenceAssetRecord,isAddReference);
                 return;
             }
 
@@ -140,35 +140,45 @@ namespace GameFramePro.ResourcesEx
         }
 
         /// <summary>/// AssetBundle 加载的资源的引用关系改变/// </summary>
-        private void OnAssetBundleSubAssetReferenceChange(LoadAssetBundleSubAssetRecord subAssetRecord)
+        private void OnAssetBundleSubAssetReferenceChange(LoadAssetBundleSubAssetRecord subAssetRecord,bool isAddReference)
         {
-            if (subAssetRecord.ReferenceCount == 0)
+            if (mAllLoadAssetBundleCache.TryGetValue(subAssetRecord.AssetBelongBundleName, out var assetBundleRecord))
             {
-                if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(subAssetRecord.AssetUrl))
-                {
-                    // mAllLoadedAssetBundleSubAssetRecord.Remove(subAssetRecord.AssetUrl);  //这里不能释放需要等待资源真的被释放时候调用
-                    AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(subAssetRecord);
-                }
-                else
-                    Debug.LogError("NotifyAssetReferenceChange Error !!" + subAssetRecord.AssetUrl);
-
-                if (mAllLoadAssetBundleCache.TryGetValue(subAssetRecord.AssetBelongBundleName, out var assetBundleRecord))
-                    assetBundleRecord.ReduceSubAssetReference(subAssetRecord);
-            } //资源没有引用时候 释放资源
-            else
-            {
-                if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(subAssetRecord.AssetUrl) == false)
-                    mAllLoadedAssetBundleSubAssetRecord[subAssetRecord.AssetUrl] = subAssetRecord;
-
-                if (mAllLoadAssetBundleCache.TryGetValue(subAssetRecord.AssetBelongBundleName, out var assetBundleRecord))
+                if (isAddReference)
                     assetBundleRecord.AddSubAssetReference(subAssetRecord);
                 else
-                    Debug.LogError("NotifyAssetReferenceChange Error !!" + subAssetRecord.AssetUrl);
+                    assetBundleRecord.ReduceSubAssetReference(subAssetRecord);
             }
+            else
+            {
+                Debug.LogError("NotifyAssetReferenceChange Error !!" + subAssetRecord.AssetUrl);
+            }
+
+            if (isAddReference)
+            {
+                if (mAllLoadedAssetBundleSubAssetRecord.TryGetValue(subAssetRecord.AssetUrl, out var assetRecord) == false || assetRecord == null)
+                    assetRecord = subAssetRecord;
+            }
+            else
+            {
+                if (subAssetRecord.ReferenceCount == 0)
+                {
+                    if (mAllLoadedAssetBundleSubAssetRecord.ContainsKey(subAssetRecord.AssetUrl))
+                    {
+                        // mAllLoadedAssetBundleSubAssetRecord.Remove(subAssetRecord.AssetUrl);  //这里不能释放需要等待资源真的被释放时候调用
+                        AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(subAssetRecord);
+                    }
+                    else
+                        Debug.LogError("NotifyAssetReferenceChange Error !!" + subAssetRecord.AssetUrl);
+            
+                } //资源没有引用时候 释放资源
+            }
+            
+          
         }
 
         /// <summary>/// AssetBundle 资源被引用次数改变/// </summary>
-        private void OnAssetBundleDependenceReferenceChange(LoadAssetBundleAssetRecord depdenceAssetRecord)
+        private void OnAssetBundleDependenceReferenceChange(LoadAssetBundleAssetRecord depdenceAssetRecord,bool isAddReference)
         {
             if (depdenceAssetRecord.ReferenceCount == 0)
             {

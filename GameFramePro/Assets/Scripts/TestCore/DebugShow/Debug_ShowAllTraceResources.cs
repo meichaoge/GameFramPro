@@ -29,6 +29,8 @@ public class Debug_ShowAllTraceResources : MonoBehaviour
             mAllResourcesLoadAssets.Add(item);
         }
 
+        mAllResourcesLoadAssets.Sort((a, b) => a.AssetUrl.CompareTo(b.AssetUrl));
+
         #endregion
 
         #region  AssetBundle
@@ -40,12 +42,17 @@ public class Debug_ShowAllTraceResources : MonoBehaviour
             mAllLoadAssetBundleCache.Add(item);
         }
 
+        mAllLoadAssetBundleCache.Sort((a, b) => a.AssetUrl.CompareTo(b.AssetUrl));
+
+
         mAllLoadedAssetBundleSubAssetRecord.Clear();
         foreach (var item in AssetBundleManager.S_Instance.Debug_mAllLoadedAssetBundleSubAssetRecord.Values)
         {
             item.UpdateData();
             mAllLoadedAssetBundleSubAssetRecord.Add(item);
         }
+
+        mAllLoadedAssetBundleSubAssetRecord.Sort((a, b) => a.AssetUrl.CompareTo(b.AssetUrl));
 
         #endregion
     }

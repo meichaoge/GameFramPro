@@ -676,7 +676,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mAllResourcesLoadAssets: []
-  mAllLoadAssetBundleCache: []
   mAllLoadedAssetBundleSubAssetRecord: []
 --- !u!1 &1268209834
 GameObject:
@@ -865,7 +864,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1652667700
 MonoBehaviour:
   m_ObjectHideFlags: 0

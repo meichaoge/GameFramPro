@@ -17,7 +17,7 @@ namespace GameFramePro.UI
 
         public Dictionary<string, string> NamePathMapInfor { get; protected set; } //缓存映射关系
     
-        public BaseBeReferenceGameObjectInformation ConnectTransBaseBeReference { get; protected set; }
+        public BaseBeReferenceGameObjectInformation ConnectTransBaseBeReference { get; private set; } //只有访问的权限 没有设置的权限
         //{
         //    get
         //    {
@@ -91,7 +91,6 @@ namespace GameFramePro.UI
 
         public void ReleaseReference(bool isReleaseNamePathMap)
         {
-            ConnectTransBaseBeReference.ReduceReference();
             mAllReferenceComponent.Clear();
             if (isReleaseNamePathMap)
             {

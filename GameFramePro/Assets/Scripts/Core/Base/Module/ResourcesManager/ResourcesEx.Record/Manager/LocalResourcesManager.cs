@@ -59,29 +59,35 @@ namespace GameFramePro.ResourcesEx
         {
             if (record == null) return;
 
+            Debug.LogInfor("有资源记录被移除 "+record.AssetUrl);
+            
             if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
                 mAllLoadedAssetRecord.Remove(record.AssetUrl);
             else
                 Debug.LogError("NotifyAssetRelease Error  不存在这个资源 {0}的记录", record.AssetUrl);
         }
 
-        public void NotifyAssetReferenceChange(LoadAssetBaseRecord record)
+        public void NotifyAssetReferenceChange(LoadAssetBaseRecord record, bool isAddReference)
         {
             if (record == null) return;
 
             //处理Resources 资源加载和释放
 
-            if (record.ReferenceCount == 0)
-            {
-                if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
-                    AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record);
-                else
-                    Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
-            } //资源没有引用时候 释放资源
-            else
+            if (isAddReference)
             {
                 if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl) == false)
                     mAllLoadedAssetRecord[record.AssetUrl] = record as LoadAssetResourcesAssetRecord;
+                
+            }
+            else
+            {
+                if (record.ReferenceCount == 0)
+                {
+                    if (mAllLoadedAssetRecord.ContainsKey(record.AssetUrl))
+                        AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record);
+                    else
+                        Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
+                } //资源没有引用时候 释放资源
             }
         }
 

@@ -13,13 +13,11 @@ public class TestLoadAsset : MonoBehaviour
     public Image mTarget2;
 
 
-
     private void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.A))
         {
-            ResourcesManager.SetImageSpriteByPathSync(mTarget,assetPath,false);
+            ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath);
         }
 
         if (Input.GetKeyDown(KeyCode.B))
@@ -27,13 +25,11 @@ public class TestLoadAsset : MonoBehaviour
             ResourcesManager.CloneImageSprite(mTarget, mTarget2);
         }
 
-      
 
         if (Input.GetKeyDown(KeyCode.D))
         {
             //      ResourcesManager.LoadSpriteAssetAsync(mTarget, mTarget2);
         }
-
 
 
         //if (Input.GetKeyDown(KeyCode.A))
@@ -58,7 +54,5 @@ public class TestLoadAsset : MonoBehaviour
         //        }
         //    });
         //}
-
     }
-
 }

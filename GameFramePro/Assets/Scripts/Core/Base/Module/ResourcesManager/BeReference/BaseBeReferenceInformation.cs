@@ -96,7 +96,7 @@ namespace GameFramePro
         }
 
         //减少引用
-        public  void ReduceReference(bool isForceDelete = false)
+        public void ReduceReference(bool isForceDelete = false)
         {
             if (IsReferenceAssetEnable == false)
             {
@@ -174,6 +174,7 @@ namespace GameFramePro
                 }
             }
         }
+
         #endregion
     }
 }

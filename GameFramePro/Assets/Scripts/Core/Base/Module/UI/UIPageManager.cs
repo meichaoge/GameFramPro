@@ -361,8 +361,7 @@ namespace GameFramePro.UI
         private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<BaseBeReferenceGameObjectInformation> afterInitialedInstanceAction)
         {
             BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath,false);
-            if (afterInitialedInstanceAction != null)
-                afterInitialedInstanceAction.Invoke(gameObjectInformation);
+            afterInitialedInstanceAction?.Invoke(gameObjectInformation);
         }
 
         #endregion
