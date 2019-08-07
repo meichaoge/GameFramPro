@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 namespace GameFramePro
@@ -52,9 +53,16 @@ namespace GameFramePro
             coroutine = null; //注意这里 多加了一个=null 来清理资源
         }
 
-        public void StartAsyncOperation(AsyncOperation async, Action<AsyncOperation> completeCallback, Action<float> procressCallback)
+        /// <summary>/// 开启一个异步的任务/// </summary>  
+        public CoroutineEx StartAsyncOperation(AsyncOperation async, Action completeCallback, Action<float> procressCallback)
         {
-            StartCoroutineEx(StartAsyncOperate(async, completeCallback, procressCallback));
+            if (async == null)
+            {
+                Debug.LogError("StartAsyncOperation 参数异常");
+                return null;
+            }
+
+            return StartCoroutineEx(StartAsyncOperate(async, completeCallback, procressCallback));
         }
 
         #endregion
@@ -107,22 +115,21 @@ namespace GameFramePro
         }
 
         //开启一个协程任务
-        private IEnumerator StartAsyncOperate(AsyncOperation async, Action<AsyncOperation> completeCallback, Action<float> processCallback)
+        private IEnumerator StartAsyncOperate(AsyncOperation async, Action completeCallback, Action<float> processCallback)
         {
             float progress = 0f;
             while (true)
             {
-                if (async.isDone)
-                {
-                    processCallback?.Invoke(async.progress);
-                    completeCallback?.Invoke(async);
-                    yield break;
-                }
-
                 if (progress != async.progress)
                 {
                     progress = async.progress;
                     processCallback?.Invoke(async.progress);
+                }
+
+                if (async.isDone)
+                {
+                    completeCallback?.Invoke();
+                    yield break;
                 }
 
                 yield return WaitFor_Null;

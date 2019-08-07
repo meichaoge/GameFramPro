@@ -30,7 +30,8 @@ namespace GameFramePro.NetWorkEx
                     Debug.LogError("StartDownloadTask Fail, the UnityWebRequest Already Start!!! " + TaskUrl);
 
                 mUnityWebRequestAsyncOperation = DownloadTaskCallbackData.SendWebRequest(); //启动任务
-                DownloadTaskCallbackData = mUnityWebRequestAsyncOperation.webRequest;
+                TaskInfor = AsyncManager.S_Instance.StartAsyncOperation(mUnityWebRequestAsyncOperation, OnCompleteDownloadTask, OnProcessChange);
+                TaskInfor.WaitDone(true);
             }
             else
             {
@@ -38,16 +39,18 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        public override void Tick()
+        public override void CancelDownloadTask()
         {
-            if (TaskState != TaskStateEum.Running) return;
-            if (mUnityWebRequestAsyncOperation == null)
+            if (TaskState != TaskStateEum.Running)
             {
-                OnCompleted(true, true, 1f);
+                Debug.LogError($"下载任务状态异常 不是运行 状态 {TaskState}  TaskUrl={TaskUrl}");
                 return;
             }
 
-            OnCompleted(DownloadTaskCallbackData.isDone, DownloadTaskCallbackData.isHttpError || DownloadTaskCallbackData.isNetworkError, DownloadTaskCallbackData.downloadProgress);
+
+            if (TaskInfor != null)
+                TaskInfor.StopCoroutine();
+            base.CancelDownloadTask();
         }
 
         public override void ClearDownloadTask()
@@ -60,6 +63,16 @@ namespace GameFramePro.NetWorkEx
             }
 
             base.ClearDownloadTask();
+        }
+
+        #endregion
+
+        #region 任务的状态
+
+        /// <summary>/// 完成下载任务的回调/// </summary>
+        protected override void OnCompleteDownloadTask()
+        {
+                OnCompleted(DownloadTaskCallbackData.isDone, DownloadTaskCallbackData.isNetworkError || DownloadTaskCallbackData.isNetworkError, DownloadTaskCallbackData.downloadProgress);
         }
 
         #endregion

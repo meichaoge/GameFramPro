@@ -26,8 +26,7 @@ namespace GameFramePro.NetWorkEx
 
         public string TaskUrl { get; protected set; } = string.Empty;
         public float Progress { get; protected set; } = 0f;
-        public bool IsCompleteInvoke { get; protected set; } = false;
-
+        public CoroutineEx TaskInfor { get; protected set; } = null;
         public UnityTaskPriorityEnum TaskPriorityEnum { get; protected set; } = UnityTaskPriorityEnum.Normal; //下载任务的优先级
 
         protected LinkedList<Action<W, bool, string>> TaskCompleteCallBackLinkList = new LinkedList<Action<W, bool, string>>(); //完成任务的事件链 bool 标示是否成功
@@ -35,20 +34,10 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 回调回去的参数  刚开始又初始化的时候赋值传入，开始下载后更新这个对象/// </summary>
         protected W DownloadTaskCallbackData { get; set; } = default(W);
 
-
-        public event Action<string, float> OnProgressChangedEvent; //下载进度的回调
+        /// <summary>/// 下载任务变化事件 参数 Url 和 进度/// </summary>
+        public event OnTaskProcessChangeHandler OnProgressChangedEvent; //下载进度的回调
 
         #region 构造函数和初始化
-
-//        public BaseDownloadTask()
-//        {
-//            ChangeDownloadState(TaskStateEum.None);
-//        }
-//
-//        public BaseDownloadTask(string url, W taskData, UnityTaskPriorityEnum priority, Action<W, bool, string> completeCallback)
-//        {
-//            InitialedDownloadTask(url, taskData, priority, completeCallback);
-//        }
 
         public void InitialedDownloadTask(string url, W taskData, UnityTaskPriorityEnum priority, Action<W, bool, string> completeCallback)
         {
@@ -90,25 +79,17 @@ namespace GameFramePro.NetWorkEx
                 } //调用事件链
 
                 TaskCompleteCallBackLinkList.Clear();
-                IsCompleteInvoke = true;
             }
         }
 
+        /// <summary>/// 需要在实现类中启动协程检测任务 /// </summary>
         public abstract void StartDownloadTask();
-//        {
-//            ChangeDownloadState(TaskStateEum.Running);
-//        }
-
 
         public virtual void CancelDownloadTask()
         {
             ChangeDownloadState(TaskStateEum.Cancel);
             ClearDownloadTask();
         }
-
-        /// <summary>/// 任务的Tick 只处理自身的状态变化 和回调处理，不能删除自身或者调用StartDownloadTask/// </summary>
-        public abstract void Tick();
-
 
         public virtual void ClearDownloadTask()
         {
@@ -127,6 +108,20 @@ namespace GameFramePro.NetWorkEx
             TaskState = taskState;
         }
 
+        #region 任务的状态
+
+        /// <summary>/// 完成下载任务的回调/// </summary>
+        protected abstract void OnCompleteDownloadTask();
+
+
+        /// <summary>/// 下载的进度变化/// </summary>
+        protected virtual void OnProcessChange(float process)
+        {
+            if (OnProgressChangedEvent != null)
+                OnProgressChangedEvent(TaskUrl, process);
+        }
+
+        #endregion
 
         #region  增加或者移除回调
 

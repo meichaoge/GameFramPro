@@ -302,10 +302,9 @@ namespace GameFramePro.ResourcesEx
             #endregion
 
             AssetBundleCreateRequest requst = LoadAssetBundleAsync(assetBundlePath);
-            AsyncManager.S_Instance.StartAsyncOperation(requst, (asyncOperation) =>
+            AsyncManager.S_Instance.StartAsyncOperation(requst, () =>
             {
-                var result = asyncOperation as AssetBundleCreateRequest;
-                if (result.assetBundle == null)
+                if (requst.assetBundle == null)
                 {
                     record.ClearAllDependence();
                     //    record.ReduceReference(true);
@@ -317,7 +316,7 @@ namespace GameFramePro.ResourcesEx
                     return;
                 }
 
-                var assetBundleInfor = new LoadAssetBundleInfor(assetBundlePath, result.assetBundle);
+                var assetBundleInfor = new LoadAssetBundleInfor(assetBundlePath, requst.assetBundle);
 
                 record.Initial(assetBundlePath, LoadedAssetTypeEnum.AssetBundle_UnKnown, assetBundleInfor, this);
                 mAllLoadAssetBundleCache[assetBundlePath] = record;

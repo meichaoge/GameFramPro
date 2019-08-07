@@ -15,9 +15,7 @@ namespace GameFramePro.NetWorkEx
         /// <summary>///  所有的下载任务，按照优先级排序，包含已经开始的和等待的任务/// </summary>
         public LinkedList<U> AllDownloadTaskLinkedList { get; protected set; } = new LinkedList<U>();
 
-        /// <summary>///  所有的任务请求会先进入这里然后在 Tick 时候加入 AllDownloadTaskLinkedList/// </summary>
-        public LinkedList<U> AllCacheDownloadTaskLinkedList { get; protected set; } = new LinkedList<U>();
-
+       /// <summary>///  所有的任务请求会先进入这里然后在 Tick 时候加入 AllDownloadTaskLinkedList/// </summary>
         public List<U> AllCacheDownLoadTasks = new List<U>(20); //所有下一帧需要处理的回调
 
         /// <summary>/// 最大的同时下载任务量/// </summary>
@@ -25,6 +23,9 @@ namespace GameFramePro.NetWorkEx
 
         /// <summary>/// 下载中的任务总数/// </summary>
         public int CurDownloadingTaskCount { get; protected set; } = 0;
+
+        /// <summary>/// 需要移除的任务总数/// </summary>
+        public int NeedRemoveTaskCount { get; protected set; } = 0;
 
         /// <summary>/// 等待中的任务总数/// </summary>
         public int CurWaitingTaskCount { get; protected set; } = 0;
@@ -49,15 +50,24 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 更新所有的下载任务状态/// </summary>
         protected virtual void TickAllTasks()
         {
-            curUpdateCount = 0;
+            CurDownloadingTaskCount = 0;
+            NeedRemoveTaskCount = 0;
             if (AllDownloadTaskLinkedList != null && AllDownloadTaskLinkedList.Count != 0)
             {
                 foreach (var targetNode in AllDownloadTaskLinkedList)
                 {
-                    if (targetNode == null) continue;
-                    targetNode.Tick();
+                    if (targetNode == null)
+                    {
+                        ++NeedRemoveTaskCount;
+                        continue;
+                    }
+
+              //      targetNode.Tick();
+
                     if (targetNode.TaskState == TaskStateEum.Running)
-                        ++curUpdateCount;
+                        ++CurDownloadingTaskCount;
+                    else if (targetNode.TaskState == TaskStateEum.Complete)
+                        ++NeedRemoveTaskCount; //需要移除的任务
                 }
             }
         }
@@ -67,10 +77,11 @@ namespace GameFramePro.NetWorkEx
         {
             if (AllDownloadTaskLinkedList == null || AllDownloadTaskLinkedList.Count == 0)
                 return;
+            if (NeedRemoveTaskCount == 0) return;
             var targetTaskNode = AllDownloadTaskLinkedList.First;
             while (targetTaskNode != null)
             {
-                if (targetTaskNode.Value.IsCompleteInvoke)
+                if (targetTaskNode.Value == null || targetTaskNode.Value.TaskState == TaskStateEum.Complete)
                 {
                     var next = targetTaskNode.Next;
                     AllDownloadTaskLinkedList.Remove(targetTaskNode);
@@ -112,15 +123,15 @@ namespace GameFramePro.NetWorkEx
                     {
                         if (targetNodeValue.TaskUrl == cacheTask.TaskUrl)
                         {
-                            if (targetNodeValue.IsCompleteInvoke == false)
+                            if (targetNodeValue.TaskState < TaskStateEum.Error)
                             {
                                 targetNodeValue.AddCompleteCallback(cacheTask);
-                                return;
+                                break;
                             }
+#if UNITY_EDITOR
                             else
-                            {
                                 Debug.LogError("当前下载任务已经完成，无法添加回调 " + targetNodeValue.TaskUrl);
-                            }
+#endif
                         }
                     }
 
@@ -129,7 +140,7 @@ namespace GameFramePro.NetWorkEx
                         cacheTask.ChangeDownloadState(TaskStateEum.Initialed);
                         AllDownloadTaskLinkedList.AddBefore(targetNode, cacheTask); //添加新的任务到后面
                         ++CurWaitingTaskCount;
-                        return;
+                        break;
                     }
 
                     targetNode = targetNode.Next;
@@ -145,7 +156,7 @@ namespace GameFramePro.NetWorkEx
             AllCacheDownLoadTasks.Clear();
         }
 
-
+        /// <summary>/// 开始其他等待中的任务/// </summary>
         protected virtual void StartWaitingTaskTask()
         {
             if (CurWaitingTaskCount == 0) return;
@@ -166,41 +177,6 @@ namespace GameFramePro.NetWorkEx
                 }
             }
         }
-
-
-//        /// <summary>///  /// </summary>
-//        protected virtual void RemoveAndStartTasks()
-//        {
-//
-//            if (AllDownloadTaskLinkedList != null && AllDownloadTaskLinkedList.Count != 0)
-//            {
-//                LinkedListNode<U> targetNode = AllDownloadTaskLinkedList.First;
-//                while (targetNode != null)
-//                {
-//                    if (targetNode.Value.IsCompleteInvoke)
-//                    {
-//                        var nextNode = targetNode.Next;
-//                        AllDownloadTaskLinkedList.Remove(targetNode);
-//                        targetNode = nextNode;
-//                        --CurDownloadingTaskCount;
-//                        continue;
-//                    } //完成了下载任务 需要删除旧任务
-//
-//                    if (CurDownloadingTaskCount < MaxDownloadTaskCount)
-//                    {
-//                        if (targetNode.Value.TaskState == TaskStateEum.Initialed)
-//                        {
-//                            ++CurDownloadingTaskCount;
-//                            targetNode.Value.StartDownloadTask();
-//                            targetNode = targetNode.Next;
-//                            continue;
-//                        }
-//                    } //启动新的下载任务
-//
-//                    targetNode = targetNode.Next;
-//                }
-//            }
-//        }
 
         #endregion
 

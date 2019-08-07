@@ -1,1 +1,1 @@
-[]
+[[{"Key":"AssetBundle.unity3d","Value":{"mAssetBundleAssetUpdateTagEnum":2,"mNeedUpdateAssetName":"AssetBundle.unity3d","mAssetByteSize":1261,"mAssetCRC":1948196909}},{"Key":"audio.unity3d","Value":{"mAssetBundleAssetUpdateTagEnum":2,"mNeedUpdateAssetName":"audio.unity3d","mAssetByteSize":583981,"mAssetCRC":1363619331}},{"Key":"prefabs/core.unity3d","Value":{"mAssetBundleAssetUpdateTagEnum":2,"mNeedUpdateAssetName":"prefabs/core.unity3d","mAssetByteSize":3252,"mAssetCRC":2056359650}}]]

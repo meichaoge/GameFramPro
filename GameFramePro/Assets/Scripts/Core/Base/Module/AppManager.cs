@@ -14,7 +14,7 @@ namespace GameFramePro
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
-        protected override bool IsNotDestroyedOnLoad { get;  } = true; //标示不销毁
+        protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不销毁
 
         public float CurrentRealTime
         {
@@ -27,11 +27,13 @@ namespace GameFramePro
             UIPageManager.InitialedPageManager();
 
             LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
-            AssetBundleUpgradeManager.S_Instance.BeginUpdateAssetBundle();
-
+            CoroutineEx assetBundleCoroutineEx =
+                new CoroutineEx(AssetBundleUpgradeManager.S_Instance.BeginUpdateAssetBundle());
+            yield return assetBundleCoroutineEx.WaitDone(true);
             yield return null;
 
-            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
+            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName,
+                PathDefine.UILoginChangePagePath);
         }
 
 

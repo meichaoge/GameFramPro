@@ -72,9 +72,9 @@ namespace GameFramePro
             // AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,crc, callback, priorityEnum);
         }
 
-        public void GetByteDataFromUrl(string taskUrl, UnityTaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
+        public UnityWebRequestDownloadTask GetByteDataFromUrl(string taskUrl, UnityTaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
         {
-            ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
+            return ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
 
         #endregion
