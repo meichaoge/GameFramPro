@@ -9,9 +9,7 @@ using GameFramePro.UI;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 需要自己手动挂在 第一个执行的脚本 需要尽可能少的脚本直接依赖Mono  
-    /// </summary>
+    /// <summary>/// 需要自己手动挂在 第一个执行的脚本 需要尽可能少的脚本直接依赖Mono  /// </summary>
     public class AppManager : Single_Mono<AppManager>
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();

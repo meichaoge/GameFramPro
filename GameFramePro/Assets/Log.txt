@@ -1,5 +1,9 @@
 
 2019/8/7
+<1> 优化了 AsyncManager 管理器，使得异步协程不再依赖其他的类，可以单独使用
+<2> 优化了CoroutineEx，增加了状态管理以及接口 WaitDone 的实现
+
+2019/8/7
 <1> 整理合并了Mono 单例模板类的实现，只留下一个 Single_Mono 基类
 <2> 拆分了 ResourcesManager,将资源的加载逻辑移到了 ResourcesUtility 中，隐藏了实现
 <3> 优化解决了加载相同资源时候会先卸载资源再加载的问题，预判的减少不必要的消耗

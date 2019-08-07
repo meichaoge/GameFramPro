@@ -8,14 +8,13 @@ public class TestIEnumerater : MonoBehaviour
 {
     private void Start()
     {
-            StartCoroutine(Test004());
-            return;
-            ;
-        
-        CoroutineEx text001=new CoroutineEx(Test003());
+        ///StartCoroutine(Test004());
+        StartCoroutine(TestWaitDone());
+
+        return;
+        CoroutineEx text001 = new CoroutineEx(Test003());
         text001.StartCoroutine();
         text001.OnCompleteCoroutineExEvent += OnComplete;
-
     }
 
     IEnumerator Test004()
@@ -26,16 +25,14 @@ public class TestIEnumerater : MonoBehaviour
             Debug.Log(Time.frameCount);
         }
     }
-    
-    
-    
+
 
     void OnComplete(CoroutineEx ss)
     {
         Debug.LogError("完成协程");
     }
-    
-    
+
+
     private IEnumerator Test001()
     {
         yield return StartCoroutine(Test002());
@@ -50,19 +47,29 @@ public class TestIEnumerater : MonoBehaviour
         Debug.Log("完成协程Te002");
         yield break;
     }
-    
-    
-    
-    
+
+
     private IEnumerator Test003()
     {
         Debug.Log("Test003");
         yield return new WaitForSeconds(2f);
         Debug.Log("完成协程Te003");
     }
-    
-    
-    
-    
-    
+
+
+    private IEnumerator TestWaitDone()
+    {
+        CoroutineEx test = new CoroutineEx(TestLoop());
+        yield return test.WaitDone(true);
+        Debug.Log("完成协程 TestWaitDone");
+    }
+
+    private IEnumerator TestLoop()
+    {
+        for (int dIndex = 0; dIndex < 20; dIndex++)
+        {
+            Debug.LogError("" + dIndex);
+            yield return AsyncManager.WaitFor_Null;
+        }
+    }
 }

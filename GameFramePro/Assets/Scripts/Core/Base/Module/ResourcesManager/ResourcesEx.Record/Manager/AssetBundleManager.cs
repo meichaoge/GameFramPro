@@ -281,8 +281,8 @@ namespace GameFramePro.ResourcesEx
                 if (record.IsReferenceEnable)
                 {
                     record.ClearAllDependence();
-               //     record.ReduceReference(true);
-               record.NotifyReleaseRecord();  //2019/8/7 修改
+                    //     record.ReduceReference(true);
+                    record.NotifyReleaseRecord(); //2019/8/7 修改
                 } //释放资源
 
                 mAllLoadAssetBundleCache.Remove(assetBundlePath); //已经被销毁了 需要重新加载
@@ -374,7 +374,7 @@ namespace GameFramePro.ResourcesEx
             if (string.IsNullOrEmpty(assetBundlePath))
             {
 #if UNITY_EDITOR
-                Debug.LogInfor("LoadAssetSync Fail,Not Exit asset " + assetPath);
+                Debug.LogEditorError("LoadAssetSync Fail,Not Exit asset " + assetPath);
 #endif
                 return null;
             }

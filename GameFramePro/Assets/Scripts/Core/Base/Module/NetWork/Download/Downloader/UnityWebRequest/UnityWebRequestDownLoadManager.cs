@@ -6,9 +6,7 @@ using UnityEngine.Networking;
 
 namespace GameFramePro.NetWorkEx
 {
-    /// <summary>
-    /// 使用 UnityWebRequest 的所有下载器
-    /// </summary> 
+    /// <summary>/// 使用 UnityWebRequest 的所有下载器/// </summary> 
     public class UnityWebRequestDownLoadManager : BaseDownloadManager<UnityWebRequestDownloadTask, UnityWebRequest>
     {
         protected static NativeObjectPool<UnityWebRequestDownloadTask> mUnityWebRequestTaskPoolManager = null;

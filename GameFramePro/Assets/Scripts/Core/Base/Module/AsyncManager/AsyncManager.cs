@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 异步&协程管理器
-    /// </summary>
-    public class AsyncManager : Single<AsyncManager>
+    /// <summary>/// 异步&协程管理器/// </summary>
+    public class AsyncManager : Single_Mono<AsyncManager>
     {
+        protected override bool IsNotDestroyedOnLoad { get; } = true;
+
         //***WaitForSecondsRealtime Todo
         public static readonly YieldInstruction WaitFor_OneSecond = new WaitForSeconds(1);
         public static readonly YieldInstruction WaitFor_HalfSecond = new WaitForSeconds(0.5f);
@@ -29,10 +29,7 @@ namespace GameFramePro
 
         #region 对外 Interface
 
-        /// <summary>
-        /// 开启一个协程任务
-        /// </summary>
-        /// <param name="routine"></param>
+        /// <summary>/// 开启一个协程任务/// </summary>
         public CoroutineEx StartCoroutineEx(IEnumerator task)
         {
             if (task == null) return null;
@@ -45,10 +42,7 @@ namespace GameFramePro
             return coroutine;
         }
 
-        /// <summary>
-        /// 停止一个协程
-        /// </summary>
-        /// <param name="routine"></param>
+        /// <summary>/// 停止一个协程/// </summary>
         public void StopCoroutineEx(CoroutineEx coroutine)
         {
             AsyncTracker.S_Instance.UnTrackAsyncTask(coroutine);
@@ -135,20 +129,14 @@ namespace GameFramePro
             }
         }
 
-        /// <summary>
-        /// 协程完成回调
-        /// </summary>
-        /// <param name="coroutine"></param>
+        /// <summary>/// 协程完成回调/// </summary>
         private void OnCompleteCoroutineEx(CoroutineEx coroutine)
         {
-            if(coroutine==null) return;
+            if (coroutine == null) return;
             coroutine.OnCompleteCoroutineExEvent -= OnCompleteCoroutineEx;
             UnRegisterCoroutine(coroutine);
         }
-        
+
         #endregion
-        
-        
-        
     }
 }

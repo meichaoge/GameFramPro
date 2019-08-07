@@ -9,23 +9,28 @@ namespace GameFramePro
 {
     public delegate void CompleteCoroutineExHandler(CoroutineEx coroutine);
 
-    /// <summary>
-    /// **扩展 Unity 内置的 Coroutine 提供完成协程的事件和标示, 方便获取协程的状态
-    /// </summary>
+    /// <summary>/// 标示 CoroutineEx 的状态/// </summary>
+    public enum CoroutineExStateEnum
+    {
+        Initialed, //初始化
+        Running, //正在运行
+        Break, //打断结束任务
+        Complete, // 完成
+    }
+
+
+    /// <summary>/// **扩展 Unity 内置的 Coroutine 提供完成协程的事件和标示, 方便获取协程的状态/// </summary>
     public class CoroutineEx : YieldInstruction
     {
-        private static readonly AppManager s_AppManager = AppManager.S_Instance;
+        private static readonly AsyncManager s_AsyncManager = AsyncManager.S_Instance;
         private static int s_CoroutineID = 0;
 
-        /// <summary>
-        /// 标示是否完成了任务
-        /// </summary>
-        public bool IsComplete { get; private set; } = false;
+        /// <summary>/// 标示当前的协程任务状态/// </summary>
+        public CoroutineExStateEnum CoroutineState { get; private set; }
 
-        /// <summary>
-        /// 协程的id 唯一
-        /// </summary>
+        /// <summary>/// 协程的id 唯一/// </summary>
         public int CoroutineID { get; private set; }
+
         public event CompleteCoroutineExHandler OnCompleteCoroutineExEvent;
 
 
@@ -36,12 +41,18 @@ namespace GameFramePro
 
         public CoroutineEx()
         {
-            IsComplete = false;
             CoroutineID = GetNextCoroutineID();
+            CoroutineState = CoroutineExStateEnum.Initialed;
         }
 
-        public CoroutineEx(IEnumerator task ) : base()
+        public CoroutineEx(IEnumerator task) : base()
         {
+            if (task == null)
+            {
+                Debug.LogError("初始化 CoroutineEx 失败，指定的参数为null");
+                return;
+            }
+
             mTaskCoroutine = task;
         }
 
@@ -49,58 +60,74 @@ namespace GameFramePro
 
         #region 对外接口
 
-        /// <summary>
-        /// 开始一个协程
-        /// </summary>
-        /// <returns></returns>
+        /// <summary>/// 开始一个协程/// </summary>
         public CoroutineEx StartCoroutine()
         {
-            IsComplete = false;
-            mCoroutine = s_AppManager.StartCoroutine(InnerIEnumerator());
+            if (CoroutineState != CoroutineExStateEnum.Initialed)
+            {
+                Debug.LogError("StartCoroutine Fail,Not Initialed State");
+                return this;
+            }
+
+            mCoroutine = s_AsyncManager.StartCoroutine(InnerIEnumerator());
             return this;
         }
 
-        /// <summary>
-        /// 结束一个协程
-        /// </summary>
-        /// <param name="routine"></param>
+        /// <summary>/// 结束一个协程/// </summary>
         public void StopCoroutine()
         {
             if (mCoroutine == null) return;
-            s_AppManager.StopCoroutine(mCoroutine);
-            IsComplete = false;
+
+            if (CoroutineState != CoroutineExStateEnum.Running)
+            {
+                Debug.LogError("StopCoroutine Fail,Not Running State");
+                return;
+            }
+
+            s_AsyncManager.StopCoroutine(mCoroutine);
+            CoroutineState = CoroutineExStateEnum.Break;
             OnCompleteCoroutineExEvent?.Invoke(this);
         }
 
-        
-        /// <summary>
-        /// TODO  需要测试
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator WaitDone()
+
+        /// <summary>/// 等待当前任务完成/// </summary>
+        /// <param name="isAutoStart">标示如果协程是初始化没有启动状态，是否启动协程</param>
+        public IEnumerator WaitDone(bool isAutoStart)
         {
+            if (CoroutineState == CoroutineExStateEnum.Complete)
+                yield break;
+
+            if (CoroutineState != CoroutineExStateEnum.Running)
+            {
+                if (isAutoStart && CoroutineState == CoroutineExStateEnum.Initialed)
+                    StartCoroutine();
+                else
+                {
+                    Debug.LogError("协程不是运行状态 无法使用这个接口");
+                    yield break;
+                }
+            }
+
             while (true)
             {
-                if (IsComplete)
+                if (CoroutineState == CoroutineExStateEnum.Complete || CoroutineState == CoroutineExStateEnum.Break)
                     yield break;
+                else
+                    yield return AsyncManager.WaitFor_Null;
             }
         }
-        
-        
+
         #endregion
-        
+
 
         #region 内部实现
 
-        /// <summary>
-        /// 内部执行用户的操作
-        /// </summary>
-        /// <returns></returns>
+        /// <summary>/// 内部执行用户的操作/// </summary>
         private IEnumerator InnerIEnumerator()
         {
-            if (mTaskCoroutine != null)
-                yield return s_AppManager.StartCoroutine(mTaskCoroutine);
-            IsComplete = true;
+            CoroutineState = CoroutineExStateEnum.Running;
+            yield return s_AsyncManager.StartCoroutine(mTaskCoroutine);
+            CoroutineState = CoroutineExStateEnum.Complete;
             mCoroutine = null;
 
             OnCompleteCoroutineExEvent?.Invoke(this);
@@ -108,14 +135,13 @@ namespace GameFramePro
         }
 
 
-        //获取下一个可用的协程ID 确保每个协程唯一
+        /// <summary>/// 获取下一个可用的协程ID 确保每个协程唯一/// </summary>
         private static int GetNextCoroutineID()
         {
             Interlocked.Increment(ref s_CoroutineID);
             return s_CoroutineID;
-        } 
-        
-        
+        }
+
         #endregion
     }
 }

@@ -11,8 +11,6 @@ namespace GameFramePro
     public interface IUpdateTick
     {  
 
- 
-
         /// <summary>
         /// 计时滴答
         /// </summary>

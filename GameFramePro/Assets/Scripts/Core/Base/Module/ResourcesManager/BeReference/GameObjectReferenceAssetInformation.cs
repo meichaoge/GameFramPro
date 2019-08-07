@@ -14,6 +14,7 @@ namespace GameFramePro
     {
         #region 编辑器显示
 
+# if UNITY_EDITOR
         [System.Serializable]
         /// <summary>/// 当个组件引用的资源/// </summary>
         private class ComponentReferenceAsset
@@ -40,6 +41,8 @@ namespace GameFramePro
                 Debug_AllComponentsReferenceAssets.Add(componentReference);
             }
         }
+
+#endif
 
         #endregion
 
@@ -100,7 +103,7 @@ namespace GameFramePro
                 componentReferences.Add(referenceRecord);
                 mAllComponentsReferenceAssets[targetComponent] = componentReferences;
 #if UNITY_EDITOR
-                Debug.LogInfor($"不包含对象 {gameObject.name} 的 组价{targetComponent} 引用资源记录");
+                Debug.LogEditorInfor($"不包含对象 {gameObject.name} 的 组价{targetComponent} 引用资源记录");
 #endif
                 return;
             }

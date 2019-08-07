@@ -18,6 +18,7 @@ namespace GameFramePro
 
 
         #region IUpdateTick 接口
+
         protected int curUpdateCount = 0; //当前的帧基数
         public uint TickPerUpdateCount { get; protected set; } = 5;
 
@@ -25,7 +26,7 @@ namespace GameFramePro
         {
             ++curUpdateCount;
             if (curUpdateCount == 1)
-                return true;  //确保第一次被调用
+                return true; //确保第一次被调用
 
             if (curUpdateCount < TickPerUpdateCount)
                 return false;
@@ -40,7 +41,7 @@ namespace GameFramePro
             if (CheckIfNeedUpdateTick() == false) return;
 
             //     AssetBundleDownloadManager.S_Instance.Tick();
-            ByteDataDownloadManager.S_Instance.UpdateTick();
+            ByteDataDownloadManager.S_Instance.UpdateTick(currentTime);
 
             //if (mAllDownloadeManagers.Count > 0)
             //{
@@ -48,6 +49,7 @@ namespace GameFramePro
             //        item.Tick();
             //}
         }
+
         #endregion
 
         //  protected override void InitialSingleton()
@@ -63,21 +65,23 @@ namespace GameFramePro
         //  }
 
 
-
         #region 通用的下载接口 对外隐藏实现 (这里不能是静态的 否则没法注册)
+
         public void GetAssetBundleFromUrl(string taskUrl, uint crc, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
             // AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,crc, callback, priorityEnum);
         }
 
-        public void GetByteDataFromUrl(string taskUrl, System.Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
+        public void GetByteDataFromUrl(string taskUrl, UnityTaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
         {
             ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
+
         #endregion
 
 
         #region 辅助
+
         //public void RegisterDownloadManager(IDownloadManager<, > loader)
         //{
         //    if (mAllDownloadeManagers.Contains(loader))
@@ -102,9 +106,6 @@ namespace GameFramePro
         //    return;
         //}
 
-
         #endregion
-
-
     }
 }

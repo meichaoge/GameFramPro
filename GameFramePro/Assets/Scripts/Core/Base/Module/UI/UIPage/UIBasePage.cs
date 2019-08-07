@@ -233,8 +233,8 @@ namespace GameFramePro.UI
         /// </summary>
         protected virtual void OnBeforeInVisible()
         {
-            if(mAudioController!=null)
-                mAudioController.StopAllAudios(false);  //背景音保留
+            if (mAudioController != null)
+                mAudioController.StopAllAudios(false); //背景音保留
             if (mAllContainWidgets != null && mAllContainWidgets.Count != 0)
             {
                 foreach (var widget in mAllContainWidgets)
@@ -423,7 +423,7 @@ namespace GameFramePro.UI
         {
             foreach (var routine in mAllRuningCoroutine)
             {
-                if (routine != null && routine.IsComplete == false)
+                if (routine != null && routine.CoroutineState == CoroutineExStateEnum.Running)
                     AsyncManager.S_Instance.StopCoroutineEx(routine);
             }
 

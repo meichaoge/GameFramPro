@@ -5,9 +5,7 @@ using System;
 
 namespace GameFramePro.UI
 {
-    /// <summary>
-    /// UI 的管理器
-    /// </summary>
+    /// <summary>/// UI 的管理器，负责UI的创建和界面的显示隐藏/// </summary>
     public static class UIPageManager
     {
         //****UI 页面的属性
@@ -20,10 +18,13 @@ namespace GameFramePro.UI
             S_UICamera = GameObject.Find("UICamera").GetComponent<Camera>();
             mUIChangePage = GameObject.Find("UIChangePage").transform;
             mUIPopWindow = GameObject.Find("UIPopWindow").transform;
+            if (S_UICamera == null)
+                Debug.LogError("UI 相机初始化失败 确认是否指定了名为 UICamera 的UI相机");
         }
 
 
         #region 记录页面的数据
+
         //key=UI 界面名称
         private static Dictionary<string, UIBasePage> s_AllAliveUIPages = new Dictionary<string, UIBasePage>(); //记录所有现在还在内存中的界面
 
@@ -31,7 +32,8 @@ namespace GameFramePro.UI
 
 
         #region UIBaseChangePage 页面的接口
-        private static Stack<string> s_ChangePageRecord = new Stack<string>();// 记录打开页面的顺序，处理向上返回时候有用  key=页面名称
+
+        private static Stack<string> s_ChangePageRecord = new Stack<string>(); // 记录打开页面的顺序，处理向上返回时候有用  key=页面名称
         public static UIBaseChangePage CurUIBaseChangePage { get; private set; } = null; //当前正在显示的页面 可能为null
 
         /// <summary>
@@ -78,7 +80,6 @@ namespace GameFramePro.UI
                         var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
                         debugShowScript.Initialed(targetPage);
 #endif
-
                     }
                 });
             }
@@ -116,6 +117,7 @@ namespace GameFramePro.UI
                     Debug.LogError("无法返回到上一个界面 {0} ，没有被记录的页面", perviousPageName);
                     return;
                 }
+
                 if (previouPage.IsPrefabInstanceEnable == false)
                 {
                     CreateUIPageInstance(previouPage.PageName, previouPage.mPagePath, mUIChangePage, (gameObjectReference) =>
@@ -138,7 +140,7 @@ namespace GameFramePro.UI
 
 
                 if (previouPage.IsPrefabInstanceEnable == false)
-                    continue;  //说明上一个页面加载失败
+                    continue; //说明上一个页面加载失败
 
                 if (CurUIBaseChangePage != null)
                     CurUIBaseChangePage.HidePage(false);
@@ -154,12 +156,14 @@ namespace GameFramePro.UI
         {
             s_ChangePageRecord.Push(pageName);
         }
+
         #endregion
 
 
         #region UIBasePopWindow 弹窗的接口
 
         private static HashSet<string> s_AllAcivityPopWIndows = new HashSet<string>(); //所有可见的弹窗
+
         //打开弹窗
         public static T ShowPopwindow<T>(string pageName, string pagePath, bool isBelongCurPage) where T : UIBasePopWindow, new()
         {
@@ -191,26 +195,26 @@ namespace GameFramePro.UI
             } //取出打开的界面
 
             CreateUIPageInstance(pageName, pagePath, mUIPopWindow, (gameObjectReference) =>
-             {
-                 if (gameObjectReference != null)
-                 {
-                     RecordPopPage(pageName, true);
-                     targetPage = new T();
-                     if (isBelongCurPage)
-                         targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, CurUIBaseChangePage, gameObjectReference);
-                     else
-                         targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, null, gameObjectReference);
+            {
+                if (gameObjectReference != null)
+                {
+                    RecordPopPage(pageName, true);
+                    targetPage = new T();
+                    if (isBelongCurPage)
+                        targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, CurUIBaseChangePage, gameObjectReference);
+                    else
+                        targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, null, gameObjectReference);
 
-                     TryCacheUIPage(pageName, targetPage);
-                     targetPage.InstantiatePage(); //初始化
+                    TryCacheUIPage(pageName, targetPage);
+                    targetPage.InstantiatePage(); //初始化
 
-                     targetPage.ShowPage();
+                    targetPage.ShowPage();
 #if UNITY_EDITOR
-                     var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
-                     debugShowScript.Initialed(targetPage);
+                    var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
+                    debugShowScript.Initialed(targetPage);
 #endif
-                 }
-             });
+                }
+            });
             return targetPage;
         }
 
@@ -289,6 +293,7 @@ namespace GameFramePro.UI
 
                 popWindow.HidePage(false);
             }
+
             s_AllAcivityPopWIndows.Clear();
         }
 
@@ -345,7 +350,6 @@ namespace GameFramePro.UI
                     var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
                     debugShowScript.Initialed(targetWidget);
 #endif
-
                 }
             });
 
@@ -360,7 +364,7 @@ namespace GameFramePro.UI
         //创建页面实例
         private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<BaseBeReferenceGameObjectInformation> afterInitialedInstanceAction)
         {
-            BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath,false);
+            BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath, false);
             afterInitialedInstanceAction?.Invoke(gameObjectInformation);
         }
 
@@ -368,6 +372,7 @@ namespace GameFramePro.UI
 
 
         #region 公共的接口
+
         //保存创建的页面引用
         public static bool TryCacheUIPage(string pageName, UIBasePage page)
         {
@@ -386,6 +391,7 @@ namespace GameFramePro.UI
                 Debug.LogError("TryGetUIPageFromCache Fail,Parameter is null");
                 return null;
             }
+
             UIBasePage basePage = null;
             if (s_AllAliveUIPages.TryGetValue(pageName, out basePage))
                 return basePage;
@@ -406,10 +412,10 @@ namespace GameFramePro.UI
                 else
                 {
                     page.DestroyAndRelease();
-                }//页面只取消关联预制体 不销毁  UIBasePage 对象
+                } //页面只取消关联预制体 不销毁  UIBasePage 对象
             }
         }
-        #endregion
 
+        #endregion
     }
 }

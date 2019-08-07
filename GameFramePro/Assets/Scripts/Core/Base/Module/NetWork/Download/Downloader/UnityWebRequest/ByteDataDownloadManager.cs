@@ -9,6 +9,7 @@ namespace GameFramePro.NetWorkEx
     public class ByteDataDownloadManager : UnityWebRequestDownLoadManager
     {
         protected static ByteDataDownloadManager s_Instance = null;
+
         public static ByteDataDownloadManager S_Instance
         {
             get
@@ -17,15 +18,11 @@ namespace GameFramePro.NetWorkEx
                     s_Instance = new ByteDataDownloadManager();
                 return s_Instance;
             }
-        }// 
+        } // 
 
         #region  各种类型获取数据的接口
-        /// <summary>
-        /// 获取一个数据
-        /// </summary>
-        /// <param name="taskUrl"></param>
-        /// <param name="completeCallback"></param>
-        /// <param name="priorityEnum"></param>
+
+        /// <summary>/// 获取一个数据/// </summary>
         public virtual void GetDataFromUrl(string taskUrl, Action<UnityWebRequest, bool, string> callback, UnityTaskPriorityEnum priorityEnum = UnityTaskPriorityEnum.Normal)
         {
             if (string.IsNullOrEmpty(taskUrl))
@@ -46,6 +43,7 @@ namespace GameFramePro.NetWorkEx
                     targetNode = targetNode.Next;
                     continue;
                 } //优先级不同
+
                 var targetNodeValue = targetNode.Value;
                 if (targetNodeValue.TaskPriorityEnum == priorityEnum)
                 {
@@ -64,16 +62,18 @@ namespace GameFramePro.NetWorkEx
                 if (targetNodeValue.TaskPriorityEnum < priorityEnum)
                 {
                     newDownLoadTask = GetDownloadTaskInstance(taskUrl, callback, priorityEnum);
-                    newDownLoadTask.ChangeDownloadState(DownloadStateEnum.Waiting);
+                    newDownLoadTask.ChangeDownloadState(TaskStateEum.Initialed);
                     AllCacheDownloadTaskLinkedList.AddBefore(targetNode, newDownLoadTask); //添加新的任务到后面
                     return;
                 }
 
                 targetNode = targetNode.Next;
             }
+
             newDownLoadTask = GetDownloadTaskInstance(taskUrl, callback, priorityEnum);
-            newDownLoadTask.ChangeDownloadState(DownloadStateEnum.Waiting);
+            newDownLoadTask.ChangeDownloadState(TaskStateEum.Initialed);
             AllCacheDownloadTaskLinkedList.AddLast(newDownLoadTask); //添加新的任务到最后面
+
             #endregion
         }
 
@@ -89,11 +89,5 @@ namespace GameFramePro.NetWorkEx
         }
 
         #endregion
-
-
-
-
-
-
     }
 }

@@ -332,7 +332,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &720224026
 Transform:
   m_ObjectHideFlags: 0
@@ -613,12 +613,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9a0f8d71e0b35409af73c899629786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsLoadResourcesAssetPriorit: 1
-  IsClickEffectEnable: 0
-  ColorDefine:
-    mInforLevelColor: '#5EAB15FF'
-    mEditorInforLevelColor: '#E300BDFF'
-    mEditorErroColor: '#FF2D00'
+  IsLoadResourcesAssetPriorit: 0
+  IsClickEffectEnable: 1
+  Debug_InforLevelColor: {r: 1, g: 0, b: 1, a: 1}
+  Debug_EditorInforLevelColor: {r: 0.6792453, g: 0.35530883, b: 0.0032039948, a: 1}
+  Debug_EditorErroColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!4 &1527728372
 Transform:
   m_ObjectHideFlags: 0
@@ -725,7 +724,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1652667700
 MonoBehaviour:
   m_ObjectHideFlags: 0
