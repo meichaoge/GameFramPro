@@ -46,28 +46,28 @@ namespace GameFramePro.ResourcesEx
 
         #region 基类重写和实现
 
-//        /// <summary>/// 判断参数值指定的两个资源是否相同/// </summary>
-//        public virtual bool IsReferenceEqual(LoadAssetAssetRecord record)
-//        {
-//            if (record == null) return false;
-//            if (record.LoadBasicObjectAssetInfor.IsLoadAssetEnable == false) return false;
-//            if (LoadBasicObjectAssetInfor.IsLoadAssetEnable == false) return false;
-//            if (record.LoadBasicObjectAssetInfor.LoadAssetType != LoadBasicObjectAssetInfor.LoadAssetType) return false;
-//
-//            return record.LoadBasicObjectAssetInfor.AssetUrl == LoadBasicObjectAssetInfor.AssetUrl;
-//        }
-
-
         public override void NotifyReleaseRecord()
         {
-            LoadBasicObjectAssetInfor.ReleaseAsset();
-            base.NotifyReleaseRecord();
+            //    LoadBasicObjectAssetInfor.ReleaseAsset();
             LoadBasicObjectAssetInfor = null;
+            base.NotifyReleaseRecord();
         }
 
         #endregion
 
         #region 引用记录的中资源
+
+        /// <summary>/// 用于判断是否已经包含了这个引用 避免资源被重复引用和释放消耗 /// </summary>
+        public bool IsExitReference(BaseBeReferenceInformation referenceInformation)
+        {
+            if (referenceInformation == null)
+                return false;
+
+            if (mAllBeReferenceInformations == null || mAllBeReferenceInformations.Count == 0)
+                return false;
+            return mAllBeReferenceInformations.Contains(referenceInformation);
+        }
+
 
         /// <summary>/// 通知有其他对象引用这条记录中的某个资源/// </summary>
         public void AddBeReferenceInformation(BaseBeReferenceInformation beReferenceInformation)
@@ -99,7 +99,7 @@ namespace GameFramePro.ResourcesEx
                 return;
             }
 
-            ReduceReference(false);
+            ReduceReference();
             for (int dex = mAllBeReferenceInformations.Count - 1; dex >= 0; dex--)
             {
                 if (mAllBeReferenceInformations[dex].IsReferenceEqual(beReferenceInformation))

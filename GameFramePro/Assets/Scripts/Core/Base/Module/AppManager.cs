@@ -12,11 +12,16 @@ namespace GameFramePro
     /// <summary>
     /// 需要自己手动挂在 第一个执行的脚本 需要尽可能少的脚本直接依赖Mono  
     /// </summary>
-    public class AppManager : Single_Mono_NotDestroy<AppManager>
+    public class AppManager : Single_Mono<AppManager>
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
-        public float CurrentRealTime { get { return Time.realtimeSinceStartup; } } //启动到现在的时间
+        protected override bool IsNotDestroyedOnLoad { get;  } = true; //标示不销毁
+
+        public float CurrentRealTime
+        {
+            get { return Time.realtimeSinceStartup; }
+        } //启动到现在的时间
 
         private IEnumerator Start()
         {
@@ -28,19 +33,18 @@ namespace GameFramePro
 
             yield return null;
 
-          UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
+            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
         }
 
 
         private void Update()
         {
             UpdateTick(Time.realtimeSinceStartup);
-          
         }
 
 
-
         #region 总的刷新控制
+
         private void UpdateTick(float realtimeSinceStartup)
         {
             ScreenClickManager.S_Instance.UpdateTick(realtimeSinceStartup); //屏幕点击特效
@@ -95,11 +99,6 @@ namespace GameFramePro
 
         #region 事件检测系统
 
-        
-
         #endregion
-        
-        
-        
     }
 }

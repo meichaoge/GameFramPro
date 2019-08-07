@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameFramePro.ResourcesEx;
 using UnityEngine;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 音效管理器
-    /// </summary>
-    public class AudioManager : Single_Mono_AutoCreateNotDestroy<AudioManager>, IUpdateCountTick
+    /// <summary>/// 音效管理器/// </summary>
+    public class AudioManager : Single_Mono<AudioManager>, IUpdateCountTick
     {
+        protected override bool IsNotDestroyedOnLoad { get;  } = true; //标示不会一起销毁
+
+
         #region 背景音
 
         private readonly Dictionary<string, BaseBeReferenceInformation> mAllBackgroundAudioClips = new Dictionary<string, BaseBeReferenceInformation>(); //背景音
@@ -151,14 +153,11 @@ namespace GameFramePro
             if (isReleaseClip)
             {
                 mCurBackgroundAudioSource.clip = null;
-                ResourcesManager.ReleaseComponentReference(mCurBackgroundAudioSource);
+                ResourcesUtility.ReleaseComponentReference(mCurBackgroundAudioSource);
             }
         }
 
-        /// <summary>
-        /// 停止播放背景
-        /// </summary>
-        /// <param name="audioName"></param>
+        /// <summary>/// 停止播放背景/// </summary>
         /// <param name="isReleaseClip">是否在停止的时候释放引用的音效资源</param>
         private void StopBackgroundAudio(string audioName, bool isReleaseClip = false)
         {
@@ -170,7 +169,7 @@ namespace GameFramePro
             if (isReleaseClip)
             {
                 mCurBackgroundAudioSource.clip = null;
-                ResourcesManager.ReleaseComponentReference(mCurBackgroundAudioSource);
+                ResourcesUtility.ReleaseComponentReference(mCurBackgroundAudioSource);
             }
         }
 
@@ -217,10 +216,7 @@ namespace GameFramePro
             }
         }
 
-        /// <summary>
-        /// 停止播放一个音效
-        /// </summary>
-        /// <param name="audioName"></param>
+        /// <summary>/// 停止播放一个音效/// </summary>
         /// <param name="isReleaseClip">是否在停止的时候释放引用的音效资源</param>
         public void StopNormalAudio(string audioPath, bool isReleaseClip = false)
         {
@@ -236,7 +232,7 @@ namespace GameFramePro
             if (isReleaseClip)
             {
                 curAudioSources.clip = null;
-                ResourcesManager.ReleaseComponentReference(curAudioSources);
+                ResourcesUtility.ReleaseComponentReference(curAudioSources);
             }
 
             RecycleNormalAudioSource(curAudioSources);

@@ -7,9 +7,7 @@ using UnityEngine.UI;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 屏幕点击特效管理  
-    /// </summary>
+    /// <summary>/// 屏幕点击特效管理  确保AppSetting.S_IsClickEffectEnable=true 这个脚本才能有效 /// </summary>
     public class ScreenClickManager : Single<ScreenClickManager>, IUpdateCountTick
     {
         //屏幕特效的信息
@@ -77,6 +75,7 @@ namespace GameFramePro
         {
             get { return UIPageManager.S_UICamera; }
         }
+
         private Transform mScreenEffectCanvasTrans; //最上层屏幕点击特效层
         private List<ScreenEffectInfor> mAllScreenEffectItems = new List<ScreenEffectInfor>(5); //所有的粒子特效 
 
@@ -135,6 +134,8 @@ namespace GameFramePro
 
         public bool CheckIfNeedUpdateTick()
         {
+            if (AppSetting.S_IsClickEffectEnable == false)
+                return false;
             return true;
         }
 
@@ -162,7 +163,7 @@ namespace GameFramePro
             if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
             {
                 Vector3 position = Input.mousePosition;
-                ClickPositionInWorld =mUICamera.ScreenToWorldPoint(position);
+                ClickPositionInWorld = mUICamera.ScreenToWorldPoint(position);
                 EffectLocalPos = mScreenEffectCanvasTrans.InverseTransformPoint(ClickPositionInWorld);
                 EffectLocalPos.z = 0;
                 lastClickTime = Time.time;
@@ -181,7 +182,7 @@ namespace GameFramePro
                 if (needCreateItem)
                 {
                     ScreenEffectInfor effectInfor = new ScreenEffectInfor();
-                    BaseBeReferenceGameObjectInformation information = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath,true);
+                    BaseBeReferenceGameObjectInformation information = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath, true);
                     if (information == null)
                     {
                         Debug.LogError("获取资源为null ");

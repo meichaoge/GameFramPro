@@ -8,10 +8,12 @@ namespace GameFramePro
     /// <summary>
     /// 负责辅助生成 UnityMonoObjectPool 
     /// </summary>
-    public class UnityMonoObjectPoolHelper : Single_Mono_AutoCreateNotDestroy<UnityMonoObjectPoolHelper>
+    public class UnityMonoObjectPoolHelper : Single_Mono<UnityMonoObjectPoolHelper>
     {
         private readonly string R_UnityPoolManagerPrefix = "UnityPoolManger_"; //Unity 对象池父节点名称前缀
         private Dictionary<string, Transform> mAllPoolMonoObjects = new Dictionary<string, Transform>();
+
+        protected override bool IsNotDestroyedOnLoad { get;  } = true; //标示不会一起销毁
 
 
         /// <summary>
@@ -26,6 +28,7 @@ namespace GameFramePro
                 Debug.LogError("GetUnityPoolManagerTransParent Fail,Parameter poolName is null");
                 return null;
             }
+
             poolName = string.Format("{0}{1}", R_UnityPoolManagerPrefix, poolName);
             Transform parent = null;
             if (mAllPoolMonoObjects.TryGetValue(poolName, out parent))
@@ -44,7 +47,6 @@ namespace GameFramePro
         /// 销毁对象池时候回收父节点
         /// </summary>
         /// <param name="poolName"></param>
-
         public void RecycleUnityPoolManagerTransParent(string poolName)
         {
             if (string.IsNullOrEmpty(poolName))
@@ -52,6 +54,7 @@ namespace GameFramePro
                 Debug.LogError("RecycleUnityPoolManagerTransParents Fail,Parameter poolName is null");
                 return;
             }
+
             poolName = string.Format("{0}{1}", R_UnityPoolManagerPrefix, poolName);
             Transform parent = null;
             if (mAllPoolMonoObjects.TryGetValue(poolName, out parent))
@@ -67,6 +70,5 @@ namespace GameFramePro
             Debug.LogError(string.Format("RecycleUnityPoolManagerTransParent Fail,the poolName={0} connect Transform Not Record Or Aleady Destroyed", poolName));
             return;
         }
-
     }
 }

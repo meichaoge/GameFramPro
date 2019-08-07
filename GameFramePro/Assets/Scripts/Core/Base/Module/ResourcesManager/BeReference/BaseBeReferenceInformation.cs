@@ -101,12 +101,16 @@ namespace GameFramePro
             return mReferenceAsset.Equals(asset);
         }
 
+        /// <summary>/// 判断两个引用对象是否引用相同的资源/// </summary>
         public virtual bool IsReferenceEqual(BaseBeReferenceInformation reference)
         {
             if (reference == null) return false;
-            if (IsReferenceAssetEnable == false) return false;
-            if (reference.IsReferenceAssetEnable == false) return false;
-            return mReferenceAsset.Equals(reference.mReferenceAsset);
+            if (IsReferenceAssetEnable == false && reference.IsReferenceAssetEnable == false)
+                return true; //都是无效资源
+
+            if (IsReferenceAssetEnable)
+                return mReferenceAsset.Equals(reference.mReferenceAsset); //当前对象有效则判断对象是否是同一个
+            return false;
         }
 
         #endregion
@@ -179,7 +183,7 @@ namespace GameFramePro
             if (IsReferenceAssetEnable == false) return;
             if (mReferenceAsset is AudioClip)
             {
-                ResourcesManager.SettAudioClipFromRecord(audioSource, this);
+                ResourcesUtility.SettAudioClipFromReference(audioSource, this);
             }
         }
 
@@ -189,7 +193,7 @@ namespace GameFramePro
             if (IsReferenceAssetEnable == false) return;
             if (mReferenceAsset is Sprite)
             {
-                ResourcesManager.SetImageSpriteFromRecord(targetImage, this);
+                ResourcesUtility.SetImageSpriteFromReference(targetImage, this);
             }
         }
 

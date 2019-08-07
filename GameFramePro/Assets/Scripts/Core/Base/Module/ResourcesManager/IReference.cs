@@ -20,11 +20,10 @@ namespace GameFramePro
         /// 增加引用计数
         /// </summary>
         void AddReference();
-        
+
         /// <summary>
         /// 减少引用计数
         /// </summary>
-        /// <param name="isForceDelete">是否强制减少引用计数</param>
-        void ReduceReference(bool isForceDelete = false);
+        void ReduceReference();
     }
 }

@@ -51,8 +51,8 @@ namespace GameFramePro.ResourcesEx
 
         public void ReleaseAsset()
         {
-            if (IsLoadAssetEnable == false) return;
-            Resources.UnloadAsset(mLoadUnityAsset);
+//            if (IsLoadAssetEnable == false) return;
+//            Resources.UnloadAsset(mLoadUnityAsset);
         }
 
         #endregion

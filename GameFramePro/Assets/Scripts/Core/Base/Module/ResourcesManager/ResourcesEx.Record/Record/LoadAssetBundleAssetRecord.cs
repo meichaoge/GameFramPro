@@ -105,7 +105,7 @@ namespace GameFramePro.ResourcesEx
 
             if (ReferenceCount == 0)
             {
-                ResourcesManager.UnLoadAssetBundle(this, true);
+                ResourcesUtility.UnLoadAssetBundle(this, true);
                 //  Debug.LogError("TODO  卸载AssetBundle " + AssetUrl);
             }
         }

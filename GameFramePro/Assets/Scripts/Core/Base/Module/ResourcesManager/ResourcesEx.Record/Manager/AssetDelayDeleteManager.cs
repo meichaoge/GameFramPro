@@ -52,6 +52,10 @@ namespace GameFramePro.ResourcesEx
                 temp = target.Next;
                 if (isEnable == false)
                 {
+# if UNITY_EDITOR
+                    Debug.LogEditorInfor($"某个资源{target.Value.AssetUrl}   没有引用后超过可以存活的时间 被释放了！！");
+#endif
+
                     target.Value.NotifyReleaseRecord(); //释放资源
                     s_AllDelayDeleteAssetInfor.Remove(target);
                 }
@@ -61,12 +65,13 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-        /// <summary>
-        /// 开始后台追踪这个资源的状态
-        /// </summary>
-        /// <param name="assetInfor"></param>
+        /// <summary>/// 开始后台追踪这个资源的状态/// </summary>
         public static void RecycleNoReferenceLoadAssetRecord(LoadAssetBaseRecord assetInfor)
         {
+#if UNITY_EDITOR
+            Debug.LogEditorInfor($"资源{assetInfor.AssetUrl} 加载记录已经没有引用了,进入待回收链表中 ");
+#endif
+
             LinkedListNode<LoadAssetBaseRecord> newNode = new LinkedListNode<LoadAssetBaseRecord>(assetInfor);
             AddNode(newNode);
         }
@@ -85,7 +90,12 @@ namespace GameFramePro.ResourcesEx
 
             if (target != null)
             {
-                target.Value.ReduceReference(true);
+                //        target.Value.ReduceReference(true);
+
+                target.Value.NotifyReleaseRecord(); //2019/8/7 修改
+#if UNITY_EDITOR
+                Debug.LogEditorInfor($"资源{assetPath} 加载在被真正回收前被重新引用，移除回收链表 ");
+#endif
                 return target.Value;
 //                else
 //                {

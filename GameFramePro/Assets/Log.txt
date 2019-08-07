@@ -1,4 +1,11 @@
 
+2019/8/7
+<1> 整理合并了Mono 单例模板类的实现，只留下一个 Single_Mono 基类
+<2> 拆分了 ResourcesManager,将资源的加载逻辑移到了 ResourcesUtility 中，隐藏了实现
+<3> 优化解决了加载相同资源时候会先卸载资源再加载的问题，预判的减少不必要的消耗
+<4>  解决了卸载资源时候报错的 Bug
+
+
 2019/8/6 
 <1> 重构资源引用结构，将资源的引用内置到资源加载记录中，删除之前的ReferenceAssetAndRecord 组合引用和记录的脚本
 <2> 优化ResourceManager 加载资源的接口

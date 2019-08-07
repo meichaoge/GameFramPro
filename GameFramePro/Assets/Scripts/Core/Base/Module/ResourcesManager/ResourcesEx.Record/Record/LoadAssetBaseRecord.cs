@@ -108,7 +108,7 @@ namespace GameFramePro.ResourcesEx
             }
         }
 
-        public virtual void ReduceReference(bool isForceDelete = false)
+        public virtual void ReduceReference()
         {
             if (IsReferenceEnable == false)
             {
@@ -117,10 +117,7 @@ namespace GameFramePro.ResourcesEx
             }
             else
             {
-                if (isForceDelete)
-                    ReferenceCount = 0;
-                else
-                    --ReferenceCount;
+                --ReferenceCount;
                 if (ReferenceCount == 0)
                     MarkToDeleteTime = DateTime.UtcNow.ToTimestamp_Millisecond();
             }
@@ -140,18 +137,25 @@ namespace GameFramePro.ResourcesEx
                 return false;
             }
 
-            RemainTimeToBeDelete = RemainTimeToBeDelete - tickTime;
-            return RemainTimeToBeDelete > 0f;
+            if (ReferenceCount <= 0)
+            {
+                RemainTimeToBeDelete = RemainTimeToBeDelete - tickTime;
+                return RemainTimeToBeDelete > 0f;
+            }
+            else
+            {
+                RemainTimeToBeDelete = BelongAssetManager.MaxAliveTimeAfterNoReference;
+                return true;
+            }
         }
 
 
         public virtual void NotifyReleaseRecord()
         {
-            AssetUrl = null;
             ReferenceCount = 0;
             AssetLoadedType = LoadedAssetTypeEnum.None;
-            BelongAssetManager = null;
             BelongAssetManager.NotifyAssetRelease(this);
+            BelongAssetManager = null;
         }
 
         protected virtual void NotifyReferenceChange(bool isAddReference)

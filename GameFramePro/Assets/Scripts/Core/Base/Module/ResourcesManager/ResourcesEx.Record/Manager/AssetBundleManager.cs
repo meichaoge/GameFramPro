@@ -110,7 +110,7 @@ namespace GameFramePro.ResourcesEx
                 else
                     Debug.LogError("NotifyAssetRelease Fail,没有找到这个AssetBundle的记录 {0} ", assetBundleDependence.AssetUrl);
 
-                ResourcesManager.UnLoadAssetBundle(assetBundleDependence, true);
+                ResourcesUtility.UnLoadAssetBundle(assetBundleDependence, true);
             }
             else
             {
@@ -119,20 +119,20 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-        public void NotifyAssetReferenceChange(LoadAssetBaseRecord record,bool isAddReference)
+        public void NotifyAssetReferenceChange(LoadAssetBaseRecord record, bool isAddReference)
         {
             if (record == null) return;
             if (record is LoadAssetBundleSubAssetRecord)
             {
                 var subAssetRecord = record as LoadAssetBundleSubAssetRecord;
-                OnAssetBundleSubAssetReferenceChange(subAssetRecord,isAddReference);
+                OnAssetBundleSubAssetReferenceChange(subAssetRecord, isAddReference);
                 return;
             }
 
             if (record is LoadAssetBundleAssetRecord)
             {
                 var dependenceAssetRecord = record as LoadAssetBundleAssetRecord;
-                OnAssetBundleDependenceReferenceChange(dependenceAssetRecord,isAddReference);
+                OnAssetBundleDependenceReferenceChange(dependenceAssetRecord, isAddReference);
                 return;
             }
 
@@ -140,7 +140,7 @@ namespace GameFramePro.ResourcesEx
         }
 
         /// <summary>/// AssetBundle 加载的资源的引用关系改变/// </summary>
-        private void OnAssetBundleSubAssetReferenceChange(LoadAssetBundleSubAssetRecord subAssetRecord,bool isAddReference)
+        private void OnAssetBundleSubAssetReferenceChange(LoadAssetBundleSubAssetRecord subAssetRecord, bool isAddReference)
         {
             if (mAllLoadAssetBundleCache.TryGetValue(subAssetRecord.AssetBelongBundleName, out var assetBundleRecord))
             {
@@ -170,15 +170,12 @@ namespace GameFramePro.ResourcesEx
                     }
                     else
                         Debug.LogError("NotifyAssetReferenceChange Error !!" + subAssetRecord.AssetUrl);
-            
                 } //资源没有引用时候 释放资源
             }
-            
-          
         }
 
         /// <summary>/// AssetBundle 资源被引用次数改变/// </summary>
-        private void OnAssetBundleDependenceReferenceChange(LoadAssetBundleAssetRecord depdenceAssetRecord,bool isAddReference)
+        private void OnAssetBundleDependenceReferenceChange(LoadAssetBundleAssetRecord depdenceAssetRecord, bool isAddReference)
         {
             if (depdenceAssetRecord.ReferenceCount == 0)
             {
@@ -284,7 +281,8 @@ namespace GameFramePro.ResourcesEx
                 if (record.IsReferenceEnable)
                 {
                     record.ClearAllDependence();
-                    record.ReduceReference(true);
+               //     record.ReduceReference(true);
+               record.NotifyReleaseRecord();  //2019/8/7 修改
                 } //释放资源
 
                 mAllLoadAssetBundleCache.Remove(assetBundlePath); //已经被销毁了 需要重新加载
@@ -310,7 +308,8 @@ namespace GameFramePro.ResourcesEx
                 if (result.assetBundle == null)
                 {
                     record.ClearAllDependence();
-                    record.ReduceReference(true);
+                    //    record.ReduceReference(true);
+                    record.NotifyReleaseRecord(); //2019/8/7 修改
                     mAssetBundleRecordPoolMgr.RecycleItemToPool(record);
                     Debug.LogError("LoadAssetBundleSync Fail,AssetBundle NOT Exit " + assetBundlePath);
 
