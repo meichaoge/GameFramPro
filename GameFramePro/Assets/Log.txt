@@ -1,3 +1,9 @@
+2019/8/8 20:00
+<1> 修改了下载任务类，修改对应的 Bug.
+<2> 新增接口 IUpgradeModule  ,用于需要更新的模块提供模板
+<3> 修改了AssetBundle 下载类的实现，继承自IUpgradeModule 并重新整理了下载流程，使用CoroutineEx 来协助完成整个更新流程
+<4> 抽象出 AppUpgradeManager 类，负责管理应用中需要更新的模块
+
 2019/8/7  23:11
 <1>  修改了下载任务的基类，去掉了Tick 接口，改成CoroutineEx 协程
 <2> 去掉了Tick任务状态 改成了协程去做 新增任务的状态枚举  TaskStateEum

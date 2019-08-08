@@ -22,7 +22,7 @@ namespace GameFramePro.EditorEx
         private static string s_AssetBundleNameRule = "资源相对于Resources 目录的目录命名\n";
 
 
-        [MenuItem("Assets/Tools/设置AssetBundleName/文件夹所有资源设置对应的AssetBundleName(递归)")]
+        [MenuItem("Assets/工具和扩展/设置AssetBundleName/文件夹所有资源设置对应的AssetBundleName(递归)")]
         private static void CreateAssetBundleNameOfDirectory()
         {
             if (Selection.objects.Length == 0)

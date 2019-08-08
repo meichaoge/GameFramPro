@@ -13,7 +13,7 @@ namespace GameFramePro.EditorEx
     /// </summary>
     public class LocalizationConfig_Win : EditorWindow
     {
-        [MenuItem("Tools/Localization/多语言配置窗口")]
+        [MenuItem("工具和扩展/Localization/多语言配置窗口")]
         static void OpenLocalizationConfigWin()
         {
             LocalizationConfig_Win win = EditorWindow.GetWindow<LocalizationConfig_Win>("多语言本地化配置");

@@ -9,7 +9,7 @@ namespace GameFramePro.EditorEx
     public class UIBasePageViewEditor
     {
 
-        [MenuItem("Assets/Tools/辅助/创建继承 UIBaseChangePage 页面脚本")]
+        [MenuItem("Assets/工具和扩展/辅助/创建继承 UIBaseChangePage 页面脚本")]
         private static void CreateUIBaseChangePageViewScript()
         {
             string ScriptName = "输入脚本名称";
@@ -26,7 +26,7 @@ namespace GameFramePro.EditorEx
 
             CreateUIBasePageScriptByPath(savePath, UIPageTypeEnum.ChangePage);
         }
-        [MenuItem("Assets/Tools/辅助/创建继承 UIBaseWidget 组件脚本")]
+        [MenuItem("Assets/工具和扩展/辅助/创建继承 UIBaseWidget 组件脚本")]
         private static void CreateUIBaseWidgetViewScript()
         {
 
@@ -44,7 +44,7 @@ namespace GameFramePro.EditorEx
 
             CreateUIBasePageScriptByPath(savePath, UIPageTypeEnum.Widget);
         }
-        [MenuItem("Assets/Tools/辅助/创建继承 UIBasePopWindow 弹窗脚本")]
+        [MenuItem("Assets/工具和扩展/辅助/创建继承 UIBasePopWindow 弹窗脚本")]
         private static void CreateUIBasePopWindowViewScript()
         {
             string ScriptName = "输入脚本名称";

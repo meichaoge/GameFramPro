@@ -14,7 +14,7 @@ namespace GameFramePro.EditorEx
     /// </summary>
     public class UIGraphicRaycastCheck
     {
-        [MenuItem("Tools/性能优化/检测预制体 RaycastTarget 属性 ")]
+        [MenuItem("工具和扩展/性能优化/检测预制体 RaycastTarget 属性 ")]
         private static void CheckRayCastTagEnable()
         {
             var resourcesPrefabs = AssetDatabase.FindAssets("t:prefab", new string[] { "Assets/Resources" });

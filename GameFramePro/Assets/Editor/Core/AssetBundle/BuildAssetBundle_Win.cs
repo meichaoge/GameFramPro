@@ -11,7 +11,7 @@ namespace GameFramePro.EditorEx
     /// </summary>
     public class BuildAssetBundle_Win : EditorWindow
     {
-        [MenuItem("Tools/AssetBundle/创建 AssetBundle 资源")]
+        [MenuItem("工具和扩展/AssetBundle/创建 AssetBundle 资源")]
         private static void CreateAssetBundleWin()
         {
             BuildAssetBundle_Win win = EditorWindow.GetWindow<BuildAssetBundle_Win>("Create AssetBundle Window");

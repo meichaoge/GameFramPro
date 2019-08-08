@@ -9,7 +9,7 @@ namespace GameFramePro.EditorEx
 {
     public class SpriteAltsEditor 
     {
-        [MenuItem("Assets/Tools/图片管理/SpriteAltas (TODO)")]
+        [MenuItem("Assets/工具和扩展/图片管理/SpriteAltas (TODO)")]
         private static void CollectTextureToSpriteAlts()
         {
 
