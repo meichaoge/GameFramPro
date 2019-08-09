@@ -26,7 +26,6 @@ namespace GameFramePro
         {
             Debug.Log("AppManager--->>>>");
             UIPageManager.InitialedPageManager();
-
             LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
 
             CoroutineEx appUpgradeCoroutineEx = new CoroutineEx(AppUpgradeManager.S_Instance.OnBeginUpgrade());
@@ -34,8 +33,7 @@ namespace GameFramePro
 
 
             yield return null;
-
-            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
+           UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
         }
 
 

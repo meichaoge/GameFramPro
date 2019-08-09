@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameFramePro.UI;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,10 +9,7 @@ using UnityEngine.UI;
 
 namespace GameFramePro.EditorEx
 {
-
-    /// <summary>
-    /// 创建取消勾选 RaycastTarget的UI
-    /// </summary>
+    /// <summary>/// 创建取消勾选 RaycastTarget的UI/// </summary>
     public class CreateUIWithNotRaycastTarget : Editor
     {
         [MenuItem("GameObject/UI/Image")]
@@ -52,7 +50,7 @@ namespace GameFramePro.EditorEx
                 go = CreateGameWithTypeAndName("Button", typeof(Image), parentCanvas.transform);
             else
                 go = CreateGameWithTypeAndName("Button", typeof(Image), Selection.activeTransform);
-            go.tag = "UI.Button";
+            go.tag = UGUIComponentTypeEnum.UGUIButton.ToString();
 
             go.GetComponent<Image>().raycastTarget = true;
             Button btn = go.AddComponent<Button>();
@@ -87,7 +85,7 @@ namespace GameFramePro.EditorEx
                 go = CreateGameWithTypeAndName("Text", typeof(Text), parentCanvas.transform);
             else
                 go = CreateGameWithTypeAndName("Text", typeof(Text), Selection.activeTransform);
-            go.tag = "UI.Text";
+            go.tag = UGUIComponentTypeEnum.UGUIText.ToString();
 
             Text text = go.GetComponent<Text>();
             text.text = "text";
@@ -144,6 +142,7 @@ namespace GameFramePro.EditorEx
             {
                 parentCanvas = selectTrans.GetComponentInParent<Canvas>();
             }
+
             return parentCanvas;
         }
 
@@ -157,8 +156,5 @@ namespace GameFramePro.EditorEx
 
             return go;
         }
-
-
-
     }
 }

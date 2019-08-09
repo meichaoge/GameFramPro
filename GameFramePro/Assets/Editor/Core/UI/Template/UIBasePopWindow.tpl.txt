@@ -8,7 +8,7 @@ namespace GameFramePro.UI
    	public class #CLASSNAME# : UIBasePopWindow
   	{
      #region UI
-     #UIPARAMETER#
+         #UIPARAMETER#
      #endregion
 
 
@@ -16,7 +16,14 @@ namespace GameFramePro.UI
         protected override void OnInitialed()
         {
             base.OnInitialed();
+             GetUIComponentReference();
            //TODO
+        }
+        
+      /// <summary>/// 根据挂载的 UGUIComponentReference 脚本生成对应的引用配置/// </summary>
+       private void GetUIComponentReference()
+       {
+              #UICOMPONENTREFERENCE#
         }
         #endregion
 
@@ -24,7 +31,7 @@ namespace GameFramePro.UI
         //TODO
         #endregion
 
-		#region  按钮点击事件
+		#region  点击事件或者操作
         //TODO
         #endregion
    

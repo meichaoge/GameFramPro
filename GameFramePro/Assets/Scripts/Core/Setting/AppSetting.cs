@@ -5,9 +5,7 @@ using UnityEngine;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 配置应用的设置
-    /// </summary>
+    /// <summary>/// 配置应用的设置/// </summary>
     public static class AppSetting 
     {
 
@@ -87,17 +85,13 @@ namespace GameFramePro
             }
         }
 
-        /// <summary>
-        /// Localization 本地化语言表的配置格式
-        /// </summary>
+        /// <summary>/// Localization 本地化语言表的配置格式/// </summary>
         public static ExportFormatEnum S_LocalizationExportFormatType = ExportFormatEnum.Csv;
         
         /// <summary>/// 当前目标分辨率/// </summary>
         public  static  Vector2 S_ReferenceResolution=new Vector2(640,1134);
 
-        /// <summary>
-        /// 标示是否启用 屏幕点击特效 (这里是在入口处判断，比ScreenClickManager 中的接口优先级和限制更高)
-        /// </summary>
+        /// <summary>/// 标示是否启用 屏幕点击特效 (这里是在入口处判断，比ScreenClickManager 中的接口优先级和限制更高)/// </summary>
         public static bool S_IsClickEffectEnable = true;
 
 

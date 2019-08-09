@@ -52,11 +52,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mSerilizeUGUIComponents:
   - mReferenceComponent: {fileID: 1021940056390638573}
-    mComponentType: 3
+    mComponentType: 4
   - mReferenceComponent: {fileID: 233860199635174090}
-    mComponentType: 1
-  - mReferenceComponent: {fileID: 7387198715480836558}
-    mComponentType: 3
+    mComponentType: 2
+  - mReferenceComponent: {fileID: 2249239295670576352}
+    mComponentType: 4
 --- !u!1 &233860199192482961
 GameObject:
   m_ObjectHideFlags: 0

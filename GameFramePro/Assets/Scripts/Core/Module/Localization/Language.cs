@@ -6,9 +6,7 @@ using System;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 本地化语言环境 (UnityEngine.SystemLanguage 也有定义)
-    /// </summary>
+    /// <summary>/// 本地化语言环境 (UnityEngine.SystemLanguage 也有定义)/// </summary>
     [Flags]
     public enum Language
     {

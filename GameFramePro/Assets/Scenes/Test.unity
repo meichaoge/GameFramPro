@@ -613,7 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9a0f8d71e0b35409af73c899629786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsLoadResourcesAssetPriorit: 0
+  IsLoadResourcesAssetPriorit: 1
   IsClickEffectEnable: 1
   Debug_InforLevelColor: {r: 1, g: 0, b: 1, a: 1}
   Debug_EditorInforLevelColor: {r: 0.6792453, g: 0.35530883, b: 0.0032039948, a: 1}

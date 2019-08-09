@@ -18,15 +18,15 @@ namespace GameFramePro.EditorEx
                                                                 //   position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
             float EditorLableWidth = EditorGUIUtility.labelWidth; //需要先保存这个值 然后还原
 
-            float lableWidth = 50;
-            var labelRect = new Rect(position.x, position.y, lableWidth, position.height); //显示前面的Lable
+            float lableWidth = 5;
+          //  var labelRect = new Rect(position.x, position.y, lableWidth, position.height); //显示前面的Lable
 
             float contentInforWidth = position.width - lableWidth; //内容区间的宽度
 
             var mReferenceComponentRect = new Rect(position.x + lableWidth, position.y, contentInforWidth * 0.6f, position.height);
             var mComponentTypeRect = new Rect(mReferenceComponentRect.x + mReferenceComponentRect.width, position.y, contentInforWidth * 0.4f, position.height);
 
-            EditorGUI.LabelField(labelRect, label);
+      //      EditorGUI.LabelField(labelRect, label);
             EditorGUIUtility.labelWidth = contentInforWidth * 0.2f; //控制每个属性文本区间大小
             EditorGUI.PropertyField(mReferenceComponentRect, property.FindPropertyRelative("mReferenceComponent"), new GUIContent("Component"));
             EditorGUI.PropertyField(mComponentTypeRect, property.FindPropertyRelative("mComponentType"), new GUIContent("ComponentType"));
