@@ -1,3 +1,10 @@
+2019/8/9 23:00
+<1>继续扩展和优化 UGUIComponentReference 组件，新增根据序列化组件设置Tag
+<2> AsyncManager 新增延迟一段时间执行的接口 DelayAction
+<3> 完善 UIGeneralTipPopWindow 功能
+<4> 提供UI 显示等操作的公共类 UIPageHelpUtility
+
+
 2019/8/9 20:48
 <1> 修改完善了几个下载器的配置
 <2> 修改了创建几种类型UI 的模板文件，增加自动获取 挂载了UGUIComponentReferenceEditor 组件的对象上的UI定义，并自动生成到脚本中

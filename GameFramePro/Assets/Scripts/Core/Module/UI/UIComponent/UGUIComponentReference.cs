@@ -8,27 +8,12 @@ using System.Text;
 using UnityEditor;
 
 #endif
+
 namespace GameFramePro.UI
 {
-#if UNITY_EDITOR
-    /// <summary>/// 关联的资源类型 名称也是对应的 Tag/// </summary>
-    [System.Serializable]
-    public enum UGUIComponentTypeEnum
-    {
-        Transform,
-        RectTransform,
-        UGUIText,
-        UGUIImage,
-        UGUIButton,
-        UGUIInputField,
-        UGUIDropDown,
-    }
-#endif
-
     /// <summary>/// 挂载在预制体上 编辑器配置哪些组件的引用可以序列化，主要使用这个避免每次查找/// </summary>
-    public class UGUIComponentReference : MonoBehaviour
+    public partial class UGUIComponentReference : MonoBehaviour
     {
-        
         [System.Serializable]
         public class UGUIComponentSerializationInfor
         {
@@ -41,12 +26,19 @@ namespace GameFramePro.UI
 
         [SerializeField] private List<UGUIComponentSerializationInfor> mSerilizeUGUIComponents = new List<UGUIComponentSerializationInfor>();
 
-        public List<UGUIComponentSerializationInfor> AllSerilizeUGUIComponents
-        {
-            get { return mSerilizeUGUIComponents; }
-        }
-
         private Dictionary<string, Component> mAllSerilizeUGUIComponentMap = new Dictionary<string, Component>();
+
+        /// <summary>/// 根据组件名获取对应的组件/// </summary>
+        public T GetComponentByName<T>(string gameObjectName) where T : Component
+        {
+            if (mAllSerilizeUGUIComponentMap.TryGetValue(gameObjectName, out var component))
+            {
+                if (component is T)
+                    return component as T;
+            }
+
+            return null;
+        }
 
 
         private void Awake()
@@ -69,7 +61,7 @@ namespace GameFramePro.UI
                 if (mAllSerilizeUGUIComponentMap.ContainsKey(item.mReferenceComponent.name))
                 {
 #if UNITY_EDITOR
-                    Debug.LogError("TryMapUGUIComponent 包含重复名称的引用，请去除！" + item.mReferenceComponent.name);
+                    Debug.LogError($"TryMapUGUIComponent 包含重复名称 {item.mReferenceComponent.name} 的引用，请去除！");
 #endif
                     return false;
                 }
@@ -79,96 +71,30 @@ namespace GameFramePro.UI
 
             return true;
         }
+    }
 
-        public T GetComponentByName<T>(string gameObjectName) where T : Component
-        {
-            Component component = null;
-            if (mAllSerilizeUGUIComponentMap.TryGetValue(gameObjectName, out component))
-            {
-                if (component is T)
-                    return component as T;
-            }
-
-            return null;
-        }
-
-        #region 编辑器菜单功能
 
 #if UNITY_EDITOR
 
-        //检测对象名重复
-        public void CheckIfContainSameNameObject()
-        {
-            HashSet<string> allSerializeGameObjectName = new HashSet<string>();
-            foreach (var item in mSerilizeUGUIComponents)
-            {
-                if (item == null || item.mReferenceComponent == false)
-                    continue;
-                if (allSerializeGameObjectName.Contains(item.mReferenceComponent.name))
-                {
-                    Debug.LogError("检测到序列化两个相同名称的对象，会导致无法通过名称索引，请修改 " + item.mReferenceComponent.name);
-                    return;
-                }
+    #region Unity  UGUIComponentReference 编辑器
 
-                allSerializeGameObjectName.Add(item.mReferenceComponent.name);
-            }
-        }
+    /// <summary>/// 关联的资源类型 名称也是对应的 Tag/// </summary>
+    [System.Serializable]
+    public enum UGUIComponentTypeEnum
+    {
+        Transform,
+        RectTransform,
+        UGUIText,
+        UGUIImage,
+        UGUIButton,
+        UGUIInputField,
+        UGUIDropDown,
+        CanvasGroup, 
+    }
 
-        /// <summary>/// 根据指定的需要关联的组件类型 指定组件/// </summary>
-        public void GetComponentByTypeDefine()
-        {
-            foreach (var item in mSerilizeUGUIComponents)
-            {
-                if (item == null || item.mReferenceComponent == null)
-                    continue;
-
-                AttachComponentByType(ref item.mReferenceComponent, ref item.mComponentType, item.mReferenceComponent.transform);
-            }
-        }
-
-        //根据选择的参数类型获取指定对象的指定组件 第一个参数要是引用类型
-        public static void AttachComponentByType(ref Component targetComponent, ref UGUIComponentTypeEnum type, Transform target)
-        {
-            Component temp = null;
-            switch (type)
-            {
-                case UGUIComponentTypeEnum.Transform:
-                    temp = target;
-                    break;
-                case UGUIComponentTypeEnum.RectTransform:
-                    temp = target as  RectTransform;
-                    break;
-                case UGUIComponentTypeEnum.UGUIText:
-                    temp = target.GetComponent<Text>();
-                    break;
-                case UGUIComponentTypeEnum.UGUIImage:
-                    temp = target.GetComponent<Image>();
-                    break;
-                case UGUIComponentTypeEnum.UGUIButton:
-                    temp = target.GetComponent<Button>();
-                    break;
-                case UGUIComponentTypeEnum.UGUIInputField:
-                    temp = target.GetComponent<InputField>();
-                    break;
-                case UGUIComponentTypeEnum.UGUIDropDown:
-                    temp = target.GetComponent<Dropdown>();
-                    break;
-                default:
-                    Debug.LogError("没有定义的类型 " + type);
-                    break;
-            }
-
-            if (temp == null)
-            {
-                Debug.LogError($"组件 {targetComponent.name} 没有指定类型{type} 类型的组件可以关联 自动关联成 Transform 组件");
-                type = UGUIComponentTypeEnum.Transform;
-                temp = targetComponent.transform;
-            }
-
-            targetComponent = temp;
-        }
-
-
+    /// <summary>/// 挂载在预制体上 编辑器配置哪些组件的引用可以序列化，主要使用这个避免每次查找/// </summary>
+    public partial class UGUIComponentReference
+    {
         //枚举类型转成对应的tag
         public void AddAllUGUIComponentTypeTag()
         {
@@ -199,7 +125,7 @@ namespace GameFramePro.UI
                     {
                         isExit = true;
                         item.mComponentType = type;
-                        AttachComponentByType(ref item.mReferenceComponent,ref item.mComponentType, item.mReferenceComponent.transform);
+                        AttachComponentByType(ref item.mReferenceComponent, ref item.mComponentType, item.mReferenceComponent.transform);
                         break;
                     }
                 }
@@ -208,12 +134,112 @@ namespace GameFramePro.UI
                 {
                     UGUIComponentSerializationInfor infor = new UGUIComponentSerializationInfor();
                     infor.mComponentType = type;
-                    AttachComponentByType(ref infor.mReferenceComponent,ref  infor.mComponentType, trans);
+                    AttachComponentByType(ref infor.mReferenceComponent, ref infor.mComponentType, trans);
                     mSerilizeUGUIComponents.Add(infor);
                 }
             }
         }
 
+        /// <summary>/// 检测序列化的组件名是否有重复/// </summary>
+        public void CheckIfContainSameNameComponent()
+        {
+            HashSet<string> allSerializeGameObjectName = new HashSet<string>();
+            foreach (var item in mSerilizeUGUIComponents)
+            {
+                if (item == null || item.mReferenceComponent == false)
+                    continue;
+                if (allSerializeGameObjectName.Contains(item.mReferenceComponent.name))
+                {
+                    Debug.LogError($"检测到序列化两个相同名称{item.mReferenceComponent.name} 的对象，会导致无法通过名称索引，请修改 ");
+                    return;
+                }
+
+                allSerializeGameObjectName.Add(item.mReferenceComponent.name);
+            }
+        }
+
+        /// <summary>/// 根据指定的需要关联的组件类型 指定组件/// </summary>
+        public void GetComponentByTypeDefine()
+        {
+            foreach (var item in mSerilizeUGUIComponents)
+            {
+                if (item == null || item.mReferenceComponent == null)
+                    continue;
+
+                AttachComponentByType(ref item.mReferenceComponent, ref item.mComponentType, item.mReferenceComponent.transform);
+            }
+        }
+        
+        /// <summary>/// 获取所有序列化的组件的脚本定义字符串/// </summary>
+        public static void ShowComponentReferenceByConfig(GameObject go)
+        {
+            GetComponentReferenceByConfig(go, out var uiDefineStr, out var uiReferenceStr);
+            //拷贝到剪贴板
+            TextEditor te = new TextEditor();
+            te.text = uiDefineStr + System.Environment.NewLine + uiReferenceStr;
+            te.SelectAll();
+            te.Copy();
+            Debug.LogEditorInfor($"自动生成 预制体对象 {go} 的组件引用配置,并且复制到剪切板中... 内容如下:  \n   {te.text}");
+        }
+
+        /// <summary>/// 设置序列化的组件对象的Tag/// </summary>
+        public  void AutoSetSerializaComponentTag()
+        {
+            foreach (var item in mSerilizeUGUIComponents)
+            {
+                if (item == null || item.mReferenceComponent == null)
+                    continue;
+
+                item.mReferenceComponent.gameObject.tag = item.mComponentType.ToString();
+            }
+        }
+        
+
+        /// <summary>/// 根据选择的参数类型获取指定对象的指定组件 第一个参数要是引用类型/// </summary>
+        private static void AttachComponentByType(ref Component targetComponent, ref UGUIComponentTypeEnum type, Transform target)
+        {
+            Component temp = null;
+            switch (type)
+            {
+                case UGUIComponentTypeEnum.Transform:
+                    temp = target;
+                    break;
+                case UGUIComponentTypeEnum.RectTransform:
+                    temp = target as RectTransform;
+                    break;
+                case UGUIComponentTypeEnum.UGUIText:
+                    temp = target.GetComponent<Text>();
+                    break;
+                case UGUIComponentTypeEnum.UGUIImage:
+                    temp = target.GetComponent<Image>();
+                    break;
+                case UGUIComponentTypeEnum.UGUIButton:
+                    temp = target.GetComponent<Button>();
+                    break;
+                case UGUIComponentTypeEnum.UGUIInputField:
+                    temp = target.GetComponent<InputField>();
+                    break;
+                case UGUIComponentTypeEnum.UGUIDropDown:
+                    temp = target.GetComponent<Dropdown>();
+                    break;
+                case  UGUIComponentTypeEnum.CanvasGroup:
+                    temp = target.GetComponent<CanvasGroup>();
+                    break;
+                default:
+                    Debug.LogError("没有定义的类型 " + type);
+                    break;
+            }
+
+            if (temp == null)
+            {
+                Debug.LogError($"组件 {targetComponent.name} 没有指定类型{type} 类型的组件可以关联 自动关联成 Transform 组件");
+                type = UGUIComponentTypeEnum.Transform;
+                temp = targetComponent.transform;
+            }
+
+            targetComponent = temp;
+        }
+   
         //根据选的的类型判断引用组件是否正确
         private bool CheckReferenceComponentType(ref Component targetComponent, UGUIComponentTypeEnum type)
         {
@@ -235,35 +261,17 @@ namespace GameFramePro.UI
                     return targetComponent is InputField;
                 case UGUIComponentTypeEnum.UGUIDropDown:
                     return targetComponent is Dropdown;
+                case  UGUIComponentTypeEnum.CanvasGroup:
+                    return targetComponent is CanvasGroup;
                 default:
                     Debug.LogError("没有定义的类型 " + type);
                     return false;
             }
         }
 
-        //判断引用组件和类型是佛正确
-        public void CheckSerializationComponentType()
-        {
-            for (int dex = 0; dex < mSerilizeUGUIComponents.Count; dex++)
-            {
-                var item = mSerilizeUGUIComponents[dex];
-                if (CheckReferenceComponentType(ref item.mReferenceComponent, item.mComponentType) == false)
-                    Debug.LogError("索引{0} 引用组件 {1} 不是指定的类型", dex, item.mReferenceComponent.gameObject.name);
-            }
-        }
-
-
-        public static void ShowComponentReferenceByConfig(GameObject go)
-        {
-            GetComponentReferenceByConfig(go, out var uiDefineStr, out var uiReferenceStr);
-            //拷贝到剪贴板
-            TextEditor te = new TextEditor();
-            te.text = uiDefineStr + System.Environment.NewLine + uiReferenceStr;
-            te.SelectAll();
-            te.Copy();
-            Debug.LogEditorInfor($"自动生成 预制体对象 {go} 的组件引用配置,并且复制到剪切板中... 内容如下:  \n   {te.text}");
-        }
-
+        
+        
+       
         /// <summary>/// 根据给定的对象上的  UGUIComponentReference 组件生成对应的代码/// </summary>
         /// <param name="go"></param>
         /// <param name="uiDefineString">输出得到的 UI 组件名定义</param>
@@ -294,7 +302,7 @@ namespace GameFramePro.UI
             StringBuilder uiDefineBuilder = new StringBuilder(10);
             StringBuilder uiGetReferenceBuilder = new StringBuilder(10);
 
-            foreach (var serilizeUguiComponent in componentReference.AllSerilizeUGUIComponents)
+            foreach (var serilizeUguiComponent in componentReference.mSerilizeUGUIComponents)
             {
                 string compionentName = serilizeUguiComponent.mReferenceComponent.name;
                 string uiDefineName = $"m_{compionentName}";
@@ -328,6 +336,10 @@ namespace GameFramePro.UI
                         uiDefineBuilder.Append($"\t private  Dropdown {uiDefineName} ; \n \t");
                         uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetComponentByName<Dropdown>(\"{compionentName}\"); \n \t");
                         break;
+                    case UGUIComponentTypeEnum.CanvasGroup:
+                        uiDefineBuilder.Append($"\t private  CanvasGroup {uiDefineName} ; \n \t");
+                        uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetComponentByName<CanvasGroup>(\"{compionentName}\"); \n \t");
+                        break;
                     default:
                         Debug.LogError($"无法生成指定的组件类型{serilizeUguiComponent.mComponentType}  的声明方式");
                         break;
@@ -342,14 +354,9 @@ namespace GameFramePro.UI
             uiDefineString = uiDefineBuilder.ToString();
             getReferenceString = uiGetReferenceBuilder.ToString();
         }
-
-        //private void OnValidate()
-        //{
-        //    CheckIfContainSameNameObject();
-        //    GetComponentByTypeDefine();
-        //}
-#endif
-
-        #endregion
     }
+
+    #endregion
+
+#endif
 }

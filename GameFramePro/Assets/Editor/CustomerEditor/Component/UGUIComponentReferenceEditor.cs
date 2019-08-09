@@ -25,61 +25,29 @@ namespace GameFramePro.EditorEx
         {
             serializedObject.Update();
 
-            #region 功能 枚举创建Tag
+            GUILayout.BeginVertical();
+            GUILayout.Space(5);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("根据ComponentTypeEnum创建Tag", GUILayout.Height(25), GUILayout.Width(200)))
+            if (GUILayout.Button("根据ComponentTypeEnum创建Tag", GUILayout.Height(25)))
                 mUGUIComponentReference.AddAllUGUIComponentTypeTag();
 
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(5);
-
-            #endregion
-
-            #region 功能 关联指定类型的组件
-
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("自动序列化标记Tag 的组件", GUILayout.Height(25), GUILayout.Width(200)))
+            if (GUILayout.Button("自动序列化标记Tag 的组件&设置序列化组件对象的Tag", GUILayout.Height(25)))
+            {
                 mUGUIComponentReference.AutoRecordReferenceWithTag();
-            
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
+                mUGUIComponentReference.AutoSetSerializaComponentTag();
 
-            #endregion
+            }
 
-            #region 功能
+            if (GUILayout.Button("检测是否有重名的对象", GUILayout.Height(25)))
+                mUGUIComponentReference.CheckIfContainSameNameComponent();
 
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-
-
-            if (GUILayout.Button("检测是否有重名的对象", GUILayout.Height(25),GUILayout.Width(200)))
-                mUGUIComponentReference.CheckIfContainSameNameObject();
-
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-
-            #endregion
-
-            #region 功能 获取当前对象的UI定义
-
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-
-
-            if (GUILayout.Button("获取当前对象的UI定义", GUILayout.Height(25), GUILayout.Width(200)))
+            if (GUILayout.Button("获取当前对象的UI定义", GUILayout.Height(25)))
                 UGUIComponentReference.ShowComponentReferenceByConfig(mUGUIComponentReference.gameObject);
 
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
             GUILayout.Space(5);
+            GUILayout.EndVertical();
 
-            #endregion
+
             if (EditorGUILayout.PropertyField(mSerilizeUGUIComponents))
             {
                 EditorGUI.indentLevel++;
@@ -109,14 +77,14 @@ namespace GameFramePro.EditorEx
                     EditorGUILayout.PropertyField(componentItem, true);
                     mUGUIComponentReference.GetComponentByTypeDefine();
                     EditorGUI.EndChangeCheck();
-                    
+
                     EditorGUILayout.EndHorizontal();
                 }
             }
 
             EditorGUI.indentLevel--;
             serializedObject.ApplyModifiedProperties();
-          //       base.OnInspectorGUI();
+            //       base.OnInspectorGUI();
         }
     }
 }

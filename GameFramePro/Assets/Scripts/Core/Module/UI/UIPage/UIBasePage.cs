@@ -91,18 +91,13 @@ namespace GameFramePro.UI
 
         #region UI界面外部控制接口
 
-        /// <summary>
-        /// 被实例化创建后调用 除非被销毁否则只会调用一次
-        /// </summary>
+        /// <summary>/// 被实例化创建后调用 除非被销毁否则只会调用一次/// </summary>
         public void InstantiatePage()
         {
             OnInitialed();
         }
 
-        /// <summary>
-        /// 只能由 UIPageManager 调用
-        /// </summary>
-        /// <param name="parameter"></param>
+        /// <summary>/// 只能由 UIPageManager 调用/// </summary>
         public void ShowPage()
         {
             if (IsPrefabInstanceEnable == false)
@@ -136,9 +131,7 @@ namespace GameFramePro.UI
             }
         }
 
-        /// <summary>
-        /// 关闭界面 
-        /// </summary>
+        /// <summary>/// 关闭界面 /// </summary>
         /// <param name="isForceDestroyed">=true 时候会立刻销毁自身释放引用，false 时候则会等待一段时间后被回收</param>
         public void HidePage(bool isForceDestroyed)
         {
@@ -174,9 +167,7 @@ namespace GameFramePro.UI
             }
         }
 
-        /// <summary>
-        /// 当UIBasePage 关联的对象不存在时候，恢复到初始的状态 进行数据重置然后重新关联新创建的预制体实例
-        /// </summary>
+        /// <summary>/// 当UIBasePage 关联的对象不存在时候，恢复到初始的状态 进行数据重置然后重新关联新创建的预制体实例/// </summary>
         public void ResetPageForReConnectPageInstance()
         {
             if (IsPrefabInstanceEnable)

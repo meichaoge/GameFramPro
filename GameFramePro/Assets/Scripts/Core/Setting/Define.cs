@@ -11,7 +11,8 @@ namespace GameFramePro
         #region Common
         public static string UIProgressChangePageName => "UIProgressChangePage"; //进度条弹窗
 
-        
+        public static string UIGeneralTipPopWindowName => "UIGeneralTipPopWindow"; //通用Tip 弹窗
+
 
         #endregion
         
@@ -36,7 +37,8 @@ namespace GameFramePro
         #region Common
         public static string UIProgressChangePagePath=> "Prefabs/UI/Common/UIProgressChangePage"; //进度条弹窗
 
-        
+        public static string UIGeneralTipPopWindowPath=> "Prefabs/UI/Common/UIGeneralTipPopWindow"; //通用Tip 弹窗
+
 
         #endregion
         

@@ -65,6 +65,18 @@ namespace GameFramePro
             return StartCoroutineEx(StartAsyncOperate(async, completeCallback, procressCallback));
         }
 
+        /// <summary>/// 延迟一段时间后执行操作/// </summary>
+        public static void DelayAction(float delayTime, System.Action action)
+        {
+            if (delayTime <= 0)
+            {
+                action?.Invoke();
+                return;
+            }
+
+            StartCoroutineEx(DelayDoAction(delayTime, action));
+        }
+
         #endregion
 
 
@@ -112,6 +124,13 @@ namespace GameFramePro
 
             Debug.LogEditorError(string.Format("UnRegisterCoroutine Fail, not Exit {0}", coroutine.ToString()));
             return false;
+        }
+
+        private static IEnumerator DelayDoAction(float delayTime, System.Action action)
+        {
+            if (delayTime >= 0f)
+                yield return new WaitForSeconds(delayTime);
+            action?.Invoke();
         }
 
         //开启一个协程任务
