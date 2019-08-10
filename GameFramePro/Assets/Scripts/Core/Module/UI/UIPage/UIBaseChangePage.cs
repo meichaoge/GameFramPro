@@ -6,9 +6,8 @@ using System;
 
 namespace GameFramePro.UI
 {
-    /// <summary>
-    /// 页面 同一个时刻只能有一个页面是显示状态，只能从一个切换到另一个
-    /// </summary>
+    /// <summary>/// 页面 同一个时刻只能有一个页面是显示状态，只能从一个切换到另一个/// </summary>
+    /// 页面不能释放 UIBasePage  对象，否则无法知道怎么返回到上一个页面
     public class UIBaseChangePage : UIBasePage
     {
         public HashSet<string> mAllContainSubPopWindows { get; protected set; } //所有关联属于这个页面的弹窗，关闭的时候会一起呗关闭
@@ -16,14 +15,14 @@ namespace GameFramePro.UI
 
         #region 初始化
 
-        public UIBaseChangePage():base()
+        protected UIBaseChangePage():base()
         {
             mUIPageTypeEnum = UIPageTypeEnum.ChangePage;
             MaxAliveAfterInActivte = 10;
-            IsReleaseOnDestroyPageInstance = false; //页面不能释放 UIBasePage 对象
+            IsReleaseOnDestroyPageInstance = false;
         }
 
-        public virtual void UIPageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, BaseBeReferenceGameObjectInformation baseBeReferenceInstance)
+        public virtual void UIChangePageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, BaseBeReferenceGameObjectInformation baseBeReferenceInstance)
         {
             BaseUIPageInitialed(pageName, pageType, baseBeReferenceInstance);
             mPagePath = pagePath;

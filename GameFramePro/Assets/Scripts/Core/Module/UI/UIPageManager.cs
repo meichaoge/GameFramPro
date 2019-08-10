@@ -23,26 +23,13 @@ namespace GameFramePro.UI
         }
 
 
-        #region 记录页面的数据
+        #region UIBaseChangePage 页面的接口  (单独缓存创建的页面实例)
 
-        //key=UI 界面名称
-        private static Dictionary<string, UIBasePage> s_AllAliveUIPages = new Dictionary<string, UIBasePage>(); //记录所有现在还在内存中的界面
-
-        #endregion
-
-
-        #region UIBaseChangePage 页面的接口
-
-        private static Stack<string> s_ChangePageRecord = new Stack<string>(); // 记录打开页面的顺序，处理向上返回时候有用  key=页面名称
         public static UIBaseChangePage CurUIBaseChangePage { get; private set; } = null; //当前正在显示的页面 可能为null
+        private static Stack<string> s_ChangePageRecord = new Stack<string>(); // 记录打开页面的顺序，处理向上返回时候有用  key=页面名称
+        private static Dictionary<string, UIBaseChangePage> s_AllAliveUIChangePages = new Dictionary<string, UIBaseChangePage>(); //记录所有现在还在内存中的页面
 
-        /// <summary>
-        /// 切换到 另一个界面
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="pageName"></param>
-        /// <param name="pagePath"></param>
-        /// <returns></returns>
+        /// <summary>/// 切换到 另一个界面/// </summary>
         public static T OpenChangePage<T>(string pageName, string pagePath) where T : UIBaseChangePage, new()
         {
             if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
@@ -57,9 +44,7 @@ namespace GameFramePro.UI
                 return null;
             } //自己切换到自己
 
-            T targetPage = null;
-
-            targetPage = TryGetUIPageFromCache(pageName) as T; //首先检测缓存中的数据
+            T targetPage = TryGetUIChangePageFromCache(pageName) as T; //首先检测缓存中的数据
             //创建界面
             if (targetPage == null || targetPage.IsPrefabInstanceEnable == false)
             {
@@ -70,10 +55,10 @@ namespace GameFramePro.UI
                         if (targetPage == null)
                             targetPage = new T();
                         else
-                            targetPage.ResetPageForReConnectPageInstance();
+                            targetPage.ResetPageForReConnectInstance();
 
-                        targetPage.UIPageInitialed(pageName, pagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
-                        TryCacheUIPage(pageName, targetPage);
+                        targetPage.UIChangePageInitialed(pageName, pagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
+                        TryCacheUIChangePage(targetPage);
                         targetPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
@@ -83,6 +68,14 @@ namespace GameFramePro.UI
                     }
                 });
             }
+
+
+            if (targetPage == null || targetPage.IsPrefabInstanceEnable == false)
+            {
+                Debug.LogError($"创建页面 pageName={pageName} pagePath={pagePath} ");
+                return null;
+            }
+
 
             if (CurUIBaseChangePage != null)
             {
@@ -96,10 +89,7 @@ namespace GameFramePro.UI
             return targetPage;
         }
 
-
-        /// <summary>
-        /// 返回到上一个界面
-        /// </summary>
+        /// <summary>/// 返回到上一个界面/// </summary>
         public static void BackPage()
         {
             if (s_ChangePageRecord.Count == 0) return;
@@ -111,10 +101,10 @@ namespace GameFramePro.UI
                 perviousPageName = s_ChangePageRecord.Pop();
                 if (string.IsNullOrEmpty(perviousPageName))
                     continue;
-                previouPage = TryGetUIPageFromCache(perviousPageName) as UIBaseChangePage;
+                previouPage = TryGetUIChangePageFromCache(perviousPageName);
                 if (previouPage == null)
                 {
-                    Debug.LogError("无法返回到上一个界面 {0} ，没有被记录的页面", perviousPageName);
+                    Debug.LogError($"无法返回到上一个界面 {perviousPageName} ，没有被记录的页面");
                     return;
                 }
 
@@ -124,10 +114,9 @@ namespace GameFramePro.UI
                     {
                         if (gameObjectReference != null)
                         {
-                            previouPage.ResetPageForReConnectPageInstance();
+                            previouPage.ResetPageForReConnectInstance();
 
-                            previouPage.UIPageInitialed(previouPage.PageName, previouPage.mPagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
-                            TryCacheUIPage(previouPage.PageName, previouPage);
+                            previouPage.UIChangePageInitialed(previouPage.PageName, previouPage.mPagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
                             previouPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
@@ -143,7 +132,10 @@ namespace GameFramePro.UI
                     continue; //说明上一个页面加载失败
 
                 if (CurUIBaseChangePage != null)
+                {
                     CurUIBaseChangePage.HidePage(false);
+                    RecordChangePage(previouPage.PageName);
+                }
 
                 CurUIBaseChangePage = previouPage;
                 previouPage.ShowPage();
@@ -151,46 +143,72 @@ namespace GameFramePro.UI
             }
         }
 
-        //这里后期可能会处理成值记录一次
+
+        /// <summary>/// 这里后期可能会处理成值记录一次/// </summary>
         private static void RecordChangePage(string pageName)
         {
             s_ChangePageRecord.Push(pageName);
         }
 
-        #endregion
-
-
-        #region UIBasePopWindow 弹窗的接口
-
-        private static HashSet<string> s_AllAcivityPopWIndows = new HashSet<string>(); //所有可见的弹窗
-
-        //打开弹窗
-        public static T ShowPopwindow<T>(string pageName, string pagePath, bool isBelongCurPage) where T : UIBasePopWindow, new()
+        /// <summary>/// 保存创建的页面引用/// </summary>
+        private static void TryCacheUIChangePage(UIBaseChangePage page)
         {
-            if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
+            if (page == null)
             {
-                Debug.LogError("ShowPopwindow Fail,Parameter is null");
+                Debug.LogError("缓存的页面是空");
+                return;
+            }
+
+            if (s_AllAliveUIChangePages.TryGetValue(page.PageName, out var cachePage))
+            {
+                Debug.LogError($"重复 缓存的页面 {page.PageName}");
+                return;
+            }
+
+            s_AllAliveUIChangePages[page.PageName] = page;
+        }
+
+        /// <summary>/// 从缓存中获取一个指定名称的页面/// </summary>
+        public static UIBaseChangePage TryGetUIChangePageFromCache(string pageName)
+        {
+            if (string.IsNullOrEmpty(pageName))
+            {
+                Debug.LogError("TryGetUIChangePageFromCache Fail,Parameter is null");
                 return null;
             }
 
-            if (CurUIBaseChangePage == null)
+            if (s_AllAliveUIChangePages.TryGetValue(pageName, out var baseChangePage))
+                return baseChangePage;
+            return null;
+        }
+
+        #endregion
+
+
+        #region UIBasePopWindow 弹窗的接口 (单独缓存创建的弹窗实例)
+
+        private static Dictionary<string, List<UIBasePopWindow>> s_AllAcivityPopWIndows = new Dictionary<string, List<UIBasePopWindow>>(10); //所有还在内存的弹窗
+
+        /// <summary>/// 打开弹窗 isCreateInstanceIfIsShowing 标示已经有一个同名的弹窗存在并且现实中是否需要创建一个新的实例 默认不需要  /// </summary> 
+        public static T ShowPopWindow<T>(string pageName, string pagePath, bool isBelongCurPage, bool isCreateInstanceIfIsShowing = false) where T : UIBasePopWindow, new()
+        {
+            if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
             {
-                Debug.LogError("当前没有打开任何页面 " + pageName);
+                Debug.LogError("ShowPopWindow Fail,Parameter is null");
                 return null;
-            } //自己切换到自己
+            }
 
             T targetPage = null;
-            UIBasePage cachePage = TryGetUIPageFromCache(pageName);
-            if (cachePage != null)
-            {
-                targetPage = cachePage as T;
-                if (isBelongCurPage)
-                    targetPage.ChangeBelongChangePage(CurUIBaseChangePage);
-                else
-                    targetPage.ChangeBelongChangePage(null);
+            if (isCreateInstanceIfIsShowing)
+                targetPage = TryGetUIPopWindowFromCache(pageName, -1) as T; //获取隐藏的弹窗 如果没有则创建
+            else
+                targetPage = TryGetUIPopWindowFromCache(pageName, 0) as T;
 
-                cachePage.ShowPage();
-                RecordPopPage(pageName, true);
+
+            if (targetPage != null)
+            {
+                targetPage.ChangeBelongChangePage(isBelongCurPage ? CurUIBaseChangePage : null);
+                targetPage.ShowPage();
                 return targetPage;
             } //取出打开的界面
 
@@ -198,118 +216,133 @@ namespace GameFramePro.UI
             {
                 if (gameObjectReference != null)
                 {
-                    RecordPopPage(pageName, true);
                     targetPage = new T();
-                    if (isBelongCurPage)
-                        targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, CurUIBaseChangePage, gameObjectReference);
-                    else
-                        targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, null, gameObjectReference);
+                    targetPage.UIPageInitialed(pageName, targetPage.mUIPageTypeEnum, isBelongCurPage ? CurUIBaseChangePage : null, gameObjectReference);
 
-                    TryCacheUIPage(pageName, targetPage);
+                    TryCacheUIPopWindow(targetPage);
                     targetPage.InstantiatePage(); //初始化
-
                     targetPage.ShowPage();
 #if UNITY_EDITOR
                     var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
                     debugShowScript.Initialed(targetPage);
 #endif
                 }
-            });
+            }, true);
             return targetPage;
         }
 
-        /// <summary>
-        /// 隐藏一个弹窗
-        /// </summary>
-        /// <param name="pageName"></param>
+        /// <summary>/// 隐藏一个弹窗 有可能有多个同名的窗口 所以这里不提供关闭弹窗的接口 /// </summary>
         public static void HidePopwindow(string pageName, bool isForceDestroyed = false)
         {
             if (string.IsNullOrEmpty(pageName))
             {
-                Debug.LogError("HidePopwindow Fail, parameter id null");
+                Debug.LogError("HidePopWindow Fail, parameter id null");
                 return;
             }
 
-            if (s_AllAcivityPopWIndows.Contains(pageName) == false)
-            {
-#if UNITY_EDITOR
-                Debug.LogError("弹窗{0} 已经关闭了 ，并不需要重复关闭", pageName);
-#endif
-                return;
-            }
-
-            UIBasePage popWindow = TryGetUIPageFromCache(pageName);
-            HidePopwindow(popWindow as UIBasePopWindow, isForceDestroyed, false);
+            UIBasePopWindow target = TryGetUIPopWindowFromCache(pageName, 1);
+            HidePopwindow(target, isForceDestroyed);
         }
 
-        /// <summary>
-        /// 隐藏一个弹窗
-        /// </summary>
-        /// <param name="pageName"></param>
-        public static void HidePopwindow(UIBasePopWindow popWindow, bool isForceDestroyed = false, bool isNeedCheckState = true)
+        /// <summary>/// 隐藏一个弹窗/// </summary>
+        public static void HidePopwindow(UIBasePopWindow popWindow, bool isForceDestroyed = false)
         {
             if (popWindow == null)
             {
-                Debug.LogError("HidePopwindow Fail,parameter is null");
+                Debug.LogError("HidePopWindow Fail,parameter is null");
                 return;
-            }
-
-            if (isNeedCheckState)
-            {
-                if (s_AllAcivityPopWIndows.Contains(popWindow.PageName) == false)
-                {
-#if UNITY_EDITOR
-                    Debug.LogError("弹窗{0} 已经关闭了 ，并不需要重复关闭", popWindow.PageName);
-#endif
-                    return;
-                }
             }
 
             if (popWindow.mIsActivite == false)
             {
 #if UNITY_EDITOR
-                Debug.LogError("HidePopwindow Fail, 弹窗 {0} 已经关闭了", popWindow.PageName);
+                Debug.LogError($"HidePopWindow Fail, 弹窗 {popWindow.PageName} 已经关闭了");
 #endif
                 return;
             }
 
             popWindow.HidePage(isForceDestroyed);
-            RecordPopPage(popWindow.PageName, false);
         }
 
-        /// <summary>
-        /// 关闭所有的弹窗
-        /// </summary>
+        /// <summary>/// 关闭所有的弹窗/// </summary>
         public static void HideAllPopWindows()
         {
-            foreach (var pageName in s_AllAcivityPopWIndows)
+            foreach (var popWindowInstances in s_AllAcivityPopWIndows.Values)
             {
-                if (string.IsNullOrEmpty(pageName))
-                    continue;
+                if (popWindowInstances == null) continue;
+                foreach (var popWindow in popWindowInstances)
+                {
+                    if (popWindow == null) continue;
+                    if (popWindow.mIsActivite == false) continue;
+                    popWindow.HidePage(false);
+                }
 
-                UIBasePage popWindow = TryGetUIPageFromCache(pageName);
-                if (popWindow == null || popWindow.mIsActivite == false)
-                    continue;
-
-                popWindow.HidePage(false);
+                popWindowInstances.Clear();
             }
 
             s_AllAcivityPopWIndows.Clear();
         }
 
 
-        //这里后期可能会处理成值记录一次
-        private static void RecordPopPage(string pageName, bool isAddRecord)
+        //保存创建的弹窗引用
+        public static void TryCacheUIPopWindow(UIBasePopWindow popWindow)
         {
-            if (isAddRecord)
+            if (s_AllAcivityPopWIndows.TryGetValue(popWindow.PageName, out var allBasePopWindows) == false)
             {
-                if (s_AllAcivityPopWIndows.Contains(pageName) == false)
-                    s_AllAcivityPopWIndows.Add(pageName);
+                allBasePopWindows = new List<UIBasePopWindow>();
+                s_AllAcivityPopWIndows[popWindow.PageName] = allBasePopWindows;
             }
-            else
+
+            allBasePopWindows.Add(popWindow);
+        }
+
+        /// <summary>/// 从缓存中获取一个指定名称的页面/// </summary>
+        /// <param name="getPopWindowType">=0 标示不区分是显示还是隐藏的，>0标示选择看见的弹窗 ; <0标示选择不可见得弹窗</param>
+        public static UIBasePopWindow TryGetUIPopWindowFromCache(string popWindowName, int getPopWindowType = 0)
+        {
+            if (string.IsNullOrEmpty(popWindowName))
             {
-                if (s_AllAcivityPopWIndows.Contains(pageName))
-                    s_AllAcivityPopWIndows.Remove(pageName);
+                Debug.LogError("TryGetUIPopWindowFromCache Fail,Parameter is null");
+                return null;
+            }
+
+            if (s_AllAcivityPopWIndows.TryGetValue(popWindowName, out var allBasePopWindows) == false)
+                return null;
+
+            if (allBasePopWindows == null || allBasePopWindows.Count == 0)
+                return null;
+
+            foreach (var popWindow in allBasePopWindows)
+            {
+                if (getPopWindowType == 0)
+                    return popWindow;
+                if (getPopWindowType > 0)
+                    if (popWindow.mIsActivite)
+                        return popWindow;
+
+                if (getPopWindowType < 0)
+                    if (popWindow.mIsActivite == false)
+                        return popWindow;
+            }
+
+            return null;
+        }
+
+        /// <summary>/// 只在弹窗被真正销毁时候调用/// </summary>
+        public static void RemoveUIPopWindowFromCache(UIBasePopWindow popWindow)
+        {
+            if (s_AllAcivityPopWIndows.TryGetValue(popWindow.PageName, out var allBasePopWindows))
+            {
+                if (allBasePopWindows == null || allBasePopWindows.Count == 0) return;
+
+                for (int dIndex = allBasePopWindows.Count - 1; dIndex >= 0; dIndex--)
+                {
+                    if (allBasePopWindows[dIndex] == popWindow)
+                    {
+                        allBasePopWindows.RemoveAt(dIndex);
+                        return;
+                    }
+                }
             }
         }
 
@@ -318,14 +351,7 @@ namespace GameFramePro.UI
 
         #region UIBaseWidget 组件接口 不提供关闭组件的接口 由每个父级自己管理
 
-        /// <summary>
-        /// 不会检测是否有缓存 每次都是重新创建 不受UIPageManager 管理生命周期，只受到父级页面管理
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="pageName"></param>
-        /// <param name="pagePath"></param>
-        /// <param name="parentPage"></param>
-        /// <returns></returns>
+        /// <summary>/// 不会检测是否有缓存 每次都是重新创建 不受UIPageManager 管理生命周期，只受到父级页面管理/// </summary>
         public static T CreateWidgetInstance<T>(string pageName, string pagePath, UIBasePage parentPage, Transform parentTrans) where T : UIBaseWidget, new()
         {
             if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
@@ -343,7 +369,6 @@ namespace GameFramePro.UI
                     targetWidget = new T();
 
                     targetWidget.UIPageInitialed(pageName, UIPageTypeEnum.Widget, parentPage, gameObjectReference);
-                    TryCacheUIPage(pageName, targetWidget);
                     targetWidget.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
@@ -361,59 +386,11 @@ namespace GameFramePro.UI
 
         #region 辅助工具
 
-        //创建页面实例
-        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<BaseBeReferenceGameObjectInformation> afterInitialedInstanceAction)
+        /// <summary>/// 创建页面实例/// </summary>
+        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<BaseBeReferenceGameObjectInformation> afterInitialedInstanceAction, bool isForceCreateInstance = false)
         {
-            BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath, false);
+            BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath, isForceCreateInstance);
             afterInitialedInstanceAction?.Invoke(gameObjectInformation);
-        }
-
-        #endregion
-
-
-        #region 公共的接口
-
-        //保存创建的页面引用
-        public static bool TryCacheUIPage(string pageName, UIBasePage page)
-        {
-            if (s_AllAliveUIPages.ContainsKey(pageName))
-                return false;
-
-            s_AllAliveUIPages[pageName] = page;
-            return true;
-        }
-
-        //从缓存中获取一个指定名称的页面
-        public static UIBasePage TryGetUIPageFromCache(string pageName)
-        {
-            if (string.IsNullOrEmpty(pageName))
-            {
-                Debug.LogError("TryGetUIPageFromCache Fail,Parameter is null");
-                return null;
-            }
-
-            UIBasePage basePage = null;
-            if (s_AllAliveUIPages.TryGetValue(pageName, out basePage))
-                return basePage;
-            return basePage;
-        }
-
-        public static void RemoUIPageCacheRecord(string pageName)
-        {
-            UIBasePage page = null;
-            if (s_AllAliveUIPages.TryGetValue(pageName, out page) && page != null)
-            {
-                if (page.IsReleaseOnDestroyPageInstance)
-                {
-                    page.DestroyAndRelease();
-                    page = null;
-                    s_AllAliveUIPages.Remove(pageName);
-                }
-                else
-                {
-                    page.DestroyAndRelease();
-                } //页面只取消关联预制体 不销毁  UIBasePage 对象
-            }
         }
 
         #endregion

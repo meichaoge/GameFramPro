@@ -6,14 +6,11 @@ using System;
 
 namespace GameFramePro.UI
 {
-    /// <summary>
-    /// 辅助 UIPageManager ，用于定时清理长时间不被引用的界面
-    /// </summary>
+    /// <summary>/// 辅助 UIPageManager ，用于定时清理长时间不被引用的界面/// </summary>
     public class UIPageManagerUtility : Single<UIPageManagerUtility>, IUpdateTimeTick
     {
         private LinkedList<UIBasePage> mAllInVisiblePage = new LinkedList<UIBasePage>();
         private List<UIBasePage> mTempInVisiblePage = new List<UIBasePage>(); //用于记录那些页面不可见了
-
 
 
         #region IUpdateTick 接口实现
@@ -21,7 +18,7 @@ namespace GameFramePro.UI
         protected float lastRecordTime = 0; //上一次记录的时间
         public float TickPerTimeInterval { get; private set; } = 30; //约等于1分钟检测一次
 
-        public bool CheckIfNeedUpdateTick(float curTime)
+        protected bool CheckIfNeedUpdateTick(float curTime)
         {
             if (lastRecordTime == 0f)
             {
@@ -29,11 +26,12 @@ namespace GameFramePro.UI
                 return true;
             }
 
-            if(curTime- lastRecordTime>= TickPerTimeInterval)
+            if (curTime - lastRecordTime >= TickPerTimeInterval)
                 return true;
 
             return false;
         }
+
         public void UpdateTick(float currentTime)
         {
             if (CheckIfNeedUpdateTick(currentTime) == false)
@@ -41,12 +39,14 @@ namespace GameFramePro.UI
             lastRecordTime = currentTime;
 
             #region 刷新
-            if (mTempInVisiblePage != null&& mTempInVisiblePage.Count>0)
+
+            if (mTempInVisiblePage != null && mTempInVisiblePage.Count > 0)
             {
                 foreach (var item in mTempInVisiblePage)
                     mAllInVisiblePage.AddLast(item);
                 mTempInVisiblePage.Clear();
             }
+
             if (mAllInVisiblePage.Count > 0)
             {
                 var targetNode = mAllInVisiblePage.First;
@@ -58,24 +58,22 @@ namespace GameFramePro.UI
                         mAllInVisiblePage.Remove(targetNode);
                         targetNode = next;
                         continue;
-                    }//移除非隐藏状态的界面
+                    } //移除非隐藏状态的界面
 
+                    UIBasePage uiBasePage = targetNode.Value;
 
-                    if (currentTime - targetNode.Value.RecordInvisibleRealTime >= targetNode.Value.MaxAliveAfterInActivte)
+                    if (currentTime - targetNode.Value.RecordInvisibleRealTime >= uiBasePage.MaxAliveAfterInActivte)
                     {
-                        UIPageManager.RemoUIPageCacheRecord(targetNode.Value.PageName);
+                        if (uiBasePage is UIBasePopWindow)
+                            UIPageManager.RemoveUIPopWindowFromCache(uiBasePage as UIBasePopWindow);
+
+                        uiBasePage.DestroyAndRelease();
                         mAllInVisiblePage.Remove(targetNode);
-                        targetNode = next;
-                        continue;
                     }
-                    else
-                    {
-                        targetNode = next;
-                        continue;
-                    }
+
+                    targetNode = next;
                 }
             }
-         
 
             #endregion
         }
@@ -94,12 +92,12 @@ namespace GameFramePro.UI
                 return;
             }
 
-            if (page.MaxAliveAfterInActivte <0)
+            if (page.MaxAliveAfterInActivte < 0)
                 return; //长存的页面不销毁
 
             if (page.mUIPageTypeEnum == UIPageTypeEnum.Widget)
             {
-                Debug.LogError("组件 {0}  不应该受到UI管理器的生命周期管理 ", page.PageName);
+                Debug.LogError($"组件 {page.PageName}  不应该受到UI管理器的生命周期管理 ");
             }
 
             mTempInVisiblePage.Add(page);
@@ -114,13 +112,12 @@ namespace GameFramePro.UI
                 return;
             }
 
-            if (page.MaxAliveAfterInActivte <0)
+            if (page.MaxAliveAfterInActivte < 0)
                 return; //长存的页面不销毁
 
             mTempInVisiblePage.Remove(page);
         }
+
         #endregion
-
-
     }
 }

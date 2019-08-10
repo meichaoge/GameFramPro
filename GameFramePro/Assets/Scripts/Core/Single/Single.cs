@@ -6,10 +6,7 @@ using UnityEngine;
 using GameFramePro;
 
 
-/// <summary>
-/// 非Mono的单例泛型类
-/// </summary>
-/// <typeparam name="T"></typeparam>
+/// <summary>/// 非Mono的单例泛型类/// </summary>
 public class Single<T> where T : class, new()
 {
     private static T s_Instance = default(T);
@@ -41,9 +38,7 @@ public class Single<T> where T : class, new()
     }
 
 
-    /// <summary>
-    /// 初始化单例实例的接口(只会调用一次除非对象被销毁)
-    /// </summary>
+    /// <summary>/// 初始化单例实例的接口(只会调用一次除非对象被销毁)/// </summary>
     protected virtual void InitialSingleton() { }
 
     public virtual void DisposeInstance()

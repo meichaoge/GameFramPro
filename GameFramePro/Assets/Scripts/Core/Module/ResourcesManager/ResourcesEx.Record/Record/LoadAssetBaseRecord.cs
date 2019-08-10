@@ -11,13 +11,10 @@ namespace GameFramePro.ResourcesEx
     {
         None = 0, //未知的类型
 
-        // ReSharper disable once InconsistentNaming
         Resources_UnKnown = 1, //记录时候无法判断的类型
 
         ////***本地存储的 可能是运行时记录的资源&网络下载资源&缓存资源
         //LocalStore_UnKnown = 100, //记录时候无法判断的类型
-
-        // ReSharper disable once InconsistentNaming
         AssetBundle_UnKnown = 200, //记录时候无法判断的类型
     }
 
@@ -160,7 +157,8 @@ namespace GameFramePro.ResourcesEx
 
         protected virtual void NotifyReferenceChange(bool isAddReference)
         {
-            BelongAssetManager.NotifyAssetReferenceChange(this, isAddReference);
+            if (BelongAssetManager != null)
+                BelongAssetManager.NotifyAssetReferenceChange(this, isAddReference);
         }
     }
 }

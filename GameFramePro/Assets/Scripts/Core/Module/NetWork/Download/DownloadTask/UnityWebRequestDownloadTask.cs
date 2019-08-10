@@ -30,7 +30,6 @@ namespace GameFramePro.NetWorkEx
             {
                 var mUnityWebRequestAsyncOperation = DownloadTaskCallbackData.SendWebRequest(); //启动任务
                 TaskCoroutineExInfor = AsyncManager.StartAsyncOperation(mUnityWebRequestAsyncOperation, OnCompleteDownloadTask, OnProcessChange);
-                TaskCoroutineExInfor.StartCoroutine(); //因为外层函数不是协程 因此不能使用 接口  WaitDone
             }
             else
             {

@@ -132,14 +132,14 @@ namespace GameFramePro.UI
         {
             if (string.IsNullOrEmpty(m_NameInputField.text))
             {
-                Debug.LogError("输入的用户名为null ");
+                Debug.LogInfor("输入的用户名为null ");
                 UIPageHelpUtility.ShowTipMessage("输入的用户名为null");
                 return;
             }
 
             if (string.IsNullOrEmpty(m_PasswordInputField.text))
             {
-                Debug.LogError("输入的用户密码为null ");
+                Debug.LogInfor("输入的用户密码为null ");
                 UIPageHelpUtility.ShowTipMessage("输入的用户密码为null");
 
                 return;

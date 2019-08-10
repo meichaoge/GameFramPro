@@ -6,9 +6,7 @@ using System;
 
 namespace GameFramePro.UI
 {
-    /// <summary>
-    /// 弹窗的基类
-    /// </summary>
+    /// <summary>/// 弹窗的基类/// </summary>
     public class UIBasePopWindow : UIBasePage
     {
         public UIBaseChangePage mBelongChangePage { get; protected set; } = null;
@@ -16,7 +14,7 @@ namespace GameFramePro.UI
 
         #region 初始化和设置所属于的页面
 
-        public UIBasePopWindow():base()
+        protected UIBasePopWindow():base()
         {
             mUIPageTypeEnum = UIPageTypeEnum.PopWindow;
             MaxAliveAfterInActivte = 5;

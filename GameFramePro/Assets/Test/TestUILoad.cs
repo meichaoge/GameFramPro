@@ -17,7 +17,7 @@ public class TestUILoad :MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.B))
         {
-            UIPageManager.ShowPopwindow<UILoginTipPopWindow>(NameDefine.UILoginTipPopWindowName, PathDefine.UILoginTipPopWindowPath, true); //弹出弹窗
+            UIPageManager.ShowPopWindow<UILoginTipPopWindow>(NameDefine.UILoginTipPopWindowName, PathDefine.UILoginTipPopWindowPath, true); //弹出弹窗
         }
 
         if (Input.GetKeyDown(KeyCode.C))

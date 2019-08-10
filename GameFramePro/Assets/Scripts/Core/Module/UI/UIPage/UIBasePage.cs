@@ -5,7 +5,7 @@ using System;
 
 namespace GameFramePro.UI
 {
-    //UI 界面类型
+    /// <summary>/// UI 界面类型/// </summary>
     public enum UIPageTypeEnum
     {
         None = 0, //未知的初始状态 不可用
@@ -14,7 +14,7 @@ namespace GameFramePro.UI
         Widget, //组件 没有自己的声明周期，只被父组件管理 不被 UIPageManager 记录
     }
 
-    //页面的状态
+    /// <summary>/// 页面的状态/// </summary>
     public enum UIPageStateEnum
     {
         None = -1, //初始状态
@@ -24,13 +24,11 @@ namespace GameFramePro.UI
         Destroyed, //已经被隐藏
     }
 
-    /// <summary>
-    /// UI界面的基类
-    /// </summary>
+    /// <summary>/// UI界面的基类/// </summary>
     public class UIBasePage
     {
-        /// <summary>/// 标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。现在的页面类型UI 都应该是false,使得能够回退到上一个界面/// </summary>
-        public bool IsReleaseOnDestroyPageInstance { get; protected set; } = true;
+        //标示是否在关联的预制体销毁时候释放 UIBasePage 的内存。现在的页面类型UI 都应该是false,使得能够回退到上一个界面 
+        protected bool IsReleaseOnDestroyPageInstance { get; set; } = true;
 
         public bool mIsActivite
         {
@@ -68,7 +66,7 @@ namespace GameFramePro.UI
 
         #region 构造函数和初始化 和 IDisposable 接口
 
-        public UIBasePage()
+        protected UIBasePage()
         {
             mUIPageState = UIPageStateEnum.Initialed;
         }
@@ -97,12 +95,12 @@ namespace GameFramePro.UI
             OnInitialed();
         }
 
-        /// <summary>/// 只能由 UIPageManager 调用/// </summary>
+        /// <summary>/// 显示界面/// </summary>
         public void ShowPage()
         {
             if (IsPrefabInstanceEnable == false)
             {
-                Debug.LogError(string.Format("ShowPage Page {0} 关联的预制体为null", PageName));
+                Debug.LogError($"ShowPage Page {PageName} 关联的预制体为null");
                 return;
             }
 
@@ -137,7 +135,7 @@ namespace GameFramePro.UI
         {
             if (IsPrefabInstanceEnable == false)
             {
-                Debug.LogError(string.Format("HidePage Page {0} 关联的预制体为null", PageName));
+                Debug.LogError($"HidePage Page {PageName} 关联的预制体为null");
                 return;
             }
 
@@ -168,7 +166,7 @@ namespace GameFramePro.UI
         }
 
         /// <summary>/// 当UIBasePage 关联的对象不存在时候，恢复到初始的状态 进行数据重置然后重新关联新创建的预制体实例/// </summary>
-        public void ResetPageForReConnectPageInstance()
+        public void ResetPageForReConnectInstance()
         {
             if (IsPrefabInstanceEnable)
             {
@@ -182,9 +180,7 @@ namespace GameFramePro.UI
         }
 
 
-        /// <summary>
-        ///  释放引用的对象和UIbasePage 对象
-        /// </summary>
+        /// <summary>///  释放引用的对象和UIBasePage 对象/// </summary>
         public void DestroyAndRelease()
         {
             OnBeforeDestroyed();
@@ -198,30 +194,22 @@ namespace GameFramePro.UI
 
         #region UI 界面内部实现接口
 
-        /// <summary>
-        /// 每次界面关联的的预制体被创建时候调用
-        /// </summary>
+        /// <summary>/// 每次界面关联的的预制体被创建时候调用/// </summary>
         protected virtual void OnInitialed()
         {
         }
 
-        /// <summary>
-        /// 调用SetActive(true )之前调用这个
-        /// </summary>
+        /// <summary>/// 调用SetActive(true )之前调用这个/// </summary>
         protected virtual void OnBeforeVisible()
         {
         }
 
-        /// <summary>
-        /// 调用SetActive(true )之后调用这个
-        /// </summary>
+        /// <summary>/// 调用SetActive(true )之后调用这个/// </summary>
         protected virtual void OnAfterVisible()
         {
         }
 
-        /// <summary>
-        /// 调用SetActive(false )之前调用这个
-        /// </summary>
+        /// <summary>/// 调用SetActive(false )之前调用这个/// </summary>
         protected virtual void OnBeforeInVisible()
         {
             if (mAudioController != null)
@@ -245,9 +233,7 @@ namespace GameFramePro.UI
             }
         }
 
-        /// <summary>
-        /// 调用SetActive(false )之后调用这个
-        /// </summary>
+        /// <summary>/// 调用SetActive(false )之后调用这个/// </summary>
         protected virtual void OnAfterInVisible(bool isForceDestroyed)
         {
             if (isForceDestroyed)
@@ -261,9 +247,7 @@ namespace GameFramePro.UI
             }
         }
 
-        /// <summary>
-        /// 在被销毁前时候释放自身
-        /// </summary>
+        /// <summary>/// 在被销毁前时候释放自身/// </summary>
         protected virtual void OnBeforeDestroyed()
         {
             //页面没有销毁UIBasePage 对象，其他的需要销毁
@@ -287,9 +271,7 @@ namespace GameFramePro.UI
             }
         }
 
-        /// <summary>
-        /// 在被销毁后执行
-        /// </summary>
+        /// <summary>/// 在被销毁后执行/// </summary>
         protected virtual void OnAfterDestroyed()
         {
         }
@@ -298,11 +280,7 @@ namespace GameFramePro.UI
 
         #region 子组件
 
-        /// <summary>
-        /// 由于考虑到有多个同名的  UIBaseWidget 这里不会检测是否存在
-        /// </summary>
-        /// <param name="widgetName"></param>
-        /// <param name="widget"></param>
+        /// <summary>/// 由于考虑到有多个同名的  UIBaseWidget 这里不会检测是否存在/// </summary>
         public virtual void AddWidget(string widgetName, UIBaseWidget widget)
         {
             if (mAllContainWidgets == null)

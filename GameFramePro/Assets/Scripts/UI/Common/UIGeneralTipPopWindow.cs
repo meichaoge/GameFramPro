@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace GameFramePro.UI
 {
@@ -11,12 +12,10 @@ namespace GameFramePro.UI
         #region UI
 
         private Text m_TipText;
-        private  CanvasGroup m_Content ; 
+        private CanvasGroup m_Content;
+
         #endregion
 
-
-
-        
         #region 基类重写
 
         /// <summary>/// 显示瓢字提示/// </summary>
@@ -24,13 +23,12 @@ namespace GameFramePro.UI
         {
             ShowTipView(message);
         }
-        
-        
+
+
         protected override void OnInitialed()
         {
             base.OnInitialed();
             GetUIComponentReference();
-            //TODO
         }
 
         protected override void OnBeforeVisible()
@@ -49,14 +47,17 @@ namespace GameFramePro.UI
         private void GetUIComponentReference()
         {
             m_TipText = GetComponentByName<Text>("TipText");
-            m_Content =GetComponentByName<CanvasGroup>("Content"); 
+            m_Content = GetComponentByName<CanvasGroup>("Content");
         }
 
         private void DoContentFadeEffect()
         {
-            AsyncManager.DelayAction(1f, () => { HidePage(false);});
+            m_Content.alpha = 0;
+            m_Content.DOFade(1, 0.5F);
+
+            m_Content.DOFade(0, 0.5F).SetDelay(1).OnComplete(() => { HidePage(false); });
         }
-        
+
         #endregion
 
         #region  创建视图
@@ -65,7 +66,6 @@ namespace GameFramePro.UI
         {
             m_TipText.text = message;
         }
-        
 
         #endregion
 

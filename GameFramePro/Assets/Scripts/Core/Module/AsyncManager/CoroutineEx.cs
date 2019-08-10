@@ -131,7 +131,6 @@ namespace GameFramePro
             mCoroutine = null;
 
             OnCompleteCoroutineExEvent?.Invoke(this);
-            yield break;
         }
 
 

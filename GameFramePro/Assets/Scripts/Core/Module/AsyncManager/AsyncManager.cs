@@ -39,7 +39,7 @@ namespace GameFramePro
             coroutine.OnCompleteCoroutineExEvent += OnCompleteCoroutineEx;
             RegisterCoroutine(coroutine);
             AsyncTracker.S_Instance.TrackAsyncTask(coroutine);
-
+            coroutine.StartCoroutine();
             return coroutine;
         }
 

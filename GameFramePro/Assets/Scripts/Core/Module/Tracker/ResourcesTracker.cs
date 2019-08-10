@@ -77,7 +77,7 @@ namespace GameFramePro
             infor.TargetResources = obj;
             mAllTraceResourcesInfor[instanceId] = infor;
 #if UNITY_EDITOR
-            Debug.LogEditorInfor(string.Format("RegistTraceResources Success,instanceid={0}  target object name={1} type={2}", instanceId, obj.name, obj.GetType()));
+            Debug.LogEditorInfor($"RegistTraceResources Success,instanceid={instanceId}  target object name={obj.name} type={obj.GetType()}");
 #endif
             return true;
         }

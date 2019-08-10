@@ -1,3 +1,11 @@
+
+
+
+2019/8/10 17:00
+<1> 修改了 UIPageManager 缓存页面的逻辑，弹窗和页面都是单独缓存自己的子类
+<2> 扩展 UIPageManager 中创建弹窗的逻辑，支持多个同名的弹窗实例的创建
+<3> 导入插件DoTweenPro 
+
 2019/8/9 23:00
 <1>继续扩展和优化 UGUIComponentReference 组件，新增根据序列化组件设置Tag
 <2> AsyncManager 新增延迟一段时间执行的接口 DelayAction
