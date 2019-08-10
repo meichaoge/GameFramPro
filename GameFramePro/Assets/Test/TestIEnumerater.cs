@@ -9,13 +9,56 @@ public class TestIEnumerater : MonoBehaviour
     private void Start()
     {
         ///StartCoroutine(Test004());
-        StartCoroutine(TestWaitDone());
+        //StartCoroutine(TestWaitDone());
 
+//        var yy = StartCoroutine(OutCoroutine());
+//        AsyncManager.Invoke(10, () =>
+//        {
+//            Debug.Log("stop");
+//            StopCoroutine(yy);
+//        });
+
+
+        //AsyncManager.StartCoroutineEx(TestLoop());
+//
+        var xx = AsyncManager.InvokeRepeating(3, 1f, DoRepeat);
+
+        AsyncManager.Invoke(10, () =>
+        {
+            xx.StopCoroutine();
+            Debug.Log("xx" + xx);
+        });
         return;
         CoroutineEx text001 = new CoroutineEx(Test003());
         text001.StartCoroutine();
         text001.OnCompleteCoroutineExEvent += OnComplete;
     }
+
+
+    private IEnumerator OutCoroutine()
+    {
+        int data = 0;
+        yield return StartCoroutine(InnerCoroutine());
+        while (true)
+        {
+            ++data;
+            Debug.Log("OutCoroutine " + data);
+            yield return AsyncManager.WaitFor_OneSecond;
+        }
+    }
+
+
+    private IEnumerator InnerCoroutine()
+    {
+        int data = 0;
+        while (true)
+        {
+            ++data;
+            Debug.Log("InnerCoroutine " + data);
+            yield return AsyncManager.WaitFor_OneSecond;
+        }
+    }
+
 
     IEnumerator Test004()
     {
@@ -24,6 +67,11 @@ public class TestIEnumerater : MonoBehaviour
             yield return AsyncManager.WaitFor_Null;
             Debug.Log(Time.frameCount);
         }
+    }
+
+    private void DoRepeat()
+    {
+        Debug.LogError("111" + Time.realtimeSinceStartup);
     }
 
 

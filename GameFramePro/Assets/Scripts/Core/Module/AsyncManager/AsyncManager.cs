@@ -22,9 +22,6 @@ namespace GameFramePro
 
         #region Data
 
-        //Key =任务id
-        private static Dictionary<int, CoroutineEx> s_AllCreateCoroutines = new Dictionary<int, CoroutineEx>(); //创建的协程
-
         #endregion
 
 
@@ -36,9 +33,11 @@ namespace GameFramePro
             if (task == null) return null;
 
             CoroutineEx coroutine = new CoroutineEx(task);
+            AsyncTracker.S_Instance.TrackAsyncTask(coroutine);
+#if UNITY_EDITOR
             coroutine.OnCompleteCoroutineExEvent += OnCompleteCoroutineEx;
             RegisterCoroutine(coroutine);
-            AsyncTracker.S_Instance.TrackAsyncTask(coroutine);
+#endif
             coroutine.StartCoroutine();
             return coroutine;
         }
@@ -46,9 +45,11 @@ namespace GameFramePro
         /// <summary>/// 停止一个协程/// </summary>
         public static void StopCoroutineEx(CoroutineEx coroutine)
         {
-            AsyncTracker.S_Instance.UnTrackAsyncTask(coroutine);
+#if UNITY_EDITOR
             UnRegisterCoroutine(coroutine);
             coroutine.OnCompleteCoroutineExEvent -= OnCompleteCoroutineEx;
+#endif
+            AsyncTracker.S_Instance.UnTrackAsyncTask(coroutine);
             coroutine.StopCoroutine();
             coroutine = null; //注意这里 多加了一个=null 来清理资源
         }
@@ -65,16 +66,25 @@ namespace GameFramePro
             return StartCoroutineEx(StartAsyncOperate(async, completeCallback, procressCallback));
         }
 
-        /// <summary>/// 延迟一段时间后执行操作/// </summary>
-        public static void DelayAction(float delayTime, System.Action action)
+        /// <summary>/// 延迟一段时间后执行操作(类似MonoBehavior.Invoke)/// </summary>
+        public static CoroutineEx Invoke(float delayTime, System.Action action)
         {
             if (delayTime <= 0)
             {
                 action?.Invoke();
-                return;
+                return null;
             }
 
-            StartCoroutineEx(DelayDoAction(delayTime, action));
+            return StartCoroutineEx(DelayDoAction(delayTime, action));
+        }
+
+        /// <summary>/// 延迟一段时间后每repeatRate 秒执行一次操作操作(类似MonoBehavior.InvokeRepeating)/// </summary>
+        public static CoroutineEx InvokeRepeating(float time, float repeatRate, System.Action action)
+        {
+            if ((double) repeatRate <= 9.99999974737875E-06 && (double) repeatRate != 0.0)
+                throw new UnityException("Invoke repeat rate has to be larger than 0.00001F)");
+
+            return StartCoroutineEx(DelayDoActionRepeat(time, repeatRate, action));
         }
 
         #endregion
@@ -82,55 +92,28 @@ namespace GameFramePro
 
         #region 内部实现
 
-        //注册的协程
-        private static bool RegisterCoroutine(CoroutineEx coroutine)
-        {
-            if (coroutine == null)
-            {
-                Debug.LogError("RegisterCoroutine Fail!!  参数为null");
-                return false;
-            }
-
-            if (s_AllCreateCoroutines.TryGetValue(coroutine.CoroutineID, out var record))
-            {
-                if (object.ReferenceEquals(record, coroutine))
-                {
-                    Debug.LogEditorError(string.Format("RegisterCoroutine Fail, Already Exit {0}", coroutine.CoroutineID));
-                    return false;
-                }
-
-                Debug.LogEditorError(string.Format("RegisterCoroutine Fail, Already Exit,but reference not equal {0}", coroutine.CoroutineID));
-                return false;
-            }
-
-            s_AllCreateCoroutines[coroutine.CoroutineID] = record;
-            return true;
-        }
-
-        //注册协程
-        private static bool UnRegisterCoroutine(CoroutineEx coroutine)
-        {
-            if (coroutine == null)
-            {
-                Debug.LogError("UnRegisterCoroutine Fail!!  参数为null");
-                return false;
-            }
-
-            if (s_AllCreateCoroutines.ContainsKey(coroutine.CoroutineID))
-            {
-                s_AllCreateCoroutines.Remove(coroutine.CoroutineID);
-                return true;
-            }
-
-            Debug.LogEditorError(string.Format("UnRegisterCoroutine Fail, not Exit {0}", coroutine.ToString()));
-            return false;
-        }
-
+        //延迟一段时间后执行一次
         private static IEnumerator DelayDoAction(float delayTime, System.Action action)
         {
             if (delayTime >= 0f)
                 yield return new WaitForSeconds(delayTime);
             action?.Invoke();
+        }
+
+        /// <summary>/// 延迟一段时间后每repeatRate 秒执行一次 执行一次/// </summary>
+        private static IEnumerator DelayDoActionRepeat(float time, float repeatRate, System.Action action)
+        {
+            if (time > 0)
+                yield return new WaitForSeconds(time);
+
+            action?.Invoke();
+
+            YieldInstruction yieldInstruction = new WaitForSeconds(repeatRate);
+            while (true)
+            {
+                yield return yieldInstruction;
+                action?.Invoke();
+            }
         }
 
         //开启一个协程任务
@@ -155,13 +138,70 @@ namespace GameFramePro
             }
         }
 
+        #endregion
+
+
+        #region 记录正在运行的协程
+
+#if UNITY_EDITOR
+        //Key =任务id
+        private static Dictionary<int, CoroutineEx> s_AllCreateCoroutines = new Dictionary<int, CoroutineEx>(); //创建的协程
+
+
+        //注册的协程
+        private static bool RegisterCoroutine(CoroutineEx coroutine)
+        {
+            if (coroutine == null)
+            {
+                Debug.LogError("RegisterCoroutine Fail!!  参数为null");
+                return false;
+            }
+
+            if (s_AllCreateCoroutines.TryGetValue(coroutine.CoroutineID, out var record))
+            {
+                if (object.ReferenceEquals(record, coroutine))
+                {
+                    Debug.LogEditorError($"RegisterCoroutine Fail, Already Exit {coroutine.CoroutineID}");
+                    return false;
+                }
+
+                Debug.LogEditorError($"RegisterCoroutine Fail, Already Exit,but reference not equal {coroutine.CoroutineID}");
+                return false;
+            }
+
+            s_AllCreateCoroutines[coroutine.CoroutineID] = record;
+            return true;
+        }
+
+        //取消注册协程
+        private static bool UnRegisterCoroutine(CoroutineEx coroutine)
+        {
+            if (coroutine == null)
+            {
+                Debug.LogError("UnRegisterCoroutine Fail!!  参数为null");
+                return false;
+            }
+
+            if (s_AllCreateCoroutines.ContainsKey(coroutine.CoroutineID))
+            {
+                s_AllCreateCoroutines.Remove(coroutine.CoroutineID);
+                return true;
+            }
+
+            Debug.LogEditorError($"UnRegisterCoroutine Fail, not Exit {coroutine.ToString()}");
+            return false;
+        }
+
+
         /// <summary>/// 协程完成回调/// </summary>
         private static void OnCompleteCoroutineEx(CoroutineEx coroutine)
         {
             if (coroutine == null) return;
             coroutine.OnCompleteCoroutineExEvent -= OnCompleteCoroutineEx;
-            UnRegisterCoroutine(coroutine);
+            //     UnRegisterCoroutine(coroutine);
         }
+
+#endif
 
         #endregion
     }

@@ -20,6 +20,7 @@ namespace GameFramePro
 
 
     /// <summary>/// **扩展 Unity 内置的 Coroutine 提供完成协程的事件和标示, 方便获取协程的状态/// </summary>
+    /// 注意嵌套的 CoroutineEx 无法通过外层的CoroutineEx 结束，与MonoBehavior 中的协程一样
     public class CoroutineEx : YieldInstruction
     {
         private static readonly AsyncManager s_AsyncManager = AsyncManager.S_Instance;
@@ -32,7 +33,6 @@ namespace GameFramePro
         public int CoroutineID { get; private set; }
 
         public event CompleteCoroutineExHandler OnCompleteCoroutineExEvent;
-
 
         private IEnumerator mTaskCoroutine = null; //用户要做的任务
         private Coroutine mCoroutine = null;
@@ -70,6 +70,8 @@ namespace GameFramePro
             }
 
             mCoroutine = s_AsyncManager.StartCoroutine(InnerIEnumerator());
+
+            // Debug.Log(mCoroutine.GetHashCode());
             return this;
         }
 
@@ -84,6 +86,7 @@ namespace GameFramePro
                 return;
             }
 
+            //   Debug.Log(mCoroutine.GetHashCode());
             s_AsyncManager.StopCoroutine(mCoroutine);
             CoroutineState = CoroutineExStateEnum.Break;
             OnCompleteCoroutineExEvent?.Invoke(this);
@@ -126,7 +129,8 @@ namespace GameFramePro
         private IEnumerator InnerIEnumerator()
         {
             CoroutineState = CoroutineExStateEnum.Running;
-            yield return s_AsyncManager.StartCoroutine(mTaskCoroutine);
+            //     yield return s_AsyncManager.StartCoroutine(mTaskCoroutine); //这里不能再次启动一个协程 否则外层协程无法结束内部协程
+            yield return mTaskCoroutine;
             CoroutineState = CoroutineExStateEnum.Complete;
             mCoroutine = null;
 

@@ -1,5 +1,7 @@
-
-
+2019/8/10 19:00
+<1> AsyncManager新增  InvokeRepeating和Invoke  接口，类似于MonoBehavior 中一样
+<2> 修复 CoroutineEx 启动协程时候，对内部的任务也启动一个协程导致无法通过CoroutineEx 结束任务的Bug 
+<3> 新增TimeTickUtility 组件 ，完成计时器的功能
 
 2019/8/10 17:00
 <1> 修改了 UIPageManager 缓存页面的逻辑，弹窗和页面都是单独缓存自己的子类

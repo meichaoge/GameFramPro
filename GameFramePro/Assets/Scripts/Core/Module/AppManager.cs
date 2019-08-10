@@ -58,6 +58,8 @@ namespace GameFramePro
             DownloadManager.S_Instance.UpdateTick(realtimeSinceStartup);
             AssetDelayDeleteManager.S_Instance.UpdateTick(realtimeSinceStartup);
             UIPageManagerUtility.S_Instance.UpdateTick(realtimeSinceStartup);
+            TimeTickUtility.S_Instance.UpdateTick(realtimeSinceStartup); //计时器
+
             //foreach (var updateTick in mAllControllUpdateTicks)
             //{
             //    updateTick.Tick(realtimeSinceStartup);
