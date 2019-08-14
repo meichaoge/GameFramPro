@@ -1,0 +1,36 @@
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.pdb
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\UnityEditor.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\UnityEngine.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Mono.Cecil.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity.SerializationLogic.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity.DataContract.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\ICSharpCode.NRefactory.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity.UNetWeaver.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity.CecilTools.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Mono.Cecil.Pdb.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\Mono.Cecil.Mdb.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\UnityEditor.xml
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\bin\Debug\UnityEngine.xml
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.dll
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.pdb
+c:\users\client2\documents\visual studio 2015\Projects\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csprojResolveAssemblyReference.cache
+E:\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.dll
+E:\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.pdb
+E:\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csprojResolveAssemblyReference.cache
+E:\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.dll
+E:\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.pdb
+E:\GameFraneWorkSpace\GameFramePro\Assets\Editor\DebugEX\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.dll
+E:\GameFraneWorkSpace\GameFramePro\Assets\Editor\DebugEX\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.pdb
+E:\GameFraneWorkSpace\GameFramePro\Assets\Editor\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csprojAssemblyReference.cache
+E:\GameFraneWorkSpace\GameFramePro\Assets\Editor\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csproj.CoreCompileInputs.cache
+E:\GameFraneWorkSpace\GameFramePro\Assets\Editor\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csproj.CopyComplete
+E:\GameFraneWorkSpace\GameFramePro\Assets\Editor\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.dll
+E:\GameFraneWorkSpace\GameFramePro\Assets\Editor\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.pdb
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.dll
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\bin\Debug\Unity_DebugEX.pdb
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csproj.CoreCompileInputs.cache
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csproj.CopyComplete
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.dll
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.pdb
+E:\GameFraneWorkSpace\GameFramePro\DebugEX\Unity_DebugEX\Unity_DebugEX\obj\Debug\Unity_DebugEX.csprojAssemblyReference.cache
