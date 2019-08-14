@@ -35,7 +35,7 @@ namespace GameFramePro
         event OnTaskProcessChangeHandler OnProgressChangedEvent;
 
         /// <summary>/// 启动任务后的协程 对象/// </summary>
-        CoroutineEx TaskCoroutineExInfor { get; }
+        SuperCoroutine TaskSuperCoroutinenfor { get; }
 
         /// <summary>/// 完成任务时候/// </summary>
         void OnCompleted(bool isDone, bool isError, float progress);

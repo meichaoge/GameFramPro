@@ -32,19 +32,28 @@ namespace BestHTTP
         /// <summary>
         /// It's true if this connection is available to process a HTTPRequest.
         /// </summary>
-        public bool IsFree { get { return State == HTTPConnectionStates.Initial || State == HTTPConnectionStates.Free; } }
+        public bool IsFree
+        {
+            get { return State == HTTPConnectionStates.Initial || State == HTTPConnectionStates.Free; }
+        }
 
         /// <summary>
         /// Returns true if it's an active connection.
         /// </summary>
-        public bool IsActive { get { return State > HTTPConnectionStates.Initial && State < HTTPConnectionStates.Free; } }
+        public bool IsActive
+        {
+            get { return State > HTTPConnectionStates.Initial && State < HTTPConnectionStates.Free; }
+        }
 
         /// <summary>
         /// If the State is HTTPConnectionStates.Processing, then it holds a HTTPRequest instance. Otherwise it's null.
         /// </summary>
         public HTTPRequest CurrentRequest { get; protected set; }
 
-        public virtual bool IsRemovable { get { return IsFree && (DateTime.UtcNow - LastProcessTime) > HTTPManager.MaxConnectionIdleTime; } }
+        public virtual bool IsRemovable
+        {
+            get { return IsFree && (DateTime.UtcNow - LastProcessTime) > HTTPManager.MaxConnectionIdleTime; }
+        }
 
         /// <summary>
         /// When we start to process the current request. It's set after the connection is established.
@@ -57,7 +66,10 @@ namespace BestHTTP
         public DateTime TimedOutStart { get; protected set; }
 
 #if !BESTHTTP_DISABLE_PROXY
-        public bool HasProxy { get { return this.CurrentRequest != null && this.CurrentRequest.Proxy != null; } }
+        public bool HasProxy
+        {
+            get { return this.CurrentRequest != null && this.CurrentRequest.Proxy != null; }
+        }
 #endif
 
         public Uri LastProcessedUri { get; protected set; }
@@ -77,9 +89,9 @@ namespace BestHTTP
 
         #endregion
 
-        public ConnectionBase(string serverAddress)
-            :this(serverAddress, true)
-        {}
+        public ConnectionBase(string serverAddress) : this(serverAddress, true)
+        {
+        }
 
         public ConnectionBase(string serverAddress, bool threaded)
         {
@@ -109,7 +121,6 @@ namespace BestHTTP
 
         protected virtual void ThreadFunc()
         {
-
         }
 
         internal void HandleProgressCallback()
@@ -138,6 +149,7 @@ namespace BestHTTP
                 {
                     HTTPManager.Logger.Exception("ConnectionBase", "HandleProgressCallback - OnUploadProgress", ex);
                 }
+
                 CurrentRequest.UploadProgressChanged = false;
             }
         }
@@ -194,6 +206,7 @@ namespace BestHTTP
         #region Dispose Pattern
 
         protected bool IsDisposed { get; private set; }
+
         public void Dispose()
         {
             Dispose(true);

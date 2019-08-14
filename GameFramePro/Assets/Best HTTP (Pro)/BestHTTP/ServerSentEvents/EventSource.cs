@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using BestHTTP.Extensions;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -25,14 +24,18 @@ namespace BestHTTP.ServerSentEvents
     }
 
     public delegate void OnGeneralEventDelegate(EventSource eventSource);
+
     public delegate void OnMessageDelegate(EventSource eventSource, BestHTTP.ServerSentEvents.Message message);
+
     public delegate void OnErrorDelegate(EventSource eventSource, string error);
+
     public delegate bool OnRetryDelegate(EventSource eventSource);
+
     public delegate void OnEventDelegate(EventSource eventSource, BestHTTP.ServerSentEvents.Message message);
+
     public delegate void OnStateChangedDelegate(EventSource eventSource, States oldState, States newState);
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-
     delegate void OnWebGLEventSourceOpenDelegate(uint id);
     delegate void OnWebGLEventSourceMessageDelegate(uint id, string eventStr, string data, string eventId, int retry);
     delegate void OnWebGLEventSourceErrorDelegate(uint id, string reason);
@@ -46,7 +49,7 @@ namespace BestHTTP.ServerSentEvents
         : IHeartbeat
 #endif
     {
-#region Public Properties
+        #region Public Properties
 
         /// <summary>
         /// Uri of the remote endpoint.
@@ -58,10 +61,7 @@ namespace BestHTTP.ServerSentEvents
         /// </summary>
         public States State
         {
-            get
-            {
-                return _state;
-            }
+            get { return _state; }
             private set
             {
                 States oldState = _state;
@@ -73,13 +73,14 @@ namespace BestHTTP.ServerSentEvents
                     {
                         OnStateChanged(this, oldState, _state);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         HTTPManager.Logger.Exception("EventSource", "OnStateChanged", ex);
                     }
                 }
             }
         }
+
         private States _state;
 
         /// <summary>
@@ -101,9 +102,9 @@ namespace BestHTTP.ServerSentEvents
         public bool WithCredentials { get; set; }
 #endif
 
-#endregion
+        #endregion
 
-#region Public Events
+        #region Public Events
 
         /// <summary>
         /// Called when successfully connected to the server.
@@ -137,9 +138,9 @@ namespace BestHTTP.ServerSentEvents
         /// </summary>
         public event OnStateChangedDelegate OnStateChanged;
 
-#endregion
+        #endregion
 
-#region Privates
+        #region Privates
 
         /// <summary>
         /// A dictionary to store eventName => delegate mapping.
@@ -161,7 +162,7 @@ namespace BestHTTP.ServerSentEvents
         private uint Id;
 #endif
 
-#endregion
+        #endregion
 
         public EventSource(Uri uri)
         {
@@ -192,7 +193,7 @@ namespace BestHTTP.ServerSentEvents
 #endif
         }
 
-#region Public Functions
+        #region Public Functions
 
         /// <summary>
         /// Start to connect to the remote server.
@@ -266,9 +267,9 @@ namespace BestHTTP.ServerSentEvents
             EventTable.Remove(eventName);
         }
 
-#endregion
+        #endregion
 
-#region Private Helper Functions
+        #region Private Helper Functions
 
         private void CallOnError(string error, string msg)
         {
@@ -294,7 +295,7 @@ namespace BestHTTP.ServerSentEvents
                 {
                     return OnRetry(this);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     HTTPManager.Logger.Exception("EventSource", "CallOnRetry", ex);
                 }
@@ -340,9 +341,10 @@ namespace BestHTTP.ServerSentEvents
         }
 #endif
 
-#endregion
+        #endregion
 
-#region HTTP Request Implementation
+        #region HTTP Request Implementation
+
 #if !UNITY_WEBGL || UNITY_EDITOR
 
         /// <summary>
@@ -423,10 +425,11 @@ namespace BestHTTP.ServerSentEvents
                         canRetry = false;
 
                         reason = string.Format("Request Finished Successfully, but the server sent an error. Status Code: {0}-{1} Message: {2}",
-                                                        resp.StatusCode,
-                                                        resp.Message,
-                                                        resp.DataAsText);
+                            resp.StatusCode,
+                            resp.Message,
+                            resp.DataAsText);
                     }
+
                     break;
 
                 // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
@@ -466,9 +469,10 @@ namespace BestHTTP.ServerSentEvents
                 SetClosed("OnRequestFinished");
         }
 #endif
-#endregion
 
-#region EventStreamResponse Event Handlers
+        #endregion
+
+        #region EventStreamResponse Event Handlers
 
         private void OnMessageReceived(
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -518,7 +522,7 @@ namespace BestHTTP.ServerSentEvents
                         {
                             action(this, message);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             HTTPManager.Logger.Exception("EventSource", "OnMessageReceived - action", ex);
                         }
@@ -527,9 +531,10 @@ namespace BestHTTP.ServerSentEvents
             }
         }
 
-#endregion
+        #endregion
 
-#region IHeartbeat Implementation
+        #region IHeartbeat Implementation
+
 #if !UNITY_WEBGL || UNITY_EDITOR
 
         void IHeartbeat.OnHeartbeatUpdate(TimeSpan dif)
@@ -552,11 +557,12 @@ namespace BestHTTP.ServerSentEvents
             }
         }
 #endif
-#endregion
 
-#region WebGL Static Callbacks
+        #endregion
+
+        #region WebGL Static Callbacks
+
 #if UNITY_WEBGL && !UNITY_EDITOR
-
         [AOT.MonoPInvokeCallback(typeof(OnWebGLEventSourceOpenDelegate))]
         static void OnOpenCallback(uint id)
         {
@@ -620,11 +626,12 @@ namespace BestHTTP.ServerSentEvents
         }
 
 #endif
-#endregion
 
-#region WebGL Interface
+        #endregion
+
+        #region WebGL Interface
+
 #if UNITY_WEBGL && !UNITY_EDITOR
-
         [DllImport("__Internal")]
         static extern bool ES_IsSupported();
 
@@ -641,8 +648,8 @@ namespace BestHTTP.ServerSentEvents
         static extern void ES_Release(uint id);
 
 #endif
-#endregion
 
+        #endregion
     }
 }
 

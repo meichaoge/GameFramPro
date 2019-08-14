@@ -37,7 +37,7 @@ namespace GameFramePro.Upgrade
 
 
             AssetBundleUpgradeManager.S_Instance.OnUpgradeProcessEvent += OnUpgradeProcess;
-            CoroutineEx assetBundleCoroutineEx = new CoroutineEx(AssetBundleUpgradeManager.S_Instance.OnBeginUpgrade());
+            var assetBundleCoroutineEx = new SuperCoroutine(AssetBundleUpgradeManager.S_Instance.OnBeginUpgrade());
             yield return assetBundleCoroutineEx.WaitDone(true);
             AssetBundleUpgradeManager.S_Instance.OnUpgradeProcessEvent -= OnUpgradeProcess;
 

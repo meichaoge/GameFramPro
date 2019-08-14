@@ -49,11 +49,11 @@ namespace GameFramePro.Upgrade
             OnBeginUpgradeEvent?.Invoke();
 
             OnUpgradeProcess("开始检测 本地AssetBundle 资源状态 ", 0);
-            CoroutineEx getServerAssetBundleConfig = new CoroutineEx(GetServerAssetBundleContainAssetConfig());
+            var getServerAssetBundleConfig = new SuperCoroutine(GetServerAssetBundleContainAssetConfig());
             getServerAssetBundleConfig.StartCoroutine(); //下载服务器的配置
 
 
-            CoroutineEx localAssetBundleCoroutineEx = new CoroutineEx(GetAllLocalAssetBundleInformation());
+            var localAssetBundleCoroutineEx = new SuperCoroutine(GetAllLocalAssetBundleInformation());
             yield return localAssetBundleCoroutineEx.WaitDone(true); //获取本地AssetBundle 的信息
             OnUpgradeProcess("本地AssetBundle 资源状态获取完成 ", 0.1f);
 
@@ -61,7 +61,7 @@ namespace GameFramePro.Upgrade
 
 
             OnUpgradeProcess(" 开始获取需要更新的 AssetBundle 资源 ", 0.2f);
-            CoroutineEx getNeedUpdateAssetBundleCoroutineEx = new CoroutineEx(GetAllNeedUpdateAssetBundleConfig());
+            var getNeedUpdateAssetBundleCoroutineEx = new SuperCoroutine(GetAllNeedUpdateAssetBundleConfig());
             yield return getNeedUpdateAssetBundleCoroutineEx.WaitDone(); //获取需要下载的资源列表
             OnUpgradeProcess(" 获取需要更新的 AssetBundle 资源 完成", 0.3f);
 
@@ -70,7 +70,7 @@ namespace GameFramePro.Upgrade
             if (TotalNeedDownloadAssetCount != 0)
             {
                 OnUpgradeProcess(" 开始更新的 AssetBundle 资源 ", 0.35f);
-                CoroutineEx downloadAssetBundleCoroutineEx = new CoroutineEx(BeginDownloadAllAssetBundle());
+                var downloadAssetBundleCoroutineEx = new SuperCoroutine(BeginDownloadAllAssetBundle());
                 yield return downloadAssetBundleCoroutineEx.WaitDone(); //开始下载资源
                 OnUpgradeProcess(" 更新的 AssetBundle 资源 完成 ", 0.9f);
             }
@@ -121,7 +121,7 @@ namespace GameFramePro.Upgrade
 
 
             OnUpgradeProcess("  重新下载失败的 AssetBundle 资源 ", 0.35f);
-            CoroutineEx downloadAssetBundleCoroutineEx = new CoroutineEx(BeginDownloadAllAssetBundle());
+            var downloadAssetBundleCoroutineEx = new SuperCoroutine(BeginDownloadAllAssetBundle());
             yield return downloadAssetBundleCoroutineEx.WaitDone(); //开始下载资源
             OnUpgradeProcess(" 重新下载失败的 AssetBundle 资源 完成 ", 0.9f);
 
@@ -161,36 +161,64 @@ namespace GameFramePro.Upgrade
 
             // 如果本地资源存在则获取本地资源的详细信息 并录入
 
+            #region 使用Loom
+
+//            if (isLocalAssetBundleExit)
+//            {
+//                ///利用多线程计算本地资源的信息
+//                Loom.S_Instance.RunAsync(() =>
+//                {
+//                    for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
+//                    {
+//                        var filePath = allAssetBundleFiles[dex];
+//                        AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
+//                        assetBundleInfor.mBundleName = filePath.Substring(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath.Length + 1);
+//                        assetBundleInfor.mBundleMD5Code = MD5Helper.GetFileMD5(filePath, ref assetBundleInfor.mBundleSize);
+//                        string assetBundleNameStr = assetBundleInfor.mBundleName.GetPathStringEx(); //去掉路径分隔符
+//                        mAllLocalAssetBundleAssetFileInfor[assetBundleNameStr] = assetBundleInfor; //记录本地AssetBundle 资源信息
+//                        mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length; //进度
+//                    }
+//
+//                    isCompleteGetLocalFileInfor = true;
+//                    //   Loom.S_Instance.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
+//                });
+//            } //获取本地的所有的AssetBundle 信息 (文件MD5 大小等)
+//            else
+//            {
+//                Debug.LogInfor("BeginUpdateAssetBundle 本地没有资源 下载所有的资源");
+//                mAllLocalAssetBundleLoadProcess = 1f;
+//                isCompleteGetLocalFileInfor = true;
+//            }
+//
+////等待所有的本地资源信息的录入
+//            while (isCompleteGetLocalFileInfor == false)
+//                yield return AsyncManager.WaitFor_Null;
+
+            #endregion
+
             if (isLocalAssetBundleExit)
             {
-                ///利用多线程计算本地资源的信息
-                Loom.S_Instance.RunAsync(() =>
+                yield return AsyncManager.JumpToBackground; //到子线程
+                for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
                 {
-                    for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
-                    {
-                        var filePath = allAssetBundleFiles[dex];
-                        AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
-                        assetBundleInfor.mBundleName = filePath.Substring(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath.Length + 1);
-                        assetBundleInfor.mBundleMD5Code = MD5Helper.GetFileMD5(filePath, ref assetBundleInfor.mBundleSize);
-                        string assetBundleNameStr = assetBundleInfor.mBundleName.GetPathStringEx(); //去掉路径分隔符
-                        mAllLocalAssetBundleAssetFileInfor[assetBundleNameStr] = assetBundleInfor; //记录本地AssetBundle 资源信息
-                        mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length; //进度
-                    }
+                    var filePath = allAssetBundleFiles[dex];
+                    AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
+                    assetBundleInfor.mBundleName = filePath.Substring(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath.Length + 1);
+                    assetBundleInfor.mBundleMD5Code = MD5Helper.GetFileMD5(filePath, ref assetBundleInfor.mBundleSize);
+                    string assetBundleNameStr = assetBundleInfor.mBundleName.GetPathStringEx(); //去掉路径分隔符
+                    mAllLocalAssetBundleAssetFileInfor[assetBundleNameStr] = assetBundleInfor; //记录本地AssetBundle 资源信息
+                    mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length; //进度
+                }
 
-                    isCompleteGetLocalFileInfor = true;
-                    //   Loom.S_Instance.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
-                });
-            } //获取本地的所有的AssetBundle 信息 (文件MD5 大小等)
+                yield return AsyncManager.JumpToUnity; //回到主线程
+                isCompleteGetLocalFileInfor = true;
+            }
             else
             {
                 Debug.LogInfor("BeginUpdateAssetBundle 本地没有资源 下载所有的资源");
                 mAllLocalAssetBundleLoadProcess = 1f;
                 isCompleteGetLocalFileInfor = true;
             }
-
-            //等待所有的本地资源信息的录入
-            while (isCompleteGetLocalFileInfor == false)
-                yield return AsyncManager.WaitFor_Null;
         }
 
         /// <summary>/// 获取服务器的AssetBundle 配置/// </summary>
@@ -208,9 +236,9 @@ namespace GameFramePro.Upgrade
                 yield return AsyncManager.WaitFor_Null;
 
 
-            if (downloadTask.TaskCoroutineExInfor != null)
+            if (downloadTask.TaskSuperCoroutinenfor != null)
             {
-                yield return downloadTask.TaskCoroutineExInfor.WaitDone(true);
+                yield return downloadTask.TaskSuperCoroutinenfor.WaitDone(true);
 
                 if (downloadTask == null || downloadTask.DownloadTaskCallbackData == null || downloadTask.DownloadTaskCallbackData.isNetworkError || downloadTask.DownloadTaskCallbackData.isDone == false)
                     Debug.LogError("OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null");

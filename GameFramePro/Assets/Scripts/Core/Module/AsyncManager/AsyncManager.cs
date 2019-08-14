@@ -12,6 +12,9 @@ namespace GameFramePro
     {
         protected override bool IsNotDestroyedOnLoad { get; } = true;
 
+        public static readonly object JumpToUnity = new object(); //回到主线程
+        public static readonly object JumpToBackground = new object(); //到后台线程
+
         //***WaitForSecondsRealtime Todo
         public static readonly YieldInstruction WaitFor_OneSecond = new WaitForSeconds(1);
         public static readonly YieldInstruction WaitFor_HalfSecond = new WaitForSeconds(0.5f);
@@ -28,14 +31,14 @@ namespace GameFramePro
         #region 对外 Interface
 
         /// <summary>/// 开启一个协程任务/// </summary>
-        public static CoroutineEx StartCoroutineEx(IEnumerator task)
+        public static SuperCoroutine StartCoroutineEx(IEnumerator task)
         {
             if (task == null) return null;
 
-            CoroutineEx coroutine = new CoroutineEx(task);
+            SuperCoroutine coroutine = new SuperCoroutine(task);
             AsyncTracker.S_Instance.TrackAsyncTask(coroutine);
 #if UNITY_EDITOR
-            coroutine.OnCompleteCoroutineExEvent += OnCompleteCoroutineEx;
+            coroutine.CompleteSuperCoroutineEvent += OnCompleteCoroutineEx;
             RegisterCoroutine(coroutine);
 #endif
             coroutine.StartCoroutine();
@@ -43,11 +46,11 @@ namespace GameFramePro
         }
 
         /// <summary>/// 停止一个协程/// </summary>
-        public static void StopCoroutineEx(CoroutineEx coroutine)
+        public static void StopCoroutineEx(SuperCoroutine coroutine)
         {
 #if UNITY_EDITOR
             UnRegisterCoroutine(coroutine);
-            coroutine.OnCompleteCoroutineExEvent -= OnCompleteCoroutineEx;
+            coroutine.CompleteSuperCoroutineEvent -= OnCompleteCoroutineEx;
 #endif
             AsyncTracker.S_Instance.UnTrackAsyncTask(coroutine);
             coroutine.StopCoroutine();
@@ -55,7 +58,7 @@ namespace GameFramePro
         }
 
         /// <summary>/// 开启一个异步的任务/// </summary>  
-        public static CoroutineEx StartAsyncOperation(AsyncOperation async, Action completeCallback, Action<float> procressCallback)
+        public static SuperCoroutine StartAsyncOperation(AsyncOperation async, Action completeCallback, Action<float> procressCallback)
         {
             if (async == null)
             {
@@ -67,7 +70,7 @@ namespace GameFramePro
         }
 
         /// <summary>/// 延迟一段时间后执行操作(类似MonoBehavior.Invoke)/// </summary>
-        public static CoroutineEx Invoke(float delayTime, System.Action action)
+        public static SuperCoroutine Invoke(float delayTime, System.Action action)
         {
             if (delayTime <= 0)
             {
@@ -79,7 +82,7 @@ namespace GameFramePro
         }
 
         /// <summary>/// 延迟一段时间后每repeatRate 秒执行一次操作操作(类似MonoBehavior.InvokeRepeating)/// </summary>
-        public static CoroutineEx InvokeRepeating(float time, float repeatRate, System.Action action)
+        public static SuperCoroutine InvokeRepeating(float time, float repeatRate, System.Action action)
         {
             if ((double) repeatRate <= 9.99999974737875E-06 && (double) repeatRate != 0.0)
                 throw new UnityException("Invoke repeat rate has to be larger than 0.00001F)");
@@ -145,11 +148,11 @@ namespace GameFramePro
 
 #if UNITY_EDITOR
         //Key =任务id
-        private static Dictionary<int, CoroutineEx> s_AllCreateCoroutines = new Dictionary<int, CoroutineEx>(); //创建的协程
+        private static Dictionary<int, SuperCoroutine> s_AllCreateCoroutines = new Dictionary<int, SuperCoroutine>(); //创建的协程
 
 
         //注册的协程
-        private static bool RegisterCoroutine(CoroutineEx coroutine)
+        private static bool RegisterCoroutine(SuperCoroutine coroutine)
         {
             if (coroutine == null)
             {
@@ -174,7 +177,7 @@ namespace GameFramePro
         }
 
         //取消注册协程
-        private static bool UnRegisterCoroutine(CoroutineEx coroutine)
+        private static bool UnRegisterCoroutine(SuperCoroutine coroutine)
         {
             if (coroutine == null)
             {
@@ -194,11 +197,11 @@ namespace GameFramePro
 
 
         /// <summary>/// 协程完成回调/// </summary>
-        private static void OnCompleteCoroutineEx(CoroutineEx coroutine)
+        private static void OnCompleteCoroutineEx(SuperCoroutine coroutine)
         {
             if (coroutine == null) return;
-            coroutine.OnCompleteCoroutineExEvent -= OnCompleteCoroutineEx;
-            //     UnRegisterCoroutine(coroutine);
+            coroutine.CompleteSuperCoroutineEvent -= OnCompleteCoroutineEx;
+            UnRegisterCoroutine(coroutine);
         }
 
 #endif

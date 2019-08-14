@@ -1,7 +1,6 @@
 ﻿#if !BESTHTTP_DISABLE_SIGNALR
 
 using System;
-
 using BestHTTP.SignalR.Hubs;
 
 namespace BestHTTP.SignalR.Messages
@@ -48,12 +47,12 @@ namespace BestHTTP.SignalR.Messages
         public readonly OnMethodProgressDelegate ProgressCallback;
 
         public ClientMessage(Hub hub,
-                             string method, 
-                             object[] args, 
-                             UInt64 callIdx, 
-                             OnMethodResultDelegate resultCallback,
-                             OnMethodFailedDelegate resultErrorCallback, 
-                             OnMethodProgressDelegate progressCallback)
+            string method,
+            object[] args,
+            UInt64 callIdx,
+            OnMethodResultDelegate resultCallback,
+            OnMethodFailedDelegate resultErrorCallback,
+            OnMethodProgressDelegate progressCallback)
         {
             Hub = hub;
             Method = method;

@@ -28,7 +28,7 @@ namespace GameFramePro
             UIPageManager.InitialedPageManager();
             LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
 
-            CoroutineEx appUpgradeCoroutineEx = new CoroutineEx(AppUpgradeManager.S_Instance.OnBeginUpgrade());
+            var appUpgradeCoroutineEx = new SuperCoroutine(AppUpgradeManager.S_Instance.OnBeginUpgrade());
             yield return appUpgradeCoroutineEx.WaitDone(true); //等待完成项目的更新
 
 

@@ -26,7 +26,7 @@ namespace GameFramePro.NetWorkEx
 
         public string TaskUrl { get; protected set; } = string.Empty;
         public float Progress { get; protected set; } = 0f;
-        public CoroutineEx TaskCoroutineExInfor { get; protected set; } = null;
+        public SuperCoroutine TaskSuperCoroutinenfor { get; protected set; } = null;
         public TaskPriorityEnum TaskPriorityEnum { get; protected set; } = TaskPriorityEnum.Normal; //下载任务的优先级
 
         protected readonly LinkedList<Action<W, bool, string>> TaskCompleteCallBackLinkList = new LinkedList<Action<W, bool, string>>(); //完成任务的事件链 bool 标示是否成功

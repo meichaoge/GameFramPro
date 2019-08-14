@@ -2,17 +2,19 @@
 
 using System;
 using System.Collections.Generic;
-
 using BestHTTP.SignalR.Messages;
 using System.Text;
 
 namespace BestHTTP.SignalR.Hubs
 {
     public delegate void OnMethodCallDelegate(Hub hub, string method, params object[] args);
+
     public delegate void OnMethodCallCallbackDelegate(Hub hub, MethodCallMessage methodCall);
 
     public delegate void OnMethodResultDelegate(Hub hub, ClientMessage originalMessage, ResultMessage result);
+
     public delegate void OnMethodFailedDelegate(Hub hub, ClientMessage originalMessage, FailureMessage error);
+
     public delegate void OnMethodProgressDelegate(Hub hub, ClientMessage originialMessage, ProgressMessage progress);
 
     /// <summary>
@@ -20,7 +22,6 @@ namespace BestHTTP.SignalR.Hubs
     /// </summary>
     public class Hub : IHub
     {
-
         #region Public Properties
 
         /// <summary>
@@ -41,6 +42,7 @@ namespace BestHTTP.SignalR.Hubs
                 return state;
             }
         }
+
         private Dictionary<string, object> state;
 
         /// <summary>
@@ -71,10 +73,8 @@ namespace BestHTTP.SignalR.Hubs
 
         Connection IHub.Connection { get; set; }
 
-        public Hub(string name)
-            :this(name, null)
+        public Hub(string name) : this(name, null)
         {
-
         }
 
         public Hub(string name, Connection manager)
@@ -165,7 +165,7 @@ namespace BestHTTP.SignalR.Hubs
             } while (System.Threading.Interlocked.CompareExchange(ref thisHub.Connection.ClientMessageCounter, newValue, originalValue) != originalValue);
 
             // Create and send the client message
-            return thisHub.Call(new ClientMessage(this, method, args, (ulong)thisHub.Connection.ClientMessageCounter, onResult, onResultError, onProgress));
+            return thisHub.Call(new ClientMessage(this, method, args, (ulong) thisHub.Connection.ClientMessageCounter, onResult, onResultError, onProgress));
         }
 
         #endregion
@@ -214,7 +214,7 @@ namespace BestHTTP.SignalR.Hubs
                 {
                     OnMethodCall(this, msg.Method, msg.Arguments);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     HTTPManager.Logger.Exception("Hub - " + this.Name, "IHub.OnMethod - OnMethodCall", ex);
                 }
@@ -227,7 +227,7 @@ namespace BestHTTP.SignalR.Hubs
                 {
                     callback(this, msg);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     HTTPManager.Logger.Exception("Hub - " + this.Name, "IHub.OnMethod - callback", ex);
                 }
@@ -252,7 +252,7 @@ namespace BestHTTP.SignalR.Hubs
                 return;
             }
 
-            switch(msg.Type)
+            switch (msg.Type)
             {
                 case MessageTypes.Result:
                     ResultMessage result = msg as ResultMessage;
@@ -266,7 +266,7 @@ namespace BestHTTP.SignalR.Hubs
                         {
                             originalMsg.ResultCallback(this, originalMsg, result);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             HTTPManager.Logger.Exception("Hub " + this.Name, "IHub.OnMessage - ResultCallback", ex);
                         }
@@ -288,7 +288,7 @@ namespace BestHTTP.SignalR.Hubs
                         {
                             originalMsg.ResultErrorCallback(this, originalMsg, error);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             HTTPManager.Logger.Exception("Hub " + this.Name, "IHub.OnMessage - ResultErrorCallback", ex);
                         }
@@ -304,11 +304,12 @@ namespace BestHTTP.SignalR.Hubs
                         {
                             originalMsg.ProgressCallback(this, originalMsg, msg as ProgressMessage);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             HTTPManager.Logger.Exception("Hub " + this.Name, "IHub.OnMessage - ProgressCallback", ex);
                         }
                     }
+
                     break;
             }
         }

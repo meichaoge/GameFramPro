@@ -55,7 +55,7 @@ namespace GameFramePro.UI
 
         #region 辅助功能扩展功能（协程+UI组件引用+延迟销毁+音效控制组件）
 
-        private readonly List<CoroutineEx> mAllRuningCoroutine = new List<CoroutineEx>();
+        private readonly List<SuperCoroutine> mAllRuningCoroutine = new List<SuperCoroutine>();
         public float MaxAliveAfterInActivte { get; protected set; } = 0f; //当值等于0时候表示立刻销毁 ;小于0表示长存，其他值标示隐藏后的秒数
         public float RecordInvisibleRealTime { get; protected set; } = 0f; //不可见时候的时间
 
@@ -382,7 +382,7 @@ namespace GameFramePro.UI
             mAllRuningCoroutine.Add(AsyncManager.StartCoroutineEx(routine));
         }
 
-        protected virtual void StopCoroutine(CoroutineEx routine)
+        protected virtual void StopCoroutine(SuperCoroutine routine)
         {
             mAllRuningCoroutine.Remove(routine);
             AsyncManager.StopCoroutineEx(routine);
@@ -392,7 +392,7 @@ namespace GameFramePro.UI
         {
             foreach (var routine in mAllRuningCoroutine)
             {
-                if (routine != null && routine.CoroutineState == CoroutineExStateEnum.Running)
+                if (routine != null && routine.CoroutineState == CoroutineStateUsage.Running)
                     AsyncManager.StopCoroutineEx(routine);
             }
 

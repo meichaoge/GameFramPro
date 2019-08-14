@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using BestHTTP.SignalR.Messages;
 using BestHTTP.SignalR.JsonEncoders;
 
@@ -51,6 +50,7 @@ namespace BestHTTP.SignalR.Transports
                     OnStateChanged(this, old, _state);
             }
         }
+
         public TransportStates _state;
 
         /// <summary>
@@ -180,17 +180,18 @@ namespace BestHTTP.SignalR.Transports
                     }
                     else
                         HTTPManager.Logger.Warning("Transport - " + this.Name, string.Format("Start - request finished Successfully, but the server sent an error. Status Code: {0}-{1} Message: {2} Uri: {3}",
-                                                                    resp.StatusCode,
-                                                                    resp.Message,
-                                                                    resp.DataAsText,
-                                                                    req.CurrentUri));
+                            resp.StatusCode,
+                            resp.Message,
+                            resp.DataAsText,
+                            req.CurrentUri));
+
                     goto default;
 
                 default:
                     HTTPManager.Logger.Information("Transport - " + this.Name, "Start request state: " + req.State.ToString());
 
                     // The request may not reached the server. Try it again.
-                    int retryCount = (int)req.Tag;
+                    int retryCount = (int) req.Tag;
                     if (retryCount++ < MaxRetryCount)
                     {
                         req.Tag = retryCount;
@@ -252,23 +253,24 @@ namespace BestHTTP.SignalR.Transports
                     else
                     {
                         HTTPManager.Logger.Warning("Transport - " + this.Name, string.Format("Abort - Handshake request finished Successfully, but the server sent an error. Status Code: {0}-{1} Message: {2} Uri: {3}",
-                                                                    resp.StatusCode,
-                                                                    resp.Message,
-                                                                    resp.DataAsText,
-                                                                    req.CurrentUri));
+                            resp.StatusCode,
+                            resp.Message,
+                            resp.DataAsText,
+                            req.CurrentUri));
 
                         // try again
                         goto default;
                     }
+
                     break;
                 default:
                     HTTPManager.Logger.Information("Transport - " + this.Name, "Abort request state: " + req.State.ToString());
 
                     // The request may not reached the server. Try it again.
-                    int retryCount = (int)req.Tag;
+                    int retryCount = (int) req.Tag;
                     if (retryCount++ < MaxRetryCount)
                     {
-                        req.Tag = retryCount;                        
+                        req.Tag = retryCount;
                         req.Send();
                     }
                     else
@@ -341,7 +343,7 @@ namespace BestHTTP.SignalR.Transports
                 // try to decode the json message with the encoder
                 msg = encoder.DecodeMessage(json);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 HTTPManager.Logger.Exception("MessageFactory", "Parse - encoder.DecodeMessage", ex);
                 return null;
@@ -364,7 +366,7 @@ namespace BestHTTP.SignalR.Transports
                     result = new FailureMessage();
             }
             else
-              result = new MultiMessage();
+                result = new MultiMessage();
 
             try
             {

@@ -29,7 +29,7 @@ namespace GameFramePro.NetWorkEx
             if (DownloadTaskCallbackData != null)
             {
                 var mUnityWebRequestAsyncOperation = DownloadTaskCallbackData.SendWebRequest(); //启动任务
-                TaskCoroutineExInfor = AsyncManager.StartAsyncOperation(mUnityWebRequestAsyncOperation, OnCompleteDownloadTask, OnProcessChange);
+                TaskSuperCoroutinenfor = AsyncManager.StartAsyncOperation(mUnityWebRequestAsyncOperation, OnCompleteDownloadTask, OnProcessChange);
             }
             else
             {
@@ -47,8 +47,8 @@ namespace GameFramePro.NetWorkEx
             }
 
 
-            if (TaskCoroutineExInfor != null)
-                TaskCoroutineExInfor.StopCoroutine();
+            if (TaskSuperCoroutinenfor != null)
+                TaskSuperCoroutinenfor.StopCoroutine();
             base.CancelDownloadTask();
         }
 

@@ -1,3 +1,10 @@
+
+2019/8/14 15:00
+<1> 参考插件Thread NinJa . 完成一个支持多线程调用的协程基类 SuperCoroutine，并修改了相应的 AsyncManager 类依赖  SuperCoroutine
+<2> 根据 SuperCoroutine 修改了各个使用 CoroutineEx 的模块
+<3> 删除插件 Thread NinJa .并导出到目录 UnityPackages&Dll 中
+
+
 2019/8/10 19:00
 <1> AsyncManager新增  InvokeRepeating和Invoke  接口，类似于MonoBehavior 中一样
 <2> 修复 CoroutineEx 启动协程时候，对内部的任务也启动一个协程导致无法通过CoroutineEx 结束任务的Bug 
