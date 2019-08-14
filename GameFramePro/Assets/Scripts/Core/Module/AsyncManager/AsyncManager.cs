@@ -101,6 +101,7 @@ namespace GameFramePro
             if (delayTime >= 0f)
                 yield return new WaitForSeconds(delayTime);
             action?.Invoke();
+            yield break;
         }
 
         /// <summary>/// 延迟一段时间后每repeatRate 秒执行一次 执行一次/// </summary>

@@ -1,3 +1,6 @@
+2019/8/14 18:00
+<1> 修改了EventTrigger 模块中的 移除事件时候递归卡死的 Bug , 移除了事件向下透传的机制
+<2> 新增UI 网络测试模块和对应的接口，测试事件的转发机制
 
 2019/8/14 15:00
 <1> 参考插件Thread NinJa . 完成一个支持多线程调用的协程基类 SuperCoroutine，并修改了相应的 AsyncManager 类依赖  SuperCoroutine

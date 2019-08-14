@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using GameFramePro.Protocol.LoginModule;
 using GameFramePro.Upgrade;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
 
 namespace GameFramePro.UI
 {
@@ -48,6 +50,13 @@ namespace GameFramePro.UI
             ShowNameOrPasswordView();
 
             ShowAllSupportLanguage();
+            RegistEventMessage();
+        }
+
+        protected override void OnBeforeInVisible()
+        {
+            UnRegistEventMessage();
+            base.OnBeforeInVisible();
         }
 
         protected override void OnBeforeDestroyed()
@@ -78,6 +87,19 @@ namespace GameFramePro.UI
             m_PasswordInputField.onValueChanged.AddListener(OnUserPasswordInputCallback);
             m_SelectLanguageDropdown.onValueChanged.AddListener(OnSelectLanguageClick);
             m_LoginButton.onClick.AddListener(OnLoginButtonClick);
+        }
+
+
+        private void RegistEventMessage()
+        {
+            EventTrigger.RegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
+            EventTrigger.RegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
+        }
+
+        private void UnRegistEventMessage()
+        {
+            EventTrigger.UnRegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
+            EventTrigger.UnRegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
         }
 
         #endregion
@@ -145,9 +167,27 @@ namespace GameFramePro.UI
                 return;
             }
 
-            Debug.LogInfor("登录成功--");
+            Debug.LogInfor("登录网络请求--");
+            LoginNetworkModule.S_Instance.RequestLogin(m_NameInputField.text, m_PasswordInputField.text);
+        }
 
-            UIPageManager.OpenChangePage<UIHomeChangePage>(NameDefine.UIHomeChangePageName, PathDefine.UIHomeChangePagePath);
+        #endregion
+
+
+        #region 网络事件回调
+
+        private void OnLoginCallback(int messageID, LoginResponse response)
+        {
+            Debug.Log("登录网络回调成功" + Thread.CurrentThread.IsThreadPoolThread + "  " + Thread.CurrentThread.IsBackground);
+            if (response.mIsSuccess)
+            {
+                UIPageManager.OpenChangePage<UIHomeChangePage>(NameDefine.UIHomeChangePageName, PathDefine.UIHomeChangePagePath);
+            }
+        }
+
+        private void OnLoginCallback2(int messageID)
+        {
+            Debug.Log($" 测试向下转发的消息");
         }
 
         #endregion

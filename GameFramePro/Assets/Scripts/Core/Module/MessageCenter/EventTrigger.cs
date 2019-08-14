@@ -6,28 +6,27 @@ using System;
 
 namespace GameFramePro
 {
-
     public delegate void MessageHandler(int enumValue);
+
     public delegate void MessageHandler<T>(int enumValue, T parameter1);
+
     public delegate void MessageHandler<T, V>(int enumValue, T parameter1, V parameter2);
+
     public delegate void MessageHandler<T, V, W>(int enumValue, T parameter1, V parameter2, W parameter3);
+
     public delegate void MessageHandler<T, V, W, U>(int enumValue, T parameter1, V parameter2, W parameter3, U parameter4);
 
 
-
-    /// <summary>
-    /// 用于各个模块转发消息事件
-    /// </summary>
+    /// <summary>/// 用于各个模块转发消息事件/// </summary>
     public static class EventTrigger
     {
-
         private static Dictionary<int, LinkedList<HandlerRecord>> mAllMessageHandlers = new Dictionary<int, LinkedList<HandlerRecord>>(); //所有的消息处理中心
         private static NativeObjectPool<HandlerRecord> s_MessageHandlerRecordPool = new NativeObjectPool<HandlerRecord>(50, OnBeforeGetHandlerRecord, OnBeforeRecycleHandlerRecord);
 
         #region NativeObjectPool 接口
+
         private static void OnBeforeGetHandlerRecord(HandlerRecord record)
         {
-
         }
 
         private static void OnBeforeRecycleHandlerRecord(HandlerRecord record)
@@ -35,6 +34,7 @@ namespace GameFramePro
             if (record == null) return;
             record.ClearHandlerRecord();
         }
+
         #endregion
 
         #region 注册监听
@@ -75,6 +75,7 @@ namespace GameFramePro
                 messageHandlers = new LinkedList<HandlerRecord>();
                 mAllMessageHandlers[enumValue] = messageHandlers;
             }
+
             HandlerRecord handlerRecord = s_MessageHandlerRecordPool.GetItemFromPool();
             handlerRecord.InitialedHandlerRecord(HandlerTypeEnum.Two_Parameter, process);
             messageHandlers.AddLast(handlerRecord);
@@ -88,10 +89,12 @@ namespace GameFramePro
                 messageHandlers = new LinkedList<HandlerRecord>();
                 mAllMessageHandlers[enumValue] = messageHandlers;
             }
+
             HandlerRecord handlerRecord = s_MessageHandlerRecordPool.GetItemFromPool();
             handlerRecord.InitialedHandlerRecord(HandlerTypeEnum.Three_Parameter, process);
             messageHandlers.AddLast(handlerRecord);
         }
+
         public static void RegisterMessageHandler<T, V, W, U>(int enumValue, MessageHandler<T, V, W, U> process)
         {
             LinkedList<HandlerRecord> messageHandlers = null;
@@ -100,10 +103,12 @@ namespace GameFramePro
                 messageHandlers = new LinkedList<HandlerRecord>();
                 mAllMessageHandlers[enumValue] = messageHandlers;
             }
+
             HandlerRecord handlerRecord = s_MessageHandlerRecordPool.GetItemFromPool();
             handlerRecord.InitialedHandlerRecord(HandlerTypeEnum.Four_Parameter, process);
             messageHandlers.AddLast(handlerRecord);
         }
+
         #endregion
 
         #region 移除监听
@@ -116,23 +121,24 @@ namespace GameFramePro
                 return false;
             }
 
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
-                HandlerRecord messageHandler = null;
                 while (handlerNode != null)
                 {
-                    messageHandler = handlerNode.Value;
-                    if (messageHandler.HandlerType == HandlerTypeEnum.None_Paramter && messageHandler.HandlerFunction == process)
+                    var messageHandler = handlerNode.Value;
+                    if (messageHandler.HandlerType == HandlerTypeEnum.None_Paramter && messageHandler.HandlerFunction as MessageHandler == process)
                     {
                         messageHandlers.Remove(handlerNode);
                         s_MessageHandlerRecordPool.RecycleItemToPool(messageHandler);
                         return true;
                     }
+
+                    handlerNode = handlerNode.Next;
                 }
             }
-            Debug.LogError("UnRegisterMessageHandler Fail, ID={0}  Handler={1}", enumValue, process.Method);
+
+            Debug.LogError($"UnRegisterMessageHandler Fail, ID={enumValue}  Handler={process.Method}");
             return false;
         }
 
@@ -144,23 +150,24 @@ namespace GameFramePro
                 return false;
             }
 
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
-                HandlerRecord messageHandler = null;
                 while (handlerNode != null)
                 {
-                    messageHandler = handlerNode.Value;
-                    if (messageHandler.HandlerType == HandlerTypeEnum.One_Parameter && messageHandler.HandlerFunction == process)
+                    var messageHandler = handlerNode.Value;
+                    if (messageHandler.HandlerType == HandlerTypeEnum.One_Parameter && messageHandler.HandlerFunction as MessageHandler<T> == process)
                     {
                         messageHandlers.Remove(handlerNode);
                         s_MessageHandlerRecordPool.RecycleItemToPool(messageHandler);
                         return true;
                     }
+
+                    handlerNode = handlerNode.Next;
                 }
             }
-            Debug.LogError("UnRegisterMessageHandler<T> Fail, ID={0}  Handler={1}", enumValue, process.Method);
+
+            Debug.LogError($"UnRegisterMessageHandler<T> Fail, ID={enumValue}  Handler={process.Method}");
             return false;
         }
 
@@ -172,25 +179,27 @@ namespace GameFramePro
                 return false;
             }
 
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
-                HandlerRecord messageHandler = null;
                 while (handlerNode != null)
                 {
-                    messageHandler = handlerNode.Value;
-                    if (messageHandler.HandlerType == HandlerTypeEnum.Two_Parameter && messageHandler.HandlerFunction == process)
+                    var messageHandler = handlerNode.Value;
+                    if (messageHandler.HandlerType == HandlerTypeEnum.Two_Parameter && messageHandler.HandlerFunction as MessageHandler<T, V> == process)
                     {
                         messageHandlers.Remove(handlerNode);
                         s_MessageHandlerRecordPool.RecycleItemToPool(messageHandler);
                         return true;
                     }
+
+                    handlerNode = handlerNode.Next;
                 }
             }
-            Debug.LogError("UnRegisterMessageHandler<T,V> Fail, ID={0}  Handler={1}", enumValue, process.Method);
+
+            Debug.LogError($"UnRegisterMessageHandler<T,V> Fail, ID={enumValue}  Handler={process.Method}");
             return false;
         }
+
         public static bool UnRegisterMessageHandler<T, V, W>(int enumValue, MessageHandler<T, V, W> process)
         {
             if (process == null)
@@ -199,23 +208,24 @@ namespace GameFramePro
                 return false;
             }
 
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
-                HandlerRecord messageHandler = null;
                 while (handlerNode != null)
                 {
-                    messageHandler = handlerNode.Value;
-                    if (messageHandler.HandlerType == HandlerTypeEnum.Three_Parameter && messageHandler.HandlerFunction == process)
+                    var messageHandler = handlerNode.Value;
+                    if (messageHandler.HandlerType == HandlerTypeEnum.Three_Parameter && messageHandler.HandlerFunction as MessageHandler<T, V, W> == process)
                     {
                         messageHandlers.Remove(handlerNode);
                         s_MessageHandlerRecordPool.RecycleItemToPool(messageHandler);
                         return true;
                     }
+
+                    handlerNode = handlerNode.Next;
                 }
             }
-            Debug.LogError("UnRegisterMessageHandler<T,V,W> Fail, ID={0}  Handler={1}", enumValue, process.Method);
+
+            Debug.LogError($"UnRegisterMessageHandler<T,V,W> Fail, ID={enumValue}  Handler={process.Method}");
             return false;
         }
 
@@ -227,51 +237,50 @@ namespace GameFramePro
                 return false;
             }
 
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
-                HandlerRecord messageHandler = null;
                 while (handlerNode != null)
                 {
-                    messageHandler = handlerNode.Value;
-                    if (messageHandler.HandlerType == HandlerTypeEnum.Four_Parameter && messageHandler.HandlerFunction == process)
+                    var messageHandler = handlerNode.Value;
+                    if (messageHandler.HandlerType == HandlerTypeEnum.Four_Parameter && messageHandler.HandlerFunction as MessageHandler<T, V, W, U> == process)
                     {
                         messageHandlers.Remove(handlerNode);
                         s_MessageHandlerRecordPool.RecycleItemToPool(messageHandler);
                         return true;
                     }
+
+                    handlerNode = handlerNode.Next;
                 }
             }
-            Debug.LogError("UnRegisterMessageHandler<T,V,W,U> Fail, ID={0}  Handler={1}", enumValue, process.Method);
+
+            Debug.LogError($"UnRegisterMessageHandler<T,V,W,U> Fail, ID={enumValue}  Handler={process.Method}");
             return false;
         }
 
 
         public static bool UnRegisterAllMessageHandler(int enumValue)
         {
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
                 while (handlerNode != null)
+                {
                     s_MessageHandlerRecordPool.RecycleItemToPool(handlerNode.Value);
+                    handlerNode = handlerNode.Next;
+                }
 
                 messageHandlers.Clear();
-
             }
+
             return true;
         }
+
         #endregion
 
         #region 触发消息
 
-        /// <summary>
-        /// 处理消息
-        /// </summary>
-        /// <typeparam name="int"></typeparam>
-        /// <param name="enumValue"></param>
-        /// <param name="parameter"></param>
+        /// <summary>/// 处理消息/// </summary>
         public static void TriggerMessage(int enumValue)
         {
             LinkedList<HandlerRecord> messageHandlers = null;
@@ -285,71 +294,64 @@ namespace GameFramePro
                 }
             }
         }
-        /// <summary>
-        /// 触发事件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumValue"></param>
-        /// <param name="parameter1"></param>
-        /// <param name="isDownPassEvent">是否向下传递事件，结果是参数比当前少的也会被触发</param>
-        public static void TriggerMessage<T>(int enumValue, T parameter1, bool isDownPassEvent = false)
+
+        /// <summary>/// 触发事件/// </summary>
+        public static void TriggerMessage<T>(int enumValue, T parameter1)
         {
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
                 while (handlerNode != null)
                 {
-                    PassEvent<T>(enumValue, parameter1, handlerNode, isDownPassEvent);
+                    PassEvent<T>(enumValue, parameter1, handlerNode, false);
                     handlerNode = handlerNode.Next;
                 }
             }
         }
 
-        public static void TriggerMessage<T, V>(int enumValue, T parameter1, V parameter2, bool isDownPassEvent = false)
+        public static void TriggerMessage<T, V>(int enumValue, T parameter1, V parameter2)
         {
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
                 while (handlerNode != null)
                 {
-                    PassEvent<T, V>(enumValue, parameter1, parameter2, handlerNode, isDownPassEvent);
-                    handlerNode = handlerNode.Next;
-                }
-            }
-        }
-        public static void TriggerMessage<T, V, W>(int enumValue, T parameter1, V parameter2, W parameter3, bool isDownPassEvent = false)
-        {
-            LinkedList<HandlerRecord> messageHandlers = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
-            {
-                var handlerNode = messageHandlers.First;
-                while (handlerNode != null)
-                {
-                    PassEvent<T, V, W>(enumValue, parameter1, parameter2, parameter3, handlerNode, isDownPassEvent);
+                    PassEvent<T, V>(enumValue, parameter1, parameter2, handlerNode);
                     handlerNode = handlerNode.Next;
                 }
             }
         }
 
-        public static void TriggerMessage<T, V, W, U>(int enumValue, T parameter1, V parameter2, W parameter3, U parameter4, bool isDownPassEvent = false)
+        public static void TriggerMessage<T, V, W>(int enumValue, T parameter1, V parameter2, W parameter3)
         {
-            LinkedList<HandlerRecord> messageHandlers = null;
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
+            {
+                var handlerNode = messageHandlers.First;
+                while (handlerNode != null)
+                {
+                    PassEvent<T, V, W>(enumValue, parameter1, parameter2, parameter3, handlerNode);
+                    handlerNode = handlerNode.Next;
+                }
+            }
+        }
+
+        public static void TriggerMessage<T, V, W, U>(int enumValue, T parameter1, V parameter2, W parameter3, U parameter4)
+        {
             MessageHandler<T, V, W, U> process = null;
-            if (mAllMessageHandlers.TryGetValue(enumValue, out messageHandlers))
+            if (mAllMessageHandlers.TryGetValue(enumValue, out var messageHandlers))
             {
                 var handlerNode = messageHandlers.First;
                 while (handlerNode != null)
                 {
-                    PassEvent<T, V, W, U>(enumValue, parameter1, parameter2, parameter3, parameter4, handlerNode, isDownPassEvent);
+                    PassEvent<T, V, W, U>(enumValue, parameter1, parameter2, parameter3, parameter4, handlerNode);
                     handlerNode = handlerNode.Next;
                 }
             }
         }
 
 
-        #region 消息向下传递
+        #region 消息向下传递 （由于测试时发现传递事件时候容易在处理事件时候清空了其他的事件 所以取消 isDownPassEvent 参数的作用）
+
         private static void PassEvent(int enumValue, LinkedListNode<HandlerRecord> handlerNode, bool isDownPassEvent = false)
         {
             if (isDownPassEvent == false && handlerNode.Value.HandlerType != HandlerTypeEnum.None_Paramter)
@@ -361,7 +363,7 @@ namespace GameFramePro
                 if (process != null)
                     process.Invoke(enumValue);
                 else
-                    Debug.LogError("TriggerMessage 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction.Method);
+                    Debug.LogError("TriggerMessage 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction);
             }
         }
 
@@ -376,11 +378,11 @@ namespace GameFramePro
                 if (process != null)
                     process.Invoke(enumValue, parameter1);
                 else
-                    Debug.LogError("TriggerMessage<T> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction.Method);
+                    Debug.LogError("TriggerMessage<T> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction);
             }
 
-            if (isDownPassEvent)
-                PassEvent(enumValue, handlerNode, isDownPassEvent);
+//            if (isDownPassEvent)
+//                PassEvent(enumValue, handlerNode, isDownPassEvent);
         }
 
         private static void PassEvent<T, V>(int enumValue, T parameter1, V parameter2, LinkedListNode<HandlerRecord> handlerNode, bool isDownPassEvent = false)
@@ -394,10 +396,11 @@ namespace GameFramePro
                 if (process != null)
                     process.Invoke(enumValue, parameter1, parameter2);
                 else
-                    Debug.LogError("TriggerMessage<T,V> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction.Method);
+                    Debug.LogError("TriggerMessage<T,V> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction);
             }
-            if (isDownPassEvent)
-                PassEvent<T>(enumValue, parameter1, handlerNode, isDownPassEvent);
+
+//            if (isDownPassEvent)
+//                PassEvent<T>(enumValue, parameter1, handlerNode, isDownPassEvent);
         }
 
         private static void PassEvent<T, V, W>(int enumValue, T parameter1, V parameter2, W parameter3, LinkedListNode<HandlerRecord> handlerNode, bool isDownPassEvent = false)
@@ -411,10 +414,11 @@ namespace GameFramePro
                 if (process != null)
                     process.Invoke(enumValue, parameter1, parameter2, parameter3);
                 else
-                    Debug.LogError("TriggerMessage<T,V,W> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction.Method);
+                    Debug.LogError("TriggerMessage<T,V,W> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction);
             }
-            if (isDownPassEvent)
-                PassEvent<T, V>(enumValue, parameter1, parameter2, handlerNode, isDownPassEvent);
+
+//            if (isDownPassEvent)
+//                PassEvent<T, V>(enumValue, parameter1, parameter2, handlerNode, isDownPassEvent);
         }
 
         private static void PassEvent<T, V, W, U>(int enumValue, T parameter1, V parameter2, W parameter3, U parameter4, LinkedListNode<HandlerRecord> handlerNode, bool isDownPassEvent = false)
@@ -428,16 +432,15 @@ namespace GameFramePro
                 if (process != null)
                     process.Invoke(enumValue, parameter1, parameter2, parameter3, parameter4);
                 else
-                    Debug.LogError("TriggerMessage<T,V,W,U> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction.Method);
+                    Debug.LogError("TriggerMessage<T,V,W,U> 异常，无法转换处理过程 " + handlerNode.Value.HandlerFunction);
             }
-            if (isDownPassEvent)
-                PassEvent<T, V, W>(enumValue, parameter1, parameter2, parameter3, handlerNode, isDownPassEvent);
+
+//            if (isDownPassEvent)
+//                PassEvent<T, V, W>(enumValue, parameter1, parameter2, parameter3, handlerNode, isDownPassEvent);
         }
-        #endregion
 
         #endregion
 
-
-
+        #endregion
     }
 }
