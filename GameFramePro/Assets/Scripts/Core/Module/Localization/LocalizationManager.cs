@@ -6,22 +6,22 @@ using System.Xml;
 
 namespace GameFramePro
 {
-
     public delegate void OnLanguageChangedHandler(Language curLanguage);
 
-    /// <summary>
-    ///本地化管理器
-    /// </summary>
+    /// <summary>///本地化管理器/// </summary>
     public class LocalizationManager : Single<LocalizationManager>
     {
-
         #region 支持的本地化语言
 
         private Language mCurLanguage = 0;
+
         /// <summary>
         /// 当前的语言
         /// </summary>
-        private Language CurLanguage { get { return mCurLanguage; } }
+        public Language CurLanguage
+        {
+            get { return mCurLanguage; }
+        }
 
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace GameFramePro
             int lastSelectedLanguage = PlayerPrefsManager.GetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key);
             if (lastSelectedLanguage != 0)
             {
-                mCurLanguage = (Language)lastSelectedLanguage;
+                mCurLanguage = (Language) lastSelectedLanguage;
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace GameFramePro
             Debug.LogError("需要获取各个平台系统语言环境");
 
             mCurLanguage = Language.zh_CN;
-            PlayerPrefsManager.SetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key, (int)mCurLanguage);
+            PlayerPrefsManager.SetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key, (int) mCurLanguage);
         }
 
         /// <summary>
@@ -106,6 +106,7 @@ namespace GameFramePro
 
             mAllLanguageChangeHandlers.Add(handler);
         }
+
         /// <summary>
         ///  取消监听切换语言
         /// </summary>
@@ -117,6 +118,7 @@ namespace GameFramePro
                 Debug.LogError("UnRegisterLanguageChangeEvent Fail,Parameter is null");
                 return;
             }
+
             for (int dex = mAllLanguageChangeHandlers.Count - 1; dex >= 0; dex--)
             {
                 if (mAllLanguageChangeHandlers[dex].Equals(handler))
@@ -134,6 +136,7 @@ namespace GameFramePro
 
 
         #region 本地化加载配置文件
+
         /// <summary>
         /// 根据指定的语言和格式获取本地化文件名
         /// </summary>
@@ -155,6 +158,7 @@ namespace GameFramePro
                     return string.Empty;
             }
         }
+
         /// <summary>
         /// 加载默认的语言 本地化配置，信息不一定是最新的，只是保证一开始能正确显示
         /// </summary>
@@ -180,7 +184,10 @@ namespace GameFramePro
         /// <summary>
         /// 根据key 获取 本地化的内容(默认是当前的语言)
         /// </summary>
-        public string GetLocalizationByKey(string key) { return GetLocalizationByKey(key, CurLanguage); }
+        public string GetLocalizationByKey(string key)
+        {
+            return GetLocalizationByKey(key, CurLanguage);
+        }
 
         /// <summary>
         /// 根据key 获取 本地化的内容(默认是当前的语言)
@@ -195,6 +202,7 @@ namespace GameFramePro
                 Debug.LogError("GetLocalizationByKey Fail,parameter key  is Null");
                 return string.Empty;
             }
+
             string result = string.Empty;
 
             Dictionary<string, string> languageLocalizationInfor = null;
@@ -214,10 +222,10 @@ namespace GameFramePro
             return result;
         }
 
-
         #endregion
 
         #region 解析获得的本地化配置
+
         /// <summary>
         /// 根据选择的语言和对应的导出格式解析配置文件
         /// </summary>
@@ -246,7 +254,7 @@ namespace GameFramePro
         private Dictionary<string, string> GetLocalizationConfigByCsv(string content)
         {
             Dictionary<string, string> allConfig = new Dictionary<string, string>();
-            string[] allLines = content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] allLines = content.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             string key, localizationValue;
             for (int dex = 0; dex < allLines.Length; dex++)
             {
@@ -257,6 +265,7 @@ namespace GameFramePro
                 else
                     Debug.LogError(string.Format("解析CSV 文件失败，第{0}行数据异常 ", dex));
             }
+
             return allConfig;
         }
 
@@ -273,24 +282,24 @@ namespace GameFramePro
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(content);
             XmlReaderSettings settings = new XmlReaderSettings();
-            settings.IgnoreComments = true;//忽略文档里面的注释
+            settings.IgnoreComments = true; //忽略文档里面的注释
 
             XmlNode root = doc.SelectSingleNode("Table");
             if (root != null)
             {
                 foreach (var RowChildNode in root.ChildNodes)
                 {
-                    XmlNode RowNode = (XmlNode)RowChildNode;
+                    XmlNode RowNode = (XmlNode) RowChildNode;
 
                     string key = RowNode.SelectSingleNode("Key").InnerText;
                     string localizationValue = RowNode.SelectSingleNode(language.ToString()).InnerText;
                     allConfig[key] = localizationValue;
                 }
             }
+
             return allConfig;
         }
 
         #endregion
-
     }
 }

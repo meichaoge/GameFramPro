@@ -15,18 +15,16 @@ namespace GameFramePro.UI
     public partial class UGUIComponentReference : MonoBehaviour
     {
         [System.Serializable]
-        public class UGUIComponentSerializationInfor
+        public partial class UGUIComponentSerializationInfor
         {
             public Component mReferenceComponent = null;
-#if UNITY_EDITOR
-            //辅助获取指定类型的组件
-            public UGUIComponentTypeEnum mComponentType = UGUIComponentTypeEnum.Transform;
-#endif
         }
 
-        [SerializeField] private List<UGUIComponentSerializationInfor> mSerilizeUGUIComponents = new List<UGUIComponentSerializationInfor>();
+        [Header("序列化当前预制体中包含的组件，用于脚本访问")] [SerializeField]
+        private List<UGUIComponentSerializationInfor> mSerilizeUGUIComponents = new List<UGUIComponentSerializationInfor>();
 
         private Dictionary<string, Component> mAllSerilizeUGUIComponentMap = new Dictionary<string, Component>();
+
 
         /// <summary>/// 根据组件名获取对应的组件/// </summary>
         public T GetComponentByName<T>(string gameObjectName) where T : Component
@@ -76,7 +74,6 @@ namespace GameFramePro.UI
 
 #if UNITY_EDITOR
 
-    #region Unity  UGUIComponentReference 编辑器
 
     /// <summary>/// 关联的资源类型 名称也是对应的 Tag/// </summary>
     [System.Serializable]
@@ -89,12 +86,54 @@ namespace GameFramePro.UI
         UGUIButton,
         UGUIInputField,
         UGUIDropDown,
-        CanvasGroup, 
+        CanvasGroup,
     }
+
 
     /// <summary>/// 挂载在预制体上 编辑器配置哪些组件的引用可以序列化，主要使用这个避免每次查找/// </summary>
     public partial class UGUIComponentReference
     {
+        public partial class UGUIComponentSerializationInfor
+        {
+            //辅助获取指定类型的组件
+            public UGUIComponentTypeEnum mComponentType = UGUIComponentTypeEnum.Transform;
+        }
+
+        [CustomPropertyDrawer(typeof(UGUIComponentSerializationInfor))]
+        public class UGUIComponentSerializationInforPropertyDrawer : PropertyDrawer
+        {
+            public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+            {
+                EditorGUI.BeginProperty(position, label, property); // 开始绘制属性
+                // 获取属性前值 label, 就是显示在此属性前面的那个名称 label
+                //   position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+                float EditorLableWidth = EditorGUIUtility.labelWidth; //需要先保存这个值 然后还原
+
+                float lableWidth = 5;
+                //  var labelRect = new Rect(position.x, position.y, lableWidth, position.height); //显示前面的Lable
+
+                float contentInforWidth = position.width - lableWidth; //内容区间的宽度
+
+                var mReferenceComponentRect = new Rect(position.x + lableWidth, position.y, contentInforWidth * 0.6f, position.height);
+                var mComponentTypeRect = new Rect(mReferenceComponentRect.x + mReferenceComponentRect.width, position.y, contentInforWidth * 0.4f, position.height);
+
+                //      EditorGUI.LabelField(labelRect, label);
+                EditorGUIUtility.labelWidth = contentInforWidth * 0.2f; //控制每个属性文本区间大小
+                EditorGUI.PropertyField(mReferenceComponentRect, property.FindPropertyRelative("mReferenceComponent"), new GUIContent("Component"));
+                EditorGUI.PropertyField(mComponentTypeRect, property.FindPropertyRelative("mComponentType"), new GUIContent("ComponentType"));
+
+
+                EditorGUIUtility.labelWidth = EditorLableWidth;
+                EditorGUI.EndProperty(); // 完成绘制
+            }
+
+            public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+            {
+                return base.GetPropertyHeight(property, label);
+            }
+        }
+
+
         //枚举类型转成对应的tag
         public void AddAllUGUIComponentTypeTag()
         {
@@ -169,7 +208,7 @@ namespace GameFramePro.UI
                 AttachComponentByType(ref item.mReferenceComponent, ref item.mComponentType, item.mReferenceComponent.transform);
             }
         }
-        
+
         /// <summary>/// 获取所有序列化的组件的脚本定义字符串/// </summary>
         public static void ShowComponentReferenceByConfig(GameObject go)
         {
@@ -183,7 +222,7 @@ namespace GameFramePro.UI
         }
 
         /// <summary>/// 设置序列化的组件对象的Tag/// </summary>
-        public  void AutoSetSerializaComponentTag()
+        public void AutoSetSerializaComponentTag()
         {
             foreach (var item in mSerilizeUGUIComponents)
             {
@@ -193,7 +232,7 @@ namespace GameFramePro.UI
                 item.mReferenceComponent.gameObject.tag = item.mComponentType.ToString();
             }
         }
-        
+
 
         /// <summary>/// 根据选择的参数类型获取指定对象的指定组件 第一个参数要是引用类型/// </summary>
         private static void AttachComponentByType(ref Component targetComponent, ref UGUIComponentTypeEnum type, Transform target)
@@ -222,7 +261,7 @@ namespace GameFramePro.UI
                 case UGUIComponentTypeEnum.UGUIDropDown:
                     temp = target.GetComponent<Dropdown>();
                     break;
-                case  UGUIComponentTypeEnum.CanvasGroup:
+                case UGUIComponentTypeEnum.CanvasGroup:
                     temp = target.GetComponent<CanvasGroup>();
                     break;
                 default:
@@ -239,7 +278,7 @@ namespace GameFramePro.UI
 
             targetComponent = temp;
         }
-   
+
         //根据选的的类型判断引用组件是否正确
         private bool CheckReferenceComponentType(ref Component targetComponent, UGUIComponentTypeEnum type)
         {
@@ -261,7 +300,7 @@ namespace GameFramePro.UI
                     return targetComponent is InputField;
                 case UGUIComponentTypeEnum.UGUIDropDown:
                     return targetComponent is Dropdown;
-                case  UGUIComponentTypeEnum.CanvasGroup:
+                case UGUIComponentTypeEnum.CanvasGroup:
                     return targetComponent is CanvasGroup;
                 default:
                     Debug.LogError("没有定义的类型 " + type);
@@ -269,9 +308,7 @@ namespace GameFramePro.UI
             }
         }
 
-        
-        
-       
+
         /// <summary>/// 根据给定的对象上的  UGUIComponentReference 组件生成对应的代码/// </summary>
         /// <param name="go"></param>
         /// <param name="uiDefineString">输出得到的 UI 组件名定义</param>
@@ -356,7 +393,86 @@ namespace GameFramePro.UI
         }
     }
 
-    #endregion
+
+    [CustomEditor(typeof(UGUIComponentReference))]
+    public class UGUIComponentReference_Editor : Editor
+    {
+        private SerializedProperty mSerilizeUGUIComponents;
+        private UGUIComponentReference mUGUIComponentReference;
+
+        private void OnEnable()
+        {
+            mSerilizeUGUIComponents = serializedObject.FindProperty("mSerilizeUGUIComponents");
+            mUGUIComponentReference = target as UGUIComponentReference;
+        }
+
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            GUILayout.BeginVertical();
+            GUILayout.Space(5);
+
+            if (GUILayout.Button("根据ComponentTypeEnum创建Tag", GUILayout.Height(25)))
+                mUGUIComponentReference.AddAllUGUIComponentTypeTag();
+
+            if (GUILayout.Button("自动序列化标记Tag 的组件&设置序列化组件对象的Tag", GUILayout.Height(25)))
+            {
+                mUGUIComponentReference.AutoRecordReferenceWithTag();
+                mUGUIComponentReference.AutoSetSerializaComponentTag();
+            }
+
+            if (GUILayout.Button("检测是否有重名的对象", GUILayout.Height(25)))
+                mUGUIComponentReference.CheckIfContainSameNameComponent();
+
+            if (GUILayout.Button("获取当前对象的UI定义", GUILayout.Height(25)))
+                UGUIComponentReference.ShowComponentReferenceByConfig(mUGUIComponentReference.gameObject);
+
+            GUILayout.Space(5);
+            GUILayout.EndVertical();
+
+
+            if (EditorGUILayout.PropertyField(mSerilizeUGUIComponents))
+            {
+                EditorGUI.indentLevel++;
+                // 设置元素个数
+                mSerilizeUGUIComponents.arraySize = EditorGUILayout.IntField("Size", mSerilizeUGUIComponents.arraySize);
+
+                for (int dex = 0; dex < mSerilizeUGUIComponents.arraySize; dex++)
+                {
+                    var componentItem = mSerilizeUGUIComponents.GetArrayElementAtIndex(dex);
+                    EditorGUILayout.BeginHorizontal();
+                    if (GUILayout.Button(new GUIContent("+"), GUILayout.Width(25)))
+                    {
+                        mSerilizeUGUIComponents.InsertArrayElementAtIndex(dex + 1);
+                        var newComponentItem = mSerilizeUGUIComponents.GetArrayElementAtIndex(dex + 1);
+                        newComponentItem.FindPropertyRelative("mReferenceComponent").objectReferenceValue = null;
+                        newComponentItem.FindPropertyRelative("mComponentType").intValue = 0;
+                        break;
+                    }
+
+                    if (GUILayout.Button(new GUIContent("-"), GUILayout.Width(25)))
+                    {
+                        mSerilizeUGUIComponents.DeleteArrayElementAtIndex(dex);
+                        break;
+                    }
+
+                    EditorGUI.BeginChangeCheck();
+                    EditorGUILayout.PropertyField(componentItem, true);
+                    mUGUIComponentReference.GetComponentByTypeDefine();
+                    EditorGUI.EndChangeCheck();
+
+                    EditorGUILayout.EndHorizontal();
+                }
+            }
+
+            EditorGUI.indentLevel--;
+            serializedObject.ApplyModifiedProperties();
+            //       base.OnInspectorGUI();
+        }
+    }
+
 
 #endif
 }
