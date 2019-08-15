@@ -284,10 +284,9 @@ namespace GameFramePro.EditorEx
         private void ExportExcel(List<Language> languages, List<ExportFormatEnum> exportFormats)
         {
             string filePath = mLocalizationConfigExcelExportPath;
-            int[] allExportColumn;
             foreach (var languagege in languages)
             {
-                allExportColumn = GetExportColumnByLanguage(languagege);
+                var allExportColumn = GetExportColumnByLanguage(languagege);
                 foreach (var exportFormat in exportFormats)
                 {
                     filePath = mLocalizationConfigExcelExportPath.CombinePathEx(LocalizationManager.GetLocalizationConfigFileName(exportFormat, languagege));
