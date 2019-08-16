@@ -32,9 +32,7 @@ namespace GameFramePro.EditorEx
             }
         }
 
-        /// <summary>
-        /// Unity标准Build后处理函数
-        /// </summary>
+        /// <summary>   /// Unity标准Build后处理函数  /// </summary>
         [PostProcessBuild()]
         private static void OnPostBuildPlayer(BuildTarget target, string pathToBuiltProject)
         {

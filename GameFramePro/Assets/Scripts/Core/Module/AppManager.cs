@@ -26,6 +26,11 @@ namespace GameFramePro
         private IEnumerator Start()
         {
             Debug.Log("AppManager--->>>>");
+
+#if UNITY_EDITOR
+            Debug.LogInfor($"Application.persistentDataPath={Application.persistentDataPath}");
+#endif
+
             UIPageManager.InitialedPageManager();
             LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
 
@@ -34,7 +39,7 @@ namespace GameFramePro
 
 
             yield return null;
-           UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
+            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
         }
 
 

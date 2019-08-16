@@ -74,6 +74,12 @@ namespace GameFramePro
         {
             return ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
+        
+        /// <summary>/// 下载图片/// </summary>
+        public UnityWebRequestDownloadTask GetTextureDataFromUrl(string taskUrl, TaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
+        {
+            return TextureDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
+        }
 
         #endregion
 

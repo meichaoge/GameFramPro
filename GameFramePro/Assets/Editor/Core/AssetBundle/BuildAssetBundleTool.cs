@@ -220,7 +220,7 @@ namespace GameFramePro.EditorEx
 
 
             s_TotalAssetBundleInfor.mConfigBuildTime = DateTime.UtcNow.ToTimestamp_Millisecond();
-            string content = SerilazeManager.SerializeObject(s_TotalAssetBundleInfor);
+            string content = SerializeManager.SerializeObject(s_TotalAssetBundleInfor);
             string realPath = S_BuildAssetBundleTotalRecordRealPath.ConcatPathEx(DateTime.Now.ToString("_yyyy_MM_dd_HH_mm")).ConcatPathEx(ConstDefine.S_TextAssetExtension);
 
             IOUtility.CreateOrSetFileContent(realPath, content);
@@ -271,7 +271,7 @@ namespace GameFramePro.EditorEx
             string configContent;
             if (IOUtility.GetFileContent(assetBundleConfigPath, out configContent) == false)
                 return;
-            EditorTotalAssetBundleInfor totalAssetBundleInfor = SerilazeManager.DeserializeObject<EditorTotalAssetBundleInfor>(configContent);
+            EditorTotalAssetBundleInfor totalAssetBundleInfor = SerializeManager.DeserializeObject<EditorTotalAssetBundleInfor>(configContent);
 
             StringBuilder builder = StringUtility.GetStringBuilder();
 
@@ -316,7 +316,7 @@ namespace GameFramePro.EditorEx
             string configContent;
             if (IOUtility.GetFileContent(assetBundleConfigPath, out configContent) == false)
                 return;
-            EditorTotalAssetBundleInfor totalAssetBundleInfor = SerilazeManager.DeserializeObject<EditorTotalAssetBundleInfor>(configContent);
+            EditorTotalAssetBundleInfor totalAssetBundleInfor = SerializeManager.DeserializeObject<EditorTotalAssetBundleInfor>(configContent);
 
             AssetBundleAssetTotalInfor localAssetBundleConfig = new AssetBundleAssetTotalInfor();
             localAssetBundleConfig.mVersion = totalAssetBundleInfor.mVersion;
@@ -348,7 +348,7 @@ namespace GameFramePro.EditorEx
                 localAssetBundleConfig.mTotalAssetBundleInfor[assetBundleNameStr] = assetBundleInfor; //这里的key 不带路径分隔符
             }
 
-            string content = SerilazeManager.SerializeObject(localAssetBundleConfig);
+            string content = SerializeManager.SerializeObject(localAssetBundleConfig);
             string realPath = ConstDefine.S_ApplicationAssetParentRealPath.CombinePathEx(ConstDefine.S_ExportDirectoryName).
               CombinePathEx(AppPlatformManager.GetPlatformFolderName(targetPlatform)).CombinePathEx(S_AssetBundleExportConfigRelativePath);
             IOUtility.CreateOrSetFileContent(realPath, content, false);

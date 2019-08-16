@@ -20,7 +20,7 @@ namespace GameFramePro
             {
                 string totalKeys = PlayerPrefs.GetString(TotalPlayerPrefsKeyRecord, string.Empty);
                 if (string.IsNullOrEmpty(totalKeys)) return;
-                mAllPlayerPrefsKeys = SerilazeManager.DeserializeObject<HashSet<string>>(totalKeys);
+                mAllPlayerPrefsKeys = SerializeManager.DeserializeObject<HashSet<string>>(totalKeys);
             }
         }
 
@@ -61,7 +61,7 @@ namespace GameFramePro
         //TODO 需要检测这里是否会执行
         public static void Save()
         {
-            PlayerPrefs.SetString(TotalPlayerPrefsKeyRecord, SerilazeManager.SerializeObject(mAllPlayerPrefsKeys));
+            PlayerPrefs.SetString(TotalPlayerPrefsKeyRecord, SerializeManager.SerializeObject(mAllPlayerPrefsKeys));
             PlayerPrefs.Save();
         }
         public static bool HasKey(string key)

@@ -14,6 +14,24 @@ namespace GameFramePro.Upgrade
     /// <summary>/// 负责AssetBundle 资源的更新逻辑/// </summary>
     public class AssetBundleUpgradeManager : Single<AssetBundleUpgradeManager>, IUpgradeModule
     {
+        #region 路径配置
+
+        private string mServerAssetBundleConfigUrl = string.Empty;
+
+        /// <summary>/// 服务器AssetBundle 配置文件Url/// </summary>
+        public string ServerAssetBundleConfigUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(mServerAssetBundleConfigUrl))
+                    mServerAssetBundleConfigUrl = AppUrlManager.S_AssetBundleCDNTopUrl.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName);
+                return mServerAssetBundleConfigUrl;
+            }
+        }
+
+        #endregion
+
+
         #region 需要更新的AssetBundle 信息
 
         //key =AssetBundleName
@@ -27,9 +45,10 @@ namespace GameFramePro.Upgrade
         private AssetBundleAssetTotalInfor mServerBundleAssetConfigInfor = null; //从服务器获取的 AssetBundle 配置
 
         /// <summary>/// 总共需要下载的资源总数/// </summary>
-        public int TotalNeedDownloadAssetCount { get; private set; }
+        public uint TotalNeedDownloadAssetCount { get; private set; }
 
-        private const int S_MaxDownloadTimes = 3; //最大下载次数
+        private uint mCurDownloadCount = 0; //当前下载次数
+        private const uint S_MaxDownloadTimes = 3; //最大下载次数
 
         #endregion
 
@@ -48,40 +67,8 @@ namespace GameFramePro.Upgrade
         {
             OnBeginUpgradeEvent?.Invoke();
 
-            OnUpgradeProcess("获取服务器上AssetBundle 配置信息 ", 0);
-            var getServerAssetBundleConfig = new SuperCoroutine(GetServerAssetBundleContainAssetConfig());
-            getServerAssetBundleConfig.StartCoroutine(); //下载服务器的配置
-
-
-            var localAssetBundleCoroutineEx = new SuperCoroutine(GetAllLocalAssetBundleInformation());
-            yield return localAssetBundleCoroutineEx.WaitDone(true); //获取本地AssetBundle 的信息
-            OnUpgradeProcess("本地AssetBundle 资源状态获取完成 ", 0.1f);
-
-            yield return getServerAssetBundleConfig.WaitDone(); //等待完成获取服务器配置
-
-
-            OnUpgradeProcess(" 开始获取需要更新的 AssetBundle 资源 ", 0.2f);
-            var getNeedUpdateAssetBundleCoroutineEx = new SuperCoroutine(GetAllNeedUpdateAssetBundleConfig());
-            yield return getNeedUpdateAssetBundleCoroutineEx.WaitDone(); //获取需要下载的资源列表
-            OnUpgradeProcess(" 获取需要更新的 AssetBundle 资源 完成", 0.3f);
-
-
-            TotalNeedDownloadAssetCount = mAllNeedUpdateAssetBundleAssetInfor.Count; //需要下载的资源总数
-            if (TotalNeedDownloadAssetCount != 0)
-            {
-                OnUpgradeProcess(" 开始更新的 AssetBundle 资源 ", 0.35f);
-                var downloadAssetBundleCoroutineEx = new SuperCoroutine(BeginDownloadAllAssetBundle());
-                yield return downloadAssetBundleCoroutineEx.WaitDone(); //开始下载资源
-                OnUpgradeProcess(" 更新的 AssetBundle 资源 完成 ", 0.9f);
-            }
-            else
-                OnUpgradeProcess(" 本地的 AssetBundle 资源 是最新的 ", 0.9f);
-
-            //下载流程结束
-            if (mAllNeedUpdateAssetBundleAssetInfor.Count == 0 && mAllDownloadFailAssetBundleInfors.Count == 0)
-                OnUpgradeSuccess();
-            else
-                OnUpgradeFail(); //有任务没有下载完成
+            var assetBundleUpgradeSuperCoroutine = new SuperCoroutine(AssetBundleIUpgradeProcess(true));
+            yield return assetBundleUpgradeSuperCoroutine.WaitDone(true);
         }
 
         public void OnUpgradeProcess(string message, float process)
@@ -94,10 +81,10 @@ namespace GameFramePro.Upgrade
             OnUpgradeProcessEvent?.Invoke(message, process);
         }
 
-        public void OnUpgradeFail()
+        public void OnUpgradeFail(string message)
         {
-            Debug.LogError("有部分资源多次下载均失败了 无法继续下载！！！ 请检查网络后重试");
-            OnUpgradeFailEvent?.Invoke("有部分资源多次下载均失败了 无法继续下载！！！ 请检查网络后重试");
+            Debug.LogError(message);
+            OnUpgradeFailEvent?.Invoke(message);
         }
 
         public void OnUpgradeSuccess()
@@ -119,23 +106,80 @@ namespace GameFramePro.Upgrade
             foreach (var reDownloadFailAssetBundleInfor in mAllDownloadFailAssetBundleInfors)
                 mAllNeedUpdateAssetBundleAssetInfor.Add(reDownloadFailAssetBundleInfor.Key, reDownloadFailAssetBundleInfor.Value);
 
+            var assetBundleUpgradeSuperCoroutine = new SuperCoroutine(AssetBundleIUpgradeProcess(false));
+            yield return assetBundleUpgradeSuperCoroutine.WaitDone(true); //重新下载逻辑
 
-            OnUpgradeProcess("  重新下载失败的 AssetBundle 资源 ", 0.35f);
-            var downloadAssetBundleCoroutineEx = new SuperCoroutine(BeginDownloadAllAssetBundle());
-            yield return downloadAssetBundleCoroutineEx.WaitDone(); //开始下载资源
-            OnUpgradeProcess(" 重新下载失败的 AssetBundle 资源 完成 ", 0.9f);
 
-            //下载流程结束
-            if (mAllDownloadFailAssetBundleInfors.Count == 0)
-                OnUpgradeSuccess();
-            else
-                OnUpgradeFail(); //有任务没有下载完成
+            if (mServerBundleAssetConfigInfor == null)
+            {
+                OnUpgradeProcess("获取服务器上AssetBundle 配置信息 ", 0.25f);
+                var getServerAssetBundleConfig = new SuperCoroutine(GetServerAssetBundleServerAssetConfig());
+                yield return getServerAssetBundleConfig.WaitDone(); //下载服务器的配置
+            }
         }
 
         #endregion
 
 
         #region 获取本地AssetBundle 资源以及对于的配置表                                               
+
+        /// <summary>/// AssetBundel 更新逻辑 。isFirstUpgrade=true 则表示第一次更新下载/// </summary>
+        private IEnumerator AssetBundleIUpgradeProcess(bool isFirstUpgrade)
+        {
+            OnUpgradeProcess("获取服务器上AssetBundle 配置信息 ", 0);
+
+            SuperCoroutine localAssetBundleSuperCoroutine = null; //获取本地AssetBundle 信息
+            if (isFirstUpgrade)
+                localAssetBundleSuperCoroutine = new SuperCoroutine(GetAllLocalAssetBundleInformation());
+
+            if (mServerBundleAssetConfigInfor == null)
+            {
+                var getServerAssetBundleConfig = new SuperCoroutine(GetServerAssetBundleServerAssetConfig());
+                yield return getServerAssetBundleConfig.WaitDone(); //等待完成获取服务器配置
+            }
+
+            if (localAssetBundleSuperCoroutine != null)
+            {
+                yield return localAssetBundleSuperCoroutine.WaitDone(true); //获取本地AssetBundle 的信息
+                OnUpgradeProcess("本地AssetBundle 资源状态获取完成 ", 0.1f);
+            } //后判断避免阻塞服务器配置下载
+
+
+            //为了确保重试时候不用重新获取本地资源信息 这里要先处理本地资源
+            if (mServerBundleAssetConfigInfor == null)
+            {
+                OnUpgradeFail("服务器最新的AssetBundle配置下载失败,请检查网络后重试!!!");
+                yield break;
+            }
+
+
+            if (isFirstUpgrade)
+            {
+                OnUpgradeProcess(" 开始获取需要更新的 AssetBundle 资源 ", 0.2f);
+                var getNeedUpdateAssetBundleCoroutineEx = new SuperCoroutine(GetAllNeedUpdateAssetBundleConfig());
+                yield return getNeedUpdateAssetBundleCoroutineEx.WaitDone(); //获取需要下载的资源列表
+                OnUpgradeProcess(" 获取需要更新的 AssetBundle 资源 完成", 0.3f);
+            } //第一次需要判断哪些资源需要下载
+
+
+            TotalNeedDownloadAssetCount = (uint) mAllNeedUpdateAssetBundleAssetInfor.Count; //需要下载的资源总数
+            if (TotalNeedDownloadAssetCount != 0)
+            {
+                OnUpgradeProcess(" 开始更新的 AssetBundle 资源 ", 0.35f);
+                var downloadAssetBundleCoroutineEx = new SuperCoroutine(BeginDownloadAllAssetBundle());
+                yield return downloadAssetBundleCoroutineEx.WaitDone(); //开始下载资源
+                OnUpgradeProcess(" 更新的 AssetBundle 资源 完成 ", 0.9f);
+            }
+            else
+                OnUpgradeProcess(" 本地的 AssetBundle 资源 是最新的 ", 0.9f);
+
+            //下载流程结束
+            if (mAllNeedUpdateAssetBundleAssetInfor.Count == 0 && mAllDownloadFailAssetBundleInfors.Count == 0)
+                OnUpgradeSuccess();
+            else
+                OnUpgradeFail("部分资源多次下载均失败了 无法继续下载. 请检查网络后重试"); //有任务没有下载完成
+        }
+
 
         private float mAllLocalAssetBundleLoadProcess = 0f; //获取进度
 
@@ -154,8 +198,6 @@ namespace GameFramePro.Upgrade
                 if (allAssetBundleFiles.Length == 0)
                     isLocalAssetBundleExit = false;
             }
-
-            bool isCompleteGetLocalFileInfor = false; //标示是否完成了所有的本地资源信息的录入
 
             // 如果本地资源存在则获取本地资源的详细信息 并录入
 
@@ -209,39 +251,56 @@ namespace GameFramePro.Upgrade
                 }
 
                 yield return AsyncManager.JumpToUnity; //回到主线程
-                isCompleteGetLocalFileInfor = true;
             }
             else
             {
                 Debug.LogInfor("BeginUpdateAssetBundle 本地没有资源 下载所有的资源");
                 mAllLocalAssetBundleLoadProcess = 1f;
-                isCompleteGetLocalFileInfor = true;
             }
         }
 
         /// <summary>/// 获取服务器的AssetBundle 配置/// </summary>
-        private IEnumerator GetServerAssetBundleContainAssetConfig()
+        private IEnumerator GetServerAssetBundleServerAssetConfig()
         {
-            string assetBundleConfigFileUrl = AppUrlManager.S_AssetBundleCDNTopUrl.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName);
-            UnityWebRequestDownloadTask downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(assetBundleConfigFileUrl, TaskPriorityEnum.Immediately, null);
-            if (downloadTask == null)
+            if (mServerBundleAssetConfigInfor != null)
             {
-                Debug.LogError("获取服务器配置的下载任务创建失败");
+                Debug.LogInfor($"AssetBundle 服务器配置已经下载完成 不需要重新下载");
                 yield break;
             }
 
-            while (downloadTask.TaskState == TaskStateEum.Initialed)
-                yield return AsyncManager.WaitFor_Null;
 
+            mCurDownloadCount = 1;
 
-            if (downloadTask.TaskSuperCoroutinenfor != null)
+            while (mServerBundleAssetConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
-                yield return downloadTask.TaskSuperCoroutinenfor.WaitDone(true);
-
-                if (downloadTask == null || downloadTask.DownloadTaskCallbackData == null || downloadTask.DownloadTaskCallbackData.isNetworkError || downloadTask.DownloadTaskCallbackData.isDone == false)
-                    Debug.LogError("OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null");
+                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(ServerAssetBundleConfigUrl, TaskPriorityEnum.Immediately, null);
+                if (downloadTask == null)
+                {
+                    Debug.LogError("获取服务器配置的下载任务创建失败");
+                }
                 else
-                    mServerBundleAssetConfigInfor = SerilazeManager.DeserializeObject<AssetBundleAssetTotalInfor>((downloadTask.DownloadTaskCallbackData.downloadHandler as DownloadHandlerBuffer).text);
+                {
+                    while (downloadTask.TaskState == TaskStateEum.Initialed)
+                        yield return AsyncManager.WaitFor_Null;
+
+
+                    if (downloadTask.TaskSuperCoroutinenfor != null)
+                    {
+                        yield return downloadTask.TaskSuperCoroutinenfor.WaitDone(true);
+
+                        if (downloadTask.DownloadTaskCallbackData == null || downloadTask.DownloadTaskCallbackData.isNetworkError || downloadTask.DownloadTaskCallbackData.isDone == false)
+                            Debug.LogError("OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null");
+                        else
+                        {
+                            mServerBundleAssetConfigInfor = SerializeManager.DeserializeObject<AssetBundleAssetTotalInfor>((downloadTask.DownloadTaskCallbackData.downloadHandler as DownloadHandlerBuffer).text);
+                            if (mServerBundleAssetConfigInfor != null)
+                                yield break;
+                        }
+                    }
+
+                    yield return AsyncManager.WaitFor_Null;
+                    ++mCurDownloadCount; //下载失败继续下载
+                }
             }
         }
 
@@ -293,15 +352,12 @@ namespace GameFramePro.Upgrade
             if (mAllNeedUpdateAssetBundleAssetInfor == null || mAllNeedUpdateAssetBundleAssetInfor.Count == 0)
                 yield break;
 
-            int curDownloadTime = 1;
+            mCurDownloadCount = 1;
             mAllDownloadFailAssetBundleInfors.Clear();
             BeginDownloadAssetBundle(mAllNeedUpdateAssetBundleAssetInfor); //开始下载
 
-            while (true)
+            while (mCurDownloadCount <= S_MaxDownloadTimes)
             {
-                if (curDownloadTime > S_MaxDownloadTimes)
-                    yield break; //尝试多次仍然失败
-
                 while (mAllNeedUpdateAssetBundleAssetInfor.Count != 0)
                     yield return AsyncManager.WaitFor_Null; //等待完成所有的下载
 
@@ -311,8 +367,10 @@ namespace GameFramePro.Upgrade
                 foreach (var reDownLoadTask in mAllDownloadFailAssetBundleInfors)
                     mAllNeedUpdateAssetBundleAssetInfor.Add(reDownLoadTask.Key, reDownLoadTask.Value);
 
+                yield return AsyncManager.WaitFor_Null;
+
                 mAllDownloadFailAssetBundleInfors.Clear();
-                curDownloadTime++;
+                mCurDownloadCount++;
                 BeginDownloadAssetBundle(mAllNeedUpdateAssetBundleAssetInfor); // 重新开始下载
             } //最多尝试 S_MaxDownloadTimes
         }
@@ -344,7 +402,7 @@ namespace GameFramePro.Upgrade
         private void ShowAllNeedUpdateAssetBundleByType(Dictionary<string, UpdateAssetBundleInfor> dataSources)
         {
             var dataList = dataSources.GroupBy((assetBundleItem) => assetBundleItem.Value.mAssetBundleAssetUpdateTagEnum).ToList();
-            string content = SerilazeManager.SerializeObject(dataList);
+            string content = SerializeManager.SerializeObject(dataList);
             string filePath = Application.dataPath.CombinePathEx(ConstDefine.S_EditorName).CombinePathEx("totalNeedUpdateAssetBundle.txt");
             IOUtility.CreateOrSetFileContent(filePath, content);
             Debug.LogEditorInfor($"ShowAllNeedUpdateAssetBundleByType 成功，保存在目录 {filePath}");
@@ -412,6 +470,5 @@ namespace GameFramePro.Upgrade
         #endregion
 
         #endregion
-
     }
 }

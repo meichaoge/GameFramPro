@@ -68,7 +68,7 @@ namespace GameFramePro.EditorEx
 
 
             //生成Json字符串
-            string json = SerilazeManager.SerializeObject(tableInfor);
+            string json = SerializeManager.SerializeObject(tableInfor);
             //写入文件
             using (FileStream fileStream = new FileStream(JsonPath, FileMode.Create, FileAccess.Write))
             {

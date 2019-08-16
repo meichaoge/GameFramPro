@@ -319,17 +319,13 @@ namespace GameFramePro
 
         #region 获取目录下的文件和子目录(可以过滤部分扩展名)
 
-        /// <summary>
-        /// 获取指定目录下的文件 不包含指定类型的扩展名
-        /// </summary>
-        /// <param name="path"></param>
+        /// <summary>/// 获取指定目录下的文件 不包含指定类型的扩展名/// </summary>
         /// <param name="exculdeExtension">当这个参数为null 或者长度为0 时候等同于Directory.GetFiles(path, searchPattern, searchOption)</param>
-        /// <returns></returns>
         public static string[] GetFilesExculde(this string path, string searchPattern, SearchOption searchOption, string[] exculdeExtension)
         {
             if (System.IO.Directory.Exists(path) == false)
             {
-                Debug.LogErrorFormat("GetFilesExculde Fail,Not Exit Directory :{0}", path);
+                Debug.LogError($"GetFilesExculde Fail,Not Exit Directory :{path}");
                 return null;
             }
 
@@ -342,22 +338,16 @@ namespace GameFramePro
             return allFilesList.ToArray();
         }
 
-        /// <summary>
-        ///  获取指定目录下所有的文件和文件夹目录
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="searchPattern"></param>
-        /// <param name="searchOption"></param>
+        /// <summary>///  获取指定目录下所有的文件和文件夹目录/// </summary>
         /// <param name="exculdeExtension">需要过滤掉那些文件扩展名</param>
         /// <param name="isRelativePath">返回结果中是否是相对于path 的相对路径</param>
         /// <param name="directoryIndex">目录在返回结果中的结束索引(等于-1标示不存在，否则为目录总个数)</param>
-        /// <returns></returns>
         public static string[] GetDirectoriesAndFilesExculde(this string path, string searchPattern, SearchOption searchOption, string[] exculdeExtension, out int directoryIndex, bool isRelativePath = false)
         {
             directoryIndex = -1;
             if (System.IO.Directory.Exists(path) == false)
             {
-                Debug.LogErrorFormat("GetFilesExculde Fail,Not Exit Directory :{0}", path);
+                Debug.LogError($"GetFilesExculde Fail,Not Exit Directory :{path}");
                 return new string[0];
             }
             //  Debug.LogEditorInfor("GetFiles_DirectoryExculde  path=" + path);
@@ -479,12 +469,7 @@ namespace GameFramePro
 
         #region 路径处理
 
-        /// <summary>
-        /// 获取从某个指定的文件夹名开始的目录
-        /// </summary>
-        /// <param name="currentPath"></param>
-        /// <param name="startDirectoryName"></param>
-        /// <returns></returns>
+        /// <summary>/// 获取从某个指定的文件夹名开始的目录/// </summary>
         public static string GetPathFromSpecialDirectoryName(this string targetPath, string directoryName, bool isIncludeDirectoryName = true)
         {
             if (string.IsNullOrEmpty(targetPath)) return string.Empty;
@@ -654,12 +639,8 @@ namespace GameFramePro
         #endregion
 
 
-        /// <summary>
-        /// byte 单位转换成B/KB/MB/GB单位
-        /// </summary>
-        /// <param name="byteSize"></param>
+        /// <summary>/// byte 单位转换成B/KB/MB/GB单位/// </summary>
         /// <param name="isUptoConvert">=true  标示向上取整，=false 则四舍五入</param>
-        /// <returns></returns>
         public static string ByteConversionOthers(int byteSize, bool isUptoConvert = false)
         {
             //转成Byte

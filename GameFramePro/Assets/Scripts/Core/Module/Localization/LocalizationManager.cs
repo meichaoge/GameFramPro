@@ -283,7 +283,7 @@ namespace GameFramePro.Localization
 
         private Dictionary<string, string> GetLocalizationConfigByJson(string content)
         {
-            Dictionary<string, string> allConfig = SerilazeManager.DeserializeObject<Dictionary<string, string>>(content);
+            Dictionary<string, string> allConfig = SerializeManager.DeserializeObject<Dictionary<string, string>>(content);
             return allConfig;
         }
 

@@ -21,7 +21,7 @@ namespace GameFramePro
     /// <summary>
     /// 序列化
     /// </summary>
-    public class SerilazeManager : Single<SerilazeManager>
+    public class SerializeManager : Single<SerializeManager>
     {
         public static JsonParserEnum S_AppJsonParserEnum { get; set; } = JsonParserEnum.NewtonJson;
 

@@ -26,7 +26,7 @@ namespace GameFramePro.Upgrade
         public event OnUpgradeFailDelegate OnUpgradeFailEvent;
         public event OnUpgradeSuccessDelegate OnUpgradeSuccessEvent;
         public event OnReBeginUpgradeDelegate OnReBeginUpgradeEvent;
-        public float CurProcess { get; }
+        public float CurProcess { get; private set; }
 
         public IEnumerator OnBeginUpgrade()
         {
@@ -35,12 +35,17 @@ namespace GameFramePro.Upgrade
             mUIProgressChangePage = UIPageManager.OpenChangePage<UIProgressChangePage>(NameDefine.UIProgressChangePageName, PathDefine.UIProgressChangePagePath);
             mUIProgressChangePage.ShowProgress("开始应用启动时候的更新流程", 0);
 
-
+            //AssetBundle 更新下载
             AssetBundleUpgradeManager.S_Instance.OnUpgradeProcessEvent += OnUpgradeProcess;
-            var assetBundleCoroutineEx = new SuperCoroutine(AssetBundleUpgradeManager.S_Instance.OnBeginUpgrade());
-            yield return assetBundleCoroutineEx.WaitDone(true);
+            var assetBundleSuperCoroutine = new SuperCoroutine(AssetBundleUpgradeManager.S_Instance.OnBeginUpgrade());
+            yield return assetBundleSuperCoroutine.WaitDone(true);
             AssetBundleUpgradeManager.S_Instance.OnUpgradeProcessEvent -= OnUpgradeProcess;
 
+            //预加载图片
+            PreLoadTextureManager.S_Instance.OnUpgradeProcessEvent += OnUpgradeProcess;
+            var preloadTextureSuperCoroutine = new SuperCoroutine(PreLoadTextureManager.S_Instance.OnBeginUpgrade());
+            yield return preloadTextureSuperCoroutine.WaitDone(true);
+            PreLoadTextureManager.S_Instance.OnUpgradeProcessEvent -= OnUpgradeProcess;
 
 
             OnUpgradeProcess("更新完成", 1f);
@@ -48,13 +53,15 @@ namespace GameFramePro.Upgrade
 
         public void OnUpgradeProcess(string message, float process)
         {
+            CurProcess = process;
             Debug.LogInfor($"OnUpgradeProcess process={process}  message={message}  ");
             mUIProgressChangePage.ShowProgress(message, process);
         }
 
-        public void OnUpgradeFail()
+        public void OnUpgradeFail(string message)
         {
-            Debug.LogError("下载失败 ");
+            Debug.LogError(message);
+            OnUpgradeFailEvent?.Invoke(message);
         }
 
         public void OnUpgradeSuccess()

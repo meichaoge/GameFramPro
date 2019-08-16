@@ -44,7 +44,7 @@ namespace GameFramePro.Upgrade
         void OnUpgradeProcess(string message, float process);
 
         /// <summary>/// 更新失败/// </summary>
-        void OnUpgradeFail();
+        void OnUpgradeFail(string message);
 
         /// <summary>/// 更新成功/// </summary>
         void OnUpgradeSuccess();

@@ -15,6 +15,10 @@ namespace GameFramePro.Upgrade
 
         /// <summary>///资源大小 (byte)/// </summary>
         public int mAssetSize;
+
+        public PreloadImgInfor()
+        {
+        }
     }
 
 
@@ -27,6 +31,10 @@ namespace GameFramePro.Upgrade
 
         public int TotalSize; //资源总大小
         public Dictionary<string, PreloadImgInfor> AllPreloadImgConfig = new Dictionary<string, PreloadImgInfor>();
+
+        public PreloadImgConfigInfor()
+        {
+        }
 
         public void GetTotalSize()
         {
