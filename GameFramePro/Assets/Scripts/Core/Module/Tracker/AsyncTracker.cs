@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace GameFramePro
+namespace GameFramePro.AnalysisEx
 {
     /// <summary>/// 追踪异步&协程任务/// </summary>
     public class AsyncTracker : Single<AsyncTracker>

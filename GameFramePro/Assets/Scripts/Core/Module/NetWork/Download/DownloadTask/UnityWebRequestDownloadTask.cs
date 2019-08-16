@@ -11,8 +11,6 @@ namespace GameFramePro.NetWorkEx
     {
         public static int S_Timeout { get; protected set; } = 15; //超时时间15秒+
 
-        //  protected UnityWebRequestAsyncOperation mUnityWebRequestAsyncOperation { get; set; } = null; //发送请求后的状态
-
 
         #region IDownloadTaskProcess 接口实现
 

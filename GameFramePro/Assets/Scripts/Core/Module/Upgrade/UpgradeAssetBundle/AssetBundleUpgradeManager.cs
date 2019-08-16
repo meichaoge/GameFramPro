@@ -48,7 +48,7 @@ namespace GameFramePro.Upgrade
         {
             OnBeginUpgradeEvent?.Invoke();
 
-            OnUpgradeProcess("开始检测 本地AssetBundle 资源状态 ", 0);
+            OnUpgradeProcess("获取服务器上AssetBundle 配置信息 ", 0);
             var getServerAssetBundleConfig = new SuperCoroutine(GetServerAssetBundleContainAssetConfig());
             getServerAssetBundleConfig.StartCoroutine(); //下载服务器的配置
 
@@ -134,8 +134,6 @@ namespace GameFramePro.Upgrade
 
         #endregion
 
-
-        #region AssetBundle 更新细节实现
 
         #region 获取本地AssetBundle 资源以及对于的配置表                                               
 
@@ -415,6 +413,5 @@ namespace GameFramePro.Upgrade
 
         #endregion
 
-        #endregion
     }
 }

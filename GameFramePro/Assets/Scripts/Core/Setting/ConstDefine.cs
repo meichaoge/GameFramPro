@@ -28,6 +28,8 @@ namespace GameFramePro
         public static readonly string S_ExportDirectoryName = "Export"; //项目导出需要提交到CDN的目录名
         public static readonly string S_LocalStoreDirectoryName = "Download"; //外部下载保存本地的顶层目录
         public static readonly string S_AssetBundleDirectoryName = "AssetBundle";  //所有关于AssetBundle 资源生成的顶层目录
+        public static readonly string S_TextureDirectoryName = "Texture";  //所有关于 图片 资源生成的顶层目录
+
 
 
         public static readonly string S_LocalizationDirectoryName = "Localization"; //本地化语言相对于Resources路径

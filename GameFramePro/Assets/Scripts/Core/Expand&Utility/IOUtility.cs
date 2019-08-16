@@ -7,17 +7,12 @@ using System.Text.RegularExpressions;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 对 System.IO 名称空间下类进行扩展
-    /// </summary>
+    /// <summary>/// 对 System.IO 名称空间下类进行扩展/// </summary>
     public static class IOUtility
     {
-
         #region 文件创建、追加
 
-        /// <summary>
-        /// 创建或者追加内容
-        /// </summary>
+        /// <summary>/// 创建或者追加内容/// </summary>
         /// <param name="filePath">文件绝对路径</param>
         /// <param name="content">文本内容</param>
         /// <param name="isAppend">是否是追加模式</param>
@@ -28,6 +23,7 @@ namespace GameFramePro
                 Debug.LogError("CreateOrSetFileContent Path is Null  ");
                 return;
             }
+
             byte[] data = Encoding.UTF8.GetBytes(content);
             CreateOrSetFileContent(filePath, data, isAppend);
         }
@@ -43,24 +39,21 @@ namespace GameFramePro
                     Debug.LogError("无法解析路径的目录" + filePath);
                     return;
                 }
+
                 if (Directory.Exists(directionaryPath) == false)
                     Directory.CreateDirectory(directionaryPath);
 
-
-                int buffersize = 1024;
-                buffersize = Mathf.Max(buffersize, byteData.Length);  //防止content为null时候buffer=0报错
-
                 if (File.Exists(filePath) && (isAppend == false))
-                    operateStream = new FileStream(filePath, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read, buffersize);//截断
+                    operateStream = new FileStream(filePath, FileMode.Truncate, FileAccess.Write, FileShare.Read, byteData.Length); //截断
                 else
-                    operateStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, buffersize);//打开或者创建
+                    operateStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, byteData.Length); //打开或者创建
 
                 if (isAppend)
-                    operateStream.Write(byteData, (int)operateStream.Length, byteData.Length);
+                    operateStream.Write(byteData, (int) operateStream.Length, byteData.Length);
                 else
                     operateStream.Write(byteData, 0, byteData.Length);
 
-                operateStream.Flush();// 刷新
+                operateStream.Flush(); // 刷新
             }
             catch (System.Exception e)
             {
@@ -77,11 +70,7 @@ namespace GameFramePro
             }
         }
 
-        /// <summary>
-        /// 读取指定路径上文件的全部信息
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="content"></param>
+        /// <summary>/// 读取指定路径上文件的全部信息/// </summary>
         /// <returns>返回值标示是否读取生成</returns>
         public static bool GetFileContent(string filePath, out string content)
         {
@@ -118,11 +107,7 @@ namespace GameFramePro
             return true;
         }
 
-        /// <summary>
-        /// 删除指定的文件
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
+        /// <summary>/// 删除指定的文件/// </summary>
         public static bool DeleteFile(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -131,9 +116,9 @@ namespace GameFramePro
                 return false;
             }
 
-            if (System.IO.File.Exists(filePath)==false)
+            if (System.IO.File.Exists(filePath) == false)
             {
-                Debug.LogError("DeleteFile Fail,File Not Exit "+ filePath);
+                Debug.LogError("DeleteFile Fail,File Not Exit " + filePath);
                 return false;
             }
 
@@ -141,10 +126,10 @@ namespace GameFramePro
             return true;
         }
 
-
         #endregion
 
         #region 目录操作 (获取父目录、判断是否包含子目录、创建和销毁目录)
+
         /// <summary>
         /// 获取指定目录下的第N级别的父目录
         /// </summary>
@@ -166,12 +151,13 @@ namespace GameFramePro
                 {
                     Debug.LogError("GetFilePathParentDirectory ,parentDeeep is much more than directory deep");
                     return string.Empty;
-                }//层级太深了 无法获取
+                } //层级太深了 无法获取
+
                 ++currentDeep;
             }
+
             return parentPath;
         }
-
 
 
         /// <summary>
@@ -197,10 +183,10 @@ namespace GameFramePro
                 if (isFirstLoop)
                 {
                     isFirstLoop = false;
-                    if (Path.HasExtension(currentPath))  //文件路径
+                    if (Path.HasExtension(currentPath)) //文件路径
                     {
-                        currentPath = GetPathWithOutExtension(currentPath);  //去掉所有的扩展名
-                        currentPath = Path.GetDirectoryName(currentPath);  //第一个处理文件路径需要取目录后再处理
+                        currentPath = GetPathWithOutExtension(currentPath); //去掉所有的扩展名
+                        currentPath = Path.GetDirectoryName(currentPath); //第一个处理文件路径需要取目录后再处理
                     }
                 }
 
@@ -235,6 +221,7 @@ namespace GameFramePro
                 targetPath = System.IO.Path.GetDirectoryName(targetPath);
                 directotyName = GetFileNameWithoutExtensionEx(System.IO.Path.GetDirectoryName(targetPath));
             }
+
             return true;
         }
 
@@ -271,6 +258,7 @@ namespace GameFramePro
                 Debug.LogError("ClearDirectory Fail,Parameter directoryPath is null or empty ");
                 return false;
             }
+
             if (System.IO.Directory.Exists(directoryPath) == false)
             {
                 if (isAutoCreate)
@@ -278,11 +266,11 @@ namespace GameFramePro
                 //  Debug.LogError(string.Format("ClearDirectory Fail, directoryPath[ {0} ] is not exit ", directoryPath));
                 return false;
             }
+
             System.IO.Directory.Delete(directoryPath, true);
             System.IO.Directory.CreateDirectory(directoryPath);
             return true;
         }
-
 
 
         /// <summary>
@@ -307,13 +295,13 @@ namespace GameFramePro
                         continue;
                 }
 
-                if (fsi is System.IO.FileInfo)          //如果是文件，复制文件
+                if (fsi is System.IO.FileInfo) //如果是文件，复制文件
                 {
                     if (System.IO.File.Exists(destName))
                         System.IO.File.Delete(destName);
                     File.Copy(fsi.FullName, destName);
                 }
-                else                                    //如果是文件夹，新建文件夹，递归
+                else //如果是文件夹，新建文件夹，递归
                 {
                     Directory.CreateDirectory(destName);
                     CopyDirectory(fsi.FullName, destName, exculdeExtension);
@@ -326,9 +314,11 @@ namespace GameFramePro
         /// </summary>
         /// <param name="sourcePath">待复制的文件夹路径</param>
         /// <param name="destinationPath">目标路径</param>
+
         #endregion
 
         #region 获取目录下的文件和子目录(可以过滤部分扩展名)
+
         /// <summary>
         /// 获取指定目录下的文件 不包含指定类型的扩展名
         /// </summary>
@@ -342,6 +332,7 @@ namespace GameFramePro
                 Debug.LogErrorFormat("GetFilesExculde Fail,Not Exit Directory :{0}", path);
                 return null;
             }
+
             string[] allFiles = Directory.GetFiles(path, searchPattern, searchOption);
             if (exculdeExtension == null || exculdeExtension.Length == 0)
                 return allFiles;
@@ -399,6 +390,7 @@ namespace GameFramePro
                 directoryIndex = allDirectorys.Length; //记录目录结束索引
                 return allFilesAndDirectorys;
             }
+
             #endregion
 
             #region 按照指定的扩展名过滤结果
@@ -414,8 +406,8 @@ namespace GameFramePro
                     tempFilesAndDirectorys.Add(directory);
                 else
                     tempFilesAndDirectorys.Add(directory.Substring(pathLength));
-
             }
+
             if (tempFilesAndDirectorys.Count > 0)
                 directoryIndex = tempFilesAndDirectorys.Count;
 
@@ -431,9 +423,10 @@ namespace GameFramePro
             }
 
             return tempFilesAndDirectorys.ToArray();
-            #endregion
 
+            #endregion
         }
+
         /// <summary>
         ///  获取指定目录下所有的文件和文件夹目录
         /// </summary>
@@ -463,6 +456,7 @@ namespace GameFramePro
                 Debug.LogErrorFormat("GetContainDirectoryExculde Fail,Not Exit Directory :{0}", path);
                 return 0;
             }
+
             string[] allDirectorys = Directory.GetDirectories(path);
             if (exculdeExtension == null || exculdeExtension.Length == 0)
                 return allDirectorys.Length;
@@ -476,6 +470,7 @@ namespace GameFramePro
                     continue;
                 ++directoryCount;
             }
+
             return directoryCount;
         }
 
@@ -483,6 +478,7 @@ namespace GameFramePro
 
 
         #region 路径处理
+
         /// <summary>
         /// 获取从某个指定的文件夹名开始的目录
         /// </summary>
@@ -495,7 +491,7 @@ namespace GameFramePro
             if (string.IsNullOrEmpty(directoryName)) return targetPath;
 
             List<string> allDirectoryNames = new List<string>();
-            string currentPath = targetPath;// System.IO.Path.GetDirectoryName(targetPath);
+            string currentPath = targetPath; // System.IO.Path.GetDirectoryName(targetPath);
             string currentDirectoryName = Path.GetFileName(currentPath);
             bool isFirstLoop = true;
             while (true)
@@ -527,6 +523,7 @@ namespace GameFramePro
                         break;
                     }
                 }
+
                 currentPath = Path.GetDirectoryName(currentPath);
                 currentDirectoryName = Path.GetFileName(currentPath);
 
@@ -542,6 +539,7 @@ namespace GameFramePro
                 if (dex != allDirectoryNames.Count - 1)
                     builder.Append(System.IO.Path.AltDirectorySeparatorChar);
             }
+
             string resultPath = builder.ToString();
             StringUtility.ReleaseStringBuilder(builder);
             return resultPath;
@@ -640,6 +638,7 @@ namespace GameFramePro
             string path2 = GetPathStringEx(otherPath);
             return path1 == path2;
         }
+
         /// <summary>
         /// 获取不带路径分隔符(/or\or空白符)的字符串
         /// </summary>
@@ -651,14 +650,8 @@ namespace GameFramePro
                 return Regex.Replace(targetPath, @"[\\/\s]", string.Empty);
             return string.Empty;
         }
+
         #endregion
-
-
-
-
-
-
-
 
 
         /// <summary>
@@ -675,7 +668,7 @@ namespace GameFramePro
             else
                 byteSize = Mathf.FloorToInt(byteSize / 8f);
 
-            string[] units = new string[] { "B", "KB", "MB", "GB", "TB" };
+            string[] units = new string[] {"B", "KB", "MB", "GB", "TB"};
             int count = 0;
             while (byteSize >= 1024)
             {
@@ -687,14 +680,11 @@ namespace GameFramePro
                 {
                     byteSize = Mathf.FloorToInt(byteSize / 1024f);
                 }
+
                 count++;
             }
+
             return string.Format("{0}{1}", byteSize, units[count]);
         }
-
-
-
-
-
     }
 }

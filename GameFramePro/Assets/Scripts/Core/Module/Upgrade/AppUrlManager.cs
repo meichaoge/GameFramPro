@@ -7,9 +7,7 @@ using System;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 管理各个模块的URL
-    /// </summary>
+    /// <summary>/// 管理各个模块CDN 的URL/// </summary>
     internal static  class AppUrlManager 
     {
         private static string s_TopCDNUrl = "https://superxu3d.tcmapi.cn/goalon/TestApplication/";
@@ -17,9 +15,7 @@ namespace GameFramePro
 
 
         private static string s_AssetBundleCDNTopUrl = string.Empty;
-        /// <summary>
-        /// AssetBundle CDN顶层目录url
-        /// </summary>
+        /// <summary>/// AssetBundle CDN顶层目录url/// </summary>
         public static string S_AssetBundleCDNTopUrl
         {
             get
@@ -31,6 +27,18 @@ namespace GameFramePro
         }
 
 
+        private static string s_TextureCDNTopUrl = string.Empty;
+
+        /// <summary>/// Texture CDN顶层目录url/// </summary>
+        public static string S_TextureCDNTopUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(s_TextureCDNTopUrl))
+                    s_TextureCDNTopUrl = s_TopCDNUrl.CombinePathEx(AppPlatformManager.GetRuntimePlatformFolderName()).CombinePathEx(ConstDefine.S_TextureDirectoryName);
+                return s_TextureCDNTopUrl;
+            }
+        }
      
 
 

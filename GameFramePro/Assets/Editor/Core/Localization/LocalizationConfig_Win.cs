@@ -5,12 +5,11 @@ using UnityEditor;
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
+using GameFramePro.Localization;
 
 namespace GameFramePro.EditorEx
 {
-    /// <summary>
-    /// 本地化多语言配置窗口
-    /// </summary>
+    /// <summary>/// 本地化多语言配置窗口/// </summary>
     public class LocalizationConfig_Win : EditorWindow
     {
         [MenuItem("工具和扩展/Localization/多语言配置窗口")]

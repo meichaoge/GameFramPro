@@ -5,6 +5,7 @@ using System;
 using GameFramePro.ResourcesEx;
 using System.Reflection;
 using System.Linq;
+using GameFramePro.Localization;
 using GameFramePro.UI;
 using GameFramePro.Upgrade;
 

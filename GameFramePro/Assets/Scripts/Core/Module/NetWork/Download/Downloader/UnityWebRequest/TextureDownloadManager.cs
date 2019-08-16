@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro.CacheEx;
 using UnityEngine.Networking;
 
 namespace GameFramePro.NetWorkEx

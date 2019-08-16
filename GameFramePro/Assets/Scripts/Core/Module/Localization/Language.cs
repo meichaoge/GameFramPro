@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 
-namespace GameFramePro
+namespace GameFramePro .Localization
 {
     /// <summary>/// 本地化语言环境 (UnityEngine.SystemLanguage 也有定义)/// </summary>
     [Flags]

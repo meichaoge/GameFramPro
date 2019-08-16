@@ -1,7 +1,13 @@
+2019/8/16 19:00
+<1> 添加了Quaternion 测试场景加深对四元数接口的理解
+<2> 新增 XluaCshrpBridge 类用于lua 中访问C# 的桥梁
+<3> 新增获取当前堆栈信息的类 DebugUtility
+<4> 新增图片资源的缓存管理器 AppTextureCacheManager 
+<5> 新增 预加载图片的管理逻辑 PreLoadTextureManager
+
 2019/8/15 18:00
 <1> 新增三个UI布局样式(走马灯,循环列表,无限循环列表)
 <2> 扩展了 RectTransform 类
-
 
 2019/8/15 17:00
 <1> 扩展了 Rect 的扩展接口方便进行计算

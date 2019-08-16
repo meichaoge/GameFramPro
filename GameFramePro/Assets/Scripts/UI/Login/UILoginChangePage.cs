@@ -6,6 +6,7 @@ using GameFramePro.Upgrade;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
+using GameFramePro.Localization;
 
 namespace GameFramePro.UI
 {

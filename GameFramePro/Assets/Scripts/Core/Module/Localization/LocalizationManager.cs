@@ -4,9 +4,21 @@ using UnityEngine;
 using System;
 using System.Xml;
 
-namespace GameFramePro
+namespace GameFramePro.Localization
 {
     public delegate void OnLanguageChangedHandler(Language curLanguage);
+
+    /// <summary>
+    /// 导出的配置文件格式
+    /// </summary>
+    [System.Flags]
+    public enum ExportFormatEnum
+    {
+        Csv = 1,
+        Json = 2,
+        Xml = 4,
+    }
+
 
     /// <summary>///本地化管理器/// </summary>
     public class LocalizationManager : Single<LocalizationManager>
