@@ -17,9 +17,6 @@ namespace GameFramePro.Upgrade
         /// <summary>/// CDN需要预加载的所有资源路径顶层文件夹名/// </summary>
         private const string s_PreloadImgAssetServerTopDirectory = "PreloadTextures";
 
-        /// <summary>/// 本地和服务器的资源配置名称 (Unity 客户端使用相同的名称)/// </summary>
-        public const string s_PreloadImgConfiFileName = "PreloadImageAssetConfig.json";
-
 
         private string mLocalStorePath = string.Empty;
 
@@ -35,16 +32,16 @@ namespace GameFramePro.Upgrade
         }
 
 
-        private string mPreloadImgConfigServerUrl = null;
+        private string mPreloadTexureServerUrl = null;
 
         /// <summary>/// 活动图片资源配置信息地址/// </summary>
-        public string PreloadImgConfigServerUrl
+        public string PreloadTexureServerUrl
         {
             get
             {
-                if (string.IsNullOrEmpty(mPreloadImgConfigServerUrl))
-                    mPreloadImgConfigServerUrl = $"{AppUrlManager.S_TextureCDNTopUrl}/{s_PreloadImgAssetServerTopDirectory}/";
-                return mPreloadImgConfigServerUrl;
+                if (string.IsNullOrEmpty(mPreloadTexureServerUrl))
+                    mPreloadTexureServerUrl = $"{AppUrlManager.S_TextureCDNTopUrl}/{s_PreloadImgAssetServerTopDirectory}/";
+                return mPreloadTexureServerUrl;
             }
         }
 
@@ -207,10 +204,10 @@ namespace GameFramePro.Upgrade
             mCurDownloadCount = 1;
             while (ServerPreloadImgConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
-                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(PreloadImgConfigServerUrl, TaskPriorityEnum.Immediately, null);
+                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(PreloadTexureServerUrl.CombinePathEx(ConstDefine.S_PreloadImgConfiFileName), TaskPriorityEnum.Immediately, null);
                 if (downloadTask == null)
                 {
-                    Debug.LogError($"获取服务器配置的下载任务创建失败 第{mCurDownloadCount} 次 url={PreloadImgConfigServerUrl}");
+                    Debug.LogError($"获取服务器配置的下载任务创建失败 第{mCurDownloadCount} 次 url={PreloadTexureServerUrl}");
                     yield return AsyncManager.WaitFor_Null; //等待被执行下载任务
                 }
                 else
@@ -229,7 +226,7 @@ namespace GameFramePro.Upgrade
                             string content = (downloadTask.DownloadTaskCallbackData.downloadHandler as DownloadHandlerBuffer).text;
                             if (string.IsNullOrEmpty(content))
                             {
-                                Debug.LogError($"下载的预加载图片配置失败 url={PreloadImgConfigServerUrl}");
+                                Debug.LogError($"下载的预加载图片配置失败 url={PreloadTexureServerUrl}");
                                 content = SerializeManager.SerializeObject(new PreloadImgConfigInfor());
                                 Debug.LogError("测试时 使用默认的字符串避免报错");
                             }
@@ -371,7 +368,7 @@ namespace GameFramePro.Upgrade
 
             foreach (var textureInfor in dataSources)
             {
-                string updatePreloadTextureUrl = $"{PreloadImgConfigServerUrl}{textureInfor}";
+                string updatePreloadTextureUrl = $"{PreloadTexureServerUrl}{textureInfor}";
 
 #if UNITY_EDITOR
                 Debug.LogEditorInfor($"开始下载 预加载图片  url={updatePreloadTextureUrl}");

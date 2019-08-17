@@ -34,6 +34,8 @@ namespace GameFramePro
 
         public static readonly string S_LocalizationDirectoryName = "Localization"; //本地化语言相对于Resources路径
         public static readonly string S_AssetBundleConfigFileName = "AssetBundleContainAssetInfor.csv";  //所有关于AssetBundle 资源配置文件名
+        public static readonly string S_PreloadImgConfiFileName = "PreloadImageAssetConfig.json"; //预加载图片的名称配置
+
 
 
         public const   string S_StringEmpty = ""; //空字符串
