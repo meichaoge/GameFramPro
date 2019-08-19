@@ -2,44 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro.Localization;
 
-
-namespace GameFramePro.Localization
+namespace GameFramePro.Upgrade
 {
-    /// <summary>/// 对本地化模块屏蔽外部支持的语言 ，这里是本地化使用的语言/// </summary>
+    /// <summary>/// 对更新模块屏蔽外部支持的语言 ，这里需要更新的资源支持的语言/// </summary>
     ///每种新增的语言都需要制定值 避免增加语言时候覆盖其他的配置
-    internal enum LocalizationLanguage
+    public enum UpgradeLanguage
     {
-        Unknow = 0, // 未知
+        //  Unknow = 0, // 未知
         Chinese = 1, //简体中文
         English = 3, //英语
     }
 
 
-    internal static class LocalizationHelper
+    internal static class AppUpgradeHelper
     {
         /// <summary>/// 外部支持的语言转成本地支持的语言/// </summary>
-        public static LocalizationLanguage TransformLanguage(Language language)
+        public static UpgradeLanguage TransformLanguage(Language language)
         {
             switch (language)
             {
                 case Language.zh_CN:
                 case Language.zh_HK:
-                    return LocalizationLanguage.Chinese;
+                    return UpgradeLanguage.Chinese;
                 case Language.en_US:
                 case Language.en_GB:
-                    return LocalizationLanguage.English;
+                    return UpgradeLanguage.English;
                 default:
                     Debug.LogError($"TransformLanguage Fail,没有定义的语言{language}");
-                    return LocalizationLanguage.Unknow;
+                    return UpgradeLanguage.Chinese;
             }
         }
 
 
         /// <summary>/// 获取当前的多语言/// </summary>
-        public static LocalizationLanguage GetCurLocalizationLanguage()
+        public static UpgradeLanguage GetCurUpgradeLanguage()
         {
-            Language language = LocalizationManager.S_Instance.CurLanguage;
+            var language = LocalizationManager.S_Instance.CurLanguage;
             return TransformLanguage(language);
         }
     }

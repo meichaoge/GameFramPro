@@ -35,7 +35,7 @@ namespace GameFramePro
             get
             {
                 if (string.IsNullOrEmpty(s_TextureCDNTopUrl))
-                    s_TextureCDNTopUrl = s_TopCDNUrl.CombinePathEx(AppPlatformManager.GetRuntimePlatformFolderName()).CombinePathEx(ConstDefine.S_TextureDirectoryName);
+                    s_TextureCDNTopUrl = s_TopCDNUrl.CombinePathEx(ConstDefine.S_PreLoadTextureTopDirectoryName);
                 return s_TextureCDNTopUrl;
             }
         }

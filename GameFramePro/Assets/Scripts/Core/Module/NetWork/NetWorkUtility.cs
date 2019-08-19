@@ -6,10 +6,7 @@ using UnityEngine;
 
 namespace GameFramePro.NetWorkEx
 {
-
-    /// <summary>
-    /// 网络流量单位
-    /// </summary>
+    /// <summary>/// 网络流量单位/// </summary>
     public enum NetDataEnum
     {
         B,
@@ -19,14 +16,13 @@ namespace GameFramePro.NetWorkEx
         TB,
         PB
     }
-    /// <summary>
-    /// 网络环境状态
-    /// </summary>
+
+    /// <summary>/// 网络环境状态/// </summary>
     public enum NetWorkStateEnum
     {
-        Unknow,  //无法预知
-        NetNotValible,//网络不可用
-        UseWifiNet,  //Wifi 环境
+        Unknow, //无法预知
+        NetNotValible, //网络不可用
+        UseWifiNet, //Wifi 环境
         UseFlowDataNet, //使用流量
     }
 
@@ -34,6 +30,7 @@ namespace GameFramePro.NetWorkEx
     public class NetWorkUtility : Single<NetWorkUtility>
     {
         private NetWorkStateEnum m_CurNetWorkStateEnum = NetWorkStateEnum.Unknow;
+
         public NetWorkStateEnum CurNetWorkStateEnum
         {
             get { return m_CurNetWorkStateEnum; }
@@ -57,16 +54,14 @@ namespace GameFramePro.NetWorkEx
                         default:
                             Debug.Log("Not Define " + m_CurNetWorkStateEnum);
                             break;
-                    }//网络环境改变
+                    } //网络环境改变
                 }
             }
         } //当前的网络环境
 
-        public Action OnNetWorkNotValibleEvent;  //网络数据不可用
-        public Action OnUseWifiNetEvent;  //使用Wifi 
-        public Action OnUseFlowDataNetEvent;  //使用流量
-
-       
+        public Action OnNetWorkNotValibleEvent; //网络数据不可用
+        public Action OnUseWifiNetEvent; //使用Wifi 
+        public Action OnUseFlowDataNetEvent; //使用流量
 
 
         /// <summary>
@@ -86,6 +81,7 @@ namespace GameFramePro.NetWorkEx
                 Debug.Log("IsUsingWifiNet false .... Use flow Data ..");
                 return true;
             }
+
             Debug.Log("IsUsingWifiNet true     .... Use Wifi Data ..");
             return false;
         }
@@ -128,7 +124,7 @@ namespace GameFramePro.NetWorkEx
                 byteSize = (byteSize + 1023) / 1024;
             else
                 byteSize = byteSize / 1024;
-            dataEnum = (NetDataEnum)(dataEnum + 1);
+            dataEnum = (NetDataEnum) (dataEnum + 1);
 
             GetNetDataDesciption(ref byteSize, ref dataEnum, isUpdaRounding);
         }
@@ -143,15 +139,16 @@ namespace GameFramePro.NetWorkEx
         {
             if (byteSize < 1024)
             {
-                byteSize = (int)(Mathf.Pow(10, accuracy) * byteSize) / Mathf.Pow(10, accuracy);
+                byteSize = (int) (Mathf.Pow(10, accuracy) * byteSize) / Mathf.Pow(10, accuracy);
                 return;
             }
+
             byteSize = byteSize / 1024;
-            dataEnum = (NetDataEnum)(dataEnum + 1);
+            dataEnum = (NetDataEnum) (dataEnum + 1);
 
             GetNetDataDesciption(ref byteSize, ref dataEnum, accuracy);
         }
-        #endregion
 
+        #endregion
     }
 }

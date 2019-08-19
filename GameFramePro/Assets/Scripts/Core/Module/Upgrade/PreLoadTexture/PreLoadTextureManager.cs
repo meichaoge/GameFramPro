@@ -14,10 +14,6 @@ namespace GameFramePro.Upgrade
     {
         #region 路径配置 
 
-        /// <summary>/// CDN需要预加载的所有资源路径顶层文件夹名/// </summary>
-        private const string s_PreloadImgAssetServerTopDirectory = "PreloadTextures";
-
-
         private string mLocalStorePath = string.Empty;
 
         /// <summary>/// 活动图片资源本地存储的顶级目录 （也存储了本地的配置文件）/// </summary>
@@ -26,7 +22,7 @@ namespace GameFramePro.Upgrade
             get
             {
                 if (string.IsNullOrEmpty(mLocalStorePath))
-                    mLocalStorePath = $"{AppTextureCacheManager.S_TextureCacheTopDirectory}{ConstDefine.S_LocalStoreDirectoryName}/{s_PreloadImgAssetServerTopDirectory}/";
+                    mLocalStorePath = $"{Application.persistentDataPath}/{ConstDefine.S_LocalStoreDirectoryName}/{ConstDefine.S_PreLoadTextureTopDirectoryName}/{AppUpgradeHelper.GetCurUpgradeLanguage()}/";
                 return mLocalStorePath;
             }
         }
@@ -40,7 +36,7 @@ namespace GameFramePro.Upgrade
             get
             {
                 if (string.IsNullOrEmpty(mPreloadTexureServerUrl))
-                    mPreloadTexureServerUrl = $"{AppUrlManager.S_TextureCDNTopUrl}/{s_PreloadImgAssetServerTopDirectory}/";
+                    mPreloadTexureServerUrl = $"{AppUrlManager.S_TextureCDNTopUrl}/{AppUpgradeHelper.GetCurUpgradeLanguage()}/";
                 return mPreloadTexureServerUrl;
             }
         }
@@ -66,10 +62,6 @@ namespace GameFramePro.Upgrade
 
         private uint mCurDownloadCount = 0; //当前下载次数
         private const uint S_MaxDownloadTimes = 3; //最大下载次数
-
-
-        //**对外接口
-        //     private Dictionary<string, Sprite> mAllPreloadImgSprites = new Dictionary<string, Sprite>(); //byte[] 转化成了sprite
 
         #endregion
 
@@ -140,7 +132,7 @@ namespace GameFramePro.Upgrade
             OnUpgradeProcess("获取服务器上 预加载图片 配置信息  ", 0);
 
             SuperCoroutine preloadTextureSuperCoroutine = null; //获取本地AssetBundle 信息
-            if (isFirstUpgrade )
+            if (isFirstUpgrade)
                 preloadTextureSuperCoroutine = new SuperCoroutine(LoadAllLocalPreloadImgAssetInfor()); //获取本地 预加载图片 的信息
 
             if (ServerPreloadImgConfigInfor == null)
@@ -163,7 +155,7 @@ namespace GameFramePro.Upgrade
                 yield break;
             } //服务器文件下载失败
 
-            if (isFirstUpgrade )
+            if (isFirstUpgrade)
             {
                 OnUpgradeProcess(" 开始获取需要 预加载图片 资源 ", 0.2f);
                 var getNeedUpdateTexturesSuperCoroutine = new SuperCoroutine(GetAllNeedUpdateTexturesConfigure());
@@ -204,7 +196,8 @@ namespace GameFramePro.Upgrade
             mCurDownloadCount = 1;
             while (ServerPreloadImgConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
-                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(PreloadTexureServerUrl.CombinePathEx(ConstDefine.S_PreloadImgConfiFileName), TaskPriorityEnum.Immediately, null);
+                var url = PreloadTexureServerUrl.CombinePathEx(ConstDefine.S_PreloadImgConfiFileName);
+                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(url, TaskPriorityEnum.Immediately, null);
                 if (downloadTask == null)
                 {
                     Debug.LogError($"获取服务器配置的下载任务创建失败 第{mCurDownloadCount} 次 url={PreloadTexureServerUrl}");
@@ -258,28 +251,29 @@ namespace GameFramePro.Upgrade
             foreach (var file in allFiles)
             {
                 string extensionName = Path.GetExtension(file);
-                if (extensionName == ".manifest" || extensionName == ".json")
+                if (extensionName != ".png" && extensionName == ".jpg")
                     continue;
 
-                string imgAssetPath = file.Substring(LocalStorePath.Length);
-                imgAssetPath = IOUtility.GetPathWithOutExtension(imgAssetPath);
-                imgAssetPath = imgAssetPath.Replace("\\", "/");
+                string imgRelativetPath = file.Substring(LocalStorePath.Length);
+                imgRelativetPath = imgRelativetPath.Replace("\\", @"\");
+                var md5Code = MD5Helper.GetFileMD5OutData(file, out var fileData); //图片数据
+                LocalPreloadImgAssetMD5Infor.Add(imgRelativetPath, md5Code);
+
 #if UNITY_EDITOR
-                Debug.LogEditorInfor($"---------------------Load Local Textures {imgAssetPath} :");
+
+                Debug.LogEditorInfor($"---------------------Load Local Textures {file} : md5Code={md5Code} ");
 #endif
-                byte[] imgData = MD5Helper.GetFileMD5(file, out var md5Code); //图片数据
-                LocalPreloadImgAssetMD5Infor.Add(imgAssetPath, md5Code);
 
                 //****保存本地的图片数据 避免多次加载
-                string fileName = Path.GetFileNameWithoutExtension(imgAssetPath);
-                if (localPreloadImgData.TryGetValue(fileName, out var localData))
+                //      string fileRelativePath = imgAssetPath.Substring(LocalStorePath.Length); 
+                if (localPreloadImgData.TryGetValue(imgRelativetPath, out var localData))
                 {
-                    localData = imgData;
-                    Debug.LogError($"存在重复的资源 {fileName} ");
+                    localData = fileData;
+                    Debug.LogError($"存在重复的资源 {imgRelativetPath} ");
                     continue;
                 }
 
-                localPreloadImgData.Add(fileName, imgData);
+                localPreloadImgData.Add(imgRelativetPath, fileData);
             }
         }
 
@@ -295,11 +289,15 @@ namespace GameFramePro.Upgrade
             {
                 if (LocalPreloadImgAssetMD5Infor.TryGetValue(textureInfor.mTextureRelativePath, out var textureMd5))
                 {
-                    if (textureMd5 != textureInfor.mAssetMD5)
-                        AllNeedDownloadTextureAssetRecord.Add(textureInfor.mTextureRelativePath); //需要更新
+                    if (textureMd5.Equals(textureInfor.mAssetMD5, StringComparison.Ordinal))
+
+                        if (textureMd5 != textureInfor.mAssetMD5)
+                            AllNeedDownloadTextureAssetRecord.Add(textureInfor.mTextureRelativePath); //需要更新
                     continue;
                 }
-
+#if UNITY_EDITOR
+                Debug.Log($"新增的图片{textureInfor.mTextureRelativePath} 配置");
+#endif
                 AllNeedDownloadTextureAssetRecord.Add(textureInfor.mTextureRelativePath); //需要更新
             }
 
@@ -381,7 +379,7 @@ namespace GameFramePro.Upgrade
         /// <summary>/// 下载一个 预加载图片 资源回调/// </summary>
         private void OnDownloadPreloadTextureCallback(UnityWebRequest webRequest, bool isSuccess, string url)
         {
-            string textureRelativePath = url.Substring(LocalStorePath.Length + 1);
+            string textureRelativePath = url.Substring(PreloadTexureServerUrl.Length);
 
             if (AllNeedDownloadTextureAssetRecord.Contains(textureRelativePath))
             {
@@ -401,7 +399,7 @@ namespace GameFramePro.Upgrade
                     Debug.LogError($"OnDownloadAssetBundleCallback Fail,Error {webRequest.error}  \t url={webRequest.url}");
                 }
 
-                AllDownloadTextureFailRecord.Remove(textureRelativePath);
+                AllNeedDownloadTextureAssetRecord.Remove(textureRelativePath);
             }
             else
             {

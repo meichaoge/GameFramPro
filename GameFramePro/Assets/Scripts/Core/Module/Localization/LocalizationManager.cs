@@ -8,9 +8,7 @@ namespace GameFramePro.Localization
 {
     public delegate void OnLanguageChangedHandler(Language curLanguage);
 
-    /// <summary>
-    /// 导出的配置文件格式
-    /// </summary>
+    /// <summary>/// 导出的配置文件格式/// </summary>
     [System.Flags]
     public enum ExportFormatEnum
     {

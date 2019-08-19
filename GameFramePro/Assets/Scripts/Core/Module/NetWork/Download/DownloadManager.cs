@@ -12,7 +12,7 @@ namespace GameFramePro
     /// <summary>/// 对外提供下载接口 对内隐藏实现/// </summary>
     public class DownloadManager : Single<DownloadManager>, IUpdateCountTick
     {
-        //private HashSet<IDownloadManager<object, ITaskProcess>> mAllDownloadeManagers = new HashSet<IDownloadManager<object, ITaskProcess>>(); //所有的下载器
+        private HashSet<IUpdateTick> mAllDownloadeManagers = new HashSet<IUpdateTick>(); //所有的下载器
 
 
         #region IUpdateTick 接口
@@ -38,29 +38,26 @@ namespace GameFramePro
         {
             if (CheckIfNeedUpdateTick() == false) return;
 
-            //     AssetBundleDownloadManager.S_Instance.Tick();
-            ByteDataDownloadManager.S_Instance.UpdateTick(currentTime);
-
-            //if (mAllDownloadeManagers.Count > 0)
-            //{
-            //    foreach (var item in mAllDownloadeManagers)
-            //        item.Tick();
-            //}
+            if (mAllDownloadeManagers.Count > 0)
+            {
+                foreach (var item in mAllDownloadeManagers)
+                    item.UpdateTick(currentTime);
+            }
         }
 
         #endregion
 
-        //  protected override void InitialSingleton()
-        //  {
-        //      base.InitialSingleton();
-        // //     AppManager.S_Instance.RegisterUpdateTick(this);
-
-        //  }
-        //  public override void DisposeInstance()
-        //  {
-        ////      AppManager.S_Instance.UnRegisterUpdateTick(this);
-        //      base.DisposeInstance();
-        //  }
+//          protected override void InitialSingleton()
+//          {
+//              base.InitialSingleton();
+//         //     AppManager.S_Instance.RegisterUpdateTick(this);
+//
+//          }
+//          public override void DisposeInstance()
+//          {
+//        //      AppManager.S_Instance.UnRegisterUpdateTick(this);
+//              base.DisposeInstance();
+//          }
 
 
         #region 通用的下载接口 对外隐藏实现 (这里不能是静态的 否则没法注册)
@@ -74,7 +71,7 @@ namespace GameFramePro
         {
             return ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
-        
+
         /// <summary>/// 下载图片/// </summary>
         public UnityWebRequestDownloadTask GetTextureDataFromUrl(string taskUrl, TaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
         {
@@ -86,29 +83,31 @@ namespace GameFramePro
 
         #region 辅助
 
-        //public void RegisterDownloadManager(IDownloadManager<, > loader)
-        //{
-        //    if (mAllDownloadeManagers.Contains(loader))
-        //    {
-        //        Debug.LogError("RegisterDownloadManager Fail,重复的下载器 " + loader);
-        //        return;
-        //    }
-        //    Debug.LogEditorInfor("RegisterDownloadManager Success " + loader.GetType());
-        //    mAllDownloadeManagers.Add(loader);
-        //}
+        /// <summary>/// 注册 需要更新的下载管理器计时滴答/// </summary>
+        public void RegisterDownloadManager(IUpdateTick loader)
+        {
+            if (mAllDownloadeManagers.Contains(loader))
+            {
+                Debug.LogError("RegisterDownloadManager Fail,重复的下载器 " + loader);
+                return;
+            }
 
-        //public void UnRegisterDownloadManager(IDownloadManager<object, ITaskProcess> loader)
-        //{
-        //    if (mAllDownloadeManagers.Contains(loader))
-        //    {
-        //        mAllDownloadeManagers.Remove(loader);
-        //        Debug.LogEditorInfor("UnRegisterDownloadManager Success " + loader.GetType());
-        //        return;
-        //    }
+            Debug.LogEditorInfor($"RegisterDownloadManager Success !! {loader.GetType()} ");
+            mAllDownloadeManagers.Add(loader);
+        }
 
-        //    Debug.LogError("UnRegisterDownloadManager Fail,不存在的下载器 " + loader);
-        //    return;
-        //}
+        /// <summary>/// 取消注册 需要更新的下载管理器计时滴答/// </summary>
+        public void UnRegisterDownloadManager(IUpdateTick loader)
+        {
+            if (mAllDownloadeManagers.Contains(loader))
+            {
+                mAllDownloadeManagers.Remove(loader);
+                Debug.LogEditorInfor($"UnRegisterDownloadManager Success !! {loader.GetType()} ");
+                return;
+            }
+
+            Debug.LogError("UnRegisterDownloadManager Fail,不存在的下载器 " + loader);
+        }
 
         #endregion
     }

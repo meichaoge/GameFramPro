@@ -106,7 +106,7 @@ namespace GameFramePro.NetWorkEx
                             }
 #if UNITY_EDITOR
                             else
-                                Debug.LogError("当前下载任务已经完成，无法添加回调 " + targetNodeValue.TaskUrl);
+                                Debug.LogError($"当前下载任务{targetNodeValue.TaskUrl} 已经完成{targetNodeValue.TaskState}，无法添加回调 ");
 #endif
                         }
                     }

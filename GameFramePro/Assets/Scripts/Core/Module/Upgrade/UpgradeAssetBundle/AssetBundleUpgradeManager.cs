@@ -242,9 +242,11 @@ namespace GameFramePro.Upgrade
                 for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
                 {
                     var filePath = allAssetBundleFiles[dex];
-                    AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
-                    assetBundleInfor.mBundleName = filePath.Substring(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath.Length + 1);
-                    assetBundleInfor.mBundleMD5Code = MD5Helper.GetFileMD5(filePath, ref assetBundleInfor.mBundleSize);
+                    AssetBundleInfor assetBundleInfor = new AssetBundleInfor
+                    {
+                        mBundleName = filePath.Substring(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath.Length + 1)
+                    };
+                    assetBundleInfor.mBundleMD5Code = MD5Helper.GetFileMD5OutLength(filePath, out assetBundleInfor.mBundleSize);
                     string assetBundleNameStr = assetBundleInfor.mBundleName.GetPathStringEx(); //去掉路径分隔符
                     mAllLocalAssetBundleAssetFileInfor[assetBundleNameStr] = assetBundleInfor; //记录本地AssetBundle 资源信息
                     mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length; //进度

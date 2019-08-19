@@ -6,9 +6,7 @@ using UnityEngine.Networking;
 
 namespace GameFramePro.NetWorkEx
 {
-    /// <summary>
-    /// 下载并保存到本地的文件
-    /// </summary>
+    /// <summary>/// 下载并保存到本地的文件/// </summary>
     public class FileDownloadManager : BaseDownloadManager<UnityWebRequestDownloadTask, UnityWebRequest>
     {
         protected static FileDownloadManager s_Instance = null;
@@ -18,7 +16,10 @@ namespace GameFramePro.NetWorkEx
             get
             {
                 if (s_Instance == null)
+                {
                     s_Instance = new FileDownloadManager();
+                    DownloadManager.S_Instance.RegisterDownloadManager(s_Instance);
+                }
                 return s_Instance;
             }
         } // 

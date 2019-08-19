@@ -17,7 +17,10 @@ namespace GameFramePro.NetWorkEx
             get
             {
                 if (s_Instance == null)
+                {
                     s_Instance = new ByteDataDownloadManager();
+                    DownloadManager.S_Instance.RegisterDownloadManager(s_Instance);
+                }
                 return s_Instance;
             }
         } // 

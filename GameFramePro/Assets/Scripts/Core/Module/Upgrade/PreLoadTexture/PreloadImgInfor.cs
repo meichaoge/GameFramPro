@@ -28,8 +28,8 @@ namespace GameFramePro.Upgrade
     {
         /// <summary>/// 版本号/// </summary>
         public string Version = string.Empty;
-
         public int TotalSize; //资源总大小
+        public UpgradeLanguage mLanguage;
         public Dictionary<string, PreloadImgInfor> AllPreloadImgConfig = new Dictionary<string, PreloadImgInfor>();
 
         public PreloadImgConfigInfor()

@@ -16,7 +16,7 @@ namespace GameFramePro.CacheEx
             get
             {
                 if (string.IsNullOrEmpty(s_TextureCacheTopDirectory))
-                    s_TextureCacheTopDirectory = $"{Application.persistentDataPath}/TextureCache/";
+                    s_TextureCacheTopDirectory = $"{Application.persistentDataPath}/{ConstDefine.S_LocalStoreDirectoryName}/TextureCache/";
                 return s_TextureCacheTopDirectory;
             }
         }
@@ -187,7 +187,7 @@ namespace GameFramePro.CacheEx
             }
 
             public string mTextureMd5Code { get; private set; }
-            
+
             /// <summary>/// 判断缓存资源是否过期/// </summary>
             public bool IsAvailable
             {
@@ -207,8 +207,9 @@ namespace GameFramePro.CacheEx
             public CacheTextureInfor(string fileRealPath) : this()
             {
                 mTextureRelativePath = fileRealPath;
-                string md5Code = string.Empty;
-                TextureData = MD5Helper.GetFileMD5(fileRealPath, out md5Code);
+
+                string md5Code = MD5Helper.GetFileMD5OutData(fileRealPath, out var fileData);
+                TextureData = fileData;
                 mTextureAliveTime = 0;
             }
 
@@ -219,9 +220,6 @@ namespace GameFramePro.CacheEx
                 mTextureAliveTime = maxCacheTime;
                 mTextureMd5Code = MD5Helper.GetFileMD5(data);
             }
-
-
-            
         }
     }
 }

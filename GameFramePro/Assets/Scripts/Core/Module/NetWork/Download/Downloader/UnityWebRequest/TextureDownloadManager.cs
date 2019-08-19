@@ -17,7 +17,11 @@ namespace GameFramePro.NetWorkEx
             get
             {
                 if (s_Instance == null)
+                {
                     s_Instance = new TextureDownloadManager();
+                    DownloadManager.S_Instance.RegisterDownloadManager(s_Instance);
+                }
+
                 return s_Instance;
             }
         } // 

@@ -35,15 +35,13 @@ namespace GameFramePro
 
             finally
             {
-                if (builder != null)
-                    builder.Clear();
-                if (fileStream != null)
-                    fileStream.Close();
+                builder?.Clear();
+                fileStream?.Close();
             }
         }
 
         /// <summary>/// 获取指定绝对路径下文件的MD5 /// </summary>
-        public static string GetFileMD5(string filePath, ref long fileSize)
+        public static string GetFileMD5OutLength(string filePath, out long fileSize)
         {
             FileStream fileStream = null;
             StringBuilder builder = null;
@@ -68,39 +66,36 @@ namespace GameFramePro
 
             finally
             {
-                if (builder != null)
-                    builder.Clear();
-                if (fileStream != null)
-                    fileStream.Close();
+                builder?.Clear();
+                fileStream?.Close();
             }
         }
 
         /// <summary>/// 获取指定绝对路径下文件的MD5 /// </summary>
-        public static byte[] GetFileMD5(string filePath, out string md5Code)
+        public static string GetFileMD5OutData(string filePath, out byte[] fileData)
         {
             FileStream fileStream = null;
             StringBuilder builder = null;
+            fileData = null;
             try
             {
                 fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                var data = new byte [fileStream.Length];
-                fileStream.Read(data, 0, data.Length);
-
+                fileData = new byte [fileStream.Length];
+                fileStream.Read(fileData, 0, fileData.Length);
 
                 MD5 md5 = new MD5CryptoServiceProvider();
-                byte[] result = md5.ComputeHash(fileStream);
+                byte[] result = md5.ComputeHash(fileData); //这里如果直接读取流文件获取的MD5 不一致TODO
                 builder = new StringBuilder();
                 foreach (byte b in result)
                     builder.Append(Convert.ToString(b, 16));
 
-                md5Code = builder.ToString();
-                return data;
+
+                return builder.ToString();
             }
             catch (FileNotFoundException e)
             {
                 Debug.LogError(e.Message);
-                md5Code = string.Empty;
-                return new byte[0];
+                return String.Empty;
             }
 
             finally

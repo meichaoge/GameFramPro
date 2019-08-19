@@ -29,7 +29,7 @@ namespace GameFramePro.ResourcesEx
 
             if (mAllNativeObjectPoolManagers.TryGetValue(type, out pool))
             {
-                Debug.LogError(string.Format("TrackPoolManager Fail,Already Exit Pool of Type {0}", type));
+                Debug.LogError($"TrackPoolManager Fail,Already Exit Pool of Type {type}");
                 return;
             }
             mAllNativeObjectPoolManagers[type] = poolManager as INativeObjectPool<object>;
@@ -52,7 +52,7 @@ namespace GameFramePro.ResourcesEx
                 mAllNativeObjectPoolManagers.Remove(type);
                 return;
             }
-            Debug.LogError(string.Format("UnTrackPoolManager Fail,Not Exit Pool of Type {0}", type));
+            Debug.LogError($"UnTrackPoolManager Fail,Not Exit Pool of Type {type}");
         }
 
         #endregion

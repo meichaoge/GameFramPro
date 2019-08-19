@@ -15,17 +15,26 @@ namespace GameFramePro.EditorEx
     /// </summary>
     internal static class BuildAssetBundleTool
     {
-
         /// <summary>
         /// 保存生成的AssetBundel 信息
         /// </summary>
-        public static string S_BuildAssetBundleTotalRecordPath { get { return "Editor/Core/AssetBundle/BuildAssetBundleTotalRecord"; } }
-        public static string S_BuildAssetBundleTotalRecordRealPath { get { return Application.dataPath.CombinePathEx(S_BuildAssetBundleTotalRecordPath); } }  // 真是路径 （不带扩展名）
+        public static string S_BuildAssetBundleTotalRecordPath
+        {
+            get { return "Editor/Core/AssetBundle/BuildAssetBundleTotalRecord"; }
+        }
+
+        public static string S_BuildAssetBundleTotalRecordRealPath
+        {
+            get { return Application.dataPath.CombinePathEx(S_BuildAssetBundleTotalRecordPath); }
+        } // 真是路径 （不带扩展名）
+
         //需要导出的配置文件的相对目录
-        public static string S_AssetBundleExportConfigRelativePath { get { return ConstDefine.S_AssetBundleDirectoryName.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName); } }
+        public static string S_AssetBundleExportConfigRelativePath
+        {
+            get { return ConstDefine.S_AssetBundleDirectoryName.CombinePathEx(ConstDefine.S_AssetBundleConfigFileName); }
+        }
+
         private static EditorTotalAssetBundleInfor s_TotalAssetBundleInfor = null;
-
-
 
 
         /// <summary>
@@ -51,10 +60,11 @@ namespace GameFramePro.EditorEx
                 if (EditorUserBuildSettings.activeBuildTarget != targetPlatform)
                 {
                     if (EditorUtility.DisplayDialog("切换平台提示", string.Format("生成AssetBundle ,目标平台:{0}  当前平台：{1} ，是否需要切换到对应的平台",
-                        targetPlatform, EditorUserBuildSettings.activeBuildTarget), "切换", "取消") == false)
+                            targetPlatform, EditorUserBuildSettings.activeBuildTarget), "切换", "取消") == false)
                     {
                         continue;
                     } //取消切换平台
+
                     EditorUserBuildSettings.SwitchActiveBuildTarget(targetGroup, targetPlatform);
                 }
 
@@ -76,6 +86,7 @@ namespace GameFramePro.EditorEx
             if (IOUtility.CheckOrCreateDirectory(exportPath) == false)
                 return;
             EditorUtility.DisplayProgressBar("Create AssetBundle ..", ".Prepare..", 0.1f);
+
             #region 打包前的准备工作
 
             RemoveAllUnUseAssetBundleNames();
@@ -84,42 +95,44 @@ namespace GameFramePro.EditorEx
             var containAsset = IOUtility.GetDirectoriesAndFilesExculde(exportPath, "*.*", System.IO.SearchOption.AllDirectories, null);
             if (containAsset.Length > 0)
             {
-                if (EditorUtility.DisplayDialog("提示", string.Format("保存生成AssetBundle 目录中包含 {0} 个资源，是否先删除文件内容", containAsset.Length), "删除存在文件", "忽略"))
+                if (EditorUtility.DisplayDialog("提示", $"保存生成AssetBundle 目录中包含 {containAsset.Length} 个资源，是否先删除文件内容", "删除存在文件", "忽略"))
                 {
                     IOUtility.ClearOrCreateDirectory(exportPath);
                 }
             }
+
             #endregion
 
             EditorUtility.DisplayProgressBar("Create AssetBundle ..", ".Build..", 0.5f);
             AssetBundleManifest assetBundleManifest = BuildPipeline.BuildAssetBundles(createAssetBundleSavePath, assetBundleOptions, targetPlatform);
-            Debug.Log(string.Format("生成 {0} 平台下AssetBundle 成功，保存在目录 {1}", targetPlatform, createAssetBundleSavePath));
+            Debug.Log($"生成 {targetPlatform} 平台下AssetBundle 成功，保存在目录 {createAssetBundleSavePath}");
 
             #region 打包后的操作
 
             AssetDatabase.Refresh();
 
             #region 重命名主AssetBundle 避免移动文件时候报错
-        
+
             #endregion
 
-            Debug.Log(string.Format("生成 {0} 平台下AssetBundle 成功，复制到输出目录 {1}", targetPlatform, exportPath));
+            Debug.Log($"生成 {targetPlatform} 平台下AssetBundle 成功，复制到输出目录 {exportPath}");
 
             EditorUtility.DisplayProgressBar("Create AssetBundle ..", ".处理日志记录..", 0.7f);
-            ReImportMainAssetBundle(createAssetBundleSavePath);  //修改没有扩展名的主AssetBundle 资源名
+            ReImportMainAssetBundle(createAssetBundleSavePath); //修改没有扩展名的主AssetBundle 资源名
             string assetBundleConfigPath = RecordAllBuildAssetBundleContainAssetInfor(createAssetBundleSavePath, assetBundleManifest);
             //  ExportAssetBundleInforToCsv(assetBundleConfigPath, targetPlatform);  //目前不适用csv  避免自己解析 TODO
             AssetDatabase.Refresh();
-            IOUtility.CopyDirectory(createAssetBundleSavePath, exportPath, new string[] { ConstDefine.S_MetaExtension,ConstDefine.S_AssetBundleManifestExtension });
+            IOUtility.CopyDirectory(createAssetBundleSavePath, exportPath, new string[] {ConstDefine.S_MetaExtension, ConstDefine.S_AssetBundleManifestExtension});
 
             ExportAssetBundleInforToJson(assetBundleConfigPath, targetPlatform); //在复制完文件资源之后再生成配置，否则会被删除
 
             EditorUtility.ClearProgressBar();
-            #endregion
 
+            #endregion
         }
 
         #region 打包准备+打包后的文件处理
+
         /// <summary>
         /// 将打包后的主AssetBundle 文件重命名
         /// </summary>
@@ -146,9 +159,10 @@ namespace GameFramePro.EditorEx
             foreach (var unUseAssetBundleName in allUnUsetAssetBundleNames)
             {
                 if (AssetDatabase.RemoveAssetBundleName(unUseAssetBundleName, false) == false)
-                    Debug.LogEditorError(string.Format("RemoveAllUnUseAssetBundleNames Fail,unUseAssetBundleName={0}", unUseAssetBundleName));
+                    Debug.LogEditorError($"RemoveAllUnUseAssetBundleNames Fail,unUseAssetBundleName={unUseAssetBundleName}");
             }
         }
+
         /// <summary>
         /// 移除空的AssetBundle 
         /// </summary>
@@ -183,7 +197,7 @@ namespace GameFramePro.EditorEx
                 assetBundlePackInfor.mAssetBundlePackageName = assetBundlePackage;
 
                 string assetBundlePackagePath = saveAssetBundlePath.CombinePathEx(assetBundlePackage);
-                assetBundlePackInfor.mMD5Code = MD5Helper.GetFileMD5(assetBundlePackagePath, ref assetBundlePackInfor.mPackageSize); //当前AssetBundle 包大小
+                assetBundlePackInfor.mMD5Code = MD5Helper.GetFileMD5OutLength(assetBundlePackagePath, out assetBundlePackInfor.mPackageSize); //当前AssetBundle 包大小
                 bool isSuccess = BuildPipeline.GetCRCForAssetBundle(assetBundlePackagePath, out assetBundlePackInfor.mCRCCode);
                 if (isSuccess == false)
                     Debug.LogError("RecordAllBuildAssetBundleContainAssetInfor Error" + assetBundlePackagePath);
@@ -195,7 +209,7 @@ namespace GameFramePro.EditorEx
                     EditorAssetBundleAssetInfor assetInfor = new EditorAssetBundleAssetInfor();
                     string assetRelativePath = containAsset.GetPathFromSpecialDirectoryName(ConstDefine.S_ResourcesName, false);
                     assetInfor.mAssetRelativePath = assetRelativePath.GetPathWithOutExtension(); //这里不需要任何扩展名
-                    assetInfor.mMD5Code = MD5Helper.GetFileMD5(ConstDefine.S_ResourcesRealPath.CombinePathEx(assetRelativePath), ref assetInfor.mFileAssetSize);
+                    assetInfor.mMD5Code = MD5Helper.GetFileMD5OutLength(ConstDefine.S_ResourcesRealPath.CombinePathEx(assetRelativePath), out assetInfor.mFileAssetSize);
 
                     assetBundlePackInfor.mAllContainAssetInfor.Add(assetInfor);
                     //Debug.LogEditorInfor("assetInfor=" + assetInfor);
@@ -226,7 +240,6 @@ namespace GameFramePro.EditorEx
             IOUtility.CreateOrSetFileContent(realPath, content);
             Debug.LogEditorInfor("生成AssetBundle 信息成功！！保存在目录 {0}", realPath);
             return realPath;
-
         }
 
         /// <summary>
@@ -235,10 +248,12 @@ namespace GameFramePro.EditorEx
         private static void RecordMainAssetBundelInfor(string saveAssetBundlePath)
         {
             //主AssetBundle
-            string mainAssetBundlePath = saveAssetBundlePath.CombinePathEx(ConstDefine.S_AssetBundleDirectoryName);//.ConcatPathEx(ConstDefine.S_AssetBundleExtension);
-            EditorAssetBundleInfor mainAssetBundleInfor = new EditorAssetBundleInfor();
-            mainAssetBundleInfor.mAssetBundlePackageName = System.IO.Path.GetFileName(mainAssetBundlePath).ConcatPathEx(ConstDefine.S_AssetBundleExtension);
-            mainAssetBundleInfor.mMD5Code = MD5Helper.GetFileMD5(mainAssetBundlePath.ConcatPathEx(ConstDefine.S_AssetBundleExtension), ref mainAssetBundleInfor.mPackageSize); //当前AssetBundle 包大小
+            string mainAssetBundlePath = saveAssetBundlePath.CombinePathEx(ConstDefine.S_AssetBundleDirectoryName); //.ConcatPathEx(ConstDefine.S_AssetBundleExtension);
+            EditorAssetBundleInfor mainAssetBundleInfor = new EditorAssetBundleInfor
+            {
+                mAssetBundlePackageName = System.IO.Path.GetFileName(mainAssetBundlePath).ConcatPathEx(ConstDefine.S_AssetBundleExtension)
+            };
+            mainAssetBundleInfor.mMD5Code = MD5Helper.GetFileMD5OutLength(mainAssetBundlePath.ConcatPathEx(ConstDefine.S_AssetBundleExtension), out mainAssetBundleInfor.mPackageSize); //当前AssetBundle 包大小
             bool isSuccess = BuildPipeline.GetCRCForAssetBundle(mainAssetBundlePath, out mainAssetBundleInfor.mCRCCode);
             if (isSuccess == false)
                 Debug.LogError("RecordAllBuildAssetBundleContainAssetInfor Error" + mainAssetBundlePath);
@@ -257,12 +272,12 @@ namespace GameFramePro.EditorEx
 
             //s_TotalAssetBundleInfor.mTotalSize += manifestAssetBundleInfor.mPackageSize;
             //s_TotalAssetBundleInfor.mTotalAssetBundleInfor[manifestAssetBundleInfor.mAssetBundlePackageName] = manifestAssetBundleInfor;
-
         }
 
         #endregion
 
         #region 读写生成的配置文件
+
         /// <summary>
         /// 将生成的AssetBundle 文件导出成 csv文件
         /// </summary>
@@ -276,31 +291,34 @@ namespace GameFramePro.EditorEx
             StringBuilder builder = StringUtility.GetStringBuilder();
 
             #region 开始几行数据
-            CsvUtility.WriteCsv(totalAssetBundleInfor.mVersion, ref builder);  //版本号
-            CsvUtility.WriteCsv(totalAssetBundleInfor.mTotalSize, ref builder);  //字节大小
+
+            CsvUtility.WriteCsv(totalAssetBundleInfor.mVersion, ref builder); //版本号
+            CsvUtility.WriteCsv(totalAssetBundleInfor.mTotalSize, ref builder); //字节大小
             CsvUtility.WriteCsv(totalAssetBundleInfor.mConfigBuildTime, ref builder); //创建时间
             CsvUtility.WriteCsv_NewLine(ref builder); //换行
+
             #endregion
 
             #region 每个AB 信息
+
             foreach (var assetBundle in totalAssetBundleInfor.mTotalAssetBundleInfor.Values)
             {
-                CsvUtility.WriteCsv(assetBundle.mAssetBundlePackageName, ref builder);  //AssetBundle Name
-                CsvUtility.WriteCsv(assetBundle.mPackageSize, ref builder);  //AssetBundle 包大小 单位byte
-                CsvUtility.WriteCsv(assetBundle.mAllContainAssetInfor.Count, ref builder);  //AssetBundle 包含的资源个数
+                CsvUtility.WriteCsv(assetBundle.mAssetBundlePackageName, ref builder); //AssetBundle Name
+                CsvUtility.WriteCsv(assetBundle.mPackageSize, ref builder); //AssetBundle 包大小 单位byte
+                CsvUtility.WriteCsv(assetBundle.mAllContainAssetInfor.Count, ref builder); //AssetBundle 包含的资源个数
                 CsvUtility.WriteCsv_NewLine(ref builder); //换行
 
                 foreach (var assetInfor in assetBundle.mAllContainAssetInfor)
                 {
-                    CsvUtility.WriteCsv(assetInfor.mAssetRelativePath, ref builder);  //Asset Path
+                    CsvUtility.WriteCsv(assetInfor.mAssetRelativePath, ref builder); //Asset Path
                     CsvUtility.WriteCsv_NewLine(ref builder); //换行
                 }
             }
+
             #endregion
 
             string csvContent = builder.ToString();
-            string realPath = ConstDefine.S_ApplicationAssetParentRealPath.CombinePathEx(ConstDefine.S_ExportDirectoryName).
-                CombinePathEx(AppPlatformManager.GetPlatformFolderName(targetPlatform)).CombinePathEx(S_AssetBundleExportConfigRelativePath);
+            string realPath = ConstDefine.S_ExportRealPath.CombinePathEx(AppPlatformManager.GetPlatformFolderName(targetPlatform)).CombinePathEx(S_AssetBundleExportConfigRelativePath);
             IOUtility.CreateOrSetFileContent(realPath, csvContent, false);
             Debug.LogEditorInfor("ExportAssetBundleInforToCsv Success!! File Path is " + realPath);
             StringUtility.ReleaseStringBuilder(builder);
@@ -313,8 +331,7 @@ namespace GameFramePro.EditorEx
         /// <param name="targetPlatform"></param>
         public static void ExportAssetBundleInforToJson(string assetBundleConfigPath, BuildTarget targetPlatform)
         {
-            string configContent;
-            if (IOUtility.GetFileContent(assetBundleConfigPath, out configContent) == false)
+            if (IOUtility.GetFileContent(assetBundleConfigPath, out var configContent) == false)
                 return;
             EditorTotalAssetBundleInfor totalAssetBundleInfor = SerializeManager.DeserializeObject<EditorTotalAssetBundleInfor>(configContent);
 
@@ -337,26 +354,23 @@ namespace GameFramePro.EditorEx
                 foreach (var assetInfor in bundleInfor.mAllContainAssetInfor)
                 {
                     assetBundleInfor.mContainAssetPathInfor.Add(assetInfor.mAssetRelativePath);
-                }//获取包含的资源信息
+                } //获取包含的资源信息
 
                 assetBundleInfor.mDepdenceAssetBundleInfor = new string[bundleInfor.mDepdenceAssetBundle.Count];
                 for (int dex = 0; dex < bundleInfor.mDepdenceAssetBundle.Count; dex++)
                 {
-                    assetBundleInfor.mDepdenceAssetBundleInfor[dex]= bundleInfor.mDepdenceAssetBundle[dex].mAssetBundlePackageName;
-                }//获取依赖信息 这里不是处理之后的AssetBundle Name
+                    assetBundleInfor.mDepdenceAssetBundleInfor[dex] = bundleInfor.mDepdenceAssetBundle[dex].mAssetBundlePackageName;
+                } //获取依赖信息 这里不是处理之后的AssetBundle Name
 
                 localAssetBundleConfig.mTotalAssetBundleInfor[assetBundleNameStr] = assetBundleInfor; //这里的key 不带路径分隔符
             }
 
             string content = SerializeManager.SerializeObject(localAssetBundleConfig);
-            string realPath = ConstDefine.S_ApplicationAssetParentRealPath.CombinePathEx(ConstDefine.S_ExportDirectoryName).
-              CombinePathEx(AppPlatformManager.GetPlatformFolderName(targetPlatform)).CombinePathEx(S_AssetBundleExportConfigRelativePath);
+            string realPath = ConstDefine.S_ExportRealPath.CombinePathEx(AppPlatformManager.GetPlatformFolderName(targetPlatform)).CombinePathEx(S_AssetBundleExportConfigRelativePath);
             IOUtility.CreateOrSetFileContent(realPath, content, false);
             Debug.LogEditorInfor("ExportAssetBundleInforToJson Success!! File Path is " + realPath);
-
         }
 
         #endregion
-
     }
 }
