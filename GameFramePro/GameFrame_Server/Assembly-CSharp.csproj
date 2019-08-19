@@ -53,7 +53,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Test001.cs" />
+     <Compile Include="Assets\Scripts\UdpServer.cs" />
+     <Compile Include="Assets\Scripts\UdpServerUIComponent.cs" />
+     <None Include="Assets\log.txt" />
+     <None Include="Assets\TODO.txt" />
  <Reference Include="Unity.PackageManagerUI.Editor">
  <HintPath>E:/GameFraneWorkSpace/GameFramePro/GameFrame_Server/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
  </Reference>
