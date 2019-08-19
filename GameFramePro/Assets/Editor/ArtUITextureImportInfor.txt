@@ -1,1 +1,0 @@
-Assets/Art/UI/Common/event_button_jin.png 	 	   Error TextureType: Default

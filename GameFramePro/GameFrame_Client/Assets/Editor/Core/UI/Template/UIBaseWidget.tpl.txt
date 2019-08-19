@@ -1,0 +1,39 @@
+﻿using System.Collections.Generic;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace GameFramePro.UI
+{
+   	public class #CLASSNAME# : UIBaseChangePage
+  	{
+     #region UI
+        #UIPARAMETER#
+     #endregion
+
+
+	   #region 基类重写
+        protected override void OnInitialed()
+        {
+            base.OnInitialed();
+            GetUIComponentReference();
+           //TODO
+        }
+        
+      /// <summary>/// 根据挂载的 UGUIComponentReference 脚本生成对应的引用配置/// </summary>
+      private void GetUIComponentReference()
+      {
+            #UICOMPONENTREFERENCE#
+       }
+        #endregion
+
+		#region  创建视图
+        //TODO
+        #endregion
+
+		#region  点击事件或者操作
+        //TODO
+        #endregion
+   
+  }
+}
