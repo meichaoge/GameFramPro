@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 namespace GameFramePro.NetWorkEx
 {
@@ -63,5 +64,29 @@ namespace GameFramePro.NetWorkEx
             Debug.LogError($"无法获取可用的端口号，检查是否有异常");
             return -1;
         }
+        
+        
+        /// <summary>/// 获取本机的IP 地址/// </summary>
+        public static IPAddress GetLocalIpAddress(bool isIpv4 = true)
+        {
+            var allAddress = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var infor in allAddress.AddressList)
+            {
+                if (isIpv4)
+                {
+                    if (infor.AddressFamily == AddressFamily.InterNetwork)
+                        return IPAddress.Parse(infor.ToString());
+                }
+                else
+                {
+                    if (infor.AddressFamily == AddressFamily.InterNetworkV6)
+                        return IPAddress.Parse(infor.ToString());
+                }
+            }
+
+            Debug.LogError($"获取本机的IP{isIpv4} 地址失败");
+            return IPAddress.None;
+        }
+        
     }
 }
