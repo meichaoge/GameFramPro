@@ -77,9 +77,10 @@ namespace GameFramePro.Localization
         /// <summary>/// 对外接口/// </summary>
         internal void SwitchOrShowLanguage(LocalizationLanguage showLanguage)
         {
+#if UNITY_EDITOR
             if (mIsInitialed == false)
                 GetAllLocalizations();
-
+#endif
             if (m_lastLanguageType == showLanguage)
                 return;
             InitView(showLanguage);
@@ -190,9 +191,8 @@ namespace GameFramePro.Localization
             }
         }
     }
-    
-    
-    
+
+
     [CustomEditor(typeof(LocalizationRootController))]
     public class LocalizationRootController_Editor : Editor
     {

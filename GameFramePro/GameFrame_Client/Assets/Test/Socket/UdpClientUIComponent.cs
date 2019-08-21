@@ -33,13 +33,14 @@ public class UdpClientUIComponent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        mBrocastToggle.isOn = false;
         mSendIpAddress.text = "127.0.0.1"; //SocketUtility.GetLocalIpAddress().ToString();
 
         mStartClientButton.onClick.AddListener(OnStartClientButtonClick);
         mAutoSetPortButton.onClick.AddListener(OnAutoSetPortClick);
         mJoinGoupButton.onClick.AddListener(OnJoinGroupClick);
 
-
+        mBrocastToggle.onValueChanged.AddListener(OnBrocastStateChange);
         mSendMessageButton.onClick.AddListener(OnSendMessageButtonClick);
     }
 
@@ -50,6 +51,12 @@ public class UdpClientUIComponent : MonoBehaviour
         Debug.Log("关闭客户端");
     }
 
+
+    private void OnBrocastStateChange(bool isOn)
+    {
+        if (mIsStartClient == false) return;
+        mSimpleUdpClient.SetBrocastEnableState(isOn);
+    }
 
     private void OnStartClientButtonClick()
     {
@@ -72,6 +79,7 @@ public class UdpClientUIComponent : MonoBehaviour
 
 
         mSimpleUdpClient.StartClient();
+        mBrocastToggle.isOn = mSimpleUdpClient.mIsEnableBrocast;
         Debug.Log("客户端启动");
     }
 
@@ -85,9 +93,16 @@ public class UdpClientUIComponent : MonoBehaviour
     private void OnJoinGroupClick()
     {
         if (mIsJoinGroup)
+        {
             mSimpleUdpClient.JoinGroup(IPAddress.Parse("224.100.0.1"));
+            
+            ReceiveMessage($"加入组播224.100.0.1",new IPEndPoint(IPAddress.Parse("224.100.0.1"),0 ));
+        }
         else
+        {
             mSimpleUdpClient.LeaveGroup(IPAddress.Parse("224.100.0.1"));
+            ReceiveMessage($"离开组播224.100.0.1",new IPEndPoint(IPAddress.Parse("224.100.0.1"),0 ));
+        }
 
         mIsJoinGroup = !mIsJoinGroup;
     }
@@ -120,8 +135,6 @@ public class UdpClientUIComponent : MonoBehaviour
 
     public void ReceiveMessage(string message, EndPoint endPoint)
     {
-        return;
-        
         StringBuilder builder = new StringBuilder(mReceiveMessageText.text);
         if (string.IsNullOrEmpty(mReceiveMessageText.text) == false)
             builder.Append(System.Environment.NewLine);

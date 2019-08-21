@@ -25,10 +25,8 @@ namespace GameFramePro.EditorEx
 
                 isBeforeBuildFlag = true;
 
-                EditorUtility.DisplayDialog("XX", "aa", "确定");
-
-                if (OnBeforeBuildPlayerEvent != null)
-                    OnBeforeBuildPlayerEvent();
+                EditorUtility.DisplayDialog("XX", "监听打包前的处理", "确定");
+                OnBeforeBuildPlayerEvent?.Invoke();
             }
         }
 
@@ -37,12 +35,9 @@ namespace GameFramePro.EditorEx
         private static void OnPostBuildPlayer(BuildTarget target, string pathToBuiltProject)
         {
             Debug.LogInfor("Unity标准Build后处理函数  .. OnPostBuildPlayer");
-            if (OnPostBuildPlayerEvent != null)
-            {
-                OnPostBuildPlayerEvent(target, pathToBuiltProject);
-            }
+            OnPostBuildPlayerEvent?.Invoke(target, pathToBuiltProject);
 
-            UnityEngine.Debug.Log(string.Format("Success build ({0}) : {1}", target, pathToBuiltProject));
+            UnityEngine.Debug.Log($"Success build ({target}) : {pathToBuiltProject}");
         }
 
         /// <summary>
