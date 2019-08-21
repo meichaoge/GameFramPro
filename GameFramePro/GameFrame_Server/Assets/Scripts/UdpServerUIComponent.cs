@@ -38,18 +38,26 @@ public class UdpServerUIComponent : MonoBehaviour
         mAutoSetPortButton.onClick.AddListener(OnAutoSetPortClick);
         mJoinGoupButton.onClick.AddListener(OnJoinGroupClick);
 
-
+        mBrocastToggle.onValueChanged.AddListener(OnBrocatStateChange);
         mSendMessageButton.onClick.AddListener(OnSendMessageButtonClick);
     }
 
     private void OnDisable()
     {
         if (mIsStartClient == false) return;
+        
+        mBrocastToggle.onValueChanged.RemoveAllListeners();
         mUdpServer.StopServer();
         Debug.Log("关闭服务器");
     }
 
 
+    private void OnBrocatStateChange(bool isOn)
+    {
+        if (mIsStartClient == false) return;
+    }
+    
+    
     private void OnStartServerButtonClick()
     {
         if (string.IsNullOrEmpty(mListennerPort.text))
@@ -91,7 +99,6 @@ public class UdpServerUIComponent : MonoBehaviour
         mIsJoinGroup = !mIsJoinGroup;
     }
 
-
     private void OnSendMessageButtonClick()
     {
         if (mIsStartClient == false)
@@ -116,10 +123,8 @@ public class UdpServerUIComponent : MonoBehaviour
         }
     }
 
-
     private void ReceiveMessage(string message, EndPoint endPoint)
     {
-        return;
         StringBuilder builder = new StringBuilder(mReceiveMessageText.text);
         if (string.IsNullOrEmpty(mReceiveMessageText.text) == false)
             builder.Append(System.Environment.NewLine);
