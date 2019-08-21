@@ -59,7 +59,6 @@ namespace GameFramePro
         private void UpdateTick(float realtimeSinceStartup)
         {
             ScreenClickManager.S_Instance.UpdateTick(realtimeSinceStartup); //屏幕点击特效
-            Loom.S_Instance.UpdateTick(realtimeSinceStartup);
             XluaManager.S_Instance.UpdateTick(realtimeSinceStartup);
             DownloadManager.S_Instance.UpdateTick(realtimeSinceStartup);
             AssetDelayDeleteManager.S_Instance.UpdateTick(realtimeSinceStartup);

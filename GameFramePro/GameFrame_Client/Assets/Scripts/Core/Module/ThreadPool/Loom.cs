@@ -7,16 +7,18 @@ using System.Linq;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 用来控制子线程到Unity 线程的跳转
-    /// </summary>
-    public class Loom : Single<Loom> , IUpdateCountTick
+    /// <summary>/// 用来控制子线程到Unity 线程的跳转(由于会在子线程中调用 因此需要手动挂载)/ // </summary>
+    public class Loom : MonoBehaviour
     {
+        public static Loom S_Instance = null;
+
+        #region 属性状态
+
         public static int _maxThreads = 5;
         private static int _numThreads = 0;
 
-        List<Action> _actions = new List<Action>();
-        List<Action> _currentActions = new List<Action>();
+        readonly List<Action> _actions = new List<Action>();
+        readonly List<Action> _currentActions = new List<Action>();
 
         public struct DelayedQueueItem
         {
@@ -24,31 +26,24 @@ namespace GameFramePro
             public Action action;
         }
 
-        List<DelayedQueueItem> _delayed = new List<DelayedQueueItem>();
-        List<DelayedQueueItem> _currentDelayed = new List<DelayedQueueItem>();
-  
+        readonly List<DelayedQueueItem> _delayed = new List<DelayedQueueItem>();
+        readonly List<DelayedQueueItem> _currentDelayed = new List<DelayedQueueItem>();
 
-        #region IUpdateTick 接口
-        protected int curUpdateCount = 0; //当前的帧基数
-        public uint TickPerUpdateCount { get; protected set; } = 1;
+        #endregion
 
-        public bool CheckIfNeedUpdateTick()
+        #region Mono 接口
+
+        private void Awake()
         {
-            //++curUpdateCount;
-            //if (curUpdateCount == 1)
-            //    return true;  //确保第一次被调用
-            //if (curUpdateCount < TickPerUpdateCount)
-            //    return false;
-            //curUpdateCount = 0;
-            return true;
+            S_Instance = this;
+            GameObject.DontDestroyOnLoad(gameObject);
         }
 
-
-        public void UpdateTick(float currentTime)
+        private void Update()
         {
-            if (CheckIfNeedUpdateTick() == false) return;
             UpdateAction();
         }
+
         #endregion
 
 
@@ -57,13 +52,13 @@ namespace GameFramePro
             QueueOnMainThread(action, 0f);
         }
 
-        public  void QueueOnMainThread(Action action, float time)
+        public void QueueOnMainThread(Action action, float time)
         {
             if (time != 0)
             {
                 lock (S_Instance._delayed)
                 {
-                    S_Instance._delayed.Add(new DelayedQueueItem { time = Time.time + time, action = action });
+                    S_Instance._delayed.Add(new DelayedQueueItem {time = Time.time + time, action = action});
                 }
             }
             else
@@ -75,13 +70,14 @@ namespace GameFramePro
             }
         }
 
-        public  Thread RunAsync(Action a)
+        public Thread RunAsync(Action a)
         {
             //Initialize();
             while (_numThreads >= _maxThreads)
             {
                 Thread.Sleep(1);
             }
+
             Interlocked.Increment(ref _numThreads);
             ThreadPool.QueueUserWorkItem(RunAction, a);
             return null;
@@ -91,7 +87,7 @@ namespace GameFramePro
         {
             try
             {
-                ((Action)action)();
+                ((Action) action)();
             }
             catch (Exception e)
             {
@@ -102,7 +98,7 @@ namespace GameFramePro
                 Interlocked.Decrement(ref _numThreads);
             }
         }
-       
+
 
         private void UpdateAction()
         {
@@ -117,7 +113,6 @@ namespace GameFramePro
 
                 for (int _dex = 0; _dex < _currentActions.Count; ++_dex)
                     _currentActions[_dex]();
-
             }
 
             if (_delayed.Count > 0)
@@ -129,10 +124,10 @@ namespace GameFramePro
                     for (int _dex = 0; _dex < _currentDelayed.Count; ++_dex)
                         _delayed.RemoveAt(_dex);
                 }
+
                 for (int _dex = 0; _dex < _currentDelayed.Count; ++_dex)
                     _currentDelayed[_dex].action();
-            }//if
-
+            } //if
         }
     }
 }
