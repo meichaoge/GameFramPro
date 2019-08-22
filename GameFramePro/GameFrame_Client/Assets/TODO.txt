@@ -1,5 +1,7 @@
 
-26 封装 UdpClient,TcpClient
+28 需要实现一套udp 分包和组包的工具类
+27 使用upd客户端实现一个分享视频的功能。需要实现视屏的分帧 。使用vlc 看视频
+26 封装 UdpClient,TcpClient                                                                   
 25 .NET 各种锁
 24 IntPtr 指针
 23 C# 异步的机制

@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 public class UdpClientUIComponent : MonoBehaviour
 {
+    public Text mLocalHost;
     public InputField mListennerPort;
     public Button mStartClientButton;
     public Button mAutoSetPortButton;
@@ -24,21 +25,26 @@ public class UdpClientUIComponent : MonoBehaviour
     public Button mSendMessageButton;
 
     public Toggle mBrocastToggle;
-    public Button mJoinGoupButton;
 
-    private bool mIsJoinGroup = true;
+    public InputField mGroupIpInput;
+    public Toggle mGroupIpListenner;
+
+
     private bool mIsStartClient = false;
     private SimpleUdpClient mSimpleUdpClient;
 
     // Start is called before the first frame update
     void Start()
     {
+        mLocalHost.text = SocketUtility.GetLocalIpAddress().ToString();
         mBrocastToggle.isOn = false;
         mSendIpAddress.text = "127.0.0.1"; //SocketUtility.GetLocalIpAddress().ToString();
+        mGroupIpInput.text = "234.5.6.7";
 
         mStartClientButton.onClick.AddListener(OnStartClientButtonClick);
         mAutoSetPortButton.onClick.AddListener(OnAutoSetPortClick);
-        mJoinGoupButton.onClick.AddListener(OnJoinGroupClick);
+        mGroupIpListenner.isOn = false;
+        mGroupIpListenner.onValueChanged.AddListener(OnJoinGroupClick);
 
         mBrocastToggle.onValueChanged.AddListener(OnBrocastStateChange);
         mSendMessageButton.onClick.AddListener(OnSendMessageButtonClick);
@@ -90,21 +96,19 @@ public class UdpClientUIComponent : MonoBehaviour
         Debug.Log($"自动选择端口号 {port}");
     }
 
-    private void OnJoinGroupClick()
+    private void OnJoinGroupClick(bool isOn)
     {
-        if (mIsJoinGroup)
+        if (isOn)
         {
-            mSimpleUdpClient.JoinGroup(IPAddress.Parse("224.100.0.1"));
-            
-            ReceiveMessage($"加入组播224.100.0.1",new IPEndPoint(IPAddress.Parse("224.100.0.1"),0 ));
+            mSimpleUdpClient.JoinGroup(IPAddress.Parse(mGroupIpInput.text));
+
+            ReceiveMessage(Encoding.UTF8.GetBytes($"加入组播{IPAddress.Parse(mGroupIpInput.text)}"), new IPEndPoint(IPAddress.Parse(mGroupIpInput.text), 0));
         }
         else
         {
-            mSimpleUdpClient.LeaveGroup(IPAddress.Parse("224.100.0.1"));
-            ReceiveMessage($"离开组播224.100.0.1",new IPEndPoint(IPAddress.Parse("224.100.0.1"),0 ));
+            mSimpleUdpClient.LeaveGroup(IPAddress.Parse(mGroupIpInput.text));
+            ReceiveMessage(Encoding.UTF8.GetBytes($"离开组播{IPAddress.Parse(mGroupIpInput.text)}"), new IPEndPoint(IPAddress.Parse(mGroupIpInput.text), 0));
         }
-
-        mIsJoinGroup = !mIsJoinGroup;
     }
 
 
@@ -122,18 +126,25 @@ public class UdpClientUIComponent : MonoBehaviour
             return;
         }
 
-        if (mBrocastToggle.isOn == false)
-            mSimpleUdpClient.SendMessage(mSendMessage.text, mSendIpAddress.text, int.Parse(mSendEndPort.text));
+
+        if (mGroupIpListenner.isOn)
+        {
+            mSimpleUdpClient.SendMessage(Encoding.UTF8.GetBytes(mSendMessage.text), mGroupIpInput.text, int.Parse(mSendEndPort.text));
+        }
         else
         {
-            mSimpleUdpClient.SendBrocast(mSendMessage.text, int.Parse(mSendEndPort.text));
-
-            // mSimpleUdpClient.SendMessage(mSendMessage.text, new IPEndPoint(IPAddress.Broadcast, int.Parse(mSendEndPort.text)));
+            if (mBrocastToggle.isOn == false)
+                mSimpleUdpClient.SendMessage(Encoding.UTF8.GetBytes(mSendMessage.text), mSendIpAddress.text, int.Parse(mSendEndPort.text));
+            else
+            {
+                mSimpleUdpClient.SendBrocast(Encoding.UTF8.GetBytes(mSendMessage.text), int.Parse(mSendEndPort.text));
+                // mSimpleUdpClient.SendMessage(mSendMessage.text, new IPEndPoint(IPAddress.Broadcast, int.Parse(mSendEndPort.text)));
+            }
         }
     }
 
 
-    public void ReceiveMessage(string message, EndPoint endPoint)
+    public void ReceiveMessage(byte[] message, EndPoint endPoint)
     {
         StringBuilder builder = new StringBuilder(mReceiveMessageText.text);
         if (string.IsNullOrEmpty(mReceiveMessageText.text) == false)
@@ -142,7 +153,7 @@ public class UdpClientUIComponent : MonoBehaviour
         mReceiveMessageText.text = builder.ToString();
     }
 
-    public void SendMessage(string message, EndPoint endPoint)
+    public void SendMessage(byte[] message, EndPoint endPoint)
     {
         StringBuilder builder = new StringBuilder(mSendMessageText.text);
         if (string.IsNullOrEmpty(mSendMessageText.text) == false)
