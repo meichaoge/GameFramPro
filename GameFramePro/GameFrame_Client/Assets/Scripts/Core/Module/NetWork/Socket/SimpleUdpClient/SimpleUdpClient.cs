@@ -26,7 +26,7 @@ namespace GameFramePro.NetWorkEx
         #region 属性
 
         public Socket mClientSocket { get; private set; } = null; //可能是IPv4 或者 ipv6
-        protected int EndPort { get; private set; } //端口号SocketWillSendMessageData
+        protected int EndPort { get; private set; } //端口号 
         protected AddressFamily mAddressFamily { get; set; }
         public bool mIsUdpClientStart { get; protected set; } //标示是否已经启动了UDP 客户端
         public bool mIsEnableBrocast { get; protected set; } = false; //默认不接受广播
