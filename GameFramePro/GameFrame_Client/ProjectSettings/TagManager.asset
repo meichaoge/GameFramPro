@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Transform
+  - UGUIText
+  - UGUIImage
+  - UGUIButton
+  - UGUIInputField
+  - UGUIDropDown
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: UIChangePage
+    uniqueID: 3648358919
+    locked: 0
+  - name: UIPopWindow
+    uniqueID: 1940137815
+    locked: 0
+  - name: TopScreenEffect
+    uniqueID: 627816913
+    locked: 0
