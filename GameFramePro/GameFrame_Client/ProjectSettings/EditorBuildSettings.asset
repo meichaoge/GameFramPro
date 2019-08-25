@@ -8,7 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/GameEntry.unity
     guid: 53c2e59e944ad0e439fe28ee8fa828ba
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UdpClient.unity
     guid: 72f22ad711248a6469543150e84e6021
+  - enabled: 1
+    path: Assets/Scenes/TcpClient.unity
+    guid: a97c853d28f2ad74980136b6758f4edc
   m_configObjects: {}

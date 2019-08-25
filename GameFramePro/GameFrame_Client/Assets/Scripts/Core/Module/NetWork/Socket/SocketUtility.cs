@@ -48,7 +48,7 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 获取下一个可用的端口号/// </summary>
         public static int GetNextAvailablePort()
         {
-            int beginePort = 1500; //1000以内的端口号可能被系统定义了
+            int beginePort = 2500; //1000以内的端口号可能被系统定义了
             int endPort = 60000; //系统tcp/udp 端口最大支持65535       
 
 
