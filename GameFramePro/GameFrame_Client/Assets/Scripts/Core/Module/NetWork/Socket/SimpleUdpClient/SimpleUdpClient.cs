@@ -37,14 +37,14 @@ namespace GameFramePro.NetWorkEx
         protected const int S_BufferSize = 65536;
         protected readonly byte[] mBuffer = new byte[S_BufferSize];
         protected Thread mReceiveMessageThread = null;
-        public SocketMessageDelagate OnReceiveMessageEvent;
+        public event SocketMessageDelagate OnReceiveMessageEvent;
         protected const int S_ReceiveMessageThreadInterval = 50; //发送消息的线程Sleep 时间间隔
 
 
         protected ConcurrentQueue<SocketPacket> mAllWillSendoutDatas; //线程安全的队列
         protected const int S_SendMessageThreadInterval = 50; //发送消息的线程Sleep 时间间隔
         protected Thread mSendMessageThread = null;
-        public SocketMessageDelagate OnSendMessageEvent;
+        public event SocketMessageDelagate OnSendMessageEvent;
 
         #endregion
 

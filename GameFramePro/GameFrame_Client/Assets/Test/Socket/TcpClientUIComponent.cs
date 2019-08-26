@@ -114,7 +114,7 @@ public class TcpClientUIComponent : MonoBehaviour
         StringBuilder builder = new StringBuilder(mReceiveMessageText.text);
         if (string.IsNullOrEmpty(mReceiveMessageText.text) == false)
             builder.Append(System.Environment.NewLine);
-        builder.Append($"[{DateTime.Now}] : ReceiveFrom {endPoint} {message}");
+        builder.Append($"[{DateTime.Now}] : ReceiveFrom {endPoint} {Encoding.UTF8.GetString(message)}");
         mReceiveMessageText.text = builder.ToString();
     }
 
@@ -123,7 +123,7 @@ public class TcpClientUIComponent : MonoBehaviour
         StringBuilder builder = new StringBuilder(mSendMessageText.text);
         if (string.IsNullOrEmpty(mSendMessageText.text) == false)
             builder.Append(System.Environment.NewLine);
-        builder.Append($"[{DateTime.Now}] : SendTo {endPoint} {message}");
+        builder.Append($"[{DateTime.Now}] : SendTo {endPoint} {Encoding.UTF8.GetString(message)}");
         mSendMessageText.text = builder.ToString();
     }
 }

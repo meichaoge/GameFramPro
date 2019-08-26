@@ -7,24 +7,29 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using GameFramePro;
+using GameFramePro.NetWorkEx;
 
 
-namespace GameFramePro.NetWorkEx
+namespace System.Net.Sockets
 {
     /// <summary>/// Tcp 客户端/// </summary>
     public class SimpleTcpClient : IDisposable
     {
         #region 属性
+
         public Socket mClientSocket { get; protected set; } = null; //可能是IPv4 或者 ipv6
         public AddressFamily mAddressFamily { get; protected set; }
 
         public int mMaxConnectTime = 2000; //连接超时 毫秒
 
         protected ManualResetEvent mTimeOutResetEvent = new ManualResetEvent(false);
+
         #endregion
 
 
         #region 状态+数据
+
         /// <summary>/// Socket 是否已经断开连接/// </summary>
         protected bool IsDisConnect = false;
 
@@ -33,7 +38,7 @@ namespace GameFramePro.NetWorkEx
         {
             get
             {
-                if (IsDisConnect == false) return false;
+                if (IsDisConnect) return false;
                 return mClientSocket == null ? false : mClientSocket.Connected;
             }
         }
@@ -89,22 +94,30 @@ namespace GameFramePro.NetWorkEx
                 if (mClientSocket == null)
                     throw new ArgumentNullException($"Socket 没有初始化");
 
+
                 var asyncResult = mClientSocket.BeginConnect(remoteEP, new AsyncCallback((result) =>
                 {
-                    Debug.Log($"连接回调");
+                    Debug.Log($"连接回调 连接状态{mClientSocket.Connected}");
+
                     mTimeOutResetEvent.Set();
-                    StartReceiveAndSendThread();
+
+                    if (mClientSocket.Connected)
+                    {
+                        Debug.LogError($"连接成功");
+                        StartReceiveAndSendThread();
+                    }
+                    else
+                    {
+                        //  System.Net.Sockets.SocketAsyncResult res = result as System.Net.Sockets.SocketAsyncResult;
+                        Debug.LogError($"连接失败{result}");
+                        
+                        Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(Encoding.UTF8.GetBytes($"连接失败{result}"), null); });
+                    }
                 }), null);
                 mTimeOutResetEvent.WaitOne(timeOut, true);
                 if (asyncResult.IsCompleted == false)
                 {
                     Debug.LogError($"连接超时");
-                }
-                else
-                {
-                    Debug.LogError($"连接成功");
-
-
                 }
             }
             catch (System.ArgumentOutOfRangeException e)
@@ -146,6 +159,7 @@ namespace GameFramePro.NetWorkEx
                     mClientSocket.Close();
                     Debug.LogError($"连接超时");
                 }
+
                 return asyncResult;
             }
             catch (System.ArgumentOutOfRangeException e)
@@ -182,7 +196,8 @@ namespace GameFramePro.NetWorkEx
 
         public void StopClient()
         {
-            mClientSocket?.Disconnect(false);
+            if (mIsConnected)
+                mClientSocket?.Disconnect(false);
             mClientSocket?.Close();
             mByteMessages = null;
         }
@@ -194,7 +209,7 @@ namespace GameFramePro.NetWorkEx
 
         private void StartReceiveAndSendThread()
         {
-            IsDisConnect = true;
+            IsDisConnect = false;
 
             mReceiveMessageThread = new Thread(BeginReceiveMessageThread);
             mReceiveMessageThread.IsBackground = true;
@@ -209,6 +224,9 @@ namespace GameFramePro.NetWorkEx
         private void OnBeginConnectCallback(IAsyncResult asyncResult)
         {
             mClientSocket.EndConnect(asyncResult);
+            if (mClientSocket.Connected == false)
+                Debug.LogError($"连接失败了");
+
             StartReceiveAndSendThread();
         }
 
@@ -235,14 +253,12 @@ namespace GameFramePro.NetWorkEx
             }
             catch (ThreadAbortException e)
             {
-
-            }//线程被Abort() 调用时候抛出
+            } //线程被Abort() 调用时候抛出
             catch (Exception e)
             {
                 Debug.LogError($"发送消息异常{e}");
                 throw;
             }
-
         }
 
 
@@ -252,13 +268,8 @@ namespace GameFramePro.NetWorkEx
             {
                 while (true)
                 {
-
                     if (mIsConnected == false || mClientSocket == null)
-                    {
-                        // 
                         continue;
-                    }
-
 
                     //                if (mClientSocket.Poll(-1, SelectMode.SelectError))
                     //                {
@@ -275,7 +286,7 @@ namespace GameFramePro.NetWorkEx
                         if (receiveData == 0)
                         {
                             Debug.LogError($"接受到数据长度为0 断开连接{mClientSocket}");
-                            IsDisConnect = false;
+                            IsDisConnect = true;
                             //Thread.Sleep(100);
                             continue;
                         }
@@ -294,8 +305,7 @@ namespace GameFramePro.NetWorkEx
             }
             catch (ThreadAbortException e)
             {
-
-            }//线程被Abort() 调用时候抛出
+            } //线程被Abort() 调用时候抛出
             catch (Exception e)
             {
                 Debug.LogError($"TCP 接受数据异常{e}");
