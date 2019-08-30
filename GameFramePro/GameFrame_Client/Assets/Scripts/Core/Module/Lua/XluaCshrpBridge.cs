@@ -41,5 +41,20 @@ namespace GameFramePro.Lua
         }
 
         #endregion
+
+
+        #region 随机数
+
+        public static int GetRandomInt(int min, int max)
+        {
+            return UnityEngine.Random.Range(min, max);
+        }
+
+        public static float GetRandomFloat(float min, float max)
+        {
+            return UnityEngine.Random.Range(min, max);
+        }
+
+        #endregion
     }
 }
