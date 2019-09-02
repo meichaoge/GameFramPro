@@ -15,13 +15,7 @@ namespace GameFramePro.NetWorkEx
     /// <summary>/// UDP 客户端/// </summary>
     public class SimpleUdpClient : IDisposable
     {
-        /// <summary>/// 需要发送的消息队列/// </summary>
-        protected class SocketPacket
-        {
-            public byte[] messageData;
-            public EndPoint mEndPoint;
-            public bool mIsBrocast = false;
-        }
+        internal SocketMessageQueue mSocketMessageQueue { get; set; }
 
         #region 属性
 
@@ -41,7 +35,6 @@ namespace GameFramePro.NetWorkEx
         protected const int S_ReceiveMessageThreadInterval = 50; //发送消息的线程Sleep 时间间隔
 
 
-        protected ConcurrentQueue<SocketPacket> mAllWillSendoutDatas; //线程安全的队列
         protected const int S_SendMessageThreadInterval = 50; //发送消息的线程Sleep 时间间隔
         protected Thread mSendMessageThread = null;
         public event SocketMessageDelagate OnSendMessageEvent;
@@ -54,6 +47,7 @@ namespace GameFramePro.NetWorkEx
         {
             EndPort = port;
             mAddressFamily = addressFamily;
+            mSocketMessageQueue = new SocketMessageQueue();
         }
 
         #endregion
@@ -74,8 +68,6 @@ namespace GameFramePro.NetWorkEx
                 mClientSocket?.Bind(new IPEndPoint(mAddressFamily == AddressFamily.InterNetwork ? IPAddress.Any : IPAddress.IPv6Any, EndPort));
                 if (mClientSocket != null)
                     mClientSocket.EnableBroadcast = mIsEnableBrocast;
-
-                mAllWillSendoutDatas = new ConcurrentQueue<SocketPacket>();
 
                 mReceiveMessageThread = new Thread(BeginReceiveMessage);
                 mReceiveMessageThread.IsBackground = false;
@@ -101,7 +93,7 @@ namespace GameFramePro.NetWorkEx
             {
                 mReceiveMessageThread.Abort();
                 mSendMessageThread.Abort();
-                mAllWillSendoutDatas = null;
+                mSocketMessageQueue?.ClearData();
                 OnReceiveMessageEvent = OnSendMessageEvent = null;
                 mClientSocket?.Close();
             }
@@ -112,26 +104,19 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        public void SendBrocast(byte[] message, int port)
+        public void SendBrocast(int messageId, byte[] message, int port)
         {
-            SendMessage(message, new IPEndPoint(IPAddress.Broadcast, port), true);
+            SendMessage(messageId,message, new IPEndPoint(IPAddress.Broadcast, port), true);
         }
 
-        public void SendMessage(byte[] message, string ipAddress, int port)
+        public void SendMessage(int messageId, byte[] message, string ipAddress, int port)
         {
-            SendMessage(message, new IPEndPoint(IPAddress.Parse(ipAddress), port), false);
+            SendMessage(messageId, message, new IPEndPoint(IPAddress.Parse(ipAddress), port), false);
         }
 
-        public void SendMessage(byte[] message, EndPoint endPoint, bool isBrocast = false)
+        public void SendMessage(int messageId,byte[] message, EndPoint endPoint, bool isBrocast = false)
         {
-            SocketPacket messageData = new SocketPacket()
-            {
-                messageData = message,
-                mEndPoint = endPoint,
-                mIsBrocast = isBrocast,
-            };
-
-            mAllWillSendoutDatas.Enqueue(messageData);
+            mSocketMessageQueue?.SaveSendData(messageId, message, endPoint, isBrocast);
         }
 
         //加入组
@@ -184,19 +169,18 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 发送消息的线程/// </summary>
         private void BeginSendMessage(object obj)
         {
+            SocketMessageData sendMessageData = null;
             while (true)
             {
-                SocketPacket sendMessageData = null;
-
                 try
                 {
                     if (mClientSocket == null)
                         continue;
 
-                    if (mAllWillSendoutDatas == null || mAllWillSendoutDatas.Count == 0)
+                    if (mSocketMessageQueue == null || mSocketMessageQueue.mAllSendDataQueue.Count == 0)
                         continue;
 
-                    if (mAllWillSendoutDatas.TryDequeue(out sendMessageData))
+                    if (mSocketMessageQueue.GetWillSendSocketData(out sendMessageData))
                     {
                         int dataLength = 0;
 
@@ -206,23 +190,23 @@ namespace GameFramePro.NetWorkEx
 
                             if (isBrocaseEnable == false)
                                 mClientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-                            dataLength = mClientSocket.SendTo(sendMessageData.messageData, 0, sendMessageData.messageData.Length, SocketFlags.None, sendMessageData.mEndPoint);
+                            dataLength = mClientSocket.SendTo(sendMessageData.mMessageData, 0, sendMessageData.mMessageData.Length, SocketFlags.None, sendMessageData.mEndPoint);
 
                             if (isBrocaseEnable == false)
                                 mClientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 0);
                         } //广播 发送完成立刻复位
                         else
                         {
-                            dataLength = mClientSocket.SendTo(sendMessageData.messageData, 0, sendMessageData.messageData.Length, SocketFlags.None, sendMessageData.mEndPoint);
+                            dataLength = mClientSocket.SendTo(sendMessageData.mMessageData, 0, sendMessageData.mMessageData.Length, SocketFlags.None, sendMessageData.mEndPoint);
                         }
 
 
-                        if (dataLength != sendMessageData.messageData.Length)
-                            Debug.LogError($"数据发送异常，实际发送数据量{dataLength} 总共{sendMessageData.messageData.Length}");
+                        if (dataLength != sendMessageData.mMessageData.Length)
+                            Debug.LogError($"数据发送异常，实际发送数据量{dataLength} 总共{sendMessageData.mMessageData.Length}");
 
-                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(sendMessageData.messageData, sendMessageData.mEndPoint); });
+                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(sendMessageData.mMessageData, sendMessageData.mEndPoint); });
 
-                        Debug.Log($"From{mClientSocket.LocalEndPoint} 发送{sendMessageData.mEndPoint} 消息 {sendMessageData.messageData}");
+                        Debug.Log($"From{mClientSocket.LocalEndPoint} 发送{sendMessageData.mEndPoint} 消息 {sendMessageData.mMessageData}");
                     }
                 }
                 catch (SocketException e)
@@ -231,11 +215,11 @@ namespace GameFramePro.NetWorkEx
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
-                    Debug.LogError($"指定要发送的Socket {sendMessageData.messageData.Length} 数据超过Buffer 长度");
+                    Debug.LogError($"指定要发送的Socket {sendMessageData.mMessageData.Length} 数据超过Buffer 长度");
                 }
                 catch (ArgumentNullException e)
                 {
-                    Debug.LogError($"指定要发送的Socket {sendMessageData.messageData.Length} 数据为null");
+                    Debug.LogError($"指定要发送的Socket {sendMessageData.mMessageData.Length} 数据为null");
                 }
                 catch (Exception e)
                 {
@@ -244,12 +228,6 @@ namespace GameFramePro.NetWorkEx
 
                 Thread.Sleep(S_SendMessageThreadInterval);
             }
-        }
-
-        /// <summary>/// 发送消息/// </summary>
-        /// <param name="sendMessageData"></param>
-        private void SendMessage(SocketPacket sendMessageData)
-        {
         }
 
 
@@ -269,9 +247,12 @@ namespace GameFramePro.NetWorkEx
                         int dataLength = mClientSocket.ReceiveFrom(mBuffer, 0, S_BufferSize, SocketFlags.None, ref endPoint); //子线程被阻塞在这里 直到有数据到达
                         if (dataLength > 0)
                         {
-                            //   string message = Encoding.UTF8.GetString(mBuffer, 0, dataLength);
-                            Debug.Log($"{mClientSocket.EnableBroadcast} 接受到来自{endPoint} 的{dataLength} 长度消息{mBuffer}还有{mClientSocket.Available} 的数据没有处理");
-                            Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(mBuffer, endPoint); });
+                            ////   string message = Encoding.UTF8.GetString(mBuffer, 0, dataLength);
+                            //Debug.Log($"{mClientSocket.EnableBroadcast} 接受到来自{endPoint} 的{dataLength} 长度消息{mBuffer}还有{mClientSocket.Available} 的数据没有处理");
+                            //Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(mBuffer, endPoint); });
+                            var receiveData = new byte[dataLength];
+                            System.Array.Copy(mBuffer, 0, receiveData, 0, dataLength);
+                            mSocketMessageQueue.SaveReceiveData(0, receiveData, endPoint, false);
                         }
                     }
                 }

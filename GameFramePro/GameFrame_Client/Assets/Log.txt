@@ -1,4 +1,8 @@
 
+2019/9/1
+<1> 新增Socket 消息管理组件 SocketMessageQueue 。
+<2> 新增Soket 头SocketHead
+
 2019/8/26
 <1> 修复Tcp客户端无法连接服务器的Bug .手机端还是无法连接
 <2> 开始了一个简单的TCP 心跳包管理器[HeartbeatManager]的逻辑

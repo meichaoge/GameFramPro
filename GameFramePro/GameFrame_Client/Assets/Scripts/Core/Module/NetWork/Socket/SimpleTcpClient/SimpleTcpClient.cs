@@ -16,6 +16,8 @@ namespace System.Net.Sockets
     /// <summary>/// Tcp 客户端/// </summary>
     public class SimpleTcpClient : IDisposable
     {
+        internal SocketMessageQueue mSocketMessageQueue { get; set; }
+
         #region 属性
 
         public Socket mClientSocket { get; protected set; } = null; //可能是IPv4 或者 ipv6
@@ -43,17 +45,11 @@ namespace System.Net.Sockets
             }
         }
 
-
-        protected ConcurrentQueue<byte[]> mByteMessages; //线程安全的队列
-
         protected const int S_BufferSize = 65536;
         protected readonly byte[] mBuffer = new byte[S_BufferSize];
         protected Thread mReceiveMessageThread = null;
-
         public SocketMessageDelagate OnReceiveMessageEvent;
-        //    protected const int S_ReceiveMessageThreadInterval = 50; //发送消息的线程Sleep 时间间隔
 
-        //     protected const int S_SendMessageThreadInterval = 50; //发送消息的线程Sleep 时间间隔
         protected Thread mSendMessageThread = null;
         public SocketMessageDelagate OnSendMessageEvent;
 
@@ -65,7 +61,7 @@ namespace System.Net.Sockets
         public SimpleTcpClient(AddressFamily addressFamily = AddressFamily.InterNetwork)
         {
             mAddressFamily = addressFamily;
-            mByteMessages = new ConcurrentQueue<byte[]>();
+            mSocketMessageQueue = new SocketMessageQueue();
             try
             {
                 mClientSocket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -110,7 +106,7 @@ namespace System.Net.Sockets
                     {
                         //  System.Net.Sockets.SocketAsyncResult res = result as System.Net.Sockets.SocketAsyncResult;
                         Debug.LogError($"连接失败{result}");
-                        
+
                         Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(Encoding.UTF8.GetBytes($"连接失败{result}"), null); });
                     }
                 }), null);
@@ -191,7 +187,7 @@ namespace System.Net.Sockets
                 return;
             }
 
-            mByteMessages.Enqueue(data);
+            mSocketMessageQueue.SaveSendData(0, data, mClientSocket.RemoteEndPoint, false);
         }
 
         public void StopClient()
@@ -199,7 +195,7 @@ namespace System.Net.Sockets
             if (mIsConnected)
                 mClientSocket?.Disconnect(false);
             mClientSocket?.Close();
-            mByteMessages = null;
+            mSocketMessageQueue?.ClearData();
         }
 
         #endregion
@@ -239,15 +235,15 @@ namespace System.Net.Sockets
                     if (mIsConnected == false)
                         continue;
 
-                    if (mClientSocket == null || mByteMessages == null || mByteMessages.Count == 0)
+                    if (mClientSocket == null || mSocketMessageQueue.mAllSendDataQueue == null || mSocketMessageQueue.mAllSendDataQueue.Count == 0)
                         continue;
 
-                    if (mByteMessages.TryDequeue(out var message))
+                    if (mSocketMessageQueue.GetWillSendSocketData(out var message))
                     {
-                        Debug.Log($"给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(message)}");
-                        int dataLength = mClientSocket.Send(message);
+                        Debug.Log($"给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(message.mMessageData)}");
+                        int dataLength = mClientSocket.Send(message.mMessageData);
 
-                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(message, mClientSocket.RemoteEndPoint); });
+                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(message.mMessageData, mClientSocket.RemoteEndPoint); });
                     }
                 }
             }
@@ -291,9 +287,13 @@ namespace System.Net.Sockets
                             continue;
                         }
 
-                        string message = Encoding.UTF8.GetString(mBuffer, 0, receiveData);
-                        Debug.Log($"接受来自{mClientSocket.RemoteEndPoint} {message}");
-                        Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(mBuffer, mClientSocket.RemoteEndPoint); });
+                        var receiveByteData = new byte[receiveData];
+
+                        mSocketMessageQueue.SaveReceiveData(0, receiveByteData, mClientSocket.RemoteEndPoint,false);
+
+                        //string message = Encoding.UTF8.GetString(mBuffer, 0, receiveData);
+                        //Debug.Log($"接受来自{mClientSocket.RemoteEndPoint} {message}");
+                        //Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(mBuffer, mClientSocket.RemoteEndPoint); });
                     }
                     //else
                     //{
