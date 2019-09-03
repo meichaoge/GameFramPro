@@ -9,8 +9,7 @@ using System.Threading;
 
 namespace GameFramePro.NetWorkEx
 {
-    /// <summary>/// 心跳包管理器/// </summary>
-    /// 一定时间内没有接受和发送数据就会发送消息
+    /// <summary>/// 心跳包管理器/// </summary>/// 一定时间内没有接受和发送数据就会发送消息
     internal class HeartbeatManager : Single<HeartbeatManager>
     {
         #region 公开属性
@@ -24,14 +23,14 @@ namespace GameFramePro.NetWorkEx
 
         protected ByteArray mHeartbeatData;
 
-        protected SimpleTcpClient mTargetTcpClient;
+        protected SimpleTcpEventCallback MTargetTcpEventCallback;
         protected Thread mHeartbeaThread;
 
         #region 对外接口
 
-        public void StartHeartbeat(SimpleTcpClient tcpClient, TimeSpan heartbeat)
+        public void StartHeartbeat(SimpleTcpEventCallback tcpEventCallback, TimeSpan heartbeat)
         {
-            if (tcpClient == null)
+            if (tcpEventCallback == null)
                 throw new NullReferenceException($"StartHeartbeat 失败，参数tcp 客户端为null");
 
             if (mIsHeartbeating)
@@ -40,11 +39,11 @@ namespace GameFramePro.NetWorkEx
                 return;
             }
 
-            mTargetTcpClient = tcpClient;
+            MTargetTcpEventCallback = tcpEventCallback;
             mHeartbeatTimeSpan = heartbeat;
 
-            mTargetTcpClient.OnReceiveMessageEvent += OnReceiveOrSendMessage;
-            mTargetTcpClient.OnSendMessageEvent += OnReceiveOrSendMessage;
+//            mTargetTcpClient.OnReceiveMessageEvent += OnReceiveOrSendMessage;
+//            mTargetTcpClient.OnSendMessageEvent += OnReceiveOrSendMessage;
 
             mHeartbeatData = ByteArrayPool.S_Instance.GetByteArray();
 
@@ -63,7 +62,7 @@ namespace GameFramePro.NetWorkEx
             mIsHeartbeating = false;
 
             mHeartbeaThread?.Abort();
-            mTargetTcpClient = null;
+            MTargetTcpEventCallback = null;
         }
 
         #endregion
@@ -77,12 +76,13 @@ namespace GameFramePro.NetWorkEx
             {
                 while (true)
                 {
-                    if (mTargetTcpClient.mIsConnected && DateTime.UtcNow - LastNetWorkActivityTime > mHeartbeatTimeSpan)
+                    if (MTargetTcpEventCallback.mIsConnected && DateTime.UtcNow - LastNetWorkActivityTime > mHeartbeatTimeSpan)
                     {
-                     //   mTargetTcpClient.Send(mHeartbeatData);
+                        LastNetWorkActivityTime = DateTime.UtcNow;
+                        MTargetTcpEventCallback.Send((int) ProtocolCommand.HearBeatCommand, mHeartbeatData);
                     }
 
-                    Thread.Sleep(500);
+                    Thread.Sleep(mHeartbeatTimeSpan);
                 }
             }
             catch (ThreadAbortException e)
@@ -95,10 +95,10 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        private void OnReceiveOrSendMessage(byte[] message, EndPoint endPoint)
-        {
-            LastNetWorkActivityTime = DateTime.UtcNow;
-        }
+//        private void OnReceiveOrSendMessage(byte[] message, EndPoint endPoint)
+//        {
+//            LastNetWorkActivityTime = DateTime.UtcNow;
+//        }
 
         #endregion
     }

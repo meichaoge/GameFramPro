@@ -14,9 +14,9 @@ using GameFramePro.NetWorkEx;
 namespace System.Net.Sockets
 {
     /// <summary>/// Tcp 客户端/// </summary>
-    public class SimpleTcpClient : IDisposable
+    public class SimpleTcpEventCallback : IDisposable, INetWorkEventCallback
     {
-        internal SocketMessageQueue mSocketMessageQueue { get; set; }
+        internal SocketMessageQueue mSocketMessageQueue { get; set; } //消息缓冲管理
 
         #region 属性
 
@@ -48,17 +48,15 @@ namespace System.Net.Sockets
         protected const int S_BufferSize = 65536;
         protected readonly byte[] mBuffer = new byte[S_BufferSize];
         protected Thread mReceiveMessageThread = null;
-        public SocketMessageDelagate OnReceiveMessageEvent;
 
         protected Thread mSendMessageThread = null;
-        public SocketMessageDelagate OnSendMessageEvent;
 
         #endregion
 
 
         #region 构造函数
 
-        public SimpleTcpClient(AddressFamily addressFamily = AddressFamily.InterNetwork)
+        public SimpleTcpEventCallback(AddressFamily addressFamily = AddressFamily.InterNetwork)
         {
             mAddressFamily = addressFamily;
             mSocketMessageQueue = new SocketMessageQueue();
@@ -76,6 +74,22 @@ namespace System.Net.Sockets
 
         #endregion
 
+        #region INetWorkCallback 接口
+
+        public event Action OnBeginConnectEvent;
+        public event Action OnConnectSuccessEvent;
+        public event Action<string> OnConnectErrorEvent;
+        public event Action OnConnectTimeOutEvent;
+
+        public event Action OnDisConnectEvent;
+        public event Action<string> OnSocketErrorEvent;
+
+        public event Action<SocketMessageData> OnSendMessageEvent; //发送消息
+        public event Action<SocketMessageData> OnReceiveMessageEvent; //接受到消息
+
+        #endregion
+
+
         #region 对外接口
 
         public void Connect(IPAddress ipAddress, int port, int timeOut)
@@ -85,12 +99,15 @@ namespace System.Net.Sockets
 
         public void Connect(IPEndPoint remoteEP, int timeOut)
         {
+            if (remoteEP == null)
+                throw new ArgumentNullException($"远程连接端口参数为null");
+
             try
             {
                 if (mClientSocket == null)
                     throw new ArgumentNullException($"Socket 没有初始化");
 
-
+                OnBeginConnectEvent?.Invoke();
                 var asyncResult = mClientSocket.BeginConnect(remoteEP, new AsyncCallback((result) =>
                 {
                     Debug.Log($"连接回调 连接状态{mClientSocket.Connected}");
@@ -100,37 +117,42 @@ namespace System.Net.Sockets
                     if (mClientSocket.Connected)
                     {
                         Debug.LogError($"连接成功");
+                        OnConnectSuccessEvent?.Invoke();
                         StartReceiveAndSendThread();
                     }
                     else
                     {
                         //  System.Net.Sockets.SocketAsyncResult res = result as System.Net.Sockets.SocketAsyncResult;
                         Debug.LogError($"连接失败{result}");
-
-                        Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(Encoding.UTF8.GetBytes($"连接失败{result}"), null); });
+                        OnConnectErrorEvent?.Invoke(result.ToString());
                     }
                 }), null);
                 mTimeOutResetEvent.WaitOne(timeOut, true);
                 if (asyncResult.IsCompleted == false)
                 {
                     Debug.LogError($"连接超时");
+                    OnConnectTimeOutEvent?.Invoke();
                 }
             }
             catch (System.ArgumentOutOfRangeException e)
             {
                 Debug.LogError($"TCP 连接 Socket {remoteEP} 端口号 不可用{e}");
+                OnSocketErrorEvent?.Invoke($"TCP 连接 Socket {remoteEP} 端口号 不可用{e}");
             }
             catch (System.Net.Sockets.SocketException e)
             {
                 Debug.LogError($"TCP 连接Socket {remoteEP} 异常，无法连接服务器{e}");
+                OnSocketErrorEvent?.Invoke($"TCP 连接Socket {remoteEP} 异常，无法连接服务器{e}");
             }
             catch (System.ObjectDisposedException e)
             {
                 Debug.LogError($"TCP 连接Socket  {remoteEP} 已经关闭{e}");
+                OnSocketErrorEvent?.Invoke($"TCP 连接Socket  {remoteEP} 已经关闭{e}");
             }
             catch (Exception e)
             {
                 Debug.LogError($"TCP {remoteEP} 连接失败{e}");
+                OnSocketErrorEvent?.Invoke($"TCP {remoteEP} 连接失败{e}");
                 throw;
             }
         }
@@ -148,12 +170,14 @@ namespace System.Net.Sockets
                 if (mClientSocket == null)
                     throw new ArgumentNullException($"Socket 没有初始化");
 
+                OnBeginConnectEvent?.Invoke();
                 IAsyncResult asyncResult = mClientSocket.BeginConnect(remoteEP, OnBeginConnectCallback, state);
                 asyncResult.AsyncWaitHandle.WaitOne(mMaxConnectTime, true);
                 if (asyncResult.IsCompleted == false)
                 {
                     mClientSocket.Close();
                     Debug.LogError($"连接超时");
+                    OnConnectTimeOutEvent?.Invoke();
                 }
 
                 return asyncResult;
@@ -161,25 +185,29 @@ namespace System.Net.Sockets
             catch (System.ArgumentOutOfRangeException e)
             {
                 Debug.LogError($"TCP 连接 Socket {remoteEP} 端口号 不可用{e}");
+                OnSocketErrorEvent?.Invoke($"TCP 连接 Socket {remoteEP} 端口号 不可用{e}");
             }
             catch (System.Net.Sockets.SocketException e)
             {
                 Debug.LogError($"TCP 连接Socket {remoteEP} 不可用{e}");
+                OnSocketErrorEvent?.Invoke($"TCP 连接Socket {remoteEP} 不可用{e}");
             }
             catch (System.ObjectDisposedException e)
             {
                 Debug.LogError($"TCP 连接Socket  {remoteEP} 已经关闭{e}");
+                OnSocketErrorEvent?.Invoke($"TCP 连接Socket  {remoteEP} 已经关闭{e}");
             }
             catch (Exception e)
             {
                 Debug.LogError($"TCP {remoteEP} 连接失败{e}");
+                OnSocketErrorEvent?.Invoke($"TCP {remoteEP} 连接失败{e}");
                 throw;
             }
 
             return null;
         }
 
-        public void Send(ByteArray data)
+        public void Send(int protocolId, ByteArray data)
         {
             if (mIsConnected == false)
             {
@@ -187,7 +215,7 @@ namespace System.Net.Sockets
                 return;
             }
 
-            mSocketMessageQueue.SaveSendData(0, data, mClientSocket.RemoteEndPoint, false);
+            mSocketMessageQueue.SaveSendData(protocolId, data, mClientSocket.RemoteEndPoint, false);
         }
 
         public void StopClient()
@@ -221,9 +249,15 @@ namespace System.Net.Sockets
         {
             mClientSocket.EndConnect(asyncResult);
             if (mClientSocket.Connected == false)
+            {
                 Debug.LogError($"连接失败了");
-
-            StartReceiveAndSendThread();
+                OnConnectErrorEvent?.Invoke("连接失败了");
+            }
+            else
+            {
+                StartReceiveAndSendThread();
+                OnConnectSuccessEvent?.Invoke();
+            }
         }
 
         private void BeginSendMessageThread(object obj)
@@ -243,8 +277,12 @@ namespace System.Net.Sockets
                         Debug.Log($"给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(message.mMessageByteArray.mBytes)}");
                         int dataLength = mClientSocket.Send(message.mMessageByteArray.mBytes);
 
-                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(message.mMessageByteArray.mBytes, mClientSocket.RemoteEndPoint); });
+                        OnSendMessageEvent?.Invoke(message);
+
+                        //     Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(message.mMessageByteArray.mBytes, mClientSocket.RemoteEndPoint); });
                     }
+
+                    Thread.Sleep(50);
                 }
             }
             catch (ThreadAbortException e)
@@ -252,6 +290,7 @@ namespace System.Net.Sockets
             } //线程被Abort() 调用时候抛出
             catch (Exception e)
             {
+                OnSocketErrorEvent?.Invoke($"发送消息异常{e}");
                 Debug.LogError($"发送消息异常{e}");
                 throw;
             }
@@ -269,11 +308,6 @@ namespace System.Net.Sockets
                     if (mIsConnected == false || mClientSocket == null)
                         continue;
 
-                    //                if (mClientSocket.Poll(-1, SelectMode.SelectError))
-                    //                {
-                    //                    Debug.LogError($"连接异常");
-                    //                }
-
                     if (mClientSocket.Poll(100, SelectMode.SelectRead))
                     {
                         int receiveDataLength = mClientSocket.Receive(mBuffer, receiveDataOffset, S_BufferSize, SocketFlags.None);
@@ -286,12 +320,13 @@ namespace System.Net.Sockets
                             Debug.LogError($"接受到数据长度为0 断开连接{mClientSocket}");
                             IsDisConnect = true;
                             receiveDataOffset = streamDataLength = 0;
+                            OnDisConnectEvent?.Invoke();
                             //Thread.Sleep(100);
                             continue;
                         }
 
                         if (streamDataLength == 0)
-                            SocketUtility.GetPacketLength(mBuffer, receiveDataOffset); //避免如果上一次有一个半包数据在缓存中解析错误
+                            SocketHead.GetPacketLength(mBuffer, receiveDataOffset); //避免如果上一次有一个半包数据在缓存中解析错误
 
                         if (receiveDataLength + receiveDataOffset < streamDataLength)
                         {
@@ -302,17 +337,22 @@ namespace System.Net.Sockets
                         else
                         {
                             receiveDataOffset = 0; //使得能够从上一次的 mBuffer 起始位置
-                            streamDataLength = SocketUtility.GetPacketLength(mBuffer, receiveDataOffset);
+                            streamDataLength = SocketHead.GetPacketLength(mBuffer, receiveDataOffset);
 
                             while (receiveDataOffset + streamDataLength <= receiveDataLength)
                             {
                                 ByteArray receiveByteArray = ByteArrayPool.S_Instance.GetByteArray();
                                 receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, streamDataLength, streamDataLength, 0);
-                                mSocketMessageQueue.SaveReceiveData(0, receiveByteArray, mClientSocket.RemoteEndPoint, false);
+
+                                int commandId = SocketHead.GetPacketCommandID(receiveByteArray.mBytes,0);
+                                var receiveData = new SocketMessageData(commandId, receiveByteArray, mClientSocket.RemoteEndPoint, false);
+                                mSocketMessageQueue.SaveReceiveData(receiveData);
+
+                                OnReceiveMessageEvent?.Invoke(receiveData);
 
                                 receiveDataOffset += streamDataLength;
-                                streamDataLength = SocketUtility.GetPacketLength(mBuffer, receiveDataOffset);
-                            }//拆包
+                                streamDataLength = SocketHead.GetPacketLength(mBuffer, receiveDataOffset);
+                            } //拆包
 
                             if (receiveDataOffset < receiveDataLength)
                             {
@@ -322,17 +362,9 @@ namespace System.Net.Sockets
                             else
                             {
                                 receiveDataOffset = streamDataLength = 0;
-                            }//所有的数据刚好是整包
-
+                            } //所有的数据刚好是整包
                         } //接收到了几个包的消息(粘包了)
-                        //string message = Encoding.UTF8.GetString(mBuffer, 0, receiveData);
-                        //Debug.Log($"接受来自{mClientSocket.RemoteEndPoint} {message}");
-                        //Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(mBuffer, mClientSocket.RemoteEndPoint); });
                     }
-                    //else
-                    //{
-                    //    Debug.LogError($"Socket 连接异常");
-                    //}
 
                     Thread.Sleep(100);
                 }
@@ -343,6 +375,7 @@ namespace System.Net.Sockets
             catch (Exception e)
             {
                 Debug.LogError($"TCP 接受数据异常{e}");
+                OnSocketErrorEvent?.Invoke($"TCP  接受数据异常{e}");
                 throw;
             }
         }

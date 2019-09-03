@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
@@ -20,7 +21,7 @@ namespace GameFramePro.NetWorkEx
         {
             mProtocolID = protocolId;
             mMessageByteArray = message;
-             mEndPoint = endPoint;
+            mEndPoint = endPoint;
             mIsBrocast = isBrocase;
         }
     }
@@ -43,13 +44,22 @@ namespace GameFramePro.NetWorkEx
 
 
         #region 接收的消息 （缓存+被提取处理）
+
         /// <summary>  /// 缓存接受到的数据  (被Socket 网络接受线程调用)  /// </summary>
         /// <param name="protocalID">协议ID(整型)</param>
         public void SaveReceiveData(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
         {
-            var receiveData = new SocketMessageData(protocolId, message, endPoint, isBrocast);
+            SaveReceiveData(new SocketMessageData(protocolId, message, endPoint, isBrocast));
+        }
+
+        public void SaveReceiveData(SocketMessageData receiveData)
+        {
+            if (receiveData == null)
+                throw new ArgumentNullException($"保存接受到的数据异常，数据为null");
             mAllReceiveDataQueue.Enqueue(receiveData);
         }
+
+
         /// <summary>      /// 主线程中获取缓存的网络数据    /// </summary>
         public SocketMessageData GetSocketReceiveData()
         {
@@ -60,6 +70,7 @@ namespace GameFramePro.NetWorkEx
                 return receiveMessage;
             return null;
         }
+
         public bool GetSocketReceiveData(out SocketMessageData data)
         {
             data = null;
@@ -68,24 +79,27 @@ namespace GameFramePro.NetWorkEx
 
             return mAllReceiveDataQueue.TryDequeue(out data);
         }
+
         #endregion
 
         #region 发送消息
+
         /// <summary>  /// 缓存要发送数据  (被主线程调用)  /// </summary>
         /// <param name="protocalID">协议ID(整型)</param>
         public void SaveSendData(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
         {
-            ByteArray sendMessage = ByteArrayPool.S_Instance.GetByteArray();
+            var sendMessage = ByteArrayPool.S_Instance.GetByteArray();
             System.Array.Copy(message.mBytes, 0, sendMessage.mBytes, SocketHead.S_HeadLength, message.mDataRealLength);
             sendMessage.mDataRealLength = message.mDataRealLength + SocketHead.S_HeadLength;
 
             SocketHead head = new SocketHead(protocolId, message.mDataRealLength, 0);
-            head.GetMessageHead( sendMessage);
+            head.GetMessageHead(sendMessage);
 
             var sendData = new SocketMessageData(protocolId, sendMessage, endPoint, isBrocast);
             mAllSendDataQueue.Enqueue(sendData);
             ByteArrayPool.S_Instance.RecycleByteArray(message); //回收
         }
+
         /// <summary>      ///Socket 发送消息线程  /// </summary>
         public SocketMessageData GetWillSendSocketData()
         {
@@ -107,6 +121,5 @@ namespace GameFramePro.NetWorkEx
         }
 
         #endregion
-
     }
 }

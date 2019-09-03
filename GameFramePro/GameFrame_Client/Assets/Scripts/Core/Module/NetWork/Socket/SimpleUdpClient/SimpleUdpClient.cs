@@ -15,7 +15,7 @@ namespace GameFramePro.NetWorkEx
     /// <summary>/// UDP 客户端/// </summary>
     public class SimpleUdpClient : IDisposable
     {
-        internal SocketMessageQueue mSocketMessageQueue { get; set; }
+        internal SocketMessageQueue mSocketMessageQueue { get; set; }  //消息缓冲管理器
 
         #region 属性
 
@@ -208,6 +208,8 @@ namespace GameFramePro.NetWorkEx
 
                         Debug.Log($"From{mClientSocket.LocalEndPoint} 发送{sendMessageData.mEndPoint} 消息 {sendMessageData.mMessageByteArray.mBytes}");
                     }
+
+                    Thread.Sleep(50);
                 }
                 catch (SocketException e)
                 {
@@ -254,7 +256,7 @@ namespace GameFramePro.NetWorkEx
                             continue;
                         }
 
-                        int packetLength = SocketUtility.GetPacketLength(mBuffer, 0);
+                        int packetLength = SocketHead.GetPacketLength(mBuffer, 0);
                         if (dataLength < packetLength)
                         {
                             Debug.LogError($"还有数据待接收");
