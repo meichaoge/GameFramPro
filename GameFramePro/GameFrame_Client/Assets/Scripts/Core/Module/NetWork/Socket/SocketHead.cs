@@ -10,14 +10,14 @@ namespace GameFramePro.NetWorkEx
     public class SocketHead
     {
         #region 头部信息 如果有新增的也需要修改对应的 S_HeadLength
+        public int mMessageLength;  //消息实际数据长度 （放在首位方便取）
         public int mMessageID;  //消息ID
-        public int mMessageLength;  //消息实际数据长度
         public int mVersion; //版本号
 
         public const int S_HeadLength = 3 * sizeof(int); //头部字节长度
         #endregion
 
-         public SocketHead() : this(0, 0, 0) { }
+        public SocketHead() : this(0, 0, 0) { }
 
 
         public SocketHead(int messageId, int messageLength, int version)
@@ -36,13 +36,14 @@ namespace GameFramePro.NetWorkEx
         }
 
         /// <summary>    /// 附加Socket 头部信息 /// </summary>
-        public void GetMessageHead(ref byte[] sourceData)
+        public void GetMessageHead(ByteArray sourceData)
         {
-            Array.Copy(BitConverter.GetBytes(mMessageID), 0, sourceData, 0, 4);
-            Array.Copy(BitConverter.GetBytes(mMessageLength), 0, sourceData, 4, 4);
-            Array.Copy(BitConverter.GetBytes(mVersion), 0, sourceData, 4 * 2, 4);
+            sourceData.CopyBytes(BitConverter.GetBytes(mMessageLength), 0, 4, sourceData.mDataRealLength+4, 0);
+            sourceData.CopyBytes(BitConverter.GetBytes(mMessageID), 0, 4, sourceData.mDataRealLength + 4,4);
+            sourceData.CopyBytes(BitConverter.GetBytes(mVersion), 0, 4, sourceData.mDataRealLength + 4, 8);
         }
 
 
     }
+
 }

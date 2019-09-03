@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using GameFramePro;
 using GameFramePro.NetWorkEx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -78,7 +79,7 @@ public class TcpClientUIComponent : MonoBehaviour
     private void OnmConectButton()
     {
         IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(mSendIpAddress.text), int.Parse(mSendEndPort.text));
-        mSimpleTcpClient.Connect(endpoint,2000);
+        mSimpleTcpClient.Connect(endpoint, 2000);
         Debug.Log($"客户端尝试连接到{endpoint}");
     }
 
@@ -104,8 +105,10 @@ public class TcpClientUIComponent : MonoBehaviour
             return;
         }
 
+        var sendByteArray = ByteArrayPool.S_Instance.GetByteArray();
+        sendByteArray.EncodingGetBytes(mSendMessage.text, Encoding.UTF8);
 
-        mSimpleTcpClient.Send(Encoding.UTF8.GetBytes(mSendMessage.text));
+        mSimpleTcpClient.Send(sendByteArray);
     }
 
 

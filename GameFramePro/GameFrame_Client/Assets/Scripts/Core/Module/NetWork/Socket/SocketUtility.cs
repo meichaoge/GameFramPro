@@ -86,5 +86,20 @@ namespace GameFramePro.NetWorkEx
             Debug.LogError($"获取本机的IP{isIpv4} 地址失败");
             return IPAddress.None;
         }
+
+
+        /// <summary>     /// 获取数据包的真实长度    /// </summary>  /// <returns></returns>
+        private static byte[] Buffer = new byte[4];
+        public static int GetPacketLength(byte[] buffer, int startIndex)
+        {
+            if (buffer == null || buffer.Length < 4)
+                throw new ArgumentNullException($"数据包长度异常 参数为null  或者小于4");
+            if (startIndex >= buffer.Length)
+                throw new ArgumentOutOfRangeException($"参数 startIndex 的值 超过了数据包的实际长度 ");
+            Array.Copy(buffer, startIndex, Buffer, 0, 4);
+            return BitConverter.ToInt32(Buffer, 0);
+        }
+
+
     }
 }

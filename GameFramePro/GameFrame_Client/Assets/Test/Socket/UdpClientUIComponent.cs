@@ -127,17 +127,20 @@ public class UdpClientUIComponent : MonoBehaviour
         }
 
 
+        ByteArray sendByteArray = ByteArrayPool.S_Instance.GetByteArray();
+        sendByteArray.EncodingGetBytes(mSendMessage.text, Encoding.UTF8);
+
         if (mGroupIpListenner.isOn)
         {
-            mSimpleUdpClient.SendMessage(Encoding.UTF8.GetBytes(mSendMessage.text), mGroupIpInput.text, int.Parse(mSendEndPort.text));
+            mSimpleUdpClient.SendMessage(0, sendByteArray, mGroupIpInput.text, int.Parse(mSendEndPort.text));
         }
         else
         {
             if (mBrocastToggle.isOn == false)
-                mSimpleUdpClient.SendMessage(Encoding.UTF8.GetBytes(mSendMessage.text), mSendIpAddress.text, int.Parse(mSendEndPort.text));
+                mSimpleUdpClient.SendMessage(0, sendByteArray, mSendIpAddress.text, int.Parse(mSendEndPort.text));
             else
             {
-                mSimpleUdpClient.SendBrocast(Encoding.UTF8.GetBytes(mSendMessage.text), int.Parse(mSendEndPort.text));
+                mSimpleUdpClient.SendBrocast(0, sendByteArray, int.Parse(mSendEndPort.text));
                 // mSimpleUdpClient.SendMessage(mSendMessage.text, new IPEndPoint(IPAddress.Broadcast, int.Parse(mSendEndPort.text)));
             }
         }

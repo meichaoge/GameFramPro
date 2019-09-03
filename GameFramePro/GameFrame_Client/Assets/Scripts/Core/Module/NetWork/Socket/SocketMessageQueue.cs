@@ -10,16 +10,17 @@ namespace GameFramePro.NetWorkEx
     public class SocketMessageData
     {
         public int mProtocolID; //协议id
-        public byte[] mMessageData; //消息
+        public ByteArray mMessageByteArray;
+
         public EndPoint mEndPoint;
         public bool mIsBrocast = false; //是否是广播消息
 
 
-        public SocketMessageData(int protocolId, byte[] message, EndPoint endPoint, bool isBrocase)
+        public SocketMessageData(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocase)
         {
             mProtocolID = protocolId;
-            mMessageData = message;
-            mEndPoint = endPoint;
+            mMessageByteArray = message;
+             mEndPoint = endPoint;
             mIsBrocast = isBrocase;
         }
     }
@@ -44,7 +45,7 @@ namespace GameFramePro.NetWorkEx
         #region 接收的消息 （缓存+被提取处理）
         /// <summary>  /// 缓存接受到的数据  (被Socket 网络接受线程调用)  /// </summary>
         /// <param name="protocalID">协议ID(整型)</param>
-        public void SaveReceiveData(int protocolId, byte[] message, EndPoint endPoint, bool isBrocast)
+        public void SaveReceiveData(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
         {
             var receiveData = new SocketMessageData(protocolId, message, endPoint, isBrocast);
             mAllReceiveDataQueue.Enqueue(receiveData);
@@ -72,16 +73,18 @@ namespace GameFramePro.NetWorkEx
         #region 发送消息
         /// <summary>  /// 缓存要发送数据  (被主线程调用)  /// </summary>
         /// <param name="protocalID">协议ID(整型)</param>
-        public void SaveSendData(int protocolId, byte[] message, EndPoint endPoint, bool isBrocast)
+        public void SaveSendData(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
         {
-            byte[] sendMessage = SocketManager.S_Instance.GetBytes();
-            System.Array.Copy(message, 0, sendMessage, SocketHead.S_HeadLength, message.Length);
+            ByteArray sendMessage = ByteArrayPool.S_Instance.GetByteArray();
+            System.Array.Copy(message.mBytes, 0, sendMessage.mBytes, SocketHead.S_HeadLength, message.mDataRealLength);
+            sendMessage.mDataRealLength = message.mDataRealLength + SocketHead.S_HeadLength;
 
-            SocketHead head = new SocketHead(protocolId, message.Length,0);
-            head.GetMessageHead(ref sendMessage);
+            SocketHead head = new SocketHead(protocolId, message.mDataRealLength, 0);
+            head.GetMessageHead( sendMessage);
 
-            var sendData = new SocketMessageData(protocolId, message, endPoint, isBrocast);
+            var sendData = new SocketMessageData(protocolId, sendMessage, endPoint, isBrocast);
             mAllSendDataQueue.Enqueue(sendData);
+            ByteArrayPool.S_Instance.RecycleByteArray(message); //回收
         }
         /// <summary>      ///Socket 发送消息线程  /// </summary>
         public SocketMessageData GetWillSendSocketData()

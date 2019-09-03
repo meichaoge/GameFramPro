@@ -22,7 +22,7 @@ namespace GameFramePro.NetWorkEx
         #endregion
 
 
-        protected byte[] mHeartbeatData;
+        protected ByteArray mHeartbeatData;
 
         protected SimpleTcpClient mTargetTcpClient;
         protected Thread mHeartbeaThread;
@@ -46,7 +46,7 @@ namespace GameFramePro.NetWorkEx
             mTargetTcpClient.OnReceiveMessageEvent += OnReceiveOrSendMessage;
             mTargetTcpClient.OnSendMessageEvent += OnReceiveOrSendMessage;
 
-            mHeartbeatData = BitConverter.GetBytes(1);
+            mHeartbeatData = ByteArrayPool.S_Instance.GetByteArray();
 
             LastNetWorkActivityTime = DateTime.UtcNow;
             mHeartbeaThread = new Thread(OnBeginHeartbeatThread);
@@ -79,7 +79,7 @@ namespace GameFramePro.NetWorkEx
                 {
                     if (mTargetTcpClient.mIsConnected && DateTime.UtcNow - LastNetWorkActivityTime > mHeartbeatTimeSpan)
                     {
-                        mTargetTcpClient.Send(mHeartbeatData);
+                     //   mTargetTcpClient.Send(mHeartbeatData);
                     }
 
                     Thread.Sleep(500);

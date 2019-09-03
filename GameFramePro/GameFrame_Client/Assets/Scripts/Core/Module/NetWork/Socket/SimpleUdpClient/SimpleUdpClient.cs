@@ -104,17 +104,17 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        public void SendBrocast(int messageId, byte[] message, int port)
+        public void SendBrocast(int messageId, ByteArray message, int port)
         {
-            SendMessage(messageId,message, new IPEndPoint(IPAddress.Broadcast, port), true);
+            SendMessage(messageId, message, new IPEndPoint(IPAddress.Broadcast, port), true);
         }
 
-        public void SendMessage(int messageId, byte[] message, string ipAddress, int port)
+        public void SendMessage(int messageId, ByteArray message, string ipAddress, int port)
         {
             SendMessage(messageId, message, new IPEndPoint(IPAddress.Parse(ipAddress), port), false);
         }
 
-        public void SendMessage(int messageId,byte[] message, EndPoint endPoint, bool isBrocast = false)
+        public void SendMessage(int messageId, ByteArray message, EndPoint endPoint, bool isBrocast = false)
         {
             mSocketMessageQueue?.SaveSendData(messageId, message, endPoint, isBrocast);
         }
@@ -190,23 +190,23 @@ namespace GameFramePro.NetWorkEx
 
                             if (isBrocaseEnable == false)
                                 mClientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-                            dataLength = mClientSocket.SendTo(sendMessageData.mMessageData, 0, sendMessageData.mMessageData.Length, SocketFlags.None, sendMessageData.mEndPoint);
+                            dataLength = mClientSocket.SendTo(sendMessageData.mMessageByteArray.mBytes, 0, sendMessageData.mMessageByteArray.mDataRealLength, SocketFlags.None, sendMessageData.mEndPoint);
 
                             if (isBrocaseEnable == false)
                                 mClientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 0);
                         } //广播 发送完成立刻复位
                         else
                         {
-                            dataLength = mClientSocket.SendTo(sendMessageData.mMessageData, 0, sendMessageData.mMessageData.Length, SocketFlags.None, sendMessageData.mEndPoint);
+                            dataLength = mClientSocket.SendTo(sendMessageData.mMessageByteArray.mBytes, 0, sendMessageData.mMessageByteArray.mDataRealLength, SocketFlags.None, sendMessageData.mEndPoint);
                         }
 
 
-                        if (dataLength != sendMessageData.mMessageData.Length)
-                            Debug.LogError($"数据发送异常，实际发送数据量{dataLength} 总共{sendMessageData.mMessageData.Length}");
+                        if (dataLength != sendMessageData.mMessageByteArray.mDataRealLength)
+                            Debug.LogError($"数据发送异常，实际发送数据量{dataLength} 总共{sendMessageData.mMessageByteArray.mDataRealLength}");
 
-                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(sendMessageData.mMessageData, sendMessageData.mEndPoint); });
+                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(sendMessageData.mMessageByteArray.mBytes, sendMessageData.mEndPoint); });
 
-                        Debug.Log($"From{mClientSocket.LocalEndPoint} 发送{sendMessageData.mEndPoint} 消息 {sendMessageData.mMessageData}");
+                        Debug.Log($"From{mClientSocket.LocalEndPoint} 发送{sendMessageData.mEndPoint} 消息 {sendMessageData.mMessageByteArray.mBytes}");
                     }
                 }
                 catch (SocketException e)
@@ -215,11 +215,11 @@ namespace GameFramePro.NetWorkEx
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
-                    Debug.LogError($"指定要发送的Socket {sendMessageData.mMessageData.Length} 数据超过Buffer 长度");
+                    Debug.LogError($"指定要发送的Socket {sendMessageData.mMessageByteArray.mDataRealLength} 数据超过Buffer 长度");
                 }
                 catch (ArgumentNullException e)
                 {
-                    Debug.LogError($"指定要发送的Socket {sendMessageData.mMessageData.Length} 数据为null");
+                    Debug.LogError($"指定要发送的Socket {sendMessageData.mMessageByteArray.mDataRealLength} 数据为null");
                 }
                 catch (Exception e)
                 {
@@ -245,15 +245,27 @@ namespace GameFramePro.NetWorkEx
                     {
                         EndPoint endPoint = new IPEndPoint(mClientSocket.AddressFamily == AddressFamily.InterNetwork ? IPAddress.Any : IPAddress.IPv6Any, 0);
                         int dataLength = mClientSocket.ReceiveFrom(mBuffer, 0, S_BufferSize, SocketFlags.None, ref endPoint); //子线程被阻塞在这里 直到有数据到达
-                        if (dataLength > 0)
+                        if (dataLength == 0) continue;
+
+
+                        if (dataLength < SocketHead.S_HeadLength)
                         {
-                            ////   string message = Encoding.UTF8.GetString(mBuffer, 0, dataLength);
-                            //Debug.Log($"{mClientSocket.EnableBroadcast} 接受到来自{endPoint} 的{dataLength} 长度消息{mBuffer}还有{mClientSocket.Available} 的数据没有处理");
-                            //Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(mBuffer, endPoint); });
-                            var receiveData = new byte[dataLength];
-                            System.Array.Copy(mBuffer, 0, receiveData, 0, dataLength);
-                            mSocketMessageQueue.SaveReceiveData(0, receiveData, endPoint, false);
+                            Debug.LogError($"接受到一个数据包长度小于头部长度{dataLength} <{SocketHead.S_HeadLength}");
+                            continue;
                         }
+
+                        int packetLength = SocketUtility.GetPacketLength(mBuffer, 0);
+                        if (dataLength < packetLength)
+                        {
+                            Debug.LogError($"还有数据待接收");
+                            continue;
+                        }
+
+
+                        var receiveData = ByteArrayPool.S_Instance.GetByteArray();
+                        receiveData.CopyBytes(mBuffer, 0, packetLength, packetLength, 0);
+
+                        mSocketMessageQueue.SaveReceiveData(0, receiveData, endPoint, false);
                     }
                 }
                 catch (Exception e)

@@ -179,7 +179,7 @@ namespace System.Net.Sockets
             return null;
         }
 
-        public void Send(byte[] data)
+        public void Send(ByteArray data)
         {
             if (mIsConnected == false)
             {
@@ -240,10 +240,10 @@ namespace System.Net.Sockets
 
                     if (mSocketMessageQueue.GetWillSendSocketData(out var message))
                     {
-                        Debug.Log($"给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(message.mMessageData)}");
-                        int dataLength = mClientSocket.Send(message.mMessageData);
+                        Debug.Log($"给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(message.mMessageByteArray.mBytes)}");
+                        int dataLength = mClientSocket.Send(message.mMessageByteArray.mBytes);
 
-                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(message.mMessageData, mClientSocket.RemoteEndPoint); });
+                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(message.mMessageByteArray.mBytes, mClientSocket.RemoteEndPoint); });
                     }
                 }
             }
@@ -262,6 +262,8 @@ namespace System.Net.Sockets
         {
             try
             {
+                int receiveDataOffset = 0; // mBuffer 中需要解析或者保存的数据偏移
+                int streamDataLength = 0; //需要解析的包长度
                 while (true)
                 {
                     if (mIsConnected == false || mClientSocket == null)
@@ -274,23 +276,55 @@ namespace System.Net.Sockets
 
                     if (mClientSocket.Poll(100, SelectMode.SelectRead))
                     {
-                        int receiveData = mClientSocket.Receive(mBuffer, 0, S_BufferSize, SocketFlags.None);
+                        int receiveDataLength = mClientSocket.Receive(mBuffer, receiveDataOffset, S_BufferSize, SocketFlags.None);
 
-                        if (receiveData > S_BufferSize)
-                            Debug.LogError($"接受的数据太多{receiveData} 超过{S_BufferSize}");
+                        //if (receiveDataLength > S_BufferSize)
+                        //    Debug.LogError($"接受的数据太多{receiveDataLength} 超过{S_BufferSize}");
 
-                        if (receiveData == 0)
+                        if (receiveDataLength == 0)
                         {
                             Debug.LogError($"接受到数据长度为0 断开连接{mClientSocket}");
                             IsDisConnect = true;
+                            receiveDataOffset = streamDataLength = 0;
                             //Thread.Sleep(100);
                             continue;
                         }
 
-                        var receiveByteData = new byte[receiveData];
+                        if (streamDataLength == 0)
+                            SocketUtility.GetPacketLength(mBuffer, receiveDataOffset); //避免如果上一次有一个半包数据在缓存中解析错误
 
-                        mSocketMessageQueue.SaveReceiveData(0, receiveByteData, mClientSocket.RemoteEndPoint,false);
+                        if (receiveDataLength + receiveDataOffset < streamDataLength)
+                        {
+                            Debug.LogInfor($"数据没有接受完 继续等待接受{receiveDataLength}-- {receiveDataOffset}--- {streamDataLength}");
+                            receiveDataOffset += receiveDataLength;
+                            continue;
+                        } //接收到了一部分数据(分包了)
+                        else
+                        {
+                            receiveDataOffset = 0; //使得能够从上一次的 mBuffer 起始位置
+                            streamDataLength = SocketUtility.GetPacketLength(mBuffer, receiveDataOffset);
 
+                            while (receiveDataOffset + streamDataLength <= receiveDataLength)
+                            {
+                                ByteArray receiveByteArray = ByteArrayPool.S_Instance.GetByteArray();
+                                receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, streamDataLength, streamDataLength, 0);
+                                mSocketMessageQueue.SaveReceiveData(0, receiveByteArray, mClientSocket.RemoteEndPoint, false);
+
+                                receiveDataOffset += streamDataLength;
+                                streamDataLength = SocketUtility.GetPacketLength(mBuffer, receiveDataOffset);
+                            }//拆包
+
+                            if (receiveDataOffset < receiveDataLength)
+                            {
+                                System.Array.Copy(mBuffer, receiveDataOffset, mBuffer, 0, receiveDataLength - receiveDataOffset);
+                                receiveDataOffset = receiveDataLength - receiveDataOffset;
+                            } //说明mBuffer 后面还有一小部分下一个包的数据需要移动到buffer 开始位置
+                            else
+                            {
+                                receiveDataOffset = streamDataLength = 0;
+                            }//所有的数据刚好是整包
+
+                        } //接收到了几个包的消息(粘包了)
                         //string message = Encoding.UTF8.GetString(mBuffer, 0, receiveData);
                         //Debug.Log($"接受来自{mClientSocket.RemoteEndPoint} {message}");
                         //Loom.S_Instance.QueueOnMainThread(() => { OnReceiveMessageEvent?.Invoke(mBuffer, mClientSocket.RemoteEndPoint); });
