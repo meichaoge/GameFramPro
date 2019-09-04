@@ -10,7 +10,7 @@ using System.Threading;
 namespace GameFramePro.NetWorkEx
 {
     /// <summary>/// 心跳包管理器/// </summary>/// 一定时间内没有接受和发送数据就会发送消息
-    internal class HeartbeatManager : Single<HeartbeatManager>
+    internal class HeartbeatManager
     {
         #region 公开属性
 
@@ -23,12 +23,12 @@ namespace GameFramePro.NetWorkEx
 
         protected ByteArray mHeartbeatData;
 
-        protected SimpleTcpEventCallback MTargetTcpEventCallback;
+        protected BaseTcpClient MTargetTcpEventCallback;
         protected Thread mHeartbeaThread;
 
         #region 对外接口
 
-        public void StartHeartbeat(SimpleTcpEventCallback tcpEventCallback, TimeSpan heartbeat)
+        public void StartHeartbeat(BaseTcpClient tcpEventCallback, TimeSpan heartbeat)
         {
             if (tcpEventCallback == null)
                 throw new NullReferenceException($"StartHeartbeat 失败，参数tcp 客户端为null");
