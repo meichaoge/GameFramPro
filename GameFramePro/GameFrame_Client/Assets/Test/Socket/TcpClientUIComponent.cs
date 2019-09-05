@@ -29,7 +29,7 @@ public class TcpClientUIComponent : MonoBehaviour
     public Button mConectButton;
 
     private bool mIsStartClient = false;
-    private SimpleTcpEventCallback _mSimpleTcpEventCallback;
+    private BaseTcpClient mBaseTcpClient;
 
     // Start is called before the first frame update
     void Start()
@@ -48,7 +48,7 @@ public class TcpClientUIComponent : MonoBehaviour
     private void OnDisable()
     {
         if (mIsStartClient == false) return;
-        _mSimpleTcpEventCallback?.StopClient();
+        mBaseTcpClient?.StopClient();
         Debug.Log("关闭客户端");
     }
 
@@ -68,18 +68,17 @@ public class TcpClientUIComponent : MonoBehaviour
         }
 
         mIsStartClient = true;
-        _mSimpleTcpEventCallback = new SimpleTcpEventCallback(AddressFamily.InterNetwork);
+        mBaseTcpClient = new BaseTcpClient(AddressFamily.InterNetwork);
 //        mSimpleTcpClient.OnReceiveMessageEvent += ReceiveMessage;
 //        mSimpleTcpClient.OnSendMessageEvent += SendMessage;
 
         Debug.Log($"客户端启动 ");
-
     }
 
     private void OnmConectButton()
     {
         IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(mSendIpAddress.text), int.Parse(mSendEndPort.text));
-        _mSimpleTcpEventCallback.Connect(endpoint, 2000);
+        mBaseTcpClient.Connect(endpoint, 2000);
         Debug.Log($"客户端尝试连接到{endpoint}");
     }
 
@@ -105,10 +104,10 @@ public class TcpClientUIComponent : MonoBehaviour
             return;
         }
 
-        var sendByteArray = ByteArrayPool.S_Instance.GetByteArray();
+        var sendByteArray = ByteArrayPool.GetByteArray();
         sendByteArray.EncodingGetBytes(mSendMessage.text, Encoding.UTF8);
 
-        _mSimpleTcpEventCallback.Send(0, sendByteArray);
+        mBaseTcpClient.Send(0, sendByteArray);
     }
 
 

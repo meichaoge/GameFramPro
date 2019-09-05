@@ -37,7 +37,7 @@ namespace GameFramePro
             if (task == null) return null;
 
             SuperCoroutine coroutine = new SuperCoroutine(task);
-            AsyncTracker.S_Instance.TrackAsyncTask(coroutine);
+            AsyncTracker.TrackAsyncTask(coroutine);
 #if UNITY_EDITOR
             coroutine.CompleteSuperCoroutineEvent += OnCompleteCoroutineEx;
             RegisterCoroutine(coroutine);
@@ -53,7 +53,7 @@ namespace GameFramePro
             UnRegisterCoroutine(coroutine);
             coroutine.CompleteSuperCoroutineEvent -= OnCompleteCoroutineEx;
 #endif
-            AsyncTracker.S_Instance.UnTrackAsyncTask(coroutine);
+            AsyncTracker.UnTrackAsyncTask(coroutine);
             coroutine.StopCoroutine();
             coroutine = null; //注意这里 多加了一个=null 来清理资源
         }
@@ -89,6 +89,11 @@ namespace GameFramePro
                 throw new UnityException("Invoke repeat rate has to be larger than 0.00001F)");
 
             return StartCoroutineEx(DelayDoActionRepeat(time, repeatRate, action));
+        }
+
+        public static void CancelInvoke(SuperCoroutine superCoroutine)
+        {
+            superCoroutine?.StopCoroutine();
         }
 
         #endregion

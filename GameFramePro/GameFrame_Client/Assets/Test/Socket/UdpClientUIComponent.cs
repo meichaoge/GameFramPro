@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using GameFramePro;
 using GameFramePro.NetWorkEx;
@@ -31,7 +32,7 @@ public class UdpClientUIComponent : MonoBehaviour
 
 
     private bool mIsStartClient = false;
-    private SimpleUdpClient mSimpleUdpClient;
+    private BaseUdpClient mBaseUdpClient;
 
     // Start is called before the first frame update
     void Start()
@@ -53,7 +54,7 @@ public class UdpClientUIComponent : MonoBehaviour
     private void OnDisable()
     {
         if (mIsStartClient == false) return;
-        mSimpleUdpClient.StopClient();
+        mBaseUdpClient.StopClient();
         Debug.Log("关闭客户端");
     }
 
@@ -61,7 +62,7 @@ public class UdpClientUIComponent : MonoBehaviour
     private void OnBrocastStateChange(bool isOn)
     {
         if (mIsStartClient == false) return;
-        mSimpleUdpClient.SetBrocastEnableState(isOn);
+        mBaseUdpClient.SetBrocastEnableState(isOn);
     }
 
     private void OnStartClientButtonClick()
@@ -79,13 +80,13 @@ public class UdpClientUIComponent : MonoBehaviour
         }
 
         mIsStartClient = true;
-        mSimpleUdpClient = new SimpleUdpClient(int.Parse(mListennerPort.text));
-        mSimpleUdpClient.OnReceiveMessageEvent += ReceiveMessage;
-        mSimpleUdpClient.OnSendMessageEvent += SendMessage;
+        mBaseUdpClient = new BaseUdpClient(AddressFamily.InterNetwork);//int.Parse(mListennerPort.text));
+//        mBaseUdpClient.OnReceiveMessageEvent += ReceiveMessage;
+//        mBaseUdpClient.OnSendMessageEvent += SendMessage;
 
 
-        mSimpleUdpClient.StartClient();
-        mBrocastToggle.isOn = mSimpleUdpClient.mIsEnableBrocast;
+       // mBaseUdpClient.StartClient();
+        mBrocastToggle.isOn = mBaseUdpClient.mClientSocket.EnableBroadcast;
         Debug.Log("客户端启动");
     }
 
@@ -100,13 +101,13 @@ public class UdpClientUIComponent : MonoBehaviour
     {
         if (isOn)
         {
-            mSimpleUdpClient.JoinGroup(IPAddress.Parse(mGroupIpInput.text));
+            mBaseUdpClient.JoinGroup(IPAddress.Parse(mGroupIpInput.text));
 
             ReceiveMessage(Encoding.UTF8.GetBytes($"加入组播{IPAddress.Parse(mGroupIpInput.text)}"), new IPEndPoint(IPAddress.Parse(mGroupIpInput.text), 0));
         }
         else
         {
-            mSimpleUdpClient.LeaveGroup(IPAddress.Parse(mGroupIpInput.text));
+            mBaseUdpClient.LeaveGroup(IPAddress.Parse(mGroupIpInput.text));
             ReceiveMessage(Encoding.UTF8.GetBytes($"离开组播{IPAddress.Parse(mGroupIpInput.text)}"), new IPEndPoint(IPAddress.Parse(mGroupIpInput.text), 0));
         }
     }
@@ -127,20 +128,20 @@ public class UdpClientUIComponent : MonoBehaviour
         }
 
 
-        ByteArray sendByteArray = ByteArrayPool.S_Instance.GetByteArray();
+        ByteArray sendByteArray = ByteArrayPool.GetByteArray();
         sendByteArray.EncodingGetBytes(mSendMessage.text, Encoding.UTF8);
 
         if (mGroupIpListenner.isOn)
         {
-            mSimpleUdpClient.SendMessage(0, sendByteArray, mGroupIpInput.text, int.Parse(mSendEndPort.text));
+            mBaseUdpClient.SendMessage(0, sendByteArray, mGroupIpInput.text, int.Parse(mSendEndPort.text));
         }
         else
         {
             if (mBrocastToggle.isOn == false)
-                mSimpleUdpClient.SendMessage(0, sendByteArray, mSendIpAddress.text, int.Parse(mSendEndPort.text));
+                mBaseUdpClient.SendMessage(0, sendByteArray, mSendIpAddress.text, int.Parse(mSendEndPort.text));
             else
             {
-                mSimpleUdpClient.SendBrocast(0, sendByteArray, int.Parse(mSendEndPort.text));
+                mBaseUdpClient.SendBrocast(0, sendByteArray, int.Parse(mSendEndPort.text));
                 // mSimpleUdpClient.SendMessage(mSendMessage.text, new IPEndPoint(IPAddress.Broadcast, int.Parse(mSendEndPort.text)));
             }
         }

@@ -20,7 +20,8 @@ namespace GameFramePro
 
     /// <summary>/// 扩展 Unity 自带的 Coroutine 支持多线程的异步协程和主线程子线程的调转/// </summary>
     /// 注意嵌套的 CoroutineEx 无法通过外层的CoroutineEx 结束，与MonoBehavior 中的协程一样
-    ///  参考插件 Thread Ninja 
+    ///  参考插件 Thread Ninja
+    //**************目前发现不能在子线程中创建启动这个协程对象*******
     public class SuperCoroutine : IEnumerator
     {
         /// <summary>/// 标示 SuperCoroutine 内部的 的状态/// </summary>

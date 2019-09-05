@@ -1,23 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Concurrent;
 
 
 namespace GameFramePro.AnalysisEx
 {
     /// <summary>/// 追踪异步&协程任务/// </summary>
-    public class AsyncTracker : Single<AsyncTracker>
+    public static class AsyncTracker
     {
-        private Dictionary<int, SuperCoroutine> mAllAsyncTaskRecord = new Dictionary<int, SuperCoroutine>(); //所有的异步任务
+        private static ConcurrentDictionary<int, SuperCoroutine> s_AllAsyncTaskRecord = new ConcurrentDictionary<int, SuperCoroutine>(); //所有的异步任务
 
 
         /// <summary>/// 跟踪记录异步信息/// </summary>
-        public bool TrackAsyncTask(SuperCoroutine task)
+        public static bool TrackAsyncTask(SuperCoroutine task)
         {
-            if (AppSetting.S_IsTrackAsyncTask == false || Application.isPlaying)
+            if (AppSetting.S_IsTrackAsyncTask == false)
                 return false;
 
-            if (mAllAsyncTaskRecord.TryGetValue(task.CoroutineID, out var infor))
+            if (s_AllAsyncTaskRecord.TryGetValue(task.CoroutineID, out var infor))
             {
                 if (object.ReferenceEquals(infor, task))
                 {
@@ -30,23 +31,23 @@ namespace GameFramePro.AnalysisEx
                 return false;
             }
 
-            mAllAsyncTaskRecord[task.CoroutineID] = task;
+            s_AllAsyncTaskRecord[task.CoroutineID] = task;
             Debug.Log($"TrackAsyncTask success! CoroutineID={task.CoroutineID}");
             return true;
         }
 
         /// <summary>/// 取消 跟踪记录异步信息/// </summary>
-        public bool UnTrackAsyncTask(SuperCoroutine task)
+        public static bool UnTrackAsyncTask(SuperCoroutine task)
         {
-            if (AppSetting.S_IsTrackAsyncTask == false || Application.isPlaying)
+            if (AppSetting.S_IsTrackAsyncTask == false)
                 return false;
 
-            if (mAllAsyncTaskRecord.TryGetValue(task.CoroutineID, out var infor))
+            if (s_AllAsyncTaskRecord.TryGetValue(task.CoroutineID, out var infor))
             {
                 if (object.ReferenceEquals(infor, task))
                 {
                     Debug.Log($"UnTrackAsyncTask success! CoroutineID={task.CoroutineID}");
-                    mAllAsyncTaskRecord.Remove(task.CoroutineID);
+                    s_AllAsyncTaskRecord.TryRemove(task.CoroutineID, out var taskRecord);
                     return true;
                 }
 
@@ -54,7 +55,7 @@ namespace GameFramePro.AnalysisEx
                 return false;
             }
 
-            mAllAsyncTaskRecord[task.CoroutineID] = task;
+            s_AllAsyncTaskRecord[task.CoroutineID] = task;
             Debug.LogError($"UnTrackAsyncTask Fail, no Track Async Task of CoroutineID={task.CoroutineID} ");
             return false;
         }

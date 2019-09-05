@@ -15,7 +15,7 @@ namespace GameFramePro
         private HashSet<IUpdateTick> mAllDownloadeManagers = new HashSet<IUpdateTick>(); //所有的下载器
 
 
-        #region IUpdateTick 接口
+        #region IUpdateCountTick 接口
 
         protected int curUpdateCount = 0; //当前的帧基数
         public uint TickPerUpdateCount { get; protected set; } = 5;
