@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -45,6 +46,17 @@ public class TcpClientUIComponent : MonoBehaviour
         mSendMessageButton.onClick.AddListener(OnSendMessageButtonClick);
     }
 
+    public static byte[] intToBytes(int value)
+    {
+        byte[] src = new byte[4];
+        src[3] = (byte) ((value >> 24) & 0xFF);
+        src[2] = (byte) ((value >> 16) & 0xFF);
+        src[1] = (byte) ((value >> 8) & 0xFF);
+        src[0] = (byte) (value & 0xFF);
+
+        return src;
+    }
+
     private void OnDisable()
     {
         if (mIsStartClient == false) return;
@@ -68,7 +80,7 @@ public class TcpClientUIComponent : MonoBehaviour
         }
 
         mIsStartClient = true;
-        mBaseTcpClient = new BaseTcpClient(AddressFamily.InterNetwork);
+        mBaseTcpClient = new BaseTcpClient("测试Tcp");
 //        mSimpleTcpClient.OnReceiveMessageEvent += ReceiveMessage;
 //        mSimpleTcpClient.OnSendMessageEvent += SendMessage;
 
@@ -104,10 +116,11 @@ public class TcpClientUIComponent : MonoBehaviour
             return;
         }
 
-        var sendByteArray = ByteArrayPool.GetByteArray();
+        var sendByteArray = ByteArray.GetByteArray();
         sendByteArray.EncodingGetBytes(mSendMessage.text, Encoding.UTF8);
 
         mBaseTcpClient.Send(0, sendByteArray);
+        ByteArray.RecycleByteArray(sendByteArray);
     }
 
 

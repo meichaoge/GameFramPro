@@ -80,12 +80,12 @@ public class UdpClientUIComponent : MonoBehaviour
         }
 
         mIsStartClient = true;
-        mBaseUdpClient = new BaseUdpClient(AddressFamily.InterNetwork);//int.Parse(mListennerPort.text));
+        mBaseUdpClient = new BaseUdpClient(AddressFamily.InterNetwork, "测试Udp"); //int.Parse(mListennerPort.text));
 //        mBaseUdpClient.OnReceiveMessageEvent += ReceiveMessage;
 //        mBaseUdpClient.OnSendMessageEvent += SendMessage;
 
 
-       // mBaseUdpClient.StartClient();
+        // mBaseUdpClient.StartClient();
         mBrocastToggle.isOn = mBaseUdpClient.mClientSocket.EnableBroadcast;
         Debug.Log("客户端启动");
     }
@@ -128,7 +128,7 @@ public class UdpClientUIComponent : MonoBehaviour
         }
 
 
-        ByteArray sendByteArray = ByteArrayPool.GetByteArray();
+        ByteArray sendByteArray = ByteArray.GetByteArray();
         sendByteArray.EncodingGetBytes(mSendMessage.text, Encoding.UTF8);
 
         if (mGroupIpListenner.isOn)
@@ -145,6 +145,8 @@ public class UdpClientUIComponent : MonoBehaviour
                 // mSimpleUdpClient.SendMessage(mSendMessage.text, new IPEndPoint(IPAddress.Broadcast, int.Parse(mSendEndPort.text)));
             }
         }
+
+        ByteArray.RecycleByteArray(sendByteArray);
     }
 
 

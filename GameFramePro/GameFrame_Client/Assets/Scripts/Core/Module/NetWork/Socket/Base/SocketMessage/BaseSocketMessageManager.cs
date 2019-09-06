@@ -63,19 +63,14 @@ namespace GameFramePro.NetWorkEx
         /// <summary>  /// 缓存要发送数据  (被主线程调用)  /// </summary><param name="protocalID">协议ID(整型)</param>
         public void CacheSocketSendData(BaseSocketSendMessage socketSendMessage)
         {
-//            var sendMessage = ByteArrayPool.GetByteArray();
-//            System.Array.Copy(message.mBytes, 0, sendMessage.mBytes, SocketHead.S_HeadLength, message.mDataRealLength);
-//            sendMessage.mDataRealLength = message.mDataRealLength + SocketHead.S_HeadLength;
-//
-//            SocketHead head = SocketHead.GetSocketHead(protocolId, message.mDataRealLength, 0);
-//            head.AppendMessageHead(sendMessage);
-//
-//            var sendData = GetSocketMessageData(protocolId, message, endPoint, isBrocast);
-//            mAllSendMessageQueue.Enqueue(sendData);
-//
-//            SocketHead.RecycleSocketHead(head);
             if (socketSendMessage == null)
                 throw new ArgumentNullException($"缓存要发送的数据异常，数据为null");
+
+            SocketHead head = SocketHead.GetSocketHead(socketSendMessage.mProtocolID, socketSendMessage.mSendMessageByteArray.mDataRealLength, 0);
+            head.AppendMessageHead(socketSendMessage.mSendMessageByteArray); //增加头部信息
+            SocketHead.RecycleSocketHead(head);
+
+
             mAllSendMessageQueue.Enqueue(socketSendMessage);
         }
 

@@ -31,7 +31,8 @@ namespace GameFramePro.NetWorkEx
                 return new SocketHead(commandId, messageLength, version);
             if (mSocketHeadQueue.TryDequeue(out var socketHead))
             {
-                socketHead.ResetSocketHead();
+              //  socketHead.ResetSocketHead();
+                socketHead.InitialSocketHead(commandId, messageLength, version);
                 return socketHead;
             }
 
@@ -53,6 +54,12 @@ namespace GameFramePro.NetWorkEx
 
         private SocketHead(int protocolId, int messageLength, int version)
         {
+            InitialSocketHead(protocolId, messageLength, version);
+
+        }
+
+        public void InitialSocketHead(int protocolId, int messageLength, int version)
+        {
             mProtocolId = protocolId;
             mMessageLength = messageLength;
             mVersion = version;
@@ -63,11 +70,10 @@ namespace GameFramePro.NetWorkEx
 
         #region 静态辅助接口
 
-        private static byte[] LengthBuffer = new byte[4];
-
         /// <summary>     /// 获取数据包的真实长度    /// </summary> 
         public static int GetPacketLength(byte[] buffer, int startIndex)
         {
+            byte[] LengthBuffer = new byte[4];
             if (buffer == null || buffer.Length < 4)
                 throw new ArgumentNullException($"数据包长度异常 参数为null  或者小于4");
             if (startIndex >= buffer.Length)
@@ -77,11 +83,11 @@ namespace GameFramePro.NetWorkEx
         }
 
 
-        private static byte[] CommandIDBuffer = new byte[4];
 
         /// <summary>     /// 获取数据包的协议id    /// </summary> 
         public static int GetPacketProtocolID(byte[] buffer, int startIndex)
         {
+            byte[] CommandIDBuffer = new byte[4];
             if (buffer == null || buffer.Length < 4)
                 throw new ArgumentNullException($"数据协议id异常 参数为null  或者小于4");
             if (startIndex >= buffer.Length)
@@ -104,9 +110,29 @@ namespace GameFramePro.NetWorkEx
         /// <summary>    /// 附加Socket 头部信息 /// </summary>
         public void AppendMessageHead(ByteArray sourceData)
         {
-            sourceData.CopyBytes(BitConverter.GetBytes(mMessageLength), 0, 4, sourceData.mDataRealLength + 4, 0);
-            sourceData.CopyBytes(BitConverter.GetBytes(mProtocolId), 0, 4, sourceData.mDataRealLength + 4, 4);
-            sourceData.CopyBytes(BitConverter.GetBytes(mVersion), 0, 4, sourceData.mDataRealLength + 4, 8);
+            if (sourceData.mDataRealLength > ByteArray.S_ByteLength - S_HeadLength)
+            {
+                Debug.LogError($"数据太多了无法在一个包发送{sourceData.mDataRealLength}");
+                return;
+            }
+
+            ByteArray temp = ByteArray.GetByteArray();
+            temp.mDataRealLength = mMessageLength + S_HeadLength;
+
+            System.Array.Copy(sourceData.mBytes, 0, temp.mBytes, S_HeadLength, sourceData.mDataRealLength);
+
+            Debug.Log($"源{sourceData}");
+
+            System.Array.Copy(BitConverter.GetBytes(mMessageLength + S_HeadLength), 0, temp.mBytes, 0, 4);
+            Debug.Log($"源+ 长度{mMessageLength + S_HeadLength}= {sourceData}");
+            System.Array.Copy(BitConverter.GetBytes(mProtocolId), 0, temp.mBytes, 4, 4);
+            Debug.Log($"源+ 协议id{mProtocolId} {sourceData}");
+            System.Array.Copy(BitConverter.GetBytes(mVersion), 0, temp.mBytes, 8, 4);
+            Debug.Log($"源+版本号 {mVersion} {sourceData}");
+
+
+            ByteArray.RecycleByteArray(sourceData);
+            sourceData = temp;
         }
 
         #endregion

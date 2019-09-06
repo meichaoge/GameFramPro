@@ -8,7 +8,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using GameFramePro;
-using GameFramePro.NetWorkEx;
 
 
 namespace GameFramePro.NetWorkEx
@@ -21,6 +20,8 @@ namespace GameFramePro.NetWorkEx
         protected ManualResetEvent mTimeOutResetEvent = new ManualResetEvent(false);
         public IPEndPoint mTargetEndPoint { get; protected set; } //连接的远程端口
 
+
+        public bool mIsTcpHeartbeatEnable { get; } //标识是否启用tcp 心跳包
         internal TcpHeartbeatManager mTcpHeartbeatManager { get; set; } //TCP心跳管理器
 
         #endregion
@@ -39,15 +40,18 @@ namespace GameFramePro.NetWorkEx
 
         #region 构造函数
 
-        public BaseTcpClient(AddressFamily addressFamily) : base(addressFamily, SocketType.Stream, ProtocolType.Tcp)
+        public BaseTcpClient(string clientName, AddressFamily addressFamily = AddressFamily.InterNetwork, bool isHeatbeatEnable = true) : base(clientName, addressFamily, SocketType.Stream, ProtocolType.Tcp)
         {
             mSocketClientType = SocketClientUsage.TcpClient;
+            mIsTcpHeartbeatEnable = isHeatbeatEnable;
+
             try
             {
                 mClientSocket = new Socket(addressFamily, mSocketType, mProtocolType);
                 mClientSocket.Bind(new IPEndPoint(mAddressFamily == AddressFamily.InterNetwork ? IPAddress.Any : IPAddress.IPv6Any, 0));
                 mIsSocketInitialed = true;
-                mTcpHeartbeatManager = new TcpHeartbeatManager();
+                if (mIsTcpHeartbeatEnable)
+                    mTcpHeartbeatManager = new TcpHeartbeatManager();
             }
             catch (Exception e)
             {
@@ -157,7 +161,6 @@ namespace GameFramePro.NetWorkEx
             catch (Exception e)
             {
                 OnConnectError($"TCP {remoteEP} 连接失败{e}");
-                throw;
             }
 
             return null;
@@ -172,7 +175,10 @@ namespace GameFramePro.NetWorkEx
                 return;
             }
 
-            var sendMessage = BaseSocketSendMessage.GetSocketSendMessageData(protocolId, data, mClientSocket.RemoteEndPoint, false);
+            ByteArray sendByteArray = ByteArray.GetByteArray();
+            sendByteArray.CloneFromByteArray(data); //克隆数据 避免污染源数据
+            
+            var sendMessage = BaseSocketSendMessage.GetSocketSendMessageData(protocolId, sendByteArray, mClientSocket.RemoteEndPoint, false);
             mBaseSocketMessageManager.CacheSocketSendData(sendMessage);
         }
 
@@ -200,8 +206,9 @@ namespace GameFramePro.NetWorkEx
 
                     if (mBaseSocketMessageManager.GetWillSendSocketData(out var message))
                     {
-                        int dataLength = mClientSocket.Send(message.mSendMessageByteArray.mBytes);
+                        int dataLength = mClientSocket.Send(message.mSendMessageByteArray.mBytes, 0, message.mSendMessageByteArray.mDataRealLength, SocketFlags.None);
 
+                        Debug.Log($"要发送的数据长度{message.mSendMessageByteArray.mDataRealLength} 实际发送{dataLength}  byte={message.mSendMessageByteArray}");
                         OnSendMessage(message);
                         BaseSocketSendMessage.RecycleSocketMessageData(message); //回收数据
                     }
@@ -244,7 +251,7 @@ namespace GameFramePro.NetWorkEx
                             IsDisConnect = true;
                             receiveDataOffset = streamDataLength = 0;
                             OnDisConnect($"接受到数据长度为0 断开连接{mClientSocket}");
-                            Thread.Sleep(50);
+                            Thread.Sleep(S_ReceiveMessageThreadInterval);
                             continue;
                         }
 
@@ -264,7 +271,7 @@ namespace GameFramePro.NetWorkEx
 
                         while (receiveDataOffset + streamDataLength <= receiveDataLength)
                         {
-                            ByteArray receiveByteArray = ByteArrayPool.GetByteArray();
+                            ByteArray receiveByteArray = ByteArray.GetByteArray();
                             receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, streamDataLength, streamDataLength, 0);
 
                             int protocolId = SocketHead.GetPacketProtocolID(receiveByteArray.mBytes, 0);
@@ -304,7 +311,8 @@ namespace GameFramePro.NetWorkEx
 
         public override void StopClient()
         {
-            mTcpHeartbeatManager?.StopHearbeat();
+            if (mIsTcpHeartbeatEnable)
+                mTcpHeartbeatManager?.StopHearbeat();
             base.StopClient();
         }
 

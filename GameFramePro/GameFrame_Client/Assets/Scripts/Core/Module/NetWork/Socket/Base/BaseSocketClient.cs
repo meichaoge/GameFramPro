@@ -28,6 +28,7 @@ namespace GameFramePro.NetWorkEx
         public AddressFamily mAddressFamily { get; protected set; }
         public SocketType mSocketType { get; protected set; }
         public ProtocolType mProtocolType { get; protected set; }
+        
 
         #endregion
 
@@ -76,6 +77,8 @@ namespace GameFramePro.NetWorkEx
 
         #region 属性
 
+        public string mClientName { get;  } //用于标识是哪个Sicket 客户端
+
         internal BaseSocketMessageManager mBaseSocketMessageManager { get; set; } //消息缓冲管理
 
         public int mMaxConnectTime = 2000; //连接超时 毫秒
@@ -114,8 +117,9 @@ namespace GameFramePro.NetWorkEx
 
         #region 构造函数
 
-        public BaseSocketClient(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
+        public BaseSocketClient(string clientName,AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
         {
+            mClientName = clientName;
             mAddressFamily = addressFamily;
             mSocketType = socketType;
             mProtocolType = protocolType;

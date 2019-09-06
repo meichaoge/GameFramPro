@@ -11,6 +11,8 @@ namespace GameFramePro.NetWorkEx
     /// <summary>/// 提供Socket 网络通信常用的接口/// </summary>
     public static class SocketUtility
     {
+        #region 端口和ip 信息
+
         /// <summary>/// 获取所有正在被占用的端口信息/// </summary>
         public static Dictionary<int, EndPoint> GetAllUsingPort()
         {
@@ -86,5 +88,24 @@ namespace GameFramePro.NetWorkEx
             Debug.LogError($"获取本机的IP{isIpv4} 地址失败");
             return IPAddress.None;
         }
+
+        #endregion
+
+
+        #region 其他类型转成byte 数组
+
+//        public static byte[] intToBytes(int value)
+//        {
+//            byte[] src = new byte[4];
+//            src[3] = (byte) ((value >> 24) & 0xFF);
+//            src[2] = (byte) ((value >> 16) & 0xFF);
+//            src[1] = (byte) ((value >> 8) & 0xFF);
+//            src[0] = (byte) (value & 0xFF);
+//
+//            return src;
+//        }
+
+        #endregion
+        
     }
 }

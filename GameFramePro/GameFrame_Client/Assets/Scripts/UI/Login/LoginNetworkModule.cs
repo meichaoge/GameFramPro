@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro.NetWorkEx;
 using GameFramePro.Protocol.LoginModule;
 
 namespace GameFramePro
@@ -11,9 +12,14 @@ namespace GameFramePro
     /// </summary>
     public class LoginNetworkModule : Single<LoginNetworkModule>
     {
+        protected override void InitialSingleton()
+        {
+            base.InitialSingleton();
+            NetWorkManager.S_Instance.RegisterNetWorkCallback((int) ProtocolCommand.ResponseLogin, OnResponseLogin);
+        }
+
+
         /// <summary>/// 请求登录/// </summary>
-        /// <param name="name"></param>
-        /// <param name="password"></param>
         public void RequestLogin(string name, string password)
         {
             LoginRequest requset = new LoginRequest()
@@ -22,20 +28,26 @@ namespace GameFramePro
                 mUserPassword = password,
             };
 
-            //测试代码
-            AsyncManager.Invoke(1f, () =>
-            {
-                LoginResponse response = new LoginResponse();
-                response.mIsSuccess = true;
-                response.mUserName = name;
-                response.mToken = "123456";
+            ByteArray loginData = ByteArray.GetByteArray();
+            loginData.SerilizeGetBytes(requset);
 
-                OnResponseLogin(response);
-            });
+            SocketClientHelper.BaseLoginTcpClient.Send((int) ProtocolCommand.RequestLogin, loginData);
+            ByteArray.RecycleByteArray(loginData);
+//            //测试代码
+//            AsyncManager.Invoke(1f, () =>
+//            {
+//                LoginResponse response = new LoginResponse();
+//                response.mIsSuccess = true;
+//                response.mUserName = name;
+//                response.mToken = "123456";
+//
+//                OnResponseLogin(response);
+//            });
         }
 
-        private void OnResponseLogin(LoginResponse response)
+        private void OnResponseLogin(object objectResponse)
         {
+            LoginResponse response = objectResponse as LoginResponse;
             Debug.Log("登录网络回调成功");
             EventTrigger.TriggerMessage<LoginResponse>((int) UIEventUsage.OnResponse_Login, response);
         }

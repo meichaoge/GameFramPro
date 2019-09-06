@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
+using Newtonsoft.Json.Utilities;
 using UnityEngine;
 
 
@@ -16,6 +17,7 @@ namespace GameFramePro.NetWorkEx
 
         public EndPoint mEndPoint { get; set; }
         public bool mIsBrocast { get; set; } = false; //是否是广播消息
+
 
 
         #region 对象池
@@ -90,7 +92,7 @@ namespace GameFramePro.NetWorkEx
             mProtocolID = 0;
             if (mSendMessageByteArray != null)
             {
-                ByteArrayPool.RecycleByteArray(mSendMessageByteArray);
+                ByteArray.RecycleByteArray(mSendMessageByteArray);
                 mSendMessageByteArray = null;
             }
         }

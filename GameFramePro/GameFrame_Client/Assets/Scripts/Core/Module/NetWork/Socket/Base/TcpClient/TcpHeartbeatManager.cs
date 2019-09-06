@@ -16,7 +16,7 @@ namespace GameFramePro.NetWorkEx
         #region 公开属性
 
         public TimeSpan mHeartbeatTimeSpan { get; private set; } //5秒没没有网络数据接受和发送就发送消息
-        public bool mIsHeartbeating { get; private set; } = false;
+        public bool mIsHeartbeating { get; private set; } = false; //标识心跳包是否在运行中
 
         #endregion
 
@@ -44,12 +44,8 @@ namespace GameFramePro.NetWorkEx
                 mTargetTcpClient = tcpEventCallback;
                 mHeartbeatTimeSpan = heartbeat;
 
-                mHeartbeatData = ByteArrayPool.GetByteArray();
+                mHeartbeatData = ByteArray.GetByteArray();
                 mIsHeartbeating = true;
-
-//                mHeartbeatThread = new Thread(BeginHeatbeatThread);
-//                mHeartbeatThread.IsBackground = true;
-//                mHeartbeatThread.Start();
 
                 //**使用系统计时器而不是单独线程减少资源的使用
                 mHeartbeatTimer = new System.Timers.Timer(heartbeat.TotalMilliseconds);
@@ -89,7 +85,10 @@ namespace GameFramePro.NetWorkEx
             {
                 if (mIsHeartbeating)
                 {
-                    mTargetTcpClient?.Send((int) ProtocolCommand.HearBeatCommand, mHeartbeatData);
+                    if (mTargetTcpClient != null && mTargetTcpClient.mIsConnected)
+                    {
+                        mTargetTcpClient?.Send((int) ProtocolCommand.HearBeatCommand, mHeartbeatData);
+                    }
                 }
             }
             catch (Exception exception)
@@ -98,30 +97,30 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        protected void BeginHeatbeatThread(object obj)
-        {
-            try
-            {
-                Debug.Log($"启动心跳包");
-                while (true)
-                {
-                    if (mIsHeartbeating)
-                    {
-                        mTargetTcpClient?.Send((int) ProtocolCommand.HearBeatCommand, mHeartbeatData);
-                    }
-
-                    Thread.Sleep(mHeartbeatTimeSpan);
-                }
-            }
-            catch (ThreadAbortException e)
-            {
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Exception {e}");
-                throw;
-            }
-        }
+//        protected void BeginHeatbeatThread(object obj)
+//        {
+//            try
+//            {
+//                Debug.Log($"启动心跳包");
+//                while (true)
+//                {
+//                    if (mIsHeartbeating)
+//                    {
+//                        mTargetTcpClient?.Send((int) ProtocolCommand.HearBeatCommand, mHeartbeatData);
+//                    }
+//
+//                    Thread.Sleep(mHeartbeatTimeSpan);
+//                }
+//            }
+//            catch (ThreadAbortException e)
+//            {
+//            }
+//            catch (Exception e)
+//            {
+//                Debug.LogError($"Exception {e}");
+//                throw;
+//            }
+//        }
 
         #endregion
 

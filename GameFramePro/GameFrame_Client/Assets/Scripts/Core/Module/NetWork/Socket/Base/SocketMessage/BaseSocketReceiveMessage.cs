@@ -73,7 +73,7 @@ namespace GameFramePro.NetWorkEx
             mProtocolID = 0;
             if (mReceiveMessageByteArray != null)
             {
-                ByteArrayPool.RecycleByteArray(mReceiveMessageByteArray);
+                ByteArray.RecycleByteArray(mReceiveMessageByteArray);
                 mReceiveMessageByteArray = null;
             }
         }

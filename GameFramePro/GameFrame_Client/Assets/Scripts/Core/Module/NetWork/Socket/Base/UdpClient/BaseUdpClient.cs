@@ -22,7 +22,7 @@ namespace GameFramePro.NetWorkEx
 
         #region 构造函数
 
-        public BaseUdpClient(AddressFamily addressFamily) : base(addressFamily, SocketType.Dgram, ProtocolType.Udp)
+        public BaseUdpClient(AddressFamily addressFamily,string clientName) : base(clientName,addressFamily, SocketType.Dgram, ProtocolType.Udp)
         {
             mSocketClientType = SocketClientUsage.UdpClient;
             try
@@ -55,6 +55,9 @@ namespace GameFramePro.NetWorkEx
 
         public void SendMessage(int messageId, ByteArray message, EndPoint endPoint, bool isBrocast = false)
         {
+            ByteArray sendByteArray = ByteArray.GetByteArray();
+            sendByteArray.CloneFromByteArray(message); //克隆数据 避免污染源数据
+            
             var sendMessage = BaseSocketSendMessage.GetSocketSendMessageData(messageId, message, endPoint, isBrocast);
             mBaseSocketMessageManager?.CacheSocketSendData(sendMessage);
         }
@@ -193,7 +196,7 @@ namespace GameFramePro.NetWorkEx
                             continue;
                         }
 
-                        var receiveData = ByteArrayPool.GetByteArray();
+                        var receiveData = ByteArray.GetByteArray();
                         receiveData.CopyBytes(mBuffer, 0, packetLength, packetLength, 0);
 
 
