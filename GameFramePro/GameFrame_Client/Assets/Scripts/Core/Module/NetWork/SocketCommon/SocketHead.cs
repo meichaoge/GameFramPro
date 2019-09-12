@@ -68,6 +68,7 @@ namespace GameFramePro.NetWorkEx
         #endregion
 
 
+
         #region 静态辅助接口
 
         /// <summary>     /// 获取数据包的真实长度    /// </summary> 
@@ -117,7 +118,7 @@ namespace GameFramePro.NetWorkEx
             }
 
             ByteArray temp = ByteArray.GetByteArray();
-            temp.mDataRealLength = mMessageLength + S_HeadLength;
+          //  temp.mDataRealLength = mMessageLength + S_HeadLength;
 
             System.Array.Copy(sourceData.mBytes, 0, temp.mBytes, S_HeadLength, sourceData.mDataRealLength);
 
@@ -131,8 +132,9 @@ namespace GameFramePro.NetWorkEx
             Debug.Log($"源+版本号 {mVersion} {sourceData}");
 
 
-            ByteArray.RecycleByteArray(sourceData);
-            sourceData = temp;
+            sourceData.CopyBytes(temp.mBytes,0,mMessageLength + S_HeadLength,mMessageLength + S_HeadLength,0);
+            
+            ByteArray.RecycleByteArray(temp);
         }
 
         #endregion

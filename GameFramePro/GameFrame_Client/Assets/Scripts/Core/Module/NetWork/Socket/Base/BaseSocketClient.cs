@@ -139,6 +139,8 @@ namespace GameFramePro.NetWorkEx
         {
             try
             {
+                Debug.Log($"关闭客户端{mClientSocket.LocalEndPoint}");
+                
                 RemoveAllEvents();
                 NetWorkManager.S_Instance.UnRegisterSocketClient(this);
 
@@ -233,7 +235,7 @@ namespace GameFramePro.NetWorkEx
             try
             {
 #if UNITY_EDITOR
-                Debug.Log($"[{DateTime.Now}]给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(messageData.mSendMessageByteArray.mBytes)}");
+          //     Debug.Log($"[{DateTime.Now}]给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(messageData.mSendMessageByteArray.mBytes)}");
 #endif
 
                 OnSendMessageEvent?.Invoke(this, messageData);
@@ -250,7 +252,7 @@ namespace GameFramePro.NetWorkEx
             try
             {
 #if UNITY_EDITOR
-                Debug.Log($"[{DateTime.Now}]接收到消息{Encoding.UTF8.GetString(messageData.mReceiveMessageByteArray.mBytes)}");
+             //   Debug.Log($"[{DateTime.Now}]接收到消息{Encoding.UTF8.GetString(messageData.mReceiveMessageByteArray.mBytes)}");
 #endif
 
                 OnReceiveMessageEvent?.Invoke(this, messageData);

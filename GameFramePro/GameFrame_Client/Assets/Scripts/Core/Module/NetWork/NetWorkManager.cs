@@ -6,6 +6,8 @@ using GameFramePro.NetWorkEx;
 using UnityEngine;
 using System.Collections.Concurrent;
 using System.Text;
+using LitJson;
+using Newtonsoft.Json;
 
 
 namespace GameFramePro
@@ -13,12 +15,157 @@ namespace GameFramePro
     /// <summary>/// 负责对内网络状态的控制对外提供网络回调/// </summary>
     public class NetWorkManager : Single<NetWorkManager>, IUpdateCountTick
     {
+        /// <summary>/// 监听的事件回调信息/// </summary>
+        protected class NetResponseCallbackInfor
+        {
+            public int mProtocolId; //监听的协议id 
+            public Type mResponseType; //协议返回对象类型
+            public HashSet<Action<object>> mResponseCallback = new HashSet<Action<object>>(); //回调
+
+            #region 构造函数
+
+            private NetResponseCallbackInfor(int protocold)
+            {
+                mProtocolId = protocold;
+            }
+
+            #endregion
+
+            #region 对象池
+
+            private static Queue<NetResponseCallbackInfor> s_AllNetWorkCallbackInforPool = new Queue<NetResponseCallbackInfor>();
+
+            //获取一个指定类型的对象
+            public static NetResponseCallbackInfor GetNetWorkCallbackInfor(int protocolId)
+            {
+                if (s_AllNetWorkCallbackInforPool.Count > 0)
+                    return s_AllNetWorkCallbackInforPool.Dequeue();
+
+                return new NetResponseCallbackInfor(protocolId);
+            }
+
+            //回收一个指定的对象
+            public static void RecycleNetWorkCallbackInfor(NetResponseCallbackInfor netResponseCallbackInfor)
+            {
+                if (netResponseCallbackInfor == null)
+                {
+                    Debug.LogError($"回收失败，对象null");
+                    return;
+                }
+
+                netResponseCallbackInfor.mResponseCallback.Clear();
+                netResponseCallbackInfor.mProtocolId = 0;
+                netResponseCallbackInfor.mResponseType = null;
+
+                s_AllNetWorkCallbackInforPool.Enqueue(netResponseCallbackInfor);
+            }
+
+            #endregion
+
+
+            #region 接口
+
+            //注册的回调总数
+            public int AllCallbackCount
+            {
+                get { return mResponseCallback.Count; }
+            }
+
+
+            /// <summary>/// 监听某个指定类型和id 的网络回调/// </summary>
+            public void AddCallback(Type type, int protocold, System.Action<object> callback)
+            {
+                if (callback == null || type == null)
+                {
+                    Debug.LogError($"监听回调为null{mProtocolId}  {type}  ");
+                    return;
+                }
+
+                if (protocold != mProtocolId || (mResponseType != null && mResponseType != type))
+                {
+                    Debug.LogError($"监听类型不一致当前{mProtocolId}  {mResponseType}   ：注册{protocold}  {type}");
+                    return;
+                }
+
+                if (mResponseType == null)
+                    mResponseType = type;
+
+                if (mResponseCallback.Contains(callback))
+                {
+                    Debug.LogError($"重复监听{mProtocolId}  {type}  {callback}");
+                    return;
+                }
+
+
+                mResponseCallback.Add(callback);
+            }
+
+
+            /// <summary>/// 监听某个指定类型和id 的网络回调/// </summary>
+            public void RemoveCallback(int protocold, System.Action<object> callback)
+            {
+                if (callback == null)
+                {
+                    Debug.LogError($"监听回调为null{mProtocolId}    ");
+                    return;
+                }
+
+                if (protocold != mProtocolId)
+                {
+                    Debug.LogError($"监听类型不一致当前{mProtocolId}  {mResponseType}   ：取消注册{protocold}  ");
+                    return;
+                }
+
+                mResponseCallback.Remove(callback);
+                if (mResponseCallback.Count == 0)
+                    mResponseCallback = null;
+            }
+
+            /// <summary>/// 移除所有的监听/// </summary>
+            public void RemoveAllCallback(int protocold)
+            {
+                if (protocold != mProtocolId)
+                {
+                    Debug.LogError($"监听类型不一致当前{mProtocolId}  {mResponseType}   ：取消注册{protocold}  ");
+                    return;
+                }
+
+                mResponseType = null;
+                mResponseCallback.Clear();
+            }
+
+            /// <summary>/// 触发指定消息id 的网络回调事件/// </summary>
+            public void DispatchMessage(int protocolID, string message)
+            {
+                if (mProtocolId != protocolID)
+                {
+                    Debug.LogError($"触发消息失败 {protocolID}  ：{mProtocolId}");
+                    return;
+                }
+
+                if (mResponseCallback.Count == 0)
+                {
+                    Debug.LogInfor($"没有监听{protocolID} 网络回调的函数，不处理");
+                    return;
+                }
+
+                object response = SerializeManager.DeserializeObject(message, mResponseType);
+                HashSet<Action<object>> responseCallbacks = new HashSet<Action<object>>(mResponseCallback);
+
+                foreach (var callback in responseCallbacks)
+                    callback?.Invoke(response);
+            }
+
+            #endregion
+        }
+
+
         #region 数据
 
         private Dictionary<string, BaseSocketClient> mAllSocketClients = new Dictionary<string, BaseSocketClient>(5);
 
         /// <summary>/// 所有注册的网络消息处理回调/// </summary>
-        private Dictionary<int, HashSet<System.Action<object>>> mAllRegisterResponseCallback = new Dictionary<int, HashSet<Action<object>>>(100);
+        private Dictionary<int, NetResponseCallbackInfor> mAllRegisterResponseCallback = new Dictionary<int, NetResponseCallbackInfor>(100);
 
         #endregion
 
@@ -38,15 +185,28 @@ namespace GameFramePro
                     if (socketClient == null || socketClient.mBaseSocketMessageManager == null) continue;
                     while (socketClient.mBaseSocketMessageManager.GetSocketReceiveData(out messageData))
                     {
-                        string messageStr = Encoding.UTF8.GetString(messageData.mReceiveMessageByteArray.mBytes, SocketHead.S_HeadLength, messageData.mReceiveMessageByteArray.mDataRealLength);
-                        Debug.Log($"接收到{messageData.mEndPoint}  消息id={messageData.mProtocolID}  内容{messageStr}");
+                        Debug.Log($"{messageData.mProtocolID}   {messageData.mReceiveMessageByteArray.mDataRealLength}   {messageData.mReceiveMessageByteArray}");
 
-                        var messageObj = SerializeManager.DeserializeObject(messageStr);
-                        var callbacks = GetAllNetWorkCallback(messageData.mProtocolID);
-                        if (callbacks != null)
+
+                        string messageStr = Encoding.UTF8.GetString(messageData.mReceiveMessageByteArray.mBytes, SocketHead.S_HeadLength, messageData.mReceiveMessageByteArray.mDataRealLength - SocketHead.S_HeadLength);
+
+                        //Debug.Log("-->>"+messageStr);
+
+                        if (ProtocolCommand.ResponseLogin == messageData.mProtocolID)
                         {
-                            foreach (var netWorkProcess in callbacks)
-                                netWorkProcess?.Invoke(messageObj);
+                            Debug.Log($"登录回包");
+                            // Debug.Log($"接收到{messageData.mEndPoint}  消息id={messageData.mProtocolID}  内容{messageStr}");
+                            //    Debug.Log($"接收到  消息id={messageData.mProtocolID}  内容{messageStr}");
+                        }
+
+                        if (ProtocolCommand.HearBeatCommand == messageData.mProtocolID)
+                        {
+                            Debug.Log($"心跳回包");
+                        }
+
+                        if (mAllRegisterResponseCallback.TryGetValue(messageData.mProtocolID, out var netResponseCallbackInfor))
+                        {
+                            netResponseCallbackInfor.DispatchMessage(messageData.mProtocolID, messageStr);
                         }
 
                         BaseSocketReceiveMessage.RecycleSocketMessageData(messageData);
@@ -64,16 +224,8 @@ namespace GameFramePro
 
         #region 网络消息处理监听
 
-        /// <summary>/// 获取指定消息对应的处理回调/// </summary>
-        private HashSet<System.Action<object>> GetAllNetWorkCallback(int protocolId)
-        {
-            if (mAllRegisterResponseCallback.TryGetValue(protocolId, out var netWorkCallback))
-                return netWorkCallback;
-            return null;
-        }
-
         /// <summary>/// 注册对应回调id 的处理回调/// </summary>
-        public void RegisterNetWorkCallback(int protocolId, System.Action<object> netWorkResponseCallback)
+        public void RegisterNetWorkCallback<T>(int protocolId, System.Action<object> netWorkResponseCallback)
         {
             if (netWorkResponseCallback == null)
             {
@@ -81,37 +233,43 @@ namespace GameFramePro
                 return;
             }
 
-            if (mAllRegisterResponseCallback.TryGetValue(protocolId, out var netWorkCallback) == false)
+
+            if (mAllRegisterResponseCallback.TryGetValue(protocolId, out var netResponseCallback) == false)
             {
-                netWorkCallback = new HashSet<Action<object>>();
-                netWorkCallback.Add(netWorkResponseCallback);
+                netResponseCallback = NetResponseCallbackInfor.GetNetWorkCallbackInfor(protocolId);
+                netResponseCallback.AddCallback(typeof(T), protocolId, netWorkResponseCallback);
+
+                mAllRegisterResponseCallback[protocolId] = netResponseCallback;
             }
             else
             {
-                if (netWorkCallback.Contains(netWorkResponseCallback))
-                    Debug.LogError($"处理{protocolId} 重复注册处理回调{netWorkCallback}");
-                else
-                    netWorkCallback.Add(netWorkResponseCallback);
+                netResponseCallback.AddCallback(typeof(T), protocolId, netWorkResponseCallback);
             }
         }
 
         /// <summary>/// 取消注册对应回调id 的处理回调/// </summary>
         public void UnRegisterNetWorkCallback(int protocolId, System.Action<object> netWorkResponseCallback)
         {
-            if (netWorkResponseCallback == null)
+            if (mAllRegisterResponseCallback.TryGetValue(protocolId, out var netResponseCallback) == false)
             {
-                Debug.LogError($"注册网络回调失败 {protocolId},处理函数参数为null");
-                return;
+                netResponseCallback.RemoveCallback(protocolId, netWorkResponseCallback);
+                if (netResponseCallback.AllCallbackCount == 0)
+                {
+                    NetResponseCallbackInfor.RecycleNetWorkCallbackInfor(netResponseCallback);
+                    mAllRegisterResponseCallback.Remove(protocolId);
+                }
             }
-
-            if (mAllRegisterResponseCallback.TryGetValue(protocolId, out var netWorkCallback) == false)
-                netWorkCallback.Remove(netWorkResponseCallback);
         }
 
         /// <summary>/// 取消注册对应回调id 的所有处理回调/// </summary>
         public void UnRegisterAllNetWorkCallback(int protocolId)
         {
-            mAllRegisterResponseCallback.Remove(protocolId);
+            if (mAllRegisterResponseCallback.TryGetValue(protocolId, out var netResponseCallback) == false)
+            {
+                netResponseCallback.RemoveAllCallback(protocolId);
+                NetResponseCallbackInfor.RecycleNetWorkCallbackInfor(netResponseCallback);
+                mAllRegisterResponseCallback.Remove(protocolId);
+            }
         }
 
         #endregion
@@ -258,9 +416,11 @@ namespace GameFramePro
         {
             get
             {
-                if (mBaseLoginTcpClient != null) return mBaseLoginTcpClient;
+                if (mBaseLoginTcpClient != null)
+                    return mBaseLoginTcpClient;
                 mBaseLoginTcpClient = NetWorkManager.S_Instance.GetSocketMessage<BaseTcpClient>(BaseTcpClientName);
-                if (mBaseLoginTcpClient != null) return mBaseLoginTcpClient;
+                if (mBaseLoginTcpClient != null)
+                    return mBaseLoginTcpClient;
                 mBaseLoginTcpClient = new BaseTcpClient(BaseTcpClientName, AddressFamily.InterNetwork);
                 return mBaseLoginTcpClient;
             }

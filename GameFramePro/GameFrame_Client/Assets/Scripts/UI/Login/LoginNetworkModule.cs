@@ -7,15 +7,13 @@ using GameFramePro.Protocol.LoginModule;
 
 namespace GameFramePro
 {
-    /// <summary>
-    /// 负责所有与登录有关的网络请求模块
-    /// </summary>
+    /// <summary>/// 负责所有与登录有关的网络请求模块/// </summary>
     public class LoginNetworkModule : Single<LoginNetworkModule>
     {
         protected override void InitialSingleton()
         {
             base.InitialSingleton();
-            NetWorkManager.S_Instance.RegisterNetWorkCallback((int) ProtocolCommand.ResponseLogin, OnResponseLogin);
+            NetWorkManager.S_Instance.RegisterNetWorkCallback<LoginResponse>((int) ProtocolCommand.ResponseLogin, OnResponseLogin);
         }
 
 

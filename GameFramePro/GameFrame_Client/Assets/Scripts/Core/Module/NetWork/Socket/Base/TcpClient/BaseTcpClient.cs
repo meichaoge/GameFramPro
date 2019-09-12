@@ -26,7 +26,6 @@ namespace GameFramePro.NetWorkEx
 
         #endregion
 
-
         #region IConnectSocketClient 接口实现
 
         public event System.Action<BaseSocketClient> OnBeginConnectEvent; //开始连接
@@ -64,12 +63,12 @@ namespace GameFramePro.NetWorkEx
 
         #region 对外接口
 
-        public void Connect(IPAddress ipAddress, int port, int timeOut)
+        public void Connect(IPAddress ipAddress, int port, int millisecondsTimeout)
         {
-            Connect(new IPEndPoint(ipAddress, port), timeOut);
+            Connect(new IPEndPoint(ipAddress, port), millisecondsTimeout);
         }
 
-        public virtual void Connect(IPEndPoint remoteEP, int timeOut)
+        public virtual void Connect(IPEndPoint remoteEP, int millisecondsTimeout)
         {
             if (remoteEP == null)
                 throw new ArgumentNullException($"远程连接端口参数为null");
@@ -98,7 +97,7 @@ namespace GameFramePro.NetWorkEx
                         OnConnectError($"连接失败{result}");
                     }
                 }), null);
-                mTimeOutResetEvent.WaitOne(timeOut, true);
+                mTimeOutResetEvent.WaitOne(millisecondsTimeout, true);
                 if (asyncResult.IsCompleted == false)
                     OnConnectTimeOut($"连接超时");
             }
@@ -175,9 +174,11 @@ namespace GameFramePro.NetWorkEx
                 return;
             }
 
+            Debug.Log($"Send-- {protocolId}  Length={data.mDataRealLength}  data={data.mBytes}");
+
             ByteArray sendByteArray = ByteArray.GetByteArray();
             sendByteArray.CloneFromByteArray(data); //克隆数据 避免污染源数据
-            
+
             var sendMessage = BaseSocketSendMessage.GetSocketSendMessageData(protocolId, sendByteArray, mClientSocket.RemoteEndPoint, false);
             mBaseSocketMessageManager.CacheSocketSendData(sendMessage);
         }
@@ -208,7 +209,10 @@ namespace GameFramePro.NetWorkEx
                     {
                         int dataLength = mClientSocket.Send(message.mSendMessageByteArray.mBytes, 0, message.mSendMessageByteArray.mDataRealLength, SocketFlags.None);
 
-                        Debug.Log($"要发送的数据长度{message.mSendMessageByteArray.mDataRealLength} 实际发送{dataLength}  byte={message.mSendMessageByteArray}");
+#if UNITY_EDITOR
+                        int length = SocketHead.GetPacketLength(message.mSendMessageByteArray.mBytes, 0);
+                        Debug.Log($"要发送的数据长度{message.mSendMessageByteArray.mDataRealLength} 实际发送{dataLength}  byte={message.mSendMessageByteArray}  头部标识长度{length}");
+#endif
                         OnSendMessage(message);
                         BaseSocketSendMessage.RecycleSocketMessageData(message); //回收数据
                     }
@@ -230,18 +234,21 @@ namespace GameFramePro.NetWorkEx
             try
             {
                 int receiveDataOffset = 0; // mBuffer 中需要解析或者保存的数据偏移
-                int streamDataLength = 0; //需要解析的包长度
+                int packageLength = 0; //需要解析的包长度
+                int totalReceiveDataLength = 0; //总共接收的数据总量 (待处理的数据)
                 while (true)
                 {
-                    if (mIsReceiveDataEnable)
+                    if (mIsReceiveDataEnable == false)
                     {
                         Thread.Sleep(S_ReceiveMessageThreadInterval);
                         continue;
                     }
 
-                    if (mClientSocket.Poll(100, SelectMode.SelectRead))
+                    //    if (mClientSocket.Poll(100, SelectMode.SelectRead))
                     {
                         int receiveDataLength = mClientSocket.Receive(mBuffer, receiveDataOffset, S_BufferSize, SocketFlags.None);
+                        totalReceiveDataLength += receiveDataLength;
+                        Debug.Log($"本次 解析接收的包长度 {receiveDataLength}      {totalReceiveDataLength}");
 
                         //if (receiveDataLength > S_BufferSize)
                         //    Debug.LogError($"接受的数据太多{receiveDataLength} 超过{S_BufferSize}");
@@ -249,51 +256,61 @@ namespace GameFramePro.NetWorkEx
                         if (receiveDataLength == 0)
                         {
                             IsDisConnect = true;
-                            receiveDataOffset = streamDataLength = 0;
+                            // receiveDataOffset = streamDataLength = 0;
                             OnDisConnect($"接受到数据长度为0 断开连接{mClientSocket}");
-                            Thread.Sleep(S_ReceiveMessageThreadInterval);
-                            continue;
+                            break;
+                            //  Thread.Sleep(S_ReceiveMessageThreadInterval);
                         }
 
-                        if (streamDataLength == 0)
-                            SocketHead.GetPacketLength(mBuffer, receiveDataOffset); //避免如果上一次有一个半包数据在缓存中解析错误
+                        if (packageLength == 0)
+                            packageLength = SocketHead.GetPacketLength(mBuffer, 0); //避免如果上一次有一个半包数据在缓存中解析错误
 
-                        if (receiveDataLength + receiveDataOffset < streamDataLength)
+                        if (totalReceiveDataLength < packageLength)
                         {
-                            Debug.LogInfor($"数据没有接受完 继续等待接受{receiveDataLength}-- {receiveDataOffset}--- {streamDataLength}");
+                            Debug.LogInfor($"数据没有接受完 继续等待接受{totalReceiveDataLength}-- {receiveDataOffset}--- {packageLength}");
                             receiveDataOffset += receiveDataLength;
                             continue;
                         } //接收到了一部分数据(分包了)
 
                         //** 接收到了几个包的消息(粘包了)
                         receiveDataOffset = 0; //使得能够从上一次的 mBuffer 起始位置
-                        streamDataLength = SocketHead.GetPacketLength(mBuffer, receiveDataOffset);
 
-                        while (receiveDataOffset + streamDataLength <= receiveDataLength)
+                        while (packageLength + receiveDataOffset <= totalReceiveDataLength)
                         {
                             ByteArray receiveByteArray = ByteArray.GetByteArray();
-                            receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, streamDataLength, streamDataLength, 0);
+                            receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, packageLength, packageLength, 0);
 
-                            int protocolId = SocketHead.GetPacketProtocolID(receiveByteArray.mBytes, 0);
+                            int protocolId = SocketHead.GetPacketProtocolID(receiveByteArray.mBytes, 4);
+
+                            UnityEngine.Debug.Log($"解析的协议id={protocolId}   长度={receiveByteArray.mDataRealLength} ");
 
                             var receiveMessage = BaseSocketReceiveMessage.GetSocketReceiveMessageData(protocolId, receiveByteArray, mClientSocket.RemoteEndPoint);
                             mBaseSocketMessageManager.SaveReceiveData(receiveMessage);
-
                             OnReceiveMessage(receiveMessage);
 
-                            receiveDataOffset += streamDataLength;
-                            streamDataLength = SocketHead.GetPacketLength(mBuffer, receiveDataOffset);
+                            receiveDataOffset += packageLength;
+
+                            if (receiveDataOffset == totalReceiveDataLength)
+                                break; //刚好是几个整包
+                            packageLength = SocketHead.GetPacketLength(mBuffer, receiveDataOffset); //继续处理下一个包
                         } //拆包
 
-                        if (receiveDataOffset < receiveDataLength)
+                        if (receiveDataOffset < totalReceiveDataLength)
                         {
-                            System.Array.Copy(mBuffer, receiveDataOffset, mBuffer, 0, receiveDataLength - receiveDataOffset);
-                            receiveDataOffset = receiveDataLength - receiveDataOffset;
+                            System.Array.Copy(mBuffer, receiveDataOffset, mBuffer, 0, totalReceiveDataLength - receiveDataOffset);
+                            receiveDataOffset = totalReceiveDataLength - receiveDataOffset;
                         } //说明mBuffer 后面还有一小部分下一个包的数据需要移动到buffer 开始位置
+                        else if (receiveDataOffset == totalReceiveDataLength)
+                        {
+                            receiveDataOffset = 0;
+                        } //所有的数据刚好是整包
                         else
                         {
-                            receiveDataOffset = streamDataLength = 0;
-                        } //所有的数据刚好是整包
+                            Debug.LogError($"不可能出现的异常");
+                        }
+
+                        packageLength = 0;
+                        totalReceiveDataLength = receiveDataOffset;
                     }
 
                     Thread.Sleep(S_ReceiveMessageThreadInterval);
@@ -305,7 +322,6 @@ namespace GameFramePro.NetWorkEx
             catch (Exception e)
             {
                 OnSocketException($"TCP 接收数据异常{e}");
-                throw;
             }
         }
 
@@ -373,7 +389,7 @@ namespace GameFramePro.NetWorkEx
                 if (mTcpHeartbeatManager == null)
                     Debug.LogError($"心跳包没有启动");
 
-                mTcpHeartbeatManager?.StartHeartbeat(this, TimeSpan.FromSeconds(5));
+                mTcpHeartbeatManager?.StartHeartbeat(this, TimeSpan.FromSeconds(60));
 
                 OnConnectSuccessEvent?.Invoke(this);
             }

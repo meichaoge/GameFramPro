@@ -5,6 +5,7 @@ using System;
 using GameFramePro.ResourcesEx;
 using System.Reflection;
 using System.Linq;
+using System.Net;
 using GameFramePro.Localization;
 using GameFramePro.UI;
 using GameFramePro.Upgrade;
@@ -27,6 +28,7 @@ namespace GameFramePro
         {
             Debug.Log("AppManager--->>>>");
 
+
 #if UNITY_EDITOR
             Debug.LogInfor($"Application.persistentDataPath={Application.persistentDataPath}");
 #endif
@@ -40,6 +42,8 @@ namespace GameFramePro
 
             yield return null;
             UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
+
+            SocketClientHelper.BaseLoginTcpClient.Connect(IPAddress.Parse("127.0.0.1"), 2500, 5000);
         }
 
 
@@ -65,6 +69,7 @@ namespace GameFramePro
             UIPageManagerUtility.S_Instance.UpdateTick(realtimeSinceStartup);
             TimeTickUtility.S_Instance.UpdateTick(realtimeSinceStartup); //计时器
 
+            NetWorkManager.S_Instance.UpdateTick(realtimeSinceStartup);  //网络消息中心
             //foreach (var updateTick in mAllControllUpdateTicks)
             //{
             //    updateTick.Tick(realtimeSinceStartup);
