@@ -122,14 +122,14 @@ namespace GameFramePro.NetWorkEx
 
             System.Array.Copy(sourceData.mBytes, 0, temp.mBytes, S_HeadLength, sourceData.mDataRealLength);
 
-            Debug.Log($"源{sourceData}");
+         //   Debug.Log($"源{sourceData}");
 
             System.Array.Copy(BitConverter.GetBytes(mMessageLength + S_HeadLength), 0, temp.mBytes, 0, 4);
-            Debug.Log($"源+ 长度{mMessageLength + S_HeadLength}= {sourceData}");
+       //     Debug.Log($"源+ 长度{mMessageLength + S_HeadLength}= {sourceData}");
             System.Array.Copy(BitConverter.GetBytes(mProtocolId), 0, temp.mBytes, 4, 4);
-            Debug.Log($"源+ 协议id{mProtocolId} {sourceData}");
+       //     Debug.Log($"源+ 协议id{mProtocolId} {sourceData}");
             System.Array.Copy(BitConverter.GetBytes(mVersion), 0, temp.mBytes, 8, 4);
-            Debug.Log($"源+版本号 {mVersion} {sourceData}");
+     //       Debug.Log($"源+版本号 {mVersion} {sourceData}");
 
 
             sourceData.CopyBytes(temp.mBytes,0,mMessageLength + S_HeadLength,mMessageLength + S_HeadLength,0);

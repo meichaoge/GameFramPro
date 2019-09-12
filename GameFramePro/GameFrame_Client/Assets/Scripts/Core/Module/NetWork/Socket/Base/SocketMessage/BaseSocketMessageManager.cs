@@ -66,11 +66,11 @@ namespace GameFramePro.NetWorkEx
             if (socketSendMessage == null)
                 throw new ArgumentNullException($"缓存要发送的数据异常，数据为null ");
             
-            Debug.Log($"缓存要发送的数据  长度={socketSendMessage.mSendMessageByteArray.mDataRealLength} ：{socketSendMessage.mSendMessageByteArray.mBytes}");
+            Debug.Log($"缓存要发送的数据 {socketSendMessage.mProtocolID}  长度={socketSendMessage.mSendMessageByteArray.mDataRealLength} ：{socketSendMessage.mSendMessageByteArray.mBytes}");
 
             SocketHead head = SocketHead.GetSocketHead(socketSendMessage.mProtocolID, socketSendMessage.mSendMessageByteArray.mDataRealLength, 0);
             
-            Debug.Log($"2222缓存要发送的数据  长度={socketSendMessage.mSendMessageByteArray.mDataRealLength} ：{socketSendMessage.mSendMessageByteArray.mBytes}");
+       //     Debug.Log($"2222缓存要发送的数据  长度={socketSendMessage.mSendMessageByteArray.mDataRealLength} ：{socketSendMessage.mSendMessageByteArray.mBytes}");
 
             
             head.AppendMessageHead(socketSendMessage.mSendMessageByteArray); //增加头部信息

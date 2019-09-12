@@ -21,7 +21,6 @@ namespace GameFramePro.NetWorkEx
     public abstract class BaseSocketClient: ISocketClient, IDisposable 
     {
         #region Socket 属性
-
         public SocketClientUsage mSocketClientType { get; protected set; } //客户端类型
 
         public Socket mClientSocket { get; protected set; } = null; //可能是IPv4 或者 ipv6

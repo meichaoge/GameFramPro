@@ -50,8 +50,25 @@ namespace GameFramePro
         private void Update()
         {
             UpdateTick(Time.realtimeSinceStartup);
+
+#if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                NetWorkManager.S_Instance.DisConnectSocket(SocketClientHelper.BaseTcpClientName);
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                NetWorkManager.S_Instance.ReConnectSocket(SocketClientHelper.BaseTcpClientName);
+            }
+#endif
         }
 
+
+        private void OnDisable()
+        {
+            NetWorkManager.S_Instance.CloseAllSocketClient();
+        }
 
         #region 更新流程控制
 
@@ -69,7 +86,7 @@ namespace GameFramePro
             UIPageManagerUtility.S_Instance.UpdateTick(realtimeSinceStartup);
             TimeTickUtility.S_Instance.UpdateTick(realtimeSinceStartup); //计时器
 
-            NetWorkManager.S_Instance.UpdateTick(realtimeSinceStartup);  //网络消息中心
+            NetWorkManager.S_Instance.UpdateTick(realtimeSinceStartup); //网络消息中心
             //foreach (var updateTick in mAllControllUpdateTicks)
             //{
             //    updateTick.Tick(realtimeSinceStartup);

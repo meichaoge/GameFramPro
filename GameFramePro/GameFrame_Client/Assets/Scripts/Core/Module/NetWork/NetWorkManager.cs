@@ -277,6 +277,51 @@ namespace GameFramePro
 
         #region Socket 客户端创建等 对应的事件
 
+        /// <summary>/// 关闭所有的客户端/// </summary>
+        public void CloseAllSocketClient()
+        {
+            Dictionary<string, BaseSocketClient> temp = new Dictionary<string, BaseSocketClient>(mAllSocketClients);
+
+            foreach (var socketClient in temp.Values)
+            {
+                if (socketClient == null) continue;
+                socketClient.StopClient();
+            }
+
+            mAllSocketClients.Clear();
+        }
+
+        public void DisConnectSocket(string socketName)
+        {
+            Dictionary<string, BaseSocketClient> temp = new Dictionary<string, BaseSocketClient>(mAllSocketClients);
+
+            foreach (var socketClient in temp.Values)
+            {
+                if (socketClient == null) continue;
+                if (socketClient is BaseTcpClient == false) continue;
+                if (socketClient.mClientName == socketName)
+                {
+                    (socketClient as BaseTcpClient).DisConnect();
+                }
+            }
+        }
+
+        public void ReConnectSocket(string socketName)
+        {
+            Dictionary<string, BaseSocketClient> temp = new Dictionary<string, BaseSocketClient>(mAllSocketClients);
+
+            foreach (var socketClient in temp.Values)
+            {
+                if (socketClient == null) continue;
+                if (socketClient is BaseTcpClient == false) continue;
+                if (socketClient.mClientName == socketName)
+                {
+                    (socketClient as BaseTcpClient).ReConnect();
+                }
+            }
+        }
+
+
         #region 监听Socket 客户端的创建
 
         public T GetSocketMessage<T>(string clientName) where T : BaseSocketClient

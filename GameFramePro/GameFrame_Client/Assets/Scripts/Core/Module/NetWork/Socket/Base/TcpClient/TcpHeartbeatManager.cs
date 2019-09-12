@@ -65,6 +65,8 @@ namespace GameFramePro.NetWorkEx
                 return;
             mIsHeartbeating = false;
 
+            Debug.Log($"停止TCP 心跳包");
+
             mHeartbeatThread?.Abort();
             if (mHeartbeatTimer != null)
             {

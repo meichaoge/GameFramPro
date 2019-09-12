@@ -27,6 +27,7 @@ public class TcpServer : IDisposable
         public byte[] mReceiveBuffer;
         public int mDataCount = 0; //真实的数据量
         public bool mIsConnect = true;
+        public bool mIsReceivIngData { get; set; } = false; //标识是否正在接收数据中
 
         public TcpSocketClient(Socket client)
         {
@@ -210,12 +211,12 @@ public class TcpServer : IDisposable
         messageDat.mSendMesage = message;
 
         Debug.Log($"SendMessage  {message}");
-        
+
         SocketHead head = SocketHead.GetSocketHead(protocolId, message.mDataRealLength, 1);
         head.AppendMessageHead(messageDat.mSendMesage);
         SocketHead.RecycleSocketHead(head);
-        Debug.Log($"222SendMessage 长度{message.mDataRealLength}   :: {message}");
-        
+//        Debug.Log($"222SendMessage 长度{message.mDataRealLength}   :: {message}");
+
         mAllWillSendoutDatas.Enqueue(messageDat);
     }
 
@@ -258,8 +259,8 @@ public class TcpServer : IDisposable
 
                     //           Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(Encoding.UTF8.GetString(messageData.Message), messageData.mRemoteSocket.LocalEndPoint); });
 
-                    Debug.Log($"发送{messageData.mRemoteSocket.LocalEndPoint} 消息 {messageData.mSendMesage.mDataRealLength}  --> {Encoding.UTF8.GetString(messageData.mSendMesage.mBytes, SocketHead.S_HeadLength, messageData.mSendMesage.mDataRealLength - SocketHead.S_HeadLength)}");
-                    Debug.Log($"发送{messageData.mRemoteSocket.LocalEndPoint} 消息 {messageData.mSendMesage.mBytes}");
+                    //    Debug.Log($"发送{messageData.mRemoteSocket.LocalEndPoint} 消息 {messageData.mSendMesage.mDataRealLength}  --> {Encoding.UTF8.GetString(messageData.mSendMesage.mBytes, SocketHead.S_HeadLength, messageData.mSendMesage.mDataRealLength - SocketHead.S_HeadLength)}");
+//                    Debug.Log($"发送{messageData.mRemoteSocket.LocalEndPoint} 消息 {messageData.mSendMesage.mBytes}");
                 }
 
                 Thread.Sleep(S_SendMessageThreadInterval);
@@ -291,6 +292,7 @@ public class TcpServer : IDisposable
                 {
                     if (socket.mTcpClient == null) continue;
                     if (socket.mIsConnect == false) continue;
+                    if (socket.mIsReceivIngData) continue;
                     ConnectSocketBeginReceive(socket);
                 }
 
@@ -320,15 +322,18 @@ public class TcpServer : IDisposable
     {
         if (tcpSocketClient.mDataCount >= S_BufferSize)
             Debug.Log($"ConnectSocketBeginReceive {tcpSocketClient.mDataCount}");
+        if (tcpSocketClient.mIsReceivIngData) return;
+        tcpSocketClient.mIsReceivIngData = true;
 
         tcpSocketClient.mTcpClient.BeginReceive(tcpSocketClient.mReceiveBuffer, tcpSocketClient.mDataCount, S_BufferSize, SocketFlags.None, OnReceiveCallback, tcpSocketClient);
     }
 
     protected void OnReceiveCallback(IAsyncResult asyncResult)
     {
+        TcpSocketClient tcpSocketClient = null;
         try
         {
-            TcpSocketClient tcpSocketClient = asyncResult.AsyncState as TcpSocketClient;
+            tcpSocketClient = asyncResult.AsyncState as TcpSocketClient;
 
 
             int dataLength = tcpSocketClient.mTcpClient.EndReceive(asyncResult); //            socket.Receive(mBuffer, 0, S_BufferSize, SocketFlags.None);
@@ -387,11 +392,17 @@ public class TcpServer : IDisposable
         }
         catch (System.ObjectDisposedException e)
         {
-            
         }
         catch (Exception e)
         {
             Debug.LogError($"数据接受异常{e}");
+        }
+        finally
+        {
+            if (tcpSocketClient != null)
+            {
+                tcpSocketClient.mIsReceivIngData = false; //准备下一次接收数据
+            }
         }
     }
 
