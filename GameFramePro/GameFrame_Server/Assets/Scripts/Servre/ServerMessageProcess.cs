@@ -56,9 +56,17 @@ public class ServerMessageProcess : MonoBehaviour
         {
             int protocolID = SocketHead.GetPacketProtocolID(requestData.RequestMessage, 4);
 
-            if (protocolID == ProtocolCommand.HearBeatCommand)
+            if (protocolID == ProtocolCommand.RequestHearBeat)
             {
                 Debug.Log($"收到{requestData.mClientSocket.RemoteEndPoint} 心跳包");
+                
+                
+                HeartbeatResponse response=new HeartbeatResponse()
+                {
+                    mSystemTime = System.DateTime.UtcNow.Ticks
+                };
+                string responseStr = SerializeManager.SerializeObject(response);
+                TcpServerUIComponent.Instance.mTcpServer.SendMessage(ProtocolCommand.ResponseHearBeat, responseStr, requestData.mClientSocket);
             }
             else if (protocolID == ProtocolCommand.RequestLogin)
             {

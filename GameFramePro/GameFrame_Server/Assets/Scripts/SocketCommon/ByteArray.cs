@@ -93,6 +93,7 @@ namespace GameFramePro
             if (message == null)
                 message = string.Empty;
             encoding.GetBytes(message.ToCharArray(), 0, message.Length, mBytes, byteStartIndex);
+
             mDataRealLength = message.Length;
         }
 

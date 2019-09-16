@@ -29,11 +29,25 @@ namespace GameFramePro.NetWorkEx
 
         #region IConnectSocketClient 接口实现
 
+        /// <summary>/// Socket 是否已经连接/// </summary>
+        protected bool IsConnected { get; set; } = false;
+
+        /// <summary>/// Socket 上一次IO的连接状态/// </summary>
+        public bool mIsConnected
+        {
+            get
+            {
+                if (IsConnected == false || mClientSocket == null) return false;
+                return mClientSocket.Connected;
+            }
+        }
+
         public event System.Action<BaseSocketClient> OnBeginConnectEvent; //开始连接
         public event System.Action<BaseSocketClient> OnConnectSuccessEvent; //连接成功
         public event System.Action<BaseSocketClient, string> OnConnectErrorEvent; //连接失败
         public event System.Action<BaseSocketClient> OnConnectTimeOutEvent; //连接超时
-        public event System.Action<BaseSocketClient> OnDisConnectEvent; //连接断开
+        public event System.Action<BaseSocketClient> OnBeDisConnectEvent; //连接断开(被动)
+        public event System.Action<BaseSocketClient> OnDisConnectEvent; //连接断开(主动断开)
 
         #endregion
 
@@ -65,7 +79,7 @@ namespace GameFramePro.NetWorkEx
         #region 对外接口
 
         /// <summary>/// 重连/// </summary>
-        public void ReConnect()
+        public void ReConnectClient()
         {
             if (mIsSocketInitialed == false)
             {
@@ -73,7 +87,7 @@ namespace GameFramePro.NetWorkEx
                 return;
             }
 
-            if (mIsConnected == false)
+            if (mIsConnected)
             {
                 Debug.LogError($"tcp 客户端已经连接");
                 return;
@@ -82,7 +96,8 @@ namespace GameFramePro.NetWorkEx
             try
             {
                 Debug.Log($"重连接-***--");
-                Connect(mTargetEndPoint, mMillisecondsTimeout);
+                //     Connect(mTargetEndPoint, mMillisecondsTimeout);
+                ReConnect();
             }
             catch (Exception e)
             {
@@ -106,14 +121,19 @@ namespace GameFramePro.NetWorkEx
 
             try
             {
-                mClientSocket.BeginDisconnect(true, (asyncResult) =>
+                Debug.Log($"开始断开连接---");
+                IsConnected = false;
+                mClientSocket.Shutdown(SocketShutdown.Both);
+                mClientSocket.BeginDisconnect(false, (asyncResult) =>
                 {
-                    Debug.Log($"断开连接---");
+                    (asyncResult.AsyncState as Socket).EndDisconnect(asyncResult);
+                    Debug.Log($"断开连接---{asyncResult}");
+                    OnDisConnect(null);
                 }, mClientSocket);
             }
             catch (Exception e)
             {
-                Debug.LogError($"断开连接失败 {e}");
+                OnDisConnect($"断开连接失败 {e}");
             }
         }
 
@@ -127,16 +147,25 @@ namespace GameFramePro.NetWorkEx
             if (remoteEP == null)
                 throw new ArgumentNullException($"远程连接端口参数为null");
 
+            if (IsConnected)
+            {
+                Debug.LogError($"当前已经连接了Socket");
+                return;
+            }
+
+
             try
             {
                 if (mClientSocket == null)
                     throw new ArgumentNullException($"Socket 没有初始化");
 
+                IsConnected = false;
                 mTargetEndPoint = remoteEP;
                 mMillisecondsTimeout = millisecondsTimeout;
 
-
                 OnBeginConnect($"开始连接到{remoteEP}");
+                mTimeOutResetEvent.Reset();
+
                 var asyncResult = mClientSocket.BeginConnect(remoteEP, new AsyncCallback((result) =>
                 {
                     Debug.Log($"连接回调 连接状态{mClientSocket.Connected}");
@@ -145,6 +174,7 @@ namespace GameFramePro.NetWorkEx
 
                     if (mClientSocket.Connected)
                     {
+                        IsConnected = true;
                         OnConnectSuccess($"连接成功");
                         StartReceiveAndSendThread();
                     }
@@ -176,6 +206,69 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
+        protected virtual void ReConnect()
+        {
+            if (mIsSocketInitialed == false)
+            {
+                Debug.LogError($"tcp 客户端还没有启动");
+                return;
+            }
+
+            if (IsConnected)
+            {
+                Debug.LogError($"当前已经连接了Socket");
+                return;
+            }
+
+
+            try
+            {
+                if (mClientSocket == null)
+                    throw new ArgumentNullException($"Socket 没有初始化");
+
+                OnBeginConnect($"开始连接到{mTargetEndPoint}");
+                mTimeOutResetEvent.Reset();
+
+                var asyncResult = mClientSocket.BeginConnect(mTargetEndPoint, new AsyncCallback((result) =>
+                {
+                    Debug.Log($"连接回调 连接状态{mClientSocket.Connected}");
+
+                    mTimeOutResetEvent.Set();
+
+                    if (mClientSocket.Connected)
+                    {
+                        IsConnected = true;
+                        OnConnectSuccess($"连接成功");
+                        StartReceiveAndSendThread();
+                    }
+                    else
+                    {
+                        OnConnectError($"连接失败{result}");
+                    }
+                }), null);
+                mTimeOutResetEvent.WaitOne(mMillisecondsTimeout, true);
+                if (asyncResult.IsCompleted == false)
+                    OnConnectTimeOut($"连接超时");
+            }
+            catch (System.ArgumentOutOfRangeException e)
+            {
+                OnConnectError($"TCP 连接 Socket {mTargetEndPoint} 端口号 不可用{e}");
+            }
+            catch (System.Net.Sockets.SocketException e)
+            {
+                OnConnectError($"TCP 连接Socket {mTargetEndPoint} 异常，无法连接服务器{e}");
+            }
+            catch (System.ObjectDisposedException e)
+            {
+                OnConnectError($"TCP 连接Socket  {mTargetEndPoint} 已经关闭{e}");
+            }
+            catch (Exception e)
+            {
+                OnConnectError($"TCP {mTargetEndPoint} 连接失败{e}");
+                throw;
+            }
+        }
+
 
         public IAsyncResult BeginConnect(IPAddress address, int port, object state)
         {
@@ -184,11 +277,18 @@ namespace GameFramePro.NetWorkEx
 
         public virtual IAsyncResult BeginConnect(IPEndPoint remoteEP, object state)
         {
+            if (IsConnected)
+            {
+                Debug.LogError($"当前已经连接了Socket");
+                return null;
+            }
+
             try
             {
                 if (mClientSocket == null)
                     throw new ArgumentNullException($"Socket 没有初始化");
 
+                IsConnected = false;
                 mTargetEndPoint = remoteEP;
                 OnBeginConnect($"异步连接{remoteEP}");
                 IAsyncResult asyncResult = mClientSocket.BeginConnect(remoteEP, OnBeginConnectCallback, state);
@@ -242,6 +342,25 @@ namespace GameFramePro.NetWorkEx
         #endregion
 
         #region 基类重写
+
+        protected override bool mIsSendDataEnable
+        {
+            get
+            {
+                if (mIsConnected == false || mClientSocket == null) return false;
+                if (mBaseSocketMessageManager.mAllSendMessageQueue == null || mBaseSocketMessageManager.mAllSendMessageQueue.Count == 0) return false;
+                return true;
+            }
+        }
+
+        protected override bool mIsReceiveDataEnable
+        {
+            get
+            {
+                if (mIsConnected == false || mClientSocket == null) return false;
+                return true;
+            }
+        }
 
         public override void Dispose()
         {
@@ -309,9 +428,9 @@ namespace GameFramePro.NetWorkEx
 
                     if (receiveDataLength == 0)
                     {
-                        IsDisConnect = true;
+                        IsConnected = false;
                         // receiveDataOffset = streamDataLength = 0;
-                        OnDisConnect($"接受到数据长度为0 断开连接{mClientSocket}");
+                        OnBeDisConnect($"接受到数据长度为0 断开连接{mClientSocket}");
                         break;
                         //  Thread.Sleep(S_ReceiveMessageThreadInterval);
                     }
@@ -398,9 +517,18 @@ namespace GameFramePro.NetWorkEx
             }
             else
             {
+                IsConnected = true;
                 OnConnectSuccess($"连接成功");
                 StartReceiveAndSendThread();
             }
+        }
+
+
+        /// <summary>/// tcp socket 断开后必须重新创建Socket ，
+        /// 不能直接复用,否则Soceket 异常（ystem.Net.Sockets.SocketException (0x80004005)在一个已经连接的套接字上做了一个连接请求）：/// </summary>
+        protected virtual void OnSocketDisConnected(bool isNeedReconnected)
+        {
+            mClientSocket = new Socket(mAddressFamily, mSocketType, mProtocolType);
         }
 
         #endregion
@@ -413,6 +541,7 @@ namespace GameFramePro.NetWorkEx
             OnBeginConnectEvent = null;
             OnConnectErrorEvent = null;
             OnConnectTimeOutEvent = null;
+            OnBeDisConnectEvent = null;
             OnDisConnectEvent = null;
         }
 
@@ -480,6 +609,23 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
+        protected virtual void OnBeDisConnect(string message)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(message) == false)
+                    Debug.LogError(message);
+                mTcpHeartbeatManager.StopHearbeat();
+                OnSocketDisConnected(false);
+                OnBeDisConnectEvent?.Invoke(this);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"被动断开连接异常{e}");
+            }
+        }
+
+        //主动断开
         protected virtual void OnDisConnect(string message)
         {
             try
@@ -487,11 +633,12 @@ namespace GameFramePro.NetWorkEx
                 if (string.IsNullOrEmpty(message) == false)
                     Debug.LogError(message);
                 mTcpHeartbeatManager.StopHearbeat();
+                OnSocketDisConnected(true);
                 OnDisConnectEvent?.Invoke(this);
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+                Debug.LogError($"主动断开连接异常{e}");
             }
         }
 

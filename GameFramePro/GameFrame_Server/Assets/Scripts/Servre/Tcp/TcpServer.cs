@@ -210,12 +210,13 @@ public class TcpServer : IDisposable
         messageDat.mRemoteSocket = remoteSocket;
         messageDat.mSendMesage = message;
 
-        Debug.Log($"SendMessage  {message}");
 
         SocketHead head = SocketHead.GetSocketHead(protocolId, message.mDataRealLength, 1);
         head.AppendMessageHead(messageDat.mSendMesage);
         SocketHead.RecycleSocketHead(head);
-//        Debug.Log($"222SendMessage 长度{message.mDataRealLength}   :: {message}");
+        
+        
+        Debug.Log($"SendMessage protocolId={protocolId}  ::  {message}");
 
         mAllWillSendoutDatas.Enqueue(messageDat);
     }
@@ -387,7 +388,7 @@ public class TcpServer : IDisposable
             {
                 Debug.LogError($"接受到{tcpSocketClient.mTcpClient.RemoteEndPoint} 的数据长度为0是否已经断开连接");
                 tcpSocketClient.mIsConnect = false;
-                mAllConnectTcpClients.TryRemove(tcpSocketClient.mTcpClient, out var client);
+          //      mAllConnectTcpClients.TryRemove(tcpSocketClient.mTcpClient, out var client);
             }
         }
         catch (System.ObjectDisposedException e)

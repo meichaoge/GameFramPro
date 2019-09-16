@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using LitJson;
 using Newtonsoft.Json;
+using JsonReader = Newtonsoft.Json.JsonReader;
 
 
 namespace GameFramePro
@@ -199,9 +200,9 @@ namespace GameFramePro
                             //    Debug.Log($"接收到  消息id={messageData.mProtocolID}  内容{messageStr}");
                         }
 
-                        if (ProtocolCommand.HearBeatCommand == messageData.mProtocolID)
+                        if (ProtocolCommand.ResponseHearBeat == messageData.mProtocolID)
                         {
-                            Debug.Log($"心跳回包");
+                            Debug.Log($"心跳回包 ");
                         }
 
                         if (mAllRegisterResponseCallback.TryGetValue(messageData.mProtocolID, out var netResponseCallbackInfor))
@@ -316,7 +317,7 @@ namespace GameFramePro
                 if (socketClient is BaseTcpClient == false) continue;
                 if (socketClient.mClientName == socketName)
                 {
-                    (socketClient as BaseTcpClient).ReConnect();
+                    (socketClient as BaseTcpClient).ReConnectClient();;
                 }
             }
         }
@@ -324,7 +325,7 @@ namespace GameFramePro
 
         #region 监听Socket 客户端的创建
 
-        public T GetSocketMessage<T>(string clientName) where T : BaseSocketClient
+        public T GetSocketClient<T>(string clientName) where T : BaseSocketClient
         {
             if (mAllSocketClients.TryGetValue(clientName, out var socketClient))
                 return socketClient as T;
@@ -333,7 +334,7 @@ namespace GameFramePro
         }
 
 
-//        public T CreateSocketMessage<T>(string clientName) where T : BaseSocketClient
+//        public T GetSocketClient<T>(string clientName) where T : BaseSocketClient
 //        {
 //            if (mAllSocketClients.TryGetValue(clientName, out var socketClient))
 //            {
@@ -342,8 +343,6 @@ namespace GameFramePro
 //                Debug.LogError($"创建名称{clientName} 失败，已经有一个类型为{socketClient.GetType()}");
 //                return null;
 //            }
-//            
-//            
 //
 //            Debug.LogError($"指定名称{clientName} 的Socket 没有创建");
 //            return null;
@@ -463,7 +462,7 @@ namespace GameFramePro
             {
                 if (mBaseLoginTcpClient != null)
                     return mBaseLoginTcpClient;
-                mBaseLoginTcpClient = NetWorkManager.S_Instance.GetSocketMessage<BaseTcpClient>(BaseTcpClientName);
+                mBaseLoginTcpClient = NetWorkManager.S_Instance.GetSocketClient<BaseTcpClient>(BaseTcpClientName);
                 if (mBaseLoginTcpClient != null)
                     return mBaseLoginTcpClient;
                 mBaseLoginTcpClient = new BaseTcpClient(BaseTcpClientName, AddressFamily.InterNetwork);

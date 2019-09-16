@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Timers;
+using GameFramePro.Protocol.SystemModule;
 
 namespace GameFramePro.NetWorkEx
 {
@@ -45,6 +46,12 @@ namespace GameFramePro.NetWorkEx
                 mHeartbeatTimeSpan = heartbeat;
 
                 mHeartbeatData = ByteArray.GetByteArray();
+                HeartbeatRequest request=new HeartbeatRequest()
+                {
+                    mSocketClientUrl=tcpEventCallback.mClientName,
+                };
+                mHeartbeatData.SerilizeGetBytes(request,0);
+                
                 mIsHeartbeating = true;
 
                 //**使用系统计时器而不是单独线程减少资源的使用
@@ -89,7 +96,7 @@ namespace GameFramePro.NetWorkEx
                 {
                     if (mTargetTcpClient != null && mTargetTcpClient.mIsConnected)
                     {
-                        mTargetTcpClient?.Send((int) ProtocolCommand.HearBeatCommand, mHeartbeatData);
+                        mTargetTcpClient?.Send((int) ProtocolCommand.RequestHearBeat, mHeartbeatData);
                     }
                 }
             }

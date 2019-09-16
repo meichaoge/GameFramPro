@@ -31,7 +31,6 @@ namespace GameFramePro.NetWorkEx
                 return new SocketHead(commandId, messageLength, version);
             if (mSocketHeadQueue.TryDequeue(out var socketHead))
             {
-              //  socketHead.ResetSocketHead();
                 socketHead.InitialSocketHead(commandId, messageLength, version);
                 return socketHead;
             }
@@ -55,7 +54,6 @@ namespace GameFramePro.NetWorkEx
         private SocketHead(int protocolId, int messageLength, int version)
         {
             InitialSocketHead(protocolId, messageLength, version);
-
         }
 
         public void InitialSocketHead(int protocolId, int messageLength, int version)

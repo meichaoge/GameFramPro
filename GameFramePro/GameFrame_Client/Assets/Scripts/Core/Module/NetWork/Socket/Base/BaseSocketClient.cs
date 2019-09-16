@@ -18,16 +18,16 @@ namespace GameFramePro.NetWorkEx
 
 
     /// <summary>  /// 各种Socket 客户端基类 /// </summary>
-    public abstract class BaseSocketClient: ISocketClient, IDisposable 
+    public abstract class BaseSocketClient : ISocketClient, IDisposable
     {
         #region Socket 属性
+
         public SocketClientUsage mSocketClientType { get; protected set; } //客户端类型
 
         public Socket mClientSocket { get; protected set; } = null; //可能是IPv4 或者 ipv6
         public AddressFamily mAddressFamily { get; protected set; }
         public SocketType mSocketType { get; protected set; }
         public ProtocolType mProtocolType { get; protected set; }
-        
 
         #endregion
 
@@ -41,7 +41,7 @@ namespace GameFramePro.NetWorkEx
         {
             get
             {
-                if (mIsConnected == false || mClientSocket == null) return false;
+                if (mClientSocket == null) return false;
                 if (mBaseSocketMessageManager.mAllSendMessageQueue == null || mBaseSocketMessageManager.mAllSendMessageQueue.Count == 0) return false;
                 return true;
             }
@@ -52,22 +52,8 @@ namespace GameFramePro.NetWorkEx
         {
             get
             {
-                if (mIsConnected == false || mClientSocket == null) return false;
+                if (mClientSocket == null) return false;
                 return true;
-            }
-        }
-
-
-        /// <summary>/// Socket 是否已经断开连接/// </summary>
-        protected bool IsDisConnect = false;
-
-        /// <summary>/// Socket 上一次IO的连接状态/// </summary>
-        public bool mIsConnected
-        {
-            get
-            {
-                if (IsDisConnect) return false;
-                return mClientSocket == null ? false : mClientSocket.Connected;
             }
         }
 
@@ -76,7 +62,7 @@ namespace GameFramePro.NetWorkEx
 
         #region 属性
 
-        public string mClientName { get;  } //用于标识是哪个Sicket 客户端
+        public string mClientName { get; } //用于标识是哪个Sicket 客户端
 
         internal BaseSocketMessageManager mBaseSocketMessageManager { get; set; } //消息缓冲管理
 
@@ -116,7 +102,7 @@ namespace GameFramePro.NetWorkEx
 
         #region 构造函数
 
-        public BaseSocketClient(string clientName,AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
+        public BaseSocketClient(string clientName, AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
         {
             mClientName = clientName;
             mAddressFamily = addressFamily;
@@ -139,7 +125,7 @@ namespace GameFramePro.NetWorkEx
             try
             {
                 Debug.Log($"关闭客户端{mClientSocket.LocalEndPoint}");
-                
+
                 RemoveAllEvents();
                 NetWorkManager.S_Instance.UnRegisterSocketClient(this);
 
@@ -164,8 +150,6 @@ namespace GameFramePro.NetWorkEx
         protected virtual void StartReceiveAndSendThread()
         {
             Debug.LogInfor($"启动Socket 客户端接收和发送数据线程");
-
-            IsDisConnect = false;
 
             mReceiveMessageThread = new Thread(BeginReceiveMessageThread);
             mReceiveMessageThread.IsBackground = true;
@@ -209,7 +193,7 @@ namespace GameFramePro.NetWorkEx
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+                Debug.LogError(e);
             }
         }
 
@@ -224,7 +208,7 @@ namespace GameFramePro.NetWorkEx
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+                Debug.LogError(e);
             }
         }
 
@@ -234,14 +218,14 @@ namespace GameFramePro.NetWorkEx
             try
             {
 #if UNITY_EDITOR
-          //     Debug.Log($"[{DateTime.Now}]给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(messageData.mSendMessageByteArray.mBytes)}");
+                //     Debug.Log($"[{DateTime.Now}]给{mClientSocket.RemoteEndPoint}发送消息{Encoding.UTF8.GetString(messageData.mSendMessageByteArray.mBytes)}");
 #endif
 
                 OnSendMessageEvent?.Invoke(this, messageData);
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+                Debug.LogError(e);
             }
         }
 
@@ -251,14 +235,14 @@ namespace GameFramePro.NetWorkEx
             try
             {
 #if UNITY_EDITOR
-             //   Debug.Log($"[{DateTime.Now}]接收到消息{Encoding.UTF8.GetString(messageData.mReceiveMessageByteArray.mBytes)}");
+                //   Debug.Log($"[{DateTime.Now}]接收到消息{Encoding.UTF8.GetString(messageData.mReceiveMessageByteArray.mBytes)}");
 #endif
 
                 OnReceiveMessageEvent?.Invoke(this, messageData);
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+                Debug.LogError(e);
             }
         }
 

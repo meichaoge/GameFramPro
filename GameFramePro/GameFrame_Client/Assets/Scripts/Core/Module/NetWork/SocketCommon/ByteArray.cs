@@ -142,6 +142,7 @@ namespace GameFramePro
                 return;
             }
 
+           
             string message = SerializeManager.SerializeObject(objectMessage);
             EncodingGetBytes(message, Encoding.UTF8, byteStartIndex);
         }

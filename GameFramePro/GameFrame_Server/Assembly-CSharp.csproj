@@ -78,6 +78,7 @@
     <Compile Include="Assets\Scripts\SocketCommon\Protocol\LoginProtocol\LoginRequest.cs" />
     <Compile Include="Assets\Scripts\SocketCommon\Protocol\LoginProtocol\LoginResponse.cs" />
     <Compile Include="Assets\Scripts\SocketCommon\Protocol\ProtocolCommand.cs" />
+    <Compile Include="Assets\Scripts\SocketCommon\Protocol\System\HeartbeatResponse.cs" />
     <Compile Include="Assets\Scripts\SocketCommon\SocketHead.cs" />
     <Compile Include="Assets\Scripts\SocketCommon\SocketUtility.cs" />
     <Compile Include="Assets\SDK\LitJson\IJsonWrapper.cs" />
