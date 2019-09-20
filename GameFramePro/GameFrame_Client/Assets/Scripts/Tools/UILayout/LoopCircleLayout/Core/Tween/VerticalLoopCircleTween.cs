@@ -72,9 +72,10 @@ public class VerticalLoopCircleTween : BaseVerticalLoopCircle
             return;
         }
         OnBeginScrollView();
+        //使用 .SetUpdate(UpdateType.Fixed) 是为了使得在不同的帧率下保持同样的表现形式以及保证低帧率下依然逻辑正确 (踩坑了)
         if (completeRoll != null)
         {
-            ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(UpdateItemState).SetEase(mTweenAnimationCurve).SetUpdate(UpdateType.Late).OnComplete(() =>
+            ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(UpdateItemState).SetUpdate(UpdateType.Fixed).SetEase(mTweenAnimationCurve).OnComplete(() =>
             {
                 OnCompleteScrollView();
                 completeRoll();
@@ -82,7 +83,7 @@ public class VerticalLoopCircleTween : BaseVerticalLoopCircle
         }
         else
         {
-            ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(UpdateItemState).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve).SetUpdate(UpdateType.Late);
+            ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(UpdateItemState).SetUpdate(UpdateType.Fixed).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve);
         }
     }
 
@@ -98,8 +99,8 @@ public class VerticalLoopCircleTween : BaseVerticalLoopCircle
     {
         if (IsVerticalLayot == false)
             return true;
-
-        return ViewPortRectrans.IsInsideRect_Vertical(item.position);
+        return ViewPortRectrans.IsIntersect(item,ViewPortRectrans.GetParentCanvas());
+      //  return ViewPortRectrans.IsInsideRect_Vertical(item.position);
     }
 
     /// <summary>

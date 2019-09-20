@@ -368,7 +368,7 @@ namespace GameFramePro.NetWorkEx
             base.Dispose();
         }
 
-        protected override void BeginSendMessageThread(object obj)
+        protected override void BeginSendMessageTask(object obj)
         {
             try
             {
@@ -404,7 +404,7 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        protected override void BeginReceiveMessageThread(object obj)
+        protected override void BeginReceiveMessageTask(object obj)
         {
             try
             {
@@ -413,6 +413,7 @@ namespace GameFramePro.NetWorkEx
                 int totalReceiveDataLength = 0; //总共接收的数据总量 (待处理的数据)
                 while (true)
                 {
+                  
                     if (mIsReceiveDataEnable == false)
                     {
                         Thread.Sleep(S_ReceiveMessageThreadInterval);

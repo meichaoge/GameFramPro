@@ -12,6 +12,9 @@ public static class ColorExpand
     /// <summary>/// 16进制(以#开头)转成颜色/// </summary>
     public static Color HtmToColor(string htmlString)
     {
+        if (htmlString.StartsWith("#") == false)
+            htmlString = $"#{htmlString}";
+        
         Color result;
         if (mTempColorDic.TryGetValue(htmlString, out result))
             return result;

@@ -168,13 +168,12 @@ public class HorizontialLoopCircle : BaseHorizontialLoopCircle, IEndDragHandler,
     /// <summary>
     /// 由于滑动的距离不确定 所以这里是按照中心点的坐标来 计算而不是边界(按照边界会导致滑动一点点但是一个上下不一样平衡)
     /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override bool IsItemVisible(RectTransform item)
     {
         if (IsVerticalLayot)
             return true;
-        return ViewPortRectrans.IsInsideRect_Horizontial(item.position);
+      //  return ViewPortRectrans.IsInsideRect_Horizontial(item.position);
+      return ViewPortRectrans.IsIntersect(item,ViewPortRectrans.GetParentCanvas());
     }
 
     #endregion

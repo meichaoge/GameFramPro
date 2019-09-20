@@ -29,13 +29,13 @@ public class TestVerticalHalfLoopCicele : MonoBehaviour {
             m_VerticalHalfLoopCicleTween.RefillData(DataCount, DataOffset);
         }
 
-        //int data = Random.Range(0, 3);
-        //offset = Random.Range(-10, 10);
-        //if (data >= 1)
-        //    Down();
-        //else
-        //    Up();
-        //return;
+        int data = Random.Range(0, 3);
+        offset = Random.Range(-10, 10);
+        if (data >= 1)
+            Down();
+        else
+            Up();
+        return;
 
         if (Input.GetKeyDown(KeyCode.U))
         {

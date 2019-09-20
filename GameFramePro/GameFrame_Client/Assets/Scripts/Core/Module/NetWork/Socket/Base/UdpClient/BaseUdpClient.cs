@@ -22,7 +22,7 @@ namespace GameFramePro.NetWorkEx
 
         #region 构造函数
 
-        public BaseUdpClient(AddressFamily addressFamily,string clientName) : base(clientName,addressFamily, SocketType.Dgram, ProtocolType.Udp)
+        public BaseUdpClient(AddressFamily addressFamily, string clientName) : base(clientName, addressFamily, SocketType.Dgram, ProtocolType.Udp)
         {
             mSocketClientType = SocketClientUsage.UdpClient;
             try
@@ -57,7 +57,7 @@ namespace GameFramePro.NetWorkEx
         {
             ByteArray sendByteArray = ByteArray.GetByteArray();
             sendByteArray.CloneFromByteArray(message); //克隆数据 避免污染源数据
-            
+
             var sendMessage = BaseSocketSendMessage.GetSocketSendMessageData(messageId, message, endPoint, isBrocast);
             mBaseSocketMessageManager?.CacheSocketSendData(sendMessage);
         }
@@ -106,7 +106,7 @@ namespace GameFramePro.NetWorkEx
 
         #region 基类重写
 
-        protected override void BeginSendMessageThread(object obj)
+        protected override void BeginSendMessageTask(object obj)
         {
             BaseSocketSendMessage sendMessageData = null;
             while (true)
@@ -170,7 +170,7 @@ namespace GameFramePro.NetWorkEx
         }
 
 //TODO 考虑到每次接受的数据包可能是多个udp 数据，这里需要合理安排每次处理的最大的数据量  mClientSocket.Available
-        protected override void BeginReceiveMessageThread(object obj)
+        protected override void BeginReceiveMessageTask(object obj)
         {
             while (true)
             {

@@ -21,6 +21,8 @@ public class TestHorizontialLoopCicle : MonoBehaviour {
         {
             mHorizontialLoopCircle.RefillData(DataCount);
         }
+        
+        
     }
 
 

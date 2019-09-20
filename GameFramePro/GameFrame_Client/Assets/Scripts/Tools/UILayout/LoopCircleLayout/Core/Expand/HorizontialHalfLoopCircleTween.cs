@@ -56,9 +56,9 @@ public class HorizontialHalfLoopCircleTween : HorizontialLoopCircleTween
             }
             OnBeginScrollView();
             if (completeRoll == null)
-                MoveTweenner = ContentRectrans.DOAnchorPosX(endPosx, tweenTime).OnUpdate(OnUpdateTweenView).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve);
+                MoveTweenner = ContentRectrans.DOAnchorPosX(endPosx, tweenTime).OnUpdate(OnUpdateTweenView).SetUpdate(UpdateType.Fixed).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve);
             else
-                MoveTweenner = ContentRectrans.DOAnchorPosX(endPosx, tweenTime).OnUpdate(OnUpdateTweenView).OnComplete(() =>
+                MoveTweenner = ContentRectrans.DOAnchorPosX(endPosx, tweenTime).OnUpdate(OnUpdateTweenView).SetUpdate(UpdateType.Fixed).OnComplete(() =>
                 {
                     OnCompleteScrollView();
                     completeRoll();
@@ -98,7 +98,7 @@ public class HorizontialHalfLoopCircleTween : HorizontialLoopCircleTween
         IsScrolling = true;
         if (completeRoll != null)
         {
-            MoveTweenner = ContentRectrans.DOAnchorPosX(realEndPosx, tweenTime).OnUpdate(OnUpdateTweenView).OnComplete(() =>
+            MoveTweenner = ContentRectrans.DOAnchorPosX(realEndPosx, tweenTime).OnUpdate(OnUpdateTweenView).SetUpdate(UpdateType.Fixed).OnComplete(() =>
             {
                 OnCompleteScrollView();
                 completeRoll();
@@ -106,7 +106,7 @@ public class HorizontialHalfLoopCircleTween : HorizontialLoopCircleTween
         }
         else
         {
-            MoveTweenner = ContentRectrans.DOAnchorPosX(realEndPosx, tweenTime).OnUpdate(OnUpdateTweenView).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve);
+            MoveTweenner = ContentRectrans.DOAnchorPosX(realEndPosx, tweenTime).OnUpdate(OnUpdateTweenView).SetUpdate(UpdateType.Fixed).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve);
         }
         #endregion
 

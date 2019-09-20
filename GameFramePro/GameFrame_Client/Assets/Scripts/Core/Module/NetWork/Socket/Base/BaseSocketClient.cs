@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace GameFramePro.NetWorkEx
@@ -74,9 +75,15 @@ namespace GameFramePro.NetWorkEx
 
         protected int S_BufferSize = 65536;
         protected readonly byte[] mBuffer;
-        protected Thread mReceiveMessageThread = null;
-
-        protected Thread mSendMessageThread = null;
+//        protected Thread mReceiveMessageThread = null;
+//        protected Thread mSendMessageThread = null;
+        
+        
+        protected Thread mReceiveMessageask = null;
+        public CancellationTokenSource mReceiveTaskCancleToken { get; protected set; }=new CancellationTokenSource();
+        
+        public CancellationTokenSource mSendTaskCancleToken { get; protected set; }=new CancellationTokenSource();
+        protected Thread mSendMessageTask= null;
 
         #endregion
 
@@ -129,8 +136,11 @@ namespace GameFramePro.NetWorkEx
                 RemoveAllEvents();
                 NetWorkManager.S_Instance.UnRegisterSocketClient(this);
 
-                mReceiveMessageThread.Abort();
-                mSendMessageThread.Abort();
+//                mReceiveMessageThread?.Abort();
+//                mSendMessageThread?.Abort();
+
+                mReceiveTaskCancleToken.Cancel(true);
+                mSendTaskCancleToken.Cancel(true);
 
                 mClientSocket?.Shutdown(SocketShutdown.Both);
                 mClientSocket?.Close();
@@ -151,21 +161,25 @@ namespace GameFramePro.NetWorkEx
         {
             Debug.LogInfor($"启动Socket 客户端接收和发送数据线程");
 
-            mReceiveMessageThread = new Thread(BeginReceiveMessageThread);
-            mReceiveMessageThread.IsBackground = true;
-            mReceiveMessageThread.Start();
+//            mReceiveMessageThread = new Thread(BeginReceiveMessageThread);
+//            mReceiveMessageThread.IsBackground = true;
+//            mReceiveMessageThread.Start();
+//
+//            mSendMessageThread = new Thread(BeginSendMessageThread);
+//            mSendMessageThread.IsBackground = true;
+//            mSendMessageThread.Start();
 
-            mSendMessageThread = new Thread(BeginSendMessageThread);
-            mSendMessageThread.IsBackground = true;
-            mSendMessageThread.Start();
+
+            Task.Factory.StartNew(BeginReceiveMessageTask, mReceiveTaskCancleToken, TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(BeginSendMessageTask, mSendTaskCancleToken, TaskCreationOptions.LongRunning);
         }
 
         /// <summary>/// 接收消息的线程/// </summary>
-        protected abstract void BeginReceiveMessageThread(object obj);
+        protected abstract void BeginReceiveMessageTask(object obj);
 
 
         /// <summary>/// 发送消息的线程/// </summary>
-        protected abstract void BeginSendMessageThread(object obj);
+        protected abstract void BeginSendMessageTask(object obj);
 
         #endregion
 

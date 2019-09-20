@@ -57,9 +57,9 @@ public class VerticalHalfLoopCicleTween : VerticalLoopCircleTween
             }
             OnBeginScrollView();
             if (completeRoll == null)
-                MoveTweenner = ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(OnUpdateTweenView).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve);
+                MoveTweenner = ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(OnUpdateTweenView).SetUpdate(UpdateType.Fixed).OnComplete(OnCompleteScrollView).SetEase(mTweenAnimationCurve);
             else
-                MoveTweenner = ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(OnUpdateTweenView).OnComplete(() =>
+                MoveTweenner = ContentRectrans.DOAnchorPosY(endPosY, tweenTime).OnUpdate(OnUpdateTweenView).SetUpdate(UpdateType.Fixed).OnComplete(() =>
                 {
                     OnCompleteScrollView();
                     completeRoll();

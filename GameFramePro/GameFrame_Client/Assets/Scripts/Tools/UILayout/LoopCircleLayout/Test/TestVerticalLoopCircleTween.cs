@@ -38,11 +38,11 @@ public class TestVerticalLoopCircleTween : MonoBehaviour
 
         data = Random.Range(0, 3);
         offset = Random.Range(-10, 10);
-        //if (data >= 1)
-        //    Down();
-        //else
-        //    Up();
-        //return;
+        if (data >= 1)
+            Down();
+        else
+            Up();
+        return;
         if (Input.GetKeyDown(KeyCode.D))
         {
             Down();

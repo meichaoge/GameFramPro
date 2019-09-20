@@ -165,8 +165,8 @@ public class VerticalLoopCircle : BaseVerticalLoopCircle, IDragHandler, IEndDrag
     {
         if (IsVerticalLayot == false)
             return true;
-
-        return ViewPortRectrans.IsInsideRect_Vertical(item.position);
+        return ViewPortRectrans.IsIntersect(item,ViewPortRectrans.GetParentCanvas());
+     //   return ViewPortRectrans.IsInsideRect_Vertical(item.position);
     }
 
     /// <summary>
