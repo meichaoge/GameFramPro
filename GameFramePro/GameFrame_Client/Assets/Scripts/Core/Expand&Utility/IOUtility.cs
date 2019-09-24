@@ -219,6 +219,8 @@ namespace GameFramePro
                     return false;
 
                 targetPath = System.IO.Path.GetDirectoryName(targetPath);
+                if (string.IsNullOrEmpty(targetPath))
+                    return false;
                 directotyName = GetFileNameWithoutExtensionEx(System.IO.Path.GetDirectoryName(targetPath));
             }
 

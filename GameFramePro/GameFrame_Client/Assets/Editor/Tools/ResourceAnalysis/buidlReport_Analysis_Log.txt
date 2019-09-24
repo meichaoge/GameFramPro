@@ -1,0 +1,44 @@
+key=Share
+ 4.0 mb	 0.6% Assets/Art/UI/Share/fenxiangtu7_1.jpg
+ 4.0 mb	 0.6% Assets/Art/UI/Share/fenxiangtu4_4.jpg
+ 4.0 mb	 0.6% Assets/Art/UI/Share/fenxiangtu8.jpg
+ 4.0 mb	 0.6% Assets/Art/UI/Share/fenxiangtu6.jpg
+ 4.0 mb	 0.6% Assets/Art/UI/Share/fenxiangtu5.jpg
+ 2.0 mb	 0.3% Built-in Texture2D: SpriteAtlasTexture-Share-512x1024-fmt4
+ 1.9 mb	 0.3% Assets/Art/UI/Share/fenxiangtu4_3.png
+ 542.9 kb	 0.1% Assets/Art/UI/Share/fenxiangtu4_1.png
+ 152.9 kb	 0.0% Assets/Resources/ScreenshotSharePage.prefab
+ 19.7 kb	 0.0% Assets/Resources/ui/Invite/InviteSharePage.prefab
+ 6.3 kb	 0.0% Assets/Resources/ui/Invite/TaskInviteSharePage.prefab
+ 2.2 kb	 0.0% Assets/Art/UI/Share/Sharethelist_12.png
+ 1.0 kb	 0.0% Assets/Art/UI/Share/fenxiangtu4_2.png
+ 0.8 kb	 0.0% Assets/Art/UI/Share/fenxiangtu7_2.png
+ 0.7 kb	 0.0% Assets/Art/UI/Share/fenxiangtu7_4.png
+ 0.7 kb	 0.0% Assets/Art/UI/Share/fenxiangtu7_3.png
+ 0.6 kb	 0.0% Assets/Art/UI/Common/Share_close button.png
+ 0.5 kb	 0.0% Assets/Art/UI/Share/ranking_yinglilv_al.png
+ 0.5 kb	 0.0% Assets/Art/UI/Share/Sharethelist_9.png
+ 0.5 kb	 0.0% Assets/Art/UI/Share/Sharethelist_5.png
+ 0.5 kb	 0.0% Assets/Art/UI/Share/Invite share_7.png
+ 0.5 kb	 0.0% Assets/Art/UI/Common/Share_button_1.png
+ 0.5 kb	 0.0% Assets/Art/UI/Share/Sharethelist_10.png
+ 0.5 kb	 0.0% Assets/Art/UI/Share/Invite share_6.png
+ 0.5 kb	 0.0% Assets/Art/UI/Common/Share_button_2.png
+ 0.4 kb	 0.0% Assets/Art/UI/Common/Share_title.png
+ 0.1 kb	 0.0% Assets/Scripts/Modules/UI/Pages/Features/ScreenshotSharePage.cs
+ 0.1 kb	 0.0% Assets/Scripts/Modules/Invite/TaskInviteSharePage.cs
+ 0.1 kb	 0.0% Assets/SDK/FacebookSDK/Examples/Scripts/SubMenus/DialogShare.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/ShareSDKImpl.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/ShareContent.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/ContentType.cs
+ 0.1 kb	 0.0% Assets/Scripts/Modules/Invite/InviteSharePage.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/ShareSDK.cs
+ 0.1 kb	 0.0% Assets/Scripts/Managers/ShareManager.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/ShareSDKDevInfo.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/ResponseState.cs
+ 0.1 kb	 0.0% Assets/Scripts/Network/Protocols/Enums/Incentive/ShareType.cs
+ 0.1 kb	 0.0% Assets/Scripts/Managers/DataContent/ShareUIType.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/PlatformType.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/Android/AndroidImpl.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/iOS/iOSImpl.cs
+ 0.1 kb	 0.0% Assets/SDK/shareSdk/Plugins/ShareSDK/MiniJSON.cs
