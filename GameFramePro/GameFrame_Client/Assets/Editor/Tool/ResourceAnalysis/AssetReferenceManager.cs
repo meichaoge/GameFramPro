@@ -244,7 +244,7 @@ public class AssetReferenceManager
 
     #endregion
 
-    #region 文件
+    #region 单个资源
 
     [MenuItem("工具和扩展/资源管理/图片管理(文件)/查找当前图片资源被引用的预制体信息_全部")]
     private static void GetImgAssetReferencePrefab_All()
@@ -341,195 +341,9 @@ public class AssetReferenceManager
     }
 
 
-    [MenuItem("Assets/工具和扩展/资源优化/设置图片被引用Prefabs关联Image格式(九宫格 Slider)")]
-    private static void AutoSetImgReferencePrefabType_Sliced()
-    {
-        AutoSetImgReferencePrefabType(Image.Type.Sliced);
-    }
-
-    [MenuItem("Assets/工具和扩展/资源优化/设置图片被引用Prefabs关联Image格式(九宫格 Tilied)")]
-    private static void AutoSetImgReferencePrefabType_Tilied()
-    {
-        AutoSetImgReferencePrefabType(Image.Type.Tiled);
-    }
-
-
-    private static void AutoSetImgReferencePrefabType(Image.Type type)
-    {
-        var selectobjs = Selection.objects;
-        if (selectobjs.Length == 0)
-            return;
-
-        if (selectobjs.Length > 1)
-        {
-            Debug.LogError("只能选择一个图片资源");
-            return;
-        }
-
-        string assetPath = AssetDatabase.GetAssetPath(selectobjs[0]);
-        if (assetPath.EndsWith(".png") || assetPath.EndsWith(".jpg"))
-        {
-            List<string> result = GetAssetReference(assetPath);
-            foreach (var item in result)
-            {
-                Debug.Log(string.Format("资源{0,-30} 被预制体引用{1}", assetPath, item));
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(item);
-                GameObject go = GameObject.Instantiate(prefab);
-
-                Image[] childImg = go.GetComponentsInChildren<Image>(true);
-                if (childImg.Length == 0)
-                {
-                    GameObject.DestroyImmediate(go);
-                    continue;
-                }
-
-                bool isNeedSave = false;
-                foreach (var img in childImg)
-                {
-                    if (img.sprite == null) continue;
-                    string path = AssetDatabase.GetAssetPath(img.sprite);
-                    if (path == assetPath && img.type != type)
-                    {
-                        img.type = type;
-                        isNeedSave = true;
-                        Debug.Log($"修改了节点{img.gameObject.name} image 格式为九宫格拉伸 {type}");
-                    }
-                }
-
-                if (isNeedSave)
-                {
-                    PrefabUtility.CreatePrefab(item, go);
-                    Debug.Log($"设置了预制体{item}图片格式");
-                }
-
-                GameObject.DestroyImmediate(go);
-            }
-
-            AssetDatabase.Refresh();
-            return;
-        }
-
-        Debug.LogError("选择的资源不是图片资源 " + assetPath);
-    }
-
-
-    [MenuItem("Assets/工具和扩展/资源优化/设置图片被引用Prefabs关联Image格式(水平分成2个)")]
-    private static void AutoSetImgReferencePrefab_Horizontial()
-    {
-        var selectobjs = Selection.objects;
-        if (selectobjs.Length == 0)
-            return;
-
-        if (selectobjs.Length > 1)
-        {
-            Debug.LogError("只能选择一个图片资源");
-            return;
-        }
-
-        string assetPath = AssetDatabase.GetAssetPath(selectobjs[0]);
-        if (assetPath.EndsWith(".png") || assetPath.EndsWith(".jpg"))
-        {
-            List<string> result = GetAssetReference(assetPath);
-            foreach (var item in result)
-            {
-                Debug.Log(string.Format("资源{0,-30} 被预制体引用{1}", assetPath, item));
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(item);
-                GameObject go = GameObject.Instantiate(prefab);
-
-                Image[] childImg = go.GetComponentsInChildren<Image>(true);
-                if (childImg.Length == 0)
-                {
-                    GameObject.DestroyImmediate(go);
-                    continue;
-                }
-
-                foreach (var img in childImg)
-                {
-                    if (img.sprite == null) continue;
-                    string path = AssetDatabase.GetAssetPath(img.sprite);
-                    if (path == assetPath && img.type != Image.Type.Sliced)
-                    {
-                        Image[] ChildImgs = new Image[2];
-                        RectTransform parent = img.transform as RectTransform;
-
-                        #region 创建两个子Image
-
-                        GameObject go2 = new GameObject("ChildImage_01");
-                        go2.transform.SetParent(img.transform);
-                        ChildImgs[1] = go2.GetAddComponentEx<Image>();
-                        go2.transform.SetAsFirstSibling();
-
-                        GameObject go1 = new GameObject("ChildImage_00");
-
-                        go1.transform.SetParent(img.transform);
-                        ChildImgs[0] = go1.GetAddComponentEx<Image>();
-                        go1.transform.SetAsFirstSibling();
-
-                        for (int dex = 0; dex < 2; dex++)
-                        {
-                            ChildImgs[dex].raycastTarget = img.raycastTarget;
-                        }
-
-                        #endregion
-
-                        for (int dex = 0; dex < 2; dex++)
-                        {
-                            ChildImgs[dex].sprite = img.sprite;
-                            ChildImgs[dex].raycastTarget = false;
-
-                            RectTransform target = ChildImgs[dex].transform as RectTransform;
-                            target.pivot = Vector2.one * 0.5f;
-                            target.anchorMin = Vector2.zero;
-                            target.anchorMax = Vector2.one;
-
-                            target.anchoredPosition3D = Vector3.zero;
-
-                            if (dex == 0)
-                            {
-                                target.localScale = Vector3.one;
-                                target.offsetMax = new Vector2(-1 * parent.rect.width * 0.5f, 0);
-                                target.offsetMin = Vector2.zero;
-                            }
-                            else
-                            {
-                                target.localScale = new Vector3(-1, 1, 1);
-                                target.offsetMax = Vector2.zero;
-                                target.offsetMin = new Vector2(parent.rect.width * 0.5f, 0);
-                            }
-                        }
-
-                        Button connectButton = img.transform.GetComponent<Button>();
-
-                        string imgName = img.gameObject.name;
-                        img.sprite = null;
-                        GameObject.DestroyImmediate(img);
-                        if (connectButton == null)
-                            continue;
-
-                        connectButton.transform.gameObject.AddComponent<NoDrawingRayCast>();
-                        connectButton.transition = Selectable.Transition.None;
-
-
-                        Debug.Log("水平方向上分解了节点 " + imgName);
-                    }
-                }
-
-                PrefabUtility.CreatePrefab(item, go);
-                //    Debug.Log(string.Format("设置了预制体{0}图片格式", item));
-                GameObject.DestroyImmediate(go);
-            }
-
-            AssetDatabase.Refresh();
-            //Debug.Log("一共设置了" + result.Count + "个资源的格式");
-            return;
-        }
-
-        Debug.LogError("选择的资源不是图片资源 " + assetPath);
-    }
-
     #endregion
 
-    #region 文件夹
+    #region 多个资源
 
     [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/所有图片资源被引用的预制体信息_全部")]
     private static void GetImgsAssetReferencePrefab_All()
@@ -939,7 +753,7 @@ public class AssetReferenceManager
     /// </summary>
     /// <param name="imagAsset">key 资源路径  Value 哪些资源引用</param>
     /// <returns></returns>
-    private static List<string> GetAssetReference(string assetPath)
+    public static List<string> GetAssetReference(string assetPath)
     {
         if (mAllPrefabsDepdence.Count == 0)
         {

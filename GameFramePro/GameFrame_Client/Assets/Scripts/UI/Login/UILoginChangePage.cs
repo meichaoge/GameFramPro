@@ -88,6 +88,11 @@ namespace GameFramePro.UI
             m_PasswordInputField.onValueChanged.AddListener(OnUserPasswordInputCallback);
             m_SelectLanguageDropdown.onValueChanged.AddListener(OnSelectLanguageClick);
             m_LoginButton.onClick.AddListener(OnLoginButtonClick);
+            
+            GetComponentByName<Button>("FacebookButton").onClick.AddListener(OnFacebookButtonClick);
+            GetComponentByName<Button>("WetChatButton").onClick.AddListener(OnWetChatButtonClick);
+
+            
         }
 
 
@@ -137,6 +142,19 @@ namespace GameFramePro.UI
 
         #region  按钮点击事件
 
+        private void OnFacebookButtonClick()
+        {
+            Debug.Log("android facebook 登录");
+            PlatformManager.Current.Call("LoginFacebook");
+        }
+        
+        private void OnWetChatButtonClick()
+        {
+            Debug.Log("android 微信 登录");
+            PlatformManager.Current.Call("LoginWetchat");
+        }
+        
+        
         private void OnUserNameInputCallback(string inputName)
         {
         }

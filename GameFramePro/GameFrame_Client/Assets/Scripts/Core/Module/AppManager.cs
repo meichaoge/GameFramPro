@@ -17,6 +17,11 @@ namespace GameFramePro
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
+        #if UNITY_EDITOR
+        [ReadOnly]
+        public int ReadOnlyInt = 10;
+        #endif
+        
         protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不销毁
 
         public float CurrentRealTime
