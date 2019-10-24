@@ -7,7 +7,7 @@ using UnityEngine;
 namespace GameFramePro
 {
     /// <summary>/// 音效管理器/// </summary>
-    public class AudioManager : Single_Mono<AudioManager>, IUpdateCountTick
+    public class AudioManager : SingleMono<AudioManager>, IUpdateCountTick
     {
         protected override bool IsNotDestroyedOnLoad { get;  } = true; //标示不会一起销毁
 

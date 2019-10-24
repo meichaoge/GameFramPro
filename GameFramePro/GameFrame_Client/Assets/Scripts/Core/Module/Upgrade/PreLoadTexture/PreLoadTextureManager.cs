@@ -28,16 +28,16 @@ namespace GameFramePro.Upgrade
         }
 
 
-        private string mPreloadTexureServerUrl = null;
+        private string mPreloadTextureServerUrl = null;
 
         /// <summary>/// 活动图片资源配置信息地址/// </summary>
-        public string PreloadTexureServerUrl
+        public string PreloadTextureServerUrl
         {
             get
             {
-                if (string.IsNullOrEmpty(mPreloadTexureServerUrl))
-                    mPreloadTexureServerUrl = $"{AppUrlManager.S_TextureCDNTopUrl}/{AppUpgradeHelper.GetCurUpgradeLanguage()}/";
-                return mPreloadTexureServerUrl;
+                if (string.IsNullOrEmpty(mPreloadTextureServerUrl))
+                    mPreloadTextureServerUrl = $"{AppUrlManager.S_TextureCDNTopUrl}/{AppUpgradeHelper.GetCurUpgradeLanguage()}/";
+                return mPreloadTextureServerUrl;
             }
         }
 
@@ -196,11 +196,11 @@ namespace GameFramePro.Upgrade
             mCurDownloadCount = 1;
             while (ServerPreloadImgConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
-                var url = PreloadTexureServerUrl.CombinePathEx(ConstDefine.S_PreloadImgConfiFileName);
+                var url = PreloadTextureServerUrl.CombinePathEx(ConstDefine.S_PreloadImgConfiFileName);
                 var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(url, TaskPriorityEnum.Immediately, null);
                 if (downloadTask == null)
                 {
-                    Debug.LogError($"获取服务器配置的下载任务创建失败 第{mCurDownloadCount} 次 url={PreloadTexureServerUrl}");
+                    Debug.LogError($"获取服务器配置的下载任务创建失败 第{mCurDownloadCount} 次 url={PreloadTextureServerUrl}");
                     yield return AsyncManager.WaitFor_Null; //等待被执行下载任务
                 }
                 else
@@ -212,14 +212,16 @@ namespace GameFramePro.Upgrade
                     {
                         yield return downloadTask.TaskSuperCoroutinenfor.WaitDone(true);
 
-                        if (downloadTask.DownloadTaskCallbackData == null || downloadTask.DownloadTaskCallbackData.isNetworkError || downloadTask.DownloadTaskCallbackData.isDone == false)
-                            Debug.LogError("OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null");
+                        var downLoadCallback = downloadTask.DownloadTaskCallbackData;
+
+                        if (downLoadCallback == null || downLoadCallback.isNetworkError || downLoadCallback.isDone == false || downLoadCallback.isHttpError)
+                            Debug.LogError($"OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null   {downLoadCallback.url}");
                         else
                         {
-                            string content = (downloadTask.DownloadTaskCallbackData.downloadHandler as DownloadHandlerBuffer).text;
+                            string content = (downLoadCallback.downloadHandler as DownloadHandlerBuffer).text;
                             if (string.IsNullOrEmpty(content))
                             {
-                                Debug.LogError($"下载的预加载图片配置失败 url={PreloadTexureServerUrl}");
+                                Debug.LogError($"下载的预加载图片配置失败 url={PreloadTextureServerUrl}");
                                 content = SerializeManager.SerializeObject(new PreloadImgConfigInfor());
                                 Debug.LogError("测试时 使用默认的字符串避免报错");
                             }
@@ -366,7 +368,7 @@ namespace GameFramePro.Upgrade
 
             foreach (var textureInfor in dataSources)
             {
-                string updatePreloadTextureUrl = $"{PreloadTexureServerUrl}{textureInfor}";
+                string updatePreloadTextureUrl = $"{PreloadTextureServerUrl}{textureInfor}";
 
 #if UNITY_EDITOR
                 Debug.LogEditorInfor($"开始下载 预加载图片  url={updatePreloadTextureUrl}");
@@ -379,7 +381,7 @@ namespace GameFramePro.Upgrade
         /// <summary>/// 下载一个 预加载图片 资源回调/// </summary>
         private void OnDownloadPreloadTextureCallback(UnityWebRequest webRequest, bool isSuccess, string url)
         {
-            string textureRelativePath = url.Substring(PreloadTexureServerUrl.Length);
+            string textureRelativePath = url.Substring(PreloadTextureServerUrl.Length);
 
             if (AllNeedDownloadTextureAssetRecord.Contains(textureRelativePath))
             {

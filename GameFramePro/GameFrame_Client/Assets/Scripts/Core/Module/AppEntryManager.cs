@@ -12,8 +12,12 @@ using GameFramePro.Upgrade;
 
 namespace GameFramePro
 {
-    /// <summary>/// 需要自己手动挂在 第一个执行的脚本 需要尽可能少的脚本直接依赖Mono  /// </summary>
-    public class AppManager : Single_Mono<AppManager>
+ 
+    
+    /// <summary>
+    /// 需要自己手动挂在 第一个执行的脚本(作为程序执行的入口) 需要尽可能少的脚本直接依赖Mono.
+    /// </summary>
+    public class AppEntryManager : SingleMono<AppEntryManager>
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
@@ -31,7 +35,7 @@ namespace GameFramePro
 
         private IEnumerator Start()
         {
-            Debug.Log("AppManager--->>>>");
+            Debug.Log("AppEntryManager--->>>>");
 
 
 #if UNITY_EDITOR

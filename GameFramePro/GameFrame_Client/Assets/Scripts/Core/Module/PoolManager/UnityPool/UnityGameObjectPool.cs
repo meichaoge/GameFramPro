@@ -11,28 +11,34 @@ namespace GameFramePro
     /// </summary>
     public class UnityGameObjectPool : IUnityGameObjectPool
     {
-        public System.Action<GameObject> BeforGetAction { get; private set; }
+        public System.Action<GameObject> BeforeGetAction { get; private set; }
         public System.Action<GameObject> BeforeRecycleAction { get; private set; }
         public Stack<GameObject> PoolContainer { get; private set; }
         public GameObject PrefabTarget { get; private set; }
 
         private Transform mPoolManagerTarget = null;
+
         //挂载缓存的PrefabTarget实例对象
-        public Transform PoolManagerTarget { get { if (mPoolManagerTarget == null) mPoolManagerTarget = UnityMonoObjectPoolHelper.S_Instance.GetUnityPoolManagerTransParent(PrefabTarget.name); return mPoolManagerTarget; } }
-
-
-
+        public Transform PoolManagerTarget
+        {
+            get
+            {
+                if (mPoolManagerTarget == null) mPoolManagerTarget = UnityMonoObjectPoolHelper.S_Instance.GetUnityPoolManagerTransParent(PrefabTarget.name);
+                return mPoolManagerTarget;
+            }
+        }
 
 
         public void InitialedPool(int capacity, GameObject prefabTarget, Action<GameObject> beforGetAction, Action<GameObject> beforeRecycleAction)
         {
-            BeforGetAction = beforGetAction;
+            BeforeGetAction = beforGetAction;
             BeforeRecycleAction = beforeRecycleAction;
             PrefabTarget = prefabTarget;
             if (PrefabTarget == null)
             {
                 Debug.LogError(string.Format("InitialedPool Fail, parameter prefabTarget is null of PoolType={0}", typeof(GameObject)));
             }
+
             PoolContainer = new Stack<GameObject>(capacity);
             PoolObjectManager.TrackPoolManager_Mono<GameObject>(this);
         }
@@ -46,16 +52,15 @@ namespace GameFramePro
                 {
                     target = PoolContainer.Pop();
                     if (target == null) continue;
-                    if (BeforeRecycleAction != null)
-                        BeforeRecycleAction(target);
+                    BeforeRecycleAction?.Invoke(target);
 
                     ResourcesManager.Destroy(target);
-                }//移除对象
+                } //移除对象
             } //删除缓存对象
 
 
             PrefabTarget = null;
-            BeforGetAction = BeforeRecycleAction = null;
+            BeforeGetAction = BeforeRecycleAction = null;
             PoolContainer = null;
 
             PoolObjectManager.UnTrackPoolManager_Mono<GameObject>(this);
@@ -69,15 +74,14 @@ namespace GameFramePro
             while (PoolContainer.Count > 0)
             {
                 resultObject = PoolContainer.Pop();
-                if (resultObject == null)
-                    continue;
+                if (resultObject != null)
+                   break;
             }
 
             if (resultObject == null)
-                resultObject = ResourcesManager.Instantiate<GameObject>(PrefabTarget, PoolManagerTarget,false);
+                resultObject = ResourcesManager.Instantiate<GameObject>(PrefabTarget, PoolManagerTarget, false);
 
-            if (BeforGetAction != null)
-                BeforGetAction(resultObject);
+            BeforeGetAction?.Invoke(resultObject);
 
 
             return resultObject;
@@ -98,8 +102,5 @@ namespace GameFramePro
             item.transform.SetParent(PoolManagerTarget);
             PoolContainer.Push(item);
         }
-
-
-
     }
 }

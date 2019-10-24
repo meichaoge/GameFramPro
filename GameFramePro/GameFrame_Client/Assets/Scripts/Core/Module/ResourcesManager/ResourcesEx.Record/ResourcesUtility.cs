@@ -18,7 +18,7 @@ namespace GameFramePro.ResourcesEx
         {
             LoadAssetAssetRecord record = null;
 
-            if (AppSetting.S_IsLoadResourcesAssetPriority)
+            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsLoadResourcesAssetPriority)
             {
                 record = LocalResourcesManager.S_Instance.LoadAssetSync(assetPath);
                 if (record == null)
@@ -45,7 +45,7 @@ namespace GameFramePro.ResourcesEx
                 return;
             }
 
-            if (AppSetting.S_IsLoadResourcesAssetPriority)
+            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsLoadResourcesAssetPriority)
                 LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetPath, loadCallback, null);
             else
                 AssetBundleManager.S_Instance.LoadAssetAsync(assetPath, loadCallback);

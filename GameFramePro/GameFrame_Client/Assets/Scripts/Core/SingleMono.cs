@@ -8,7 +8,7 @@ using UnityEditor;
 [InitializeOnLoad]
 #endif
 /// <summary>///  Mono的单例泛型类/// </summary>
-public class Single_Mono<T> : MonoBehaviour where T : MonoBehaviour
+public class SingleMono<T> : MonoBehaviour where T : MonoBehaviour
 {
     /// <summary>/// 标示这个Mono  实例是否不会跟随场景销毁  默认会一起销毁/// </summary>
     protected virtual bool IsNotDestroyedOnLoad { get; } = false;
@@ -39,7 +39,7 @@ public class Single_Mono<T> : MonoBehaviour where T : MonoBehaviour
     {
         if (s_Instance != null && isIgnoreCheck)
             return s_Instance;
-        if (AppSetting.S_IsSingletonCreateSaftCheck)
+        if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsSingletonCreateSaftCheck)
         {
             try
             {

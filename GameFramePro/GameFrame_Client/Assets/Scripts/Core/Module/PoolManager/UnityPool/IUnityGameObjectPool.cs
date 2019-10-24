@@ -11,7 +11,7 @@ namespace GameFramePro.ResourcesEx
     /// <typeparam name="T"></typeparam>
     public  interface IUnityGameObjectPool : IUnityObjectPool 
     {
-        System.Action<GameObject> BeforGetAction { get; }
+        System.Action<GameObject> BeforeGetAction { get; }
         System.Action<GameObject> BeforeRecycleAction { get; }
         Stack<GameObject> PoolContainer { get; }
         GameObject PrefabTarget { get; }

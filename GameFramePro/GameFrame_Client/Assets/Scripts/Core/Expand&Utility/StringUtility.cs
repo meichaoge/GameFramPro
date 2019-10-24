@@ -14,6 +14,7 @@ namespace GameFramePro
         #region StringBuilder 对象池 避免不断的创建和销毁
 
         private static NativeObjectPool<StringBuilder> s_StringBuilderPool = new NativeObjectPool<StringBuilder>(5, builder => { builder.Clear(); }, null);
+
         /// <summary>
         /// 获取一个 StringBuilder 对象
         /// </summary>
@@ -22,17 +23,23 @@ namespace GameFramePro
         {
             return s_StringBuilderPool.GetItemFromPool();
         }
+
         /// <summary>
         /// 回收获取的 StringBuilder
         /// </summary>
         /// <param name="builder"></param>
-        public static void ReleaseStringBuilder(StringBuilder builder)
+        public static string ReleaseStringBuilder(StringBuilder builder)
         {
+            string content = String.Empty;
+            if (builder != null)
+                content = builder.ToString();
             s_StringBuilderPool.RecycleItemToPool(builder);
+            return content;
         }
 
 
-        private static NativeObjectPool<List<StringBuilder>> s_StringBuilderListPool = new NativeObjectPool<List<StringBuilder>>(5, null,null);
+        private static NativeObjectPool<List<StringBuilder>> s_StringBuilderListPool = new NativeObjectPool<List<StringBuilder>>(5, null, null);
+
         /// <summary>
         /// 获取一个 StringBuilder 对象
         /// </summary>
@@ -41,6 +48,7 @@ namespace GameFramePro
         {
             return s_StringBuilderListPool.GetItemFromPool();
         }
+
         /// <summary>
         /// 回收获取的 StringBuilder
         /// </summary>
@@ -54,16 +62,15 @@ namespace GameFramePro
             s_StringBuilderListPool.RecycleItemToPool(builder);
         }
 
-
         #endregion
 
         #region List<String> 对象池
+
         private static NativeObjectPool<List<string>> s_ListStringPool = new NativeObjectPool<List<string>>(5, stringList =>
         {
             if (stringList.Count != 0)
                 stringList.Clear();
         }, null);
-
 
         #endregion
 
@@ -76,7 +83,7 @@ namespace GameFramePro
         /// <param name="exceptCount">当这个值=0时候isAutoInitialed 无效，这个接口等同于string.Split()</param>
         /// <param name="isAutoInitialed"></param>
         /// <returns></returns>
-        public static string[] SplitString(this string targetStr,char split,uint exceptCount=0,bool isAutoInitialed=false)
+        public static string[] SplitString(this string targetStr, char split, uint exceptCount = 0, bool isAutoInitialed = false)
         {
             if (exceptCount == 0)
                 return targetStr.Split(split);
@@ -84,20 +91,53 @@ namespace GameFramePro
             string[] result = null;
             if (isAutoInitialed)
             {
-               result = new string[exceptCount];
+                result = new string[exceptCount];
                 var temp = targetStr.Split(split);
                 if (targetStr.Length != 0)
                 {
-                    int copyLength = Mathf.Min((int)exceptCount, temp.Length);
+                    int copyLength = Mathf.Min((int) exceptCount, temp.Length);
                     System.Array.Copy(temp, 0, result, 0, copyLength);
                 }
             }
             else
             {
-                result= targetStr.Split(split);
+                result = targetStr.Split(split);
             }
+
             return result;
         }
 
+        /// <summary>
+        /// 将字符串按照换行符切割
+        /// </summary>
+        /// <param name="isRemoveAllEmptyLine">标识是否自动过滤空行</param>
+        /// <returns></returns>
+        public static string[] SplitStringsToLines(this string targetStr, bool isRemoveAllEmptyLine = false)
+        {
+            if (string.IsNullOrEmpty(targetStr))
+            {
+                Debug.LogError($"给定的字符串为null");
+                return new string[0];
+            }
+
+            //得到的行偶数行是分隔符空行需要过滤
+            string[] result = targetStr.Split(System.Environment.NewLine.ToCharArray());
+
+            List<string> allLines = new List<string>(result.Length);
+            int index = 0;
+            foreach (var line in result)
+            {
+                ++index;
+                if (index % 2 == 0)
+                    continue;
+
+                if (isRemoveAllEmptyLine && String.IsNullOrEmpty(line))
+                    continue;
+
+                allLines.Add(line);
+            }
+
+            return allLines.ToArray();
+        }
     }
 }

@@ -8,9 +8,9 @@ namespace GameFramePro
     //资源追踪状态
     public enum TraceResourcesStateEnum
     {
-        Normal = 0,  //普通
+        Normal = 0, //普通
         Singtion = 1, //单例
-        NotDestroyGameObject = 2,  //不会销毁的Unity GameObject
+        NotDestroyGameObject = 2, //不会销毁的Unity GameObject
     }
 
     /// <summary>
@@ -24,16 +24,25 @@ namespace GameFramePro
         {
             public int InstanceID; //这里没有使用hashcode
             public TraceResourcesStateEnum ResourcesStateEnum;
-            public Object TargetResources;  //追踪对象
+            public Object TargetResources; //追踪对象
         }
 
         private static ResourcesTracker s_instance = null;
-        public static ResourcesTracker S_Instance { get { if (s_instance == null) s_instance = new ResourcesTracker(); return s_instance; } }
 
+        public static ResourcesTracker S_Instance
+        {
+            get
+            {
+                if (s_instance == null) s_instance = new ResourcesTracker();
+                return s_instance;
+            }
+        }
 
 
         #region Data 
+
         private static Dictionary<int, TraceReSourcesInfor> mAllTraceResourcesInfor = new Dictionary<int, TraceReSourcesInfor>();
+
         #endregion
 
         #region 追踪 UnityEngine.Object  对象
@@ -46,7 +55,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool RegisterTraceResources(UnityEngine.Object obj, TraceResourcesStateEnum stateEnum)
         {
-            if (Application.isPlaying == false || AppSetting.S_IsTraceResourceCreate == false)
+            if (Application.isPlaying == false || ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTraceRecourceCreate == false)
                 return false;
 
             if (obj == null)
@@ -61,16 +70,18 @@ namespace GameFramePro
             {
                 if (infor != null)
                 {
-                    if ((infor.ResourcesStateEnum & stateEnum) != 0)  //判断是否已经包含了这一状态
+                    if ((infor.ResourcesStateEnum & stateEnum) != 0) //判断是否已经包含了这一状态
                     {
                         Debug.LogEditorInfor(string.Format("RegistTraceResources Fail,Already exit Target instanceid={0} ,state is {1}", instanceId, stateEnum));
                         return false;
                     }
+
                     infor.ResourcesStateEnum = infor.ResourcesStateEnum | stateEnum; //新增这个状态
 
                     return true;
                 }
             }
+
             infor = new TraceReSourcesInfor();
             infor.InstanceID = instanceId;
             infor.ResourcesStateEnum = stateEnum;
@@ -167,7 +178,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool UnRegisterTraceResources(UnityEngine.Object obj)
         {
-            if (Application.isPlaying == false || AppSetting.S_IsTraceResourceCreate == false)
+            if (Application.isPlaying == false || ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTraceRecourceCreate == false)
                 return false;
             if (obj == null)
             {
@@ -204,8 +215,5 @@ namespace GameFramePro
         }
 
         #endregion
-
-
-
     }
 }

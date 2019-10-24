@@ -182,10 +182,10 @@ namespace GameFramePro.Localization
         /// </summary>
         private string LoadLocalizationConfig(Language language)
         {
-            string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(AppSetting.S_LocalizationExportFormatType, language));
+            string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(ApplicationManager.S_Instance.mApplicationConfigureSettings.mLocalizationExportFormatType, language));
             string content = ResourcesManager.LoadTextAssetSync(filePath.GetPathWithOutExtension());
 
-            GetLocalizationConfigByFormat(content, language, AppSetting.S_LocalizationExportFormatType);
+            GetLocalizationConfigByFormat(content, language, ApplicationManager.S_Instance.mApplicationConfigureSettings.mLocalizationExportFormatType);
 
             Debug.LogInfor(string.Format("完成加载语言 {0}的本地化配置", language));
             return string.Empty;

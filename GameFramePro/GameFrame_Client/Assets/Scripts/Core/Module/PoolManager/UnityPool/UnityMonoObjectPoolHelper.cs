@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using GameFramePro.ResourcesEx;
 
 namespace GameFramePro
 {
     /// <summary>
     /// 负责辅助生成 UnityMonoObjectPool 
     /// </summary>
-    public class UnityMonoObjectPoolHelper : Single_Mono<UnityMonoObjectPoolHelper>
+    public class UnityMonoObjectPoolHelper : SingleMono<UnityMonoObjectPoolHelper>
     {
         private readonly string R_UnityPoolManagerPrefix = "UnityPoolManger_"; //Unity 对象池父节点名称前缀
         private Dictionary<string, Transform> mAllPoolMonoObjects = new Dictionary<string, Transform>();
 
-        protected override bool IsNotDestroyedOnLoad { get;  } = true; //标示不会一起销毁
+        protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不会一起销毁
 
 
         /// <summary>
@@ -70,5 +71,8 @@ namespace GameFramePro
             Debug.LogError(string.Format("RecycleUnityPoolManagerTransParent Fail,the poolName={0} connect Transform Not Record Or Aleady Destroyed", poolName));
             return;
         }
+
+
+      
     }
 }

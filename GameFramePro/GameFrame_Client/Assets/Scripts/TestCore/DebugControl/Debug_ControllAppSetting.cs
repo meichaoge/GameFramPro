@@ -17,8 +17,8 @@ public class Debug_ControllAppSetting : MonoBehaviour
 
     private void OnValidate()
     {
-        AppSetting.S_IsLoadResourcesAssetPriority = IsLoadResourcesAssetPriorit;
-        AppSetting.S_IsClickEffectEnable = IsClickEffectEnable;
+        ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsLoadResourcesAssetPriority = IsLoadResourcesAssetPriorit;
+        ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsClickEffectEnable = IsClickEffectEnable;
         Debug.S_LogColorDefine.mInforLevelColor = ColorExpand.ColotToHtm(Debug_InforLevelColor);
         Debug.S_LogColorDefine.mEditorInforLevelColor = ColorExpand.ColotToHtm(Debug_EditorInforLevelColor);
         Debug.S_LogColorDefine.mEditorErroColor = ColorExpand.ColotToHtm(Debug_EditorErroColor);

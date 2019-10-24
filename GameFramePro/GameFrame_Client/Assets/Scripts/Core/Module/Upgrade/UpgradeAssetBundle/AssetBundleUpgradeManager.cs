@@ -290,11 +290,13 @@ namespace GameFramePro.Upgrade
                     {
                         yield return downloadTask.TaskSuperCoroutinenfor.WaitDone(true);
 
-                        if (downloadTask.DownloadTaskCallbackData == null || downloadTask.DownloadTaskCallbackData.isNetworkError || downloadTask.DownloadTaskCallbackData.isDone == false)
-                            Debug.LogError("OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null");
+                        var downLoadCallback = downloadTask.DownloadTaskCallbackData;
+                        
+                        if (downLoadCallback == null || downLoadCallback.isNetworkError || downLoadCallback.isDone == false||downLoadCallback.isHttpError)
+                            Debug.LogError($"OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null   {downLoadCallback?.url}");
                         else
                         {
-                            mServerBundleAssetConfigInfor = SerializeManager.DeserializeObject<AssetBundleAssetTotalInfor>((downloadTask.DownloadTaskCallbackData.downloadHandler as DownloadHandlerBuffer).text);
+                            mServerBundleAssetConfigInfor = SerializeManager.DeserializeObject<AssetBundleAssetTotalInfor>((downLoadCallback.downloadHandler as DownloadHandlerBuffer).text);
                             if (mServerBundleAssetConfigInfor != null)
                                 yield break;
                         }

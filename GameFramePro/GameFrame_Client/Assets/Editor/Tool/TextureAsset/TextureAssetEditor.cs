@@ -104,7 +104,7 @@ namespace GameFramePro.EditorEx
             SetSelectAssetTexturePakeNameOrFormat(Selection.objects, true, false, true);
         }
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 格式(EditorApplicationSetting 下定义)(自动导入)", false, 15)]
+        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 格式(自动导入)", false, 15)]
         private static void AutoSetUITexturesFormat_AutoImport()
         {
             if (CheckIfSelectAnyAsset() == false) return;
@@ -112,7 +112,7 @@ namespace GameFramePro.EditorEx
             SetSelectAssetTexturePakeNameOrFormat(Selection.objects, false, true, true);
         }
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 PackName和格式(EditorApplicationSetting 下定义)(自动导入)", false, 10)]
+        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 PackName和格式(自动导入)", false, 10)]
         private static void AutoSetUITexturesPakeNamesAndFormat_AutoImport()
         {
             if (CheckIfSelectAnyAsset() == false) return;
@@ -133,7 +133,8 @@ namespace GameFramePro.EditorEx
                 if (IOUtility.IsDirectoryPath(selectObjectRelativePath) == false)
                 {
                     string packName = IOUtility.GetPathDirectoryNameByDeep(selectObjectRelativePath);
-                    SetTextureImportSettingOfPlamt(selectObjectRelativePath, TextureImporterType.Sprite, isAutoImport, EditorApplicationSetting.S_DefaultTetureImportFormat, isSetFormat, packName, isSetPackName);
+
+                    SetTextureImportSettingOfPlamt(selectObjectRelativePath, TextureImporterType.Sprite, isAutoImport, isSetFormat, packName, isSetPackName);
                 }
                 else
                 {
@@ -154,7 +155,8 @@ namespace GameFramePro.EditorEx
                         ++realTextureCount;
 
                         string packName = System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetDirectoryName(assetRelativePath));
-                        SetTextureImportSettingOfPlamt(assetRelativePath, TextureImporterType.Sprite, isAutoImport, EditorApplicationSetting.S_DefaultTetureImportFormat, isSetFormat, packName, isSetPackName);
+
+                        SetTextureImportSettingOfPlamt(assetRelativePath, TextureImporterType.Sprite, isAutoImport, isSetFormat, packName, isSetPackName);
                     }
 
                     Debug.LogEditorInfor(string.Format("目录 {0} 下设置了 {1} 个图片(.jpg|.png)", selectObjectRelativePath, realTextureCount));
@@ -309,7 +311,7 @@ namespace GameFramePro.EditorEx
 
 
         /// <summary>/// 设置多个平台下的图片导入格式/// </summary>
-        private static void SetTextureImportSettingOfPlamt(string assetPath, TextureImporterType textureType, bool isAutoImport, TextureImporterFormat format, bool isFormatSetEnable, string packingTag, bool isPackingTagEnable = false)
+        private static void SetTextureImportSettingOfPlamt(string assetPath, TextureImporterType textureType, bool isAutoImport, bool isFormatSetEnable, string packingTag, bool isPackingTagEnable = false)
         {
             TextureImporter import = AssetImporter.GetAtPath(assetPath) as TextureImporter;
             if (import == null)
@@ -352,11 +354,14 @@ namespace GameFramePro.EditorEx
 
             if (isFormatSetEnable)
             {
-                isNeedReImport = SetTextureImportFormatOfPlamt(isNeedReImport, import, format, width_Power2, height_Power2);
+                isNeedReImport = SetTextureImportFormatOfPlamt(isNeedReImport, import, width_Power2, height_Power2);
             }
 
             if (isNeedReImport)
-                AssetDatabase.ImportAsset(import.assetPath);
+            {
+               
+                AssetDatabase.Refresh();
+            }
         }
 
         /// <summary>
@@ -365,28 +370,42 @@ namespace GameFramePro.EditorEx
         /// <param name="import"></param>
         /// <param name="textureType"></param>
         /// <param name="packingTag"></param>
-        /// <param name="format"></param>
-        private static bool SetTextureImportFormatOfPlamt(bool isNeedReimport, TextureImporter import, TextureImporterFormat format, int width_Power2, int height_Power2)
+        private static bool SetTextureImportFormatOfPlamt(bool isNeedReimport, TextureImporter import, int width_Power2, int height_Power2)
         {
+            
+            Debug.Log($"尝试更新{import.assetPath} 的格式");
+            
+            
             //Default 
-            TextureImporterPlatformSettings defaultSetting = import.GetPlatformTextureSettings("Standalone");
-            if (isNeedReimport || defaultSetting.format != format)
+            TextureImporterPlatformSettings defaultSetting = import.GetDefaultPlatformTextureSettings();  // import.GetPlatformTextureSettings("DefaultTexturePlatform"); 
+            if (isNeedReimport || defaultSetting.format != TextureImporterFormat.RGBA32)
             {
                 isNeedReimport = true;
-                defaultSetting.format = format;
+                defaultSetting.format = TextureImporterFormat.RGBA32;
                 defaultSetting.overridden = true;
                 defaultSetting.resizeAlgorithm = TextureResizeAlgorithm.Bilinear;
                 defaultSetting.maxTextureSize = Mathf.Max(width_Power2, height_Power2);
                 import.SetPlatformTextureSettings(defaultSetting);
             }
-
+            
+            //Standalone
+            TextureImporterPlatformSettings StandaloneSetting = import.GetPlatformTextureSettings("Standalone");
+            if (isNeedReimport || StandaloneSetting.format != ApplicationEditorConfigure.S_Instance.mTextureImportFormat_Standalone)
+            {
+                isNeedReimport = true;
+                StandaloneSetting.format = ApplicationEditorConfigure.S_Instance.mTextureImportFormat_Standalone;
+                StandaloneSetting.overridden = true;
+                StandaloneSetting.resizeAlgorithm = TextureResizeAlgorithm.Bilinear;
+                StandaloneSetting.maxTextureSize = Mathf.Max(width_Power2, height_Power2);
+                import.SetPlatformTextureSettings(StandaloneSetting);
+            }
 
             //Android 
             TextureImporterPlatformSettings AndroidSetting = import.GetPlatformTextureSettings("Android");
-            if (isNeedReimport || AndroidSetting.format != format)
+            if (isNeedReimport || AndroidSetting.format != ApplicationEditorConfigure.S_Instance.mTextureImportFormat_Android)
             {
                 isNeedReimport = true;
-                AndroidSetting.format = format;
+                AndroidSetting.format = ApplicationEditorConfigure.S_Instance.mTextureImportFormat_Android;
                 AndroidSetting.overridden = true;
                 AndroidSetting.resizeAlgorithm = TextureResizeAlgorithm.Bilinear;
                 AndroidSetting.maxTextureSize = Mathf.Max(width_Power2, height_Power2);
@@ -396,16 +415,17 @@ namespace GameFramePro.EditorEx
 
             //IOS
             TextureImporterPlatformSettings iPhoneSetting = import.GetPlatformTextureSettings("iPhone");
-            if (isNeedReimport || iPhoneSetting.format != format)
+            if (isNeedReimport || iPhoneSetting.format != ApplicationEditorConfigure.S_Instance.mTexureImportFormat_Ios)
             {
                 isNeedReimport = true;
-                iPhoneSetting.format = format;
+                iPhoneSetting.format = ApplicationEditorConfigure.S_Instance.mTexureImportFormat_Ios;
                 iPhoneSetting.overridden = true;
                 iPhoneSetting.resizeAlgorithm = TextureResizeAlgorithm.Bilinear;
                 iPhoneSetting.maxTextureSize = Mathf.Max(width_Power2, height_Power2);
-                iPhoneSetting.format = format;
                 import.SetPlatformTextureSettings(iPhoneSetting);
             }
+
+            AssetDatabase.ImportAsset(import.assetPath);
 
             return isNeedReimport;
         }

@@ -242,7 +242,7 @@ namespace GameFramePro.UI
             }
             else
             {
-                RecordInvisibleRealTime = AppManager.S_Instance.CurrentRealTime; //记录不可见的时间
+                RecordInvisibleRealTime = AppEntryManager.S_Instance.CurrentRealTime; //记录不可见的时间
                 UIPageManagerUtility.S_Instance.RegisterUIBasePageInvisible(this);
             }
         }

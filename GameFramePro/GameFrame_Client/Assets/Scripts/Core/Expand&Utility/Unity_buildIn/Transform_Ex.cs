@@ -16,6 +16,7 @@ public static class Transform_Ex
             Debug.LogError("GetAddComponent  Fail,Target Transform Is Null");
             return null;
         }
+
         Debug.Log(typeof(T));
         T result = target.GetComponent<T>();
         if (result == null)
@@ -31,6 +32,7 @@ public static class Transform_Ex
     {
         target.ResetTransProperty(Vector3.zero, Vector3.one, Quaternion.identity);
     }
+
     /// <summary>
     /// / 重置 TransForm 位置属性
     /// </summary>
@@ -40,6 +42,7 @@ public static class Transform_Ex
     {
         target.ResetTransProperty(transpos, Vector3.one, Quaternion.identity);
     }
+
     /// <summary>
     /// / 重置 TransForm 位置属性
     /// </summary>
@@ -50,6 +53,7 @@ public static class Transform_Ex
     {
         target.ResetTransProperty(transpos, localScale, Quaternion.identity);
     }
+
     /// <summary>
     /// / 重置 TransForm 位置属性
     /// </summary>
@@ -70,7 +74,7 @@ public static class Transform_Ex
     /// <param name="target"></param>
     /// <param name="root"></param>
     /// <returns></returns>
-    public static string GetTransRelativePathToRoot(this Transform target,Transform root)
+    public static string GetTransRelativePathToRoot(this Transform target, Transform root)
     {
         string path = string.Empty;
         List<StringBuilder> stringBuilders = StringUtility.GetStringBuilderList();
@@ -84,16 +88,17 @@ public static class Transform_Ex
             stringBuilders.Add(builder);
 
             trans = trans.parent;
-
         }
+
         stringBuilders.Reverse();
-        StringBuilder pathBuilder= StringUtility.GetStringBuilder();
+        StringBuilder pathBuilder = StringUtility.GetStringBuilder();
         for (int dex = 0; dex < stringBuilders.Count; dex++)
         {
             pathBuilder.Append(stringBuilders[dex]);
             if (dex != stringBuilders.Count - 1)
                 pathBuilder.Append("/");
         }
+
         path = pathBuilder.ToString();
         StringUtility.ReleaseStringBuilder(pathBuilder);
         StringUtility.ReleaseStringBuilderList(stringBuilders);
@@ -106,13 +111,14 @@ public static class Transform_Ex
     /// </summary>
     /// <param name="includeInactive">是否包含不可见节点 默认包含</param>
     /// <returns></returns>
-    public static List<Transform> GetAllChildsTrans(this Transform target, bool includeInactive=true)
+    public static List<Transform> GetAllDirectChildsTrans(this Transform target, bool includeInactive = true)
     {
         if (target == null)
         {
             Debug.LogError("当前参数为null");
             return null;
         }
+
         List<Transform> allChildTrans = new List<Transform>(target.childCount);
         if (target.childCount == 0)
             return allChildTrans;
@@ -124,6 +130,36 @@ public static class Transform_Ex
                 continue;
             allChildTrans.Add(Trans);
         }
+
+        return allChildTrans;
+    }
+
+    /// <summary>
+    /// 获取所有的直接子节点
+    /// </summary>
+    /// <param name="includeInactive">是否包含不可见节点 默认包含</param>
+    /// <returns></returns>
+    public static List<RectTransform> GetAllDirectChildsRectTrans(this Transform target, bool includeInactive = true)
+    {
+        if (target == null)
+        {
+            Debug.LogError("当前参数为null");
+            return null;
+        }
+
+        List<RectTransform> allChildTrans = new List<RectTransform>(target.childCount);
+        if (target.childCount == 0)
+            return allChildTrans;
+
+        for (int dex = 0; dex < target.childCount; dex++)
+        {
+            var rectTransform = target.GetChild(dex) as RectTransform;
+            if (rectTransform == null) continue;
+            if (includeInactive == false && rectTransform.gameObject.activeSelf == false)
+                continue;
+            allChildTrans.Add(rectTransform);
+        }
+
         return allChildTrans;
     }
 
@@ -147,6 +183,7 @@ public static class Transform_Ex
             stringBuilders.Add(trans.name);
             trans = trans.parent;
         }
+
         stringBuilders.Reverse();
         StringBuilder pathBuilder = new StringBuilder();
         for (int dex = 0; dex < stringBuilders.Count; dex++)
@@ -155,6 +192,7 @@ public static class Transform_Ex
             if (dex != stringBuilders.Count - 1)
                 pathBuilder.Append("/");
         }
+
         path = pathBuilder.ToString();
         return path;
     }

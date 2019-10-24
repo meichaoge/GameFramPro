@@ -12,7 +12,7 @@ namespace GameFramePro.ResourcesEx
     public class UnityMonoPoolItemInfor
     {
         public GameObject mTargetObject = null;
-        public MonoBehaviour mTargetScript = null;  //关联的脚本
+        public MonoBehaviour mTargetScript = null; //关联的脚本
     }
 
 
@@ -21,7 +21,7 @@ namespace GameFramePro.ResourcesEx
     /// </summary>
     public interface IUnityMonoPool<T> : IUnityObjectPool where T : MonoBehaviour
     {
-        System.Action<T> BeforGetAction { get; }
+        System.Action<T> BeforeGetAction { get; }
         System.Action<T> BeforeRecycleAction { get; }
         Stack<UnityMonoPoolItemInfor> PoolContainer { get; }
         GameObject PrefabTarget { get; }

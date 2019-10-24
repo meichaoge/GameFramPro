@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 namespace GameFramePro
 {
     /// <summary>/// 异步&协程管理器/// </summary>
-    public class AsyncManager : Single_Mono<AsyncManager>
+    public class AsyncManager : SingleMono<AsyncManager>
     {
         protected override bool IsNotDestroyedOnLoad { get; } = true;
 

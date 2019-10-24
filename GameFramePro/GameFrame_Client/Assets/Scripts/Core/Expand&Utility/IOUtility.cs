@@ -85,6 +85,22 @@ namespace GameFramePro
             return true;
         }
 
+            
+        /// <summary>/// 读取指定路径上文件的全部信息/// </summary>
+        /// <returns>返回值标示是否读取生成 返回一行一行的数据</returns>
+        public static bool GetFileContentAllLines(string filePath, out string[] content)
+        {
+            content = null;
+            if (System.IO.File.Exists(filePath) == false)
+            {
+                Debug.LogError("GetFileContent Fail,Not Exit File Path " + filePath);
+                return false;
+            }
+
+            content = System.IO.File.ReadLines(filePath).ToArray();
+            return true;
+        }
+        
         /// <summary>
         /// 文件重命名
         /// </summary>

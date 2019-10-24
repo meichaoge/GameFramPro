@@ -50,12 +50,12 @@ namespace GameFramePro
 //          protected override void InitialSingleton()
 //          {
 //              base.InitialSingleton();
-//         //     AppManager.S_Instance.RegisterUpdateTick(this);
+//         //     AppEntryManager.S_Instance.RegisterUpdateTick(this);
 //
 //          }
 //          public override void DisposeInstance()
 //          {
-//        //      AppManager.S_Instance.UnRegisterUpdateTick(this);
+//        //      AppEntryManager.S_Instance.UnRegisterUpdateTick(this);
 //              base.DisposeInstance();
 //          }
 
