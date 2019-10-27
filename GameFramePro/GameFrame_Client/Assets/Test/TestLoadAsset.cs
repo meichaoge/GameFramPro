@@ -17,29 +17,62 @@ public class TestLoadAsset : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath);
+            LoadAssetResult<Sprite> loadAssetResult = ResourcesManager.LoadAssetSync<Sprite>(assetPath);
+            if(loadAssetResult==null)
+            {
+                mTarget.sprite = null;
+                return;
+            }
+            loadAssetResult.ReferenceWithComponent(mTarget, (sprite) =>
+            {
+                if (mTarget.sprite== sprite)
+                    return false;
+
+                ResourcesManager.ReleaseComponentReferenceAsset<Sprite>(mTarget, mTarget.sprite);
+                mTarget.sprite = sprite;
+                return true;
+            });
         }
 
         if (Input.GetKeyDown(KeyCode.B))
         {
-            ResourcesManager.CloneImageSprite(mTarget, mTarget2);
+            mTarget.sprite = mTarget2.sprite;
         }
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            var reference = ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath, false);
-            if (reference != null)
-                reference.SetSprite(mTarget);
+//            var reference = ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath, false);
+//            if (reference != null)
+//                reference.SetSprite(mTarget);
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            var reference = ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath, false);
+//            var reference = ResourcesManager.SetImageSpriteByPathSync(mTarget, assetPath, false);
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            ResourcesManager.SetImageSpriteByPathAsync(mTarget, assetPath, null);
+            ResourcesManager.LoadAssetAsync<Sprite>(assetPath, (spriteResult) =>
+            {
+                if (spriteResult == null || spriteResult.IsLoadAssetEnable == false)
+                {
+                    ResourcesManager.ReleaseComponentReferenceAsset<Sprite>(mTarget, mTarget.sprite);
+                    mTarget.sprite = null;
+                    return;
+                }
+
+                spriteResult.ReferenceWithComponent(mTarget, (sprite) =>
+                {
+                    if (mTarget.sprite == sprite)
+                        return false;
+
+                    ResourcesManager.ReleaseComponentReferenceAsset<Sprite>(mTarget, mTarget.sprite);
+                    mTarget.sprite = sprite;
+                    return true;
+                });
+
+            });
         }
     }
 }

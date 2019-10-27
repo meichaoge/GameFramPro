@@ -17,7 +17,21 @@ public class TestTextAsset : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.D))
         {
-            mTextAsset = ResourcesManager.LoadTextAssetSync(mPath);
+            LoadAssetResult<TextAsset> assetResult = ResourcesManager.LoadAssetSync<TextAsset>(mPath);
+            if(assetResult==null|| assetResult.IsLoadAssetEnable == false)
+            {
+                mTextAsset = string.Empty;
+                return;
+            }
+            assetResult.ReferenceWithComponent(null, (textAsset) => {
+                if (textAsset == null)
+                    mTextAsset = string.Empty;
+                else
+                    mTextAsset = textAsset.text;
+                return false;
+            });
+
+
             Debug.Log("加载配置文件成功");
         }
     }

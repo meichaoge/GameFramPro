@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using GameFramePro.ResourcesEx;
 using Object = UnityEngine.Object;
+using GameFramePro.ResourcesEx.Reference;
 
 namespace GameFramePro
 {
@@ -30,7 +31,6 @@ namespace GameFramePro
         {
             if (obj == null) return;
             ResourcesTracker.UnRegisterTraceResources(obj);
-            ResourcesUtility.ReleaseComponentReference(obj);
             GameObject.Destroy(obj);
         }
 
@@ -38,7 +38,6 @@ namespace GameFramePro
         {
             if (obj == null) return;
             ResourcesTracker.UnRegisterTraceResources(obj);
-            ResourcesUtility.ReleaseComponentReference(obj);
             GameObject.DestroyImmediate(obj);
         }
 
@@ -136,180 +135,256 @@ namespace GameFramePro
 
         #region 资源加载接口
 
-        #region TextAsset/lua 文件的加载
-
-        private static readonly Dictionary<string, string> mAllCacheTextInfor = new Dictionary<string, string>(); //缓存所有加载的文本资源
-
-        /// <summary>/// 文本资源的加载(一般是配置文件或者lua 文件)/// </summary>
-        public static string LoadTextAssetSync(string assetPath, bool isForceReload = false)
+        /// <summary>
+        /// 同步加载指定的资源 并且没有增加引用计数，如果需要使用这个资源需要调用 ReferenceWithComponent接口
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="assetPath"></param>
+        /// <param name="isForceReload"></param>
+        /// <returns></returns>
+        public static LoadAssetResult<T> LoadAssetSync<T>(string assetPath, bool isForceReload = false) where T : UnityEngine.Object
         {
-            string resultStr = string.Empty;
-            if (isForceReload == false)
-            {
-                if (mAllCacheTextInfor.TryGetValue(assetPath, out resultStr) && string.IsNullOrEmpty(resultStr) == false)
-                    return resultStr;
-            }
+            var objectAssetRecord = LoadAssetRecordSync(assetPath);
+            if (objectAssetRecord == null)
+                return null;
+            T result = null;
+            if (typeof(T) == typeof(Sprite))
+                result = GetSpriteAssetFromLoadAsset(objectAssetRecord.GetLoadAsset()) as T;
+            else
+                result = objectAssetRecord.GetLoadAsset() as T;
 
-            var assetRecord = ResourcesUtility.LoadAssetSync(assetPath);
-            if (assetRecord != null && assetRecord.IsReferenceEnable)
-            {
-                resultStr = assetRecord.LoadBasicObjectAssetInfor.LoadTextAssetContent();
-                mAllCacheTextInfor[assetPath] = resultStr;
-                return resultStr;
-            }
+            ReferenceAssetManager.S_Instance.AddWeakReference<T>(result, objectAssetRecord);
 
-            Debug.LogError("获取文本 资源失败 " + assetPath);
-            return resultStr;
+            return new LoadAssetResult<T>(result);
         }
 
-        public static void LoadTextAssetAsync(string assetPath, System.Action<string> textAssetAction, bool isForceReload = false)
+
+        //通用异步加载接口
+        public static void LoadAssetAsync<T>(string assetPath, System.Action<LoadAssetResult<T>> completeCallback, bool isForceReload = false) where T : UnityEngine.Object
         {
-            string resultStr = string.Empty;
-            if (isForceReload == false)
+            if (completeCallback != null)
             {
-                if (mAllCacheTextInfor.TryGetValue(assetPath, out resultStr) && string.IsNullOrEmpty(resultStr) == false)
+                LoadAssetRecordAsync(assetPath, (assetRecord) =>
                 {
-                    textAssetAction?.Invoke(resultStr);
-                    return;
-                }
-            }
-
-            ResourcesUtility.LoadAssetAsync(assetPath, (assetRecord) =>
-            {
-                if (assetRecord != null && assetRecord.IsReferenceEnable)
-                {
-                    resultStr = assetRecord.LoadBasicObjectAssetInfor.LoadTextAssetContent();
-                    mAllCacheTextInfor[assetPath] = resultStr;
-                    textAssetAction?.Invoke(resultStr);
-                    return;
-                }
-
-                Debug.LogError("获取文本 资源失败 " + assetPath);
-                textAssetAction?.Invoke(null);
-            });
-        }
-
-        #endregion
-
-        #region Sprite 加载
-
-        /// <summary>/// 根据路径加载图片资源 同步接口 .isAutoAttachReferenceAsset=true标示默认关联指定的图片资源；isForceCreateInstance=false 则标示 优先引用已经存在的引用资源/// </summary>
-        public static BaseBeReferenceInformation SetImageSpriteByPathSync(Image targetImage, string assetPath, bool isAutoAttachReferenceAsset = true, bool isForceCreateInstance = false)
-        {
-            LoadAssetAssetRecord targetRecord = null;
-            if (string.IsNullOrEmpty(assetPath) == false)
-                targetRecord = ResourcesUtility.LoadAssetSync(assetPath);
-            return ResourcesUtility.SetImageSpriteFromRecord(targetImage, targetRecord, isAutoAttachReferenceAsset, isForceCreateInstance);
-        }
-
-        /// <summary>/// 根据路径加载图片资源 异步接口 .isAutoAttachReferenceAsset=true标示默认关联指定的图片资源；isForceCreateInstance=false 则标示 优先引用已经存在的引用资源/// </summary>
-        public static void SetImageSpriteByPathAsync(Image targetImage, string assetPath, Action<BaseBeReferenceInformation> afterAttachSpriteAction, bool isAutoAttachReferenceAsset = true, bool isForceCreateInstance = false)
-        {
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                var assetInfor = ResourcesUtility.SetImageSpriteFromRecord(targetImage, null, isAutoAttachReferenceAsset, isForceCreateInstance);
-                afterAttachSpriteAction?.Invoke(assetInfor);
+                    if (assetRecord == null)
+                    {
+                        completeCallback?.Invoke(null);
+                        return;
+                    }
+                    T result = null;
+                    if (typeof(T) == typeof(Sprite))
+                        result = GetSpriteAssetFromLoadAsset(assetRecord.GetLoadAsset()) as T;
+                    else
+                        result = assetRecord.GetLoadAsset() as T;
+                    ReferenceAssetManager.S_Instance.AddWeakReference<T>(result, assetRecord);
+                    completeCallback?.Invoke(new LoadAssetResult<T>(result));
+                });
             }
             else
             {
-                ResourcesUtility.LoadAssetAsync(assetPath, (assetRecord) =>
-                {
-                    var assetInfor = ResourcesUtility.SetImageSpriteFromRecord(targetImage, assetRecord, isAutoAttachReferenceAsset, isForceCreateInstance);
-                    afterAttachSpriteAction?.Invoke(assetInfor);
-                });
+                LoadAssetRecordAsync(assetPath, null);
             }
         }
 
-        /// <summary>/// 从 fromImage 上获取引用的的资源克隆到 toImage/// </summary>
-        public static BaseBeReferenceInformation CloneImageSprite(Image fromImage, Image toImage, bool isAutoAttachReferenceAsset = true)
+    
+        /// <summary>
+        /// 从加载的资源中获取精灵对象
+        /// </summary>
+        /// <param name="objectAsset"></param>
+        /// <returns></returns>
+        private static Sprite GetSpriteAssetFromLoadAsset(Object objectAsset)
         {
-            var fromsourceReference = ReferenceAssetUtility.GetComponentReference(fromImage, FindAssetReferenceUtility.GetSpriteAssetReference, false);
-            var totargetReference = ReferenceAssetUtility.GetComponentReference(toImage, FindAssetReferenceUtility.GetSpriteAssetReference, false);
+            if (objectAsset == null)
+                return null;
+            GameObject go = objectAsset as GameObject;
+            if (go == null)
+                return null;
+            SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+                return renderer.sprite;
+            return null;
+        }
 
-            //判断是否引用相同的资源 如果是就不需要克隆
-            bool isReferenceAssetEqual = fromsourceReference == null && totargetReference == null;
-            if (isReferenceAssetEqual == false)
-                isReferenceAssetEqual = totargetReference != null && totargetReference.IsReferenceEqual(fromsourceReference); //判断是否引用相同的资源
-            if (isReferenceAssetEqual)
-            {
-#if UNITY_EDITOR
-                Debug.LogEditorInfor($"克隆对象与当前对象引用相同的资源");
-#endif
-                return totargetReference;
-            }
 
-            if (totargetReference != null)
-            {
-                if (isAutoAttachReferenceAsset)
-                    ReferenceAssetUtility.ReleaseComponentReference(toImage, totargetReference); //释放当前引用资源 以及删除对象引用记录
-            }
+        //实例化GameObject 专用接口 
+        public static GameObject InstantiateAssetSync(string assetPath, Transform parent, Vector3 localPositon, Quaternion rotation)
+        {
+            var objectAssetRecord = LoadAssetRecordSync(assetPath);
+            if (objectAssetRecord == null)
+                return null;
 
-            if (fromsourceReference == null || fromsourceReference.IsReferenceAssetEnable == false)
+            GameObject prefab = objectAssetRecord.GetLoadAsset() as GameObject;
+            if (prefab == null)
             {
-                if (isAutoAttachReferenceAsset)
-                {
-                    if (totargetReference != null)
-                        ReferenceAssetUtility.ReleaseComponentReference(toImage, totargetReference);
-                    toImage.sprite = null;
-                }
+                Debug.LogError($"加载资源{assetPath} 失败");
                 return null;
             }
 
-            //注意这里第二个参数是创建一个新的对象 而不是直接使用源对象，避免由于源对象设置为null 导致的异常
-            BaseBeReferenceInformation newBeReferenceInformation = new BaseBeReferenceInformation(fromsourceReference);
-            ReferenceAssetUtility.AddObjectComponentReference(toImage, newBeReferenceInformation, isAutoAttachReferenceAsset);
-
-            if (isAutoAttachReferenceAsset)
-                toImage.sprite = fromImage.sprite;
-
-            return newBeReferenceInformation;
+            GameObject go = Instantiate(prefab, localPositon, rotation, parent);
+            ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, objectAssetRecord);
+            return go;
         }
 
-        #endregion
-
-        #region GameObject加载
-
-        /// <summary>/// 根据给定的路径 实例化一个对象在 指定的父节点上/// </summary>/// <param name="isForceCreateInstance">标示是否是强制创建一个新的对象</param>
-        public static BaseBeReferenceGameObjectInformation InstantiateGameObjectByPathSync(Transform targetParent, string assetPath, bool isForceCreateInstance)
+        public static GameObject InstantiateAssetSync(string assetPath, Transform parent, bool worldPositionStays)
         {
-            if (string.IsNullOrEmpty(assetPath))
-                return ResourcesUtility.InstantiateGameObjectFromRecord(targetParent, null, isForceCreateInstance);
-            return ResourcesUtility.InstantiateGameObjectFromRecord(targetParent, ResourcesUtility.LoadAssetSync(assetPath), isForceCreateInstance);
-        }
-
-        /// <summary>/// 根据给定的路径 实例化一个对象在 指定的父节点上/// </summary>
-        /// <param name="isForceCreateInstance">标示是否是强制创建一个新的对象</param>
-        public static void InstantiateGameObjectByPathAsync(Transform targetParent, string assetPath, bool isForceCreateInstance, Action<BaseBeReferenceGameObjectInformation> afterInitialedInstanceAction = null)
-        {
-            if (string.IsNullOrEmpty(assetPath))
+            var objectAssetRecord = LoadAssetRecordSync(assetPath);
+            if (objectAssetRecord == null)
+                return null;
+            GameObject prefab = objectAssetRecord.GetLoadAsset() as GameObject;
+            if (prefab == null)
             {
-                BaseBeReferenceGameObjectInformation gameObject = ResourcesUtility.InstantiateGameObjectFromRecord(targetParent, null, isForceCreateInstance);
-                afterInitialedInstanceAction?.Invoke(gameObject);
+                Debug.LogError($"加载资源{assetPath} 失败");
+                return null;
+            }
+
+            GameObject go = Instantiate(prefab, parent, worldPositionStays);
+            ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, objectAssetRecord);
+            return go;
+        }
+
+        //异步实例化对象
+        public static void InstantiateAssetAsync(string assetPath, System.Action<GameObject> completeCallback, Transform parent, Vector3 localPositon, Quaternion rotation)
+        {
+            if (completeCallback != null)
+            {
+                LoadAssetRecordAsync(assetPath, (assetRecord) =>
+                {
+                    if (assetRecord == null)
+                    {
+                        completeCallback?.Invoke(null);
+                        return;
+                    }
+
+                    GameObject prefab = assetRecord.GetLoadAsset() as GameObject;
+                    if (prefab == null)
+                    {
+                        Debug.LogError($"加载资源{assetPath} 失败");
+                        completeCallback.Invoke(null);
+                    }
+                    else
+                    {
+                        GameObject go = Instantiate(prefab, localPositon, rotation, parent);
+                        ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, assetRecord);
+                        completeCallback.Invoke(go);
+                    }
+                });
             }
             else
             {
-                ResourcesUtility.LoadAssetAsync(assetPath, (assetRecord) =>
+                LoadAssetRecordAsync(assetPath, null);
+            }
+        }
+
+        public static void InstantiateAssetAsync(string assetPath, System.Action<GameObject> completeCallback, Transform parent, bool worldPositionStays)
+        {
+            if (completeCallback != null)
+            {
+                LoadAssetRecordAsync(assetPath, (assetRecord) =>
                 {
-                    BaseBeReferenceGameObjectInformation gameObject = ResourcesUtility.InstantiateGameObjectFromRecord(targetParent, assetRecord, isForceCreateInstance);
-                    afterInitialedInstanceAction?.Invoke(gameObject);
+                    if (assetRecord == null)
+                    {
+                        completeCallback?.Invoke(null);
+                        return;
+                    }
+
+                    GameObject prefab = assetRecord.GetLoadAsset() as GameObject;
+                    if (prefab == null)
+                    {
+                        Debug.LogError($"加载资源{assetPath} 失败");
+                        completeCallback.Invoke(null);
+                    }
+                    else
+                    {
+                        GameObject go = Instantiate(prefab, parent, worldPositionStays);
+                        ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, assetRecord);
+                        completeCallback.Invoke(go);
+                    }
+                });
+            }
+            else
+            {
+                LoadAssetRecordAsync(assetPath, null);
+            }
+        }
+
+        /// <summary>/// 同步下载资源接口/// </summary>
+        private static ILoadAssetRecord LoadAssetRecordSync(string assetPath)
+        {
+            ILoadAssetRecord record = null;
+
+            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsLoadResourcesAssetPriority)
+            {
+                record = LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetPath);
+                if (record == null)
+                    record = AssetBundleManager.S_Instance.AssetBundleLoadAssetSync(assetPath);
+            }
+            else
+            {
+                record = AssetBundleManager.S_Instance.AssetBundleLoadAssetSync(assetPath);
+                if (record == null)
+                    record = LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetPath);
+            }
+
+            return record;
+        }
+
+        /// <summary>/// 异步下载资源的接口/// </summary>
+        private static void LoadAssetRecordAsync(string assetPath, System.Action<ILoadAssetRecord> loadCallback)
+        {
+            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsLoadResourcesAssetPriority)
+            {
+                LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetPath, (assetRecord) =>
+                {
+                    if (assetRecord != null)
+                        loadCallback?.Invoke(assetRecord);
+                    else
+                    {
+                        AssetBundleManager.S_Instance.AssetBundleLoadAssetAsync(assetPath, (assetBundleAsset) =>
+                        {
+                            loadCallback?.Invoke(assetBundleAsset);
+                        });
+                    }
+                }, null);
+            }
+            else
+            {
+                AssetBundleManager.S_Instance.AssetBundleLoadAssetAsync(assetPath, (assetRecord) =>
+                {
+                    if (assetRecord != null)
+                        loadCallback?.Invoke(assetRecord);
+                    else
+                    {
+                        LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetPath, (localAsset) =>
+                        {
+                            loadCallback?.Invoke(localAsset);
+                        }, null);
+                    }
                 });
             }
         }
 
+
+
         #endregion
 
-        #region Audio 加载
-
-        /// <summary>/// 根据路径加载声音资源 同步接口 .isAutoAttachReferenceAsset=true标示默认关联指定的声音资源；isForceCreateInstance=false 则标示 优先引用已经存在的引用资源/// </summary>
-        public static BaseBeReferenceInformation GetAudioClipByPathSync(AudioSource targetAudioSources, string assetPath, bool isAutoAttachReferenceAsset, bool isForceCreateInstance = false)
+        #region 引用关系处理
+        /// <summary>
+        /// 释放某个组件对某个资源的依赖
+        /// </summary>
+        /// <param name="targetComponent"></param>
+        /// <param name="targetReferenceAsset"></param>
+        public static void ReleaseComponentReferenceAsset<T>(Component targetComponent,Object targetReferenceAsset) where T : UnityEngine.Object
         {
-            if (string.IsNullOrEmpty(assetPath))
-                return ResourcesUtility.SetAudioClipFromRecord(targetAudioSources, null, isAutoAttachReferenceAsset, isForceCreateInstance);
-            return ResourcesUtility.SetAudioClipFromRecord(targetAudioSources, ResourcesUtility.LoadAssetSync(assetPath), isAutoAttachReferenceAsset, isForceCreateInstance);
+            ReferenceAssetManager.S_Instance.ReduceStrongReference<T>(targetComponent, targetReferenceAsset);
         }
 
-        #endregion
+        public static void ReduceGameObjectReference(GameObject targetObject)
+        {
+            ReferenceAssetManager.S_Instance.RemoveGameObjectReference(targetObject);
+        }
+
 
         #endregion
+
     }
 }

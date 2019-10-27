@@ -22,9 +22,9 @@ namespace GameFramePro.UI
             IsReleaseOnDestroyPageInstance = false;
         }
 
-        public virtual void UIChangePageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, BaseBeReferenceGameObjectInformation baseBeReferenceInstance)
+        public virtual void UIChangePageInitialed(string pageName, string pagePath, UIPageTypeEnum pageType, GameObject goInstance)
         {
-            BaseUIPageInitialed(pageName, pageType, baseBeReferenceInstance);
+            BaseUIPageInitialed(pageName, pageType, goInstance);
             mPagePath = pagePath;
             IsReleaseOnDestroyPageInstance = false;
         }

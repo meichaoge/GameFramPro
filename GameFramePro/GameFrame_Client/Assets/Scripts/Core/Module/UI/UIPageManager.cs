@@ -48,21 +48,21 @@ namespace GameFramePro.UI
             //创建界面
             if (targetPage == null || targetPage.IsPrefabInstanceEnable == false)
             {
-                CreateUIPageInstance(pageName, pagePath, mUIChangePage, (gameObjectReference) =>
+                CreateUIPageInstance(pageName, pagePath, mUIChangePage, (goInstance) =>
                 {
-                    if (gameObjectReference != null)
+                    if (goInstance != null)
                     {
                         if (targetPage == null)
                             targetPage = new T();
                         else
                             targetPage.ResetPageForReConnectInstance();
 
-                        targetPage.UIChangePageInitialed(pageName, pagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
+                        targetPage.UIChangePageInitialed(pageName, pagePath, UIPageTypeEnum.ChangePage, goInstance);
                         TryCacheUIChangePage(targetPage);
                         targetPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                        var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
+                        var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
                         debugShowScript.Initialed(targetPage);
 #endif
                     }
@@ -110,17 +110,17 @@ namespace GameFramePro.UI
 
                 if (previouPage.IsPrefabInstanceEnable == false)
                 {
-                    CreateUIPageInstance(previouPage.PageName, previouPage.mPagePath, mUIChangePage, (gameObjectReference) =>
+                    CreateUIPageInstance(previouPage.PageName, previouPage.mPagePath, mUIChangePage, (goInstance) =>
                     {
-                        if (gameObjectReference != null)
+                        if (goInstance != null)
                         {
                             previouPage.ResetPageForReConnectInstance();
 
-                            previouPage.UIChangePageInitialed(previouPage.PageName, previouPage.mPagePath, UIPageTypeEnum.ChangePage, gameObjectReference);
+                            previouPage.UIChangePageInitialed(previouPage.PageName, previouPage.mPagePath, UIPageTypeEnum.ChangePage, goInstance);
                             previouPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                            var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
+                            var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
                             debugShowScript.Initialed(previouPage);
 #endif
                         }
@@ -223,7 +223,7 @@ namespace GameFramePro.UI
                     targetPage.InstantiatePage(); //初始化
                     targetPage.ShowPage();
 #if UNITY_EDITOR
-                    var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
+                    var debugShowScript = gameObjectReference.GetAddComponentEx<Debug_ShowUIPageInfor>();
                     debugShowScript.Initialed(targetPage);
 #endif
                 }
@@ -372,7 +372,7 @@ namespace GameFramePro.UI
                     targetWidget.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                    var debugShowScript = gameObjectReference.GetAddComponent<Debug_ShowUIPageInfor>();
+                    var debugShowScript = gameObjectReference.GetAddComponentEx<Debug_ShowUIPageInfor>();
                     debugShowScript.Initialed(targetWidget);
 #endif
                 }
@@ -387,10 +387,22 @@ namespace GameFramePro.UI
         #region 辅助工具
 
         /// <summary>/// 创建页面实例/// </summary>
-        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<BaseBeReferenceGameObjectInformation> afterInitialedInstanceAction, bool isForceCreateInstance = false)
+        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction, bool isForceCreateInstance = false)
         {
-            BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath, isForceCreateInstance);
-            afterInitialedInstanceAction?.Invoke(gameObjectInformation);
+            //    BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath, isForceCreateInstance);
+
+            GameObject go = ResourcesManager.InstantiateAssetSync(pagePath, parent, true);
+            if (go != null)
+            {
+                go.name = pageName;
+                afterInitialedInstanceAction?.Invoke(go);
+            }
+            else
+            {
+                afterInitialedInstanceAction?.Invoke(null);
+            }
+
+            //    afterInitialedInstanceAction?.Invoke(gameObjectInformation);
         }
 
         #endregion

@@ -12,7 +12,7 @@ public class Debug_ShowUIPageInfor :MonoBehaviour
     public UIPageStateEnum mUIPageState;
     public UIPageTypeEnum mUIPageTypeEnum;
     public string PageName;
-    public BaseBeReferenceGameObjectInformation ConnectPageInstance;
+    public GameObject ConnectPageInstance;
     public float RecordInvisibleRealTime;
     public float MaxAliveAfterInActivte;
 

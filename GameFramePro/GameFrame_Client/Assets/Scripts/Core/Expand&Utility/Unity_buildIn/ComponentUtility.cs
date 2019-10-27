@@ -42,35 +42,37 @@ namespace GameFramePro
             mAllGameObjectNamePathMap[go.name] = namePathMap;
             return GetNamePathMap(namePathMap); 
         }
-        /// <summary>
-        /// 获取指定对象的名称和路径的映射
-        /// </summary>
-        /// <param name="go"></param>
-        public static Dictionary<string, string> GetGameObjectNamePathMap(BaseBeReferenceGameObjectInformation gameObjectBaseBeReference)
-        {
-            if (gameObjectBaseBeReference == null|| gameObjectBaseBeReference.IsReferenceAssetEnable==false)
-            {
-                Debug.LogError("GetGameObjectNamePathMap Fail,parameter is null");
-                return null;
-            }
-            Dictionary<string, string> namePathMap = null;
-            if (mAllGameObjectNamePathMap.TryGetValue(gameObjectBaseBeReference.AssetName, out namePathMap))
-                return GetNamePathMap(namePathMap);
-            namePathMap = new Dictionary<string, string>();
-            
-            Transform[] allChildTrans = gameObjectBaseBeReference.GetComponentsInChildren<Transform>(true);
-            foreach (var child in allChildTrans)
-            {
-                if (namePathMap.ContainsKey(child.name))
-                {
-                    Debug.Log("GetGameObjectNamePathMap 包含重复的对象名 " + child.name);
-                    continue;
-                }
-                namePathMap[child.name] = gameObjectBaseBeReference.GetTransRelativePathToThis(child);            
-            }
-            mAllGameObjectNamePathMap[gameObjectBaseBeReference.AssetName] = namePathMap;
-            return GetNamePathMap(namePathMap);
-        }
+        ///// <summary>
+        ///// 获取指定对象的名称和路径的映射
+        ///// </summary>
+        ///// <param name="go"></param>
+        //public static Dictionary<string, string> GetGameObjectNamePathMap(GameObject gameObjectBaseBeReference)
+        //{
+        //    //if (gameObjectBaseBeReference == null)
+        //    //{
+        //    //    Debug.LogError("GetGameObjectNamePathMap Fail,parameter is null");
+        //    //    return null;
+        //    //}
+        //    //Dictionary<string, string> namePathMap = null;
+        //    //if (mAllGameObjectNamePathMap.TryGetValue(gameObjectBaseBeReference.AssetName, out namePathMap))
+        //    //    return GetNamePathMap(namePathMap);
+        //    //namePathMap = new Dictionary<string, string>();
+
+        //    //Transform[] allChildTrans = gameObjectBaseBeReference.GetComponentsInChildren<Transform>(true);
+        //    //foreach (var child in allChildTrans)
+        //    //{
+        //    //    if (namePathMap.ContainsKey(child.name))
+        //    //    {
+        //    //        Debug.Log("GetGameObjectNamePathMap 包含重复的对象名 " + child.name);
+        //    //        continue;
+        //    //    }
+        //    //    namePathMap[child.name] = gameObjectBaseBeReference.GetTransRelativePathToThis(child);            
+        //    //}
+        //    //mAllGameObjectNamePathMap[gameObjectBaseBeReference.AssetName] = namePathMap;
+        //    //return GetNamePathMap(namePathMap);
+
+        //    return null;
+        //}
 
 
         /// <summary>

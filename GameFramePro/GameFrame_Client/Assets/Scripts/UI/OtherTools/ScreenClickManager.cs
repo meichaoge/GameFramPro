@@ -13,15 +13,22 @@ namespace GameFramePro
         //屏幕特效的信息
         private class ScreenEffectInfor
         {
-            private BaseBeReferenceGameObjectInformation EffectItem;
+        //    private BaseBeReferenceGameObjectInformation EffectItem;
+        private GameObject mEffectItem;
             public float RemainTime { get; private set; } //剩余可以显示的时间
             public bool IsShowing { get; private set; } = false;
 
             private ParticleSystem[] mAllParticleSystems;
 
-            public void SetEffetctItem(BaseBeReferenceGameObjectInformation information)
+//            public void SetEffetctItem(BaseBeReferenceGameObjectInformation information)
+//            {
+//               // EffectItem = information;
+//                mAllParticleSystems = information.GetComponentsInChildren<ParticleSystem>(true);
+//            }
+            
+            public void SetEffetctItem(GameObject information)
             {
-                EffectItem = information;
+                mEffectItem = information;
                 mAllParticleSystems = information.GetComponentsInChildren<ParticleSystem>(true);
             }
 
@@ -42,8 +49,8 @@ namespace GameFramePro
             {
                 if (IsShowing) return;
                 IsShowing = true;
-                if (EffectItem != null)
-                    EffectItem.SetLocalPosition(localPos);
+                if (mEffectItem != null)
+                    mEffectItem.transform.localPosition=localPos;
                 RemainTime = maxAliveTime;
 
                 if (mAllParticleSystems == null) return;
@@ -182,21 +189,30 @@ namespace GameFramePro
 
                 if (needCreateItem)
                 {
-                    ScreenEffectInfor effectInfor = new ScreenEffectInfor();
-                    BaseBeReferenceGameObjectInformation information = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath, true);
-                    if (information == null)
+
+                    GameObject go = ResourcesManager.InstantiateAssetSync(EffectDefine.S_ScreenClickEffectPath, mScreenEffectCanvasTrans, true);
+                    if (go == null)
                     {
                         Debug.LogError("获取资源为null ");
                         return;
                     }
+                    
+//                    BaseBeReferenceGameObjectInformation information = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath, true);
+//                    if (information == null)
+//                    {
+//                        Debug.LogError("获取资源为null ");
+//                        return;
+//                    }
+//
+//                    if (information.IsReferenceAssetEnable == false)
+//                    {
+//                        information.ReduceReference();
+//                        return;
+//                    }
 
-                    if (information.IsReferenceAssetEnable == false)
-                    {
-                        information.ReduceReference();
-                        return;
-                    }
+                    ScreenEffectInfor effectInfor = new ScreenEffectInfor();
 
-                    effectInfor.SetEffetctItem(information);
+                    effectInfor.SetEffetctItem(go);
                     effectInfor.PlayEffect(EffectLocalPos, maxShowTime);
                     mAllScreenEffectItems.Add(effectInfor);
                 } //新建特效

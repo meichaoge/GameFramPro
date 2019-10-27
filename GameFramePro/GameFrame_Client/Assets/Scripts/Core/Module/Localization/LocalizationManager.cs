@@ -64,7 +64,7 @@ namespace GameFramePro.Localization
             int lastSelectedLanguage = PlayerPrefsManager.GetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key);
             if (lastSelectedLanguage != 0)
             {
-                mCurLanguage = (Language) lastSelectedLanguage;
+                mCurLanguage = (Language)lastSelectedLanguage;
                 return;
             }
 
@@ -72,7 +72,7 @@ namespace GameFramePro.Localization
             Debug.LogError("需要获取各个平台系统语言环境");
 
             mCurLanguage = Language.zh_CN;
-            PlayerPrefsManager.SetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key, (int) mCurLanguage);
+            PlayerPrefsManager.SetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key, (int)mCurLanguage);
         }
 
         /// <summary>
@@ -183,7 +183,17 @@ namespace GameFramePro.Localization
         private string LoadLocalizationConfig(Language language)
         {
             string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(ApplicationManager.S_Instance.mApplicationConfigureSettings.mLocalizationExportFormatType, language));
-            string content = ResourcesManager.LoadTextAssetSync(filePath.GetPathWithOutExtension());
+            LoadAssetResult<TextAsset> assetResult = ResourcesManager.LoadAssetSync<TextAsset>(filePath.GetPathWithOutExtension());
+            string content = string.Empty;
+            if(assetResult!=null&& assetResult.IsLoadAssetEnable)
+            {
+                assetResult.ReferenceWithComponent(null, (textAsset) =>
+                {
+                    if (textAsset != null)
+                        content = textAsset.text;
+                    return false;
+                });
+            }
 
             GetLocalizationConfigByFormat(content, language, ApplicationManager.S_Instance.mApplicationConfigureSettings.mLocalizationExportFormatType);
 
@@ -264,7 +274,7 @@ namespace GameFramePro.Localization
         private Dictionary<string, string> GetLocalizationConfigByCsv(string content)
         {
             Dictionary<string, string> allConfig = new Dictionary<string, string>();
-            string[] allLines = content.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            string[] allLines = content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             string key, localizationValue;
             for (int dex = 0; dex < allLines.Length; dex++)
             {
@@ -299,7 +309,7 @@ namespace GameFramePro.Localization
             {
                 foreach (var RowChildNode in root.ChildNodes)
                 {
-                    XmlNode RowNode = (XmlNode) RowChildNode;
+                    XmlNode RowNode = (XmlNode)RowChildNode;
 
                     string key = RowNode.SelectSingleNode("Key").InnerText;
                     string localizationValue = RowNode.SelectSingleNode(language.ToString()).InnerText;

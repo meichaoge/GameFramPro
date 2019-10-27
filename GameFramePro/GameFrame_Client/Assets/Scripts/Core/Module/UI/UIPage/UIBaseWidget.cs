@@ -15,13 +15,14 @@ namespace GameFramePro.UI
         public UIBasePage mParentUIPage { get; protected set; }
 
         #region  初始化
+
         public UIBaseWidget() : base()
         {
             mUIPageTypeEnum = UIPageTypeEnum.Widget;
             MaxAliveAfterInActivte = 0;
         }
 
-        public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBasePage parent, BaseBeReferenceGameObjectInformation baseBeReferenceInstance)
+        public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBasePage parent, GameObject baseBeReferenceInstance)
         {
             BaseUIPageInitialed(pageName, pageType, baseBeReferenceInstance);
             SetWidgetParent(parent);
@@ -43,10 +44,10 @@ namespace GameFramePro.UI
             //    mParentUIPage.AddWidget(PageName, this);
         }
 
-
         #endregion
 
         #region 基类重写
+
         /// <summary>
         /// 组件的声明周期只跟关联的父级组件相关 不需要再后台计时
         /// </summary>
@@ -57,6 +58,7 @@ namespace GameFramePro.UI
             {
                 DestroyAndRelease();
             }
+
             //else
             //{
             //    RecordInvisibleRealTime = AppEntryManager.S_Instance.CurrentRealTime; //记录不可见的时间
@@ -70,9 +72,5 @@ namespace GameFramePro.UI
         //}
 
         #endregion
-
-
-
-
     }
 }

@@ -17,7 +17,7 @@ namespace GameFramePro.UI
 
         public Dictionary<string, string> NamePathMapInfor { get; protected set; } //缓存映射关系
     
-        public BaseBeReferenceGameObjectInformation ConnectTransBaseBeReference { get; private set; } //只有访问的权限 没有设置的权限
+        public GameObject ConnectTransBaseBeReference { get; private set; } //只有访问的权限 没有设置的权限
         //{
         //    get
         //    {
@@ -33,7 +33,7 @@ namespace GameFramePro.UI
 
         private UGUIComponentReference mUGUIComponentReference;
         private string mConnectUIBasePageName;
-        public void InitailedComponentReference(string uiBasePageName, BaseBeReferenceGameObjectInformation connectPageInstance, UGUIComponentReference uguiComponenentReference)
+        public void InitailedComponentReference(string uiBasePageName, GameObject connectPageInstance, UGUIComponentReference uguiComponenentReference)
         {
             mUGUIComponentReference = uguiComponenentReference;
             mConnectUIBasePageName = uiBasePageName;
@@ -107,7 +107,15 @@ namespace GameFramePro.UI
         #region 辅助
         public T FindComponentByPath<T>(string gameObjectName, string path) where T : Component
         {
-            T result = ConnectTransBaseBeReference.FindChildComponentByPath<T>(path);
+            Transform child = ConnectTransBaseBeReference.transform.Find(path);
+            if (child == null)
+            {
+                Debug.LogError("获取UI界面节点路径映射失败,指定路径不存在子节点 " + path);
+                return null;
+            }
+
+
+            T result = child.GetComponent<T>();
             if (result == null)
             {
                 Debug.LogError("获取UI界面节点路径映射失败,指定路径不存在子节点 " + path);
