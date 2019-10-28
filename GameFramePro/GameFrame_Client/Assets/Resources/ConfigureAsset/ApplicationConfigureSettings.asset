@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86d119a0518bda44f93bbfc9d9b23614, type: 3}
   m_Name: ApplicationConfigureSettings
   m_EditorClassIdentifier: 
-  mIsLoadResourcesAssetPriority: 1
   mIsTraceRecourceCreate: 1
   mIsTrackAsyncTask: 1
   mIsSingletonCreateSaftCheck: 1

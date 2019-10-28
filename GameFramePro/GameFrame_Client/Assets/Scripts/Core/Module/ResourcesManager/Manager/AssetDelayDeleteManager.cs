@@ -12,7 +12,7 @@ namespace GameFramePro.ResourcesEx
     public sealed class AssetDelayDeleteManager : Single<AssetDelayDeleteManager>, IUpdateTimeTick
     {
         //按照剩余存在时间排序
-        private static readonly LinkedList<BeferenceAsset> s_AllDelayDeleteAssetInfor = new LinkedList<BeferenceAsset>();
+        private static readonly LinkedList<ComponentReferenceAssetInfor> s_AllDelayDeleteAssetInfor = new LinkedList<ComponentReferenceAssetInfor>();
 
 
         #region IUpdateTick Interface
@@ -43,7 +43,7 @@ namespace GameFramePro.ResourcesEx
             lastRecordTime = currentTime;
 
 
-            List<BeferenceAsset> allNoReferenceAssets = ReferenceAssetManager.S_Instance.GetAllNoReferenceAssetsForDelete();
+            List<ComponentReferenceAssetInfor> allNoReferenceAssets = ReferenceAssetManager.S_Instance.GetAllNoReferenceAssetsForDelete();
             foreach (var noReferenceAsset in allNoReferenceAssets)
                 s_AllDelayDeleteAssetInfor.AddLast(noReferenceAsset);
             if (s_AllDelayDeleteAssetInfor.Count == 0)
@@ -81,15 +81,15 @@ namespace GameFramePro.ResourcesEx
         /// <summary>
         /// 移除重新被引用的资源
         /// </summary>
-        /// <param name="reReferenceAsset"></param>
-        public static void RemoveDelayDeleteReferenceAsset(BeferenceAsset reReferenceAsset)
+        /// <param name="reReferenceAssetInfor"></param>
+        public static void RemoveDelayDeleteReferenceAsset(ComponentReferenceAssetInfor reReferenceAssetInfor)
         {
-            if (reReferenceAsset == null)
+            if (reReferenceAssetInfor == null)
                 return;
-            s_AllDelayDeleteAssetInfor.Remove(reReferenceAsset);
+            s_AllDelayDeleteAssetInfor.Remove(reReferenceAssetInfor);
 #if UNITY_EDITOR
-            if (reReferenceAsset.mILoadAssetRecord != null)
-                Debug.LogEditorInfor($"资源{reReferenceAsset.mILoadAssetRecord.mAssetFullUri} 重新被引用 ");
+            if (reReferenceAssetInfor.mILoadAssetRecord != null)
+                Debug.LogEditorInfor($"资源{reReferenceAssetInfor.mILoadAssetRecord.mAssetFullUri} 重新被引用 ");
 #endif
         }
 

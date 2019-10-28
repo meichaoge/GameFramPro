@@ -10,7 +10,10 @@ namespace GameFramePro.Upgrade
     [System.Serializable]
     public class AssetBundleInfor
     {
-        public string mBundleName; //对应 EditorAssetBundleInfor.mAssetBundlePackageName
+        public string mAssetBundleUri; //对应 AssetBundle 包路径
+        public string mAssetRelativeAssetBundleUri;  //资源相对于AssetBundle 的路径
+        
+        
         public long mBundleSize; // 对应 EditorAssetBundleInfor.mPackageSize
         public int mBundleAssetsCount; // 包含的资源数量
         public string mBundleMD5Code;
@@ -19,7 +22,7 @@ namespace GameFramePro.Upgrade
         public uint mBundleCRC;
 
         public HashSet<string> mContainAssetPathInfor = new HashSet<string>(); //包含的资源路径
-        public string[] mDepdenceAssetBundleInfor; //依赖的其他AssetBundle 资源
+        public string[] mDependenceAssetBundleInfor; //依赖的其他AssetBundle 资源
     }
 
     /// <summary>/// 记录了从服务器获取的所有的AssetBundle 对于的信息/// </summary>

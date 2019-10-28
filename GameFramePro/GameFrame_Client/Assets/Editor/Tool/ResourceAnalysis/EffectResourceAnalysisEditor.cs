@@ -25,11 +25,11 @@ public class EffectResourceAnalysisEditor : EditorWindow
     private List<string> mAllBuidReportLogInfors = new List<string>();
     private string mSearchKey = string.Empty;
 
-    private static string mPrefabEffectDepdencePath { get { return "Assets/Editor/Tool/ResourceAnalysis/PrefabEffectDepdenceInfor.txt"; } }
-    private TextAsset mPrefabEffectDepdenceConfig = null;
+    private static string mPrefabEffectDependencePath { get { return "Assets/Editor/Tool/ResourceAnalysis/PrefabEffectDependenceInfor.txt"; } }
+    private TextAsset mPrefabEffectDependenceConfig = null;
 
-    private Dictionary<string, List<string>> mAllEffectDepdenceInfor = new Dictionary<string, List<string>>();
-    private TextAsset mPrefabEffectDepdenceLog = null;
+    private Dictionary<string, List<string>> mAllEffectDependenceInfor = new Dictionary<string, List<string>>();
+    private TextAsset mPrefabEffectDependenceLog = null;
     private const string EffectTag = "Effect_";
     private string searchEffectKey = string.Empty;
 
@@ -168,32 +168,32 @@ public class EffectResourceAnalysisEditor : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("预制体中包含的特效信息", GUILayout.Width(150));
-        if (mPrefabEffectDepdenceConfig == null)
-            mPrefabEffectDepdenceConfig = AssetDatabase.LoadAssetAtPath<TextAsset>(mPrefabEffectDepdencePath);
+        if (mPrefabEffectDependenceConfig == null)
+            mPrefabEffectDependenceConfig = AssetDatabase.LoadAssetAtPath<TextAsset>(mPrefabEffectDependencePath);
 
-        EditorGUILayout.ObjectField(mPrefabEffectDepdenceConfig, typeof(TextAsset), false);
+        EditorGUILayout.ObjectField(mPrefabEffectDependenceConfig, typeof(TextAsset), false);
         EditorGUILayout.EndHorizontal();
 
         GUILayout.Label(string.Format("特效的标示为以 [ \"{0}\" ] 开头命名", EffectTag));
-        GUILayout.Label(string.Format("一共获取{0}个特效(被预制体)引用信息", mAllEffectDepdenceInfor.Count));
+        GUILayout.Label(string.Format("一共获取{0}个特效(被预制体)引用信息", mAllEffectDependenceInfor.Count));
 
-        if(mPrefabEffectDepdenceConfig!=null&&string.IsNullOrEmpty(mPrefabEffectDepdenceConfig.text)==false && mAllEffectDepdenceInfor.Count == 0)
+        if(mPrefabEffectDependenceConfig!=null&&string.IsNullOrEmpty(mPrefabEffectDependenceConfig.text)==false && mAllEffectDependenceInfor.Count == 0)
         {
-            mAllEffectDepdenceInfor = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDepdenceConfig.text);
+            mAllEffectDependenceInfor = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDependenceConfig.text);
         }
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("检索Resource中预制体包含的特效", GUILayout.Height(35)))
         {
-            mAllEffectDepdenceInfor.Clear();
+            mAllEffectDependenceInfor.Clear();
             GetAllResourcesEffectReferece();
 
-            string conntent = JsonConvert.SerializeObject(mAllEffectDepdenceInfor);
-            string savePath = string.Format("{0}/{1}", IOUtility.GetFilePathParentDirectory(Application.dataPath, 1), mPrefabEffectDepdencePath);
+            string conntent = JsonConvert.SerializeObject(mAllEffectDependenceInfor);
+            string savePath = string.Format("{0}/{1}", IOUtility.GetFilePathParentDirectory(Application.dataPath, 1), mPrefabEffectDependencePath);
 
             IOUtility.CreateOrSetFileContent(savePath, conntent);
-            Debug.Log(string.Format("获取脚本中特效依赖信息保存在{0}中,脚本中特效引用信息自行查看", mPrefabEffectDepdencePath));
+            Debug.Log(string.Format("获取脚本中特效依赖信息保存在{0}中,脚本中特效引用信息自行查看", mPrefabEffectDependencePath));
             AssetDatabase.Refresh();
         }
         GUILayout.FlexibleSpace();
@@ -210,18 +210,18 @@ public class EffectResourceAnalysisEditor : EditorWindow
 
         GUILayout.BeginHorizontal();
 
-        if (mPrefabEffectDepdenceLog == null)
-            mPrefabEffectDepdenceLog = AssetDatabase.LoadAssetAtPath<TextAsset>(mPrefabEffectDepdencePath);
-        EditorGUILayout.ObjectField(mPrefabEffectDepdenceLog, typeof(TextAsset), false);
+        if (mPrefabEffectDependenceLog == null)
+            mPrefabEffectDependenceLog = AssetDatabase.LoadAssetAtPath<TextAsset>(mPrefabEffectDependencePath);
+        EditorGUILayout.ObjectField(mPrefabEffectDependenceLog, typeof(TextAsset), false);
 
         if (GUILayout.Button("加载特效被预制体依赖的日志信息"))
         {
-            if (mPrefabEffectDepdenceLog == null)
+            if (mPrefabEffectDependenceLog == null)
             {
                 Debug.LogError("没有关于特效被预制体依赖的日志文件");
                 return;
             }
-            mAllEffectDepdenceInfor = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDepdenceLog.text);
+            mAllEffectDependenceInfor = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDependenceLog.text);
             Debug.Log("加载特效被预制体依赖的日志文件 成功");
         }
 
@@ -242,12 +242,12 @@ public class EffectResourceAnalysisEditor : EditorWindow
                 Debug.Log("请输入要查找的特效Key");
                 return;
             }
-            if (mAllEffectDepdenceInfor == null || mAllEffectDepdenceInfor.Count == 0)
+            if (mAllEffectDependenceInfor == null || mAllEffectDependenceInfor.Count == 0)
             {
                 Debug.Log("请生成特效被预制体引用的信息");
                 return;
             }
-            foreach (var item in mAllEffectDepdenceInfor)
+            foreach (var item in mAllEffectDependenceInfor)
             {
                 if (item.Key.Contains(searchEffectKey))
                 {
@@ -355,16 +355,16 @@ public class EffectResourceAnalysisEditor : EditorWindow
                 string gameName = child.gameObject.name;
                 if (gameName.Contains(EffectTag))
                 {
-                    List<string> depdencesObjects = null;
-                    if (mAllEffectDepdenceInfor.TryGetValue(gameName, out depdencesObjects))
+                    List<string> dependencesObjects = null;
+                    if (mAllEffectDependenceInfor.TryGetValue(gameName, out dependencesObjects))
                     {
-                        depdencesObjects.Add(prefab.name);
+                        dependencesObjects.Add(prefab.name);
                     }
                     else
                     {
-                        depdencesObjects = new List<string>();
-                        depdencesObjects.Add(prefab.name);
-                        mAllEffectDepdenceInfor[gameName] = depdencesObjects;
+                        dependencesObjects = new List<string>();
+                        dependencesObjects.Add(prefab.name);
+                        mAllEffectDependenceInfor[gameName] = dependencesObjects;
                     }
                 }
             }

@@ -33,8 +33,8 @@ namespace GameFramePro
         public static readonly string S_LocalizationDirectoryName = "Localization"; //本地化语言相对于Resources路径
         public static readonly string S_AssetBundleConfigFileName = "AssetBundleContainAssetInfor.csv"; //所有关于AssetBundle 资源配置文件名
         public static readonly string S_PreloadImgConfiFileName = "PreloadImageAssetConfig.json"; //预加载图片的名称配置
-        
-        
+
+
         //.asset 资源配置 都是在Resources 目录下
         public static string S_ApplicationConfigureAssetPath { get; set; } = "ConfigureAsset/{0}"; //相对于Resources 路径
         public static readonly string S_ApplicationConfigureName = "ApplicationConfigureSettings"; //项目配置 .asset 资源文件名
@@ -61,5 +61,24 @@ namespace GameFramePro
         {
             get { return Application.dataPath.GetFilePathParentDirectory(1).CombinePathEx(S_ExportDirectoryName); }
         }
+
+
+        private static string s_LocalAssetBundleTopDirectoryPath = string.Empty;
+
+        /// <summary>
+        /// 本地AssetBundle 顶层存储的路径
+        /// </summary>
+        public static string S_LocalAssetBundleTopDirectoryPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(s_LocalAssetBundleTopDirectoryPath))
+                    s_LocalAssetBundleTopDirectoryPath = Application.persistentDataPath.CombinePathEx(S_LocalStoreDirectoryName).CombinePathEx(S_AssetBundleDirectoryName);
+
+                return s_LocalAssetBundleTopDirectoryPath;
+            }
+        }
+        
+        
     }
 }

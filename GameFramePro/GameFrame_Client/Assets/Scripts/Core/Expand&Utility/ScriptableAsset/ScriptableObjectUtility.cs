@@ -25,10 +25,11 @@ namespace GameFramePro.EditorEx
             var fileRelativeAssetPath = assetPathAndName.Substring(assetPathAndName.IndexOf("Assets"));
 
             Debug.Log("CreateUnityAsset >>>path :" + fileRelativeAssetPath);
-            if (System.IO.Directory.Exists(fileRelativeAssetPath) == false)
+            string fileDirectory = System.IO.Path.GetDirectoryName(fileRelativeAssetPath);
+            if (System.IO.Directory.Exists(fileDirectory) == false)
             {
-                Debug.LogEditorInfor($"创建目录{fileRelativeAssetPath}");
-                Directory.CreateDirectory(fileRelativeAssetPath);
+                Debug.LogEditorInfor($"创建目录{fileDirectory}");
+                Directory.CreateDirectory(fileDirectory);
                 AssetDatabase.Refresh();
             }
 
@@ -62,11 +63,11 @@ namespace GameFramePro.EditorEx
 
 
             T asset = ScriptableObject.CreateInstance<T>();
-
-            if (System.IO.Directory.Exists(fileRelativeAssetPath) == false)
+            string fileDirectory = System.IO.Path.GetDirectoryName(fileRelativeAssetPath);
+            if (System.IO.Directory.Exists(fileDirectory) == false)
             {
-                Debug.LogEditorInfor($"创建目录{fileRelativeAssetPath}");
-                Directory.CreateDirectory(fileRelativeAssetPath);
+                Debug.LogEditorInfor($"创建目录{fileDirectory}");
+                Directory.CreateDirectory(fileDirectory);
                 AssetDatabase.Refresh();
             }
 

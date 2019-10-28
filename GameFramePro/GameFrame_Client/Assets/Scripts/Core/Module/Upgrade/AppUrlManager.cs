@@ -8,9 +8,11 @@ using System;
 namespace GameFramePro
 {
     /// <summary>/// 管理各个模块CDN 的URL/// </summary>
-    internal static  class AppUrlManager 
+    internal static class AppUrlManager
     {
-        private static string s_TopCDNUrl { get; set; }=$"https://superxu3d.tcmapi.cn/goalon/TestApplication/{ApplicationManager.S_Instance.mApplicatonPropertySettings.mAppResourcesVersion}/{AppPlatformManager.GetRuntimePlatformFolderName()}";
+        private static string s_TopCDNUrl { get; set; } = string.Format("https://superxu3d.tcmapi.cn/goalon/TestApplication/{0}/{1}", ApplicationManager.mApplicatonPropertySettings.mAppResourcesVersion,
+            AppPlatformManager.GetRuntimePlatformFolderName());
+        //    $"https://superxu3d.tcmapi.cn/goalon/TestApplication/{ApplicationManager.mApplicatonPropertySettings.mAppResourcesVersion}/{AppPlatformManager.GetRuntimePlatformFolderName()}";
 
 
 
@@ -39,7 +41,7 @@ namespace GameFramePro
                 return s_TextureCDNTopUrl;
             }
         }
-     
+
 
 
     }

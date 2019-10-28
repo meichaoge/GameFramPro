@@ -14,19 +14,19 @@ namespace GameFramePro.EditorEx
         {
             base.OnInspectorGUI();
             return;
-            SerializedObject serializedObject = new SerializedObject(target);
-            ApplicationConfigure applicationConfigure = target as ApplicationConfigure;
-
-            //  Debug.Log($"{so==null} ::  {so.FindProperty("mIsLoadResourcesAssetPriority").boolValue}");
-
-            EditorGUI.BeginChangeCheck();
-
-            bool IsChecked = EditorGUILayout.Toggle(serializedObject.FindProperty("mIsLoadResourcesAssetPriority").name, applicationConfigure.mIsLoadResourcesAssetPriority);
-            if (EditorGUI.EndChangeCheck())
-            {
-                applicationConfigure.mIsLoadResourcesAssetPriority = IsChecked;
-                Debug.LogEditorInfor($"修改了属性{applicationConfigure.mIsLoadResourcesAssetPriority}");
-            }
+//            SerializedObject serializedObject = new SerializedObject(target);
+//            ApplicationConfigure applicationConfigure = target as ApplicationConfigure;
+//
+//            //  Debug.Log($"{so==null} ::  {so.FindProperty("mIsLoadResourcesAssetPriority").boolValue}");
+//
+//            EditorGUI.BeginChangeCheck();
+//
+//            bool IsChecked = EditorGUILayout.Toggle(serializedObject.FindProperty("mIsLoadResourcesAssetPriority").name, applicationConfigure.mIsLoadResourcesAssetPriority);
+//            if (EditorGUI.EndChangeCheck())
+//            {
+//                applicationConfigure.mIsLoadResourcesAssetPriority = IsChecked;
+//                Debug.LogEditorInfor($"修改了属性{applicationConfigure.mIsLoadResourcesAssetPriority}");
+//            }
         }
     }
 }

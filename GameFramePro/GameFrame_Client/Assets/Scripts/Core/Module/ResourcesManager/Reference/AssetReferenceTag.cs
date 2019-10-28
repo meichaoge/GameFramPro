@@ -7,10 +7,11 @@ using Object = UnityEngine.Object;
 namespace GameFramePro.ResourcesEx
 {
     /// <summary>
-    /// 资源引用标识
+    /// 资源引用标识 (只在编辑器下显示)
     /// </summary>
     public class AssetReferenceTag : MonoBehaviour
     {
+#if UNITY_EDITOR
         [System.Serializable]
         internal class ReferenceAssetInfor
         {
@@ -22,8 +23,8 @@ namespace GameFramePro.ResourcesEx
 
             #region 对象池
 
-
             private static NativeObjectPool<ReferenceAssetInfor> s_ReferenceAssetInforrPoolMgr;
+
             private static void OnBeforeGeReferenceAssetInfor(ReferenceAssetInfor record)
             {
             }
@@ -31,7 +32,7 @@ namespace GameFramePro.ResourcesEx
             private static void OnBeforeRecycleReferenceAssetInfor(ReferenceAssetInfor record)
             {
                 if (record == null) return;
-                record. mComponentReference = null;
+                record.mComponentReference = null;
                 record.mReferenceAsset = null;
             }
 
@@ -76,19 +77,13 @@ namespace GameFramePro.ResourcesEx
             {
                 s_ReferenceAssetInforrPoolMgr = new NativeObjectPool<ReferenceAssetInfor>(50, OnBeforeGeReferenceAssetInfor, OnBeforeRecycleReferenceAssetInfor);
             }
-            public ReferenceAssetInfor() { }
 
+            public ReferenceAssetInfor()
+            {
+            }
         }
 
-        [SerializeField]
-        internal List<ReferenceAssetInfor> mAllReferenceInfors = new List<ReferenceAssetInfor>();
-
-
-        private void OnDestroy()
-        {
-            mAllReferenceInfors.Clear();
-            ResourcesManager.ReduceGameObjectReference(gameObject);
-        }
+        [SerializeField] internal List<ReferenceAssetInfor> mAllReferenceInfors = new List<ReferenceAssetInfor>();
 
         public void RecordReference(Component component, Type type, Object asset)
         {
@@ -107,11 +102,16 @@ namespace GameFramePro.ResourcesEx
                     return;
                 }
             }
+
             Debug.LogError($"移除引用记录失败{component} {asset.name}");
-
         }
-
-
-
+#endif
+        
+        
+        private void OnDestroy()
+        {
+            mAllReferenceInfors.Clear();
+            ResourcesManager.ReduceGameObjectReference(gameObject);
+        }
     }
 }

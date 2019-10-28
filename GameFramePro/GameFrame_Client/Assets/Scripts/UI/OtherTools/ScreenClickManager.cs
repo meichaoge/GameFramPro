@@ -141,8 +141,7 @@ namespace GameFramePro
 
         public bool CheckIfNeedUpdateTick()
         {
-            
-            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsClickEffectEnable == false)
+            if (AppEntryManager.S_Instance.mIsClickEffectEnable == false)
                 return false;
             return true;
         }

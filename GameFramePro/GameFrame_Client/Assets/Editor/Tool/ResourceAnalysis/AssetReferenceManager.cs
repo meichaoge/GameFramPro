@@ -30,7 +30,7 @@ public class AssetReferenceManager
         public string mAssetRelativePath;
         public string mAssetMd5;
         public List<PrefabAssetNodeDetailInfor> mPrefabAssetNodesInfor = new List<PrefabAssetNodeDetailInfor>();
-        public List<string> mDepdenceInfor = new List<string>();
+        public List<string> mDependenceInfor = new List<string>();
     }
 
     /// <summary>
@@ -47,9 +47,9 @@ public class AssetReferenceManager
     /// <summary>
     /// 缓存的资源依赖日志记录
     /// </summary>
-    private static string mAssetsDepdenceInforLog { get; } = "Assets/Editor/Tool/ResourceAnalysis/AssetDepdenceLog.txt";
+    private static string mAssetsDependenceInforLog { get; } = "Assets/Editor/Tool/ResourceAnalysis/AssetDependenceLog.txt";
 
-    private static Dictionary<string, AssetInfor> mAllPrefabsDepdence = new Dictionary<string, AssetInfor>(); //所有记录的Prefab资源的引用
+    private static Dictionary<string, AssetInfor> mAllPrefabsDependence = new Dictionary<string, AssetInfor>(); //所有记录的Prefab资源的引用
 
     #region 编辑器菜单
 
@@ -85,14 +85,14 @@ public class AssetReferenceManager
     //}
 
     [MenuItem("工具和扩展/资源管理/获取Assets下所有资源依赖信息")]
-    private static void GetAllAssetsDepdenceInfor()
+    private static void GetAllAssetsDependenceInfor()
     {
         GetAllPrefabRelatveInfor();
     }
 
 
     [MenuItem("工具和扩展/资源管理/获取选择资源依赖信息")]
-    private static void GeSelectAssetDepdenceInfor()
+    private static void GeSelectAssetDependenceInfor()
     {
         if (Selection.objects.Length > 1)
         {
@@ -101,24 +101,24 @@ public class AssetReferenceManager
         }
 
         string assetPath = AssetDatabase.GetAssetPath(Selection.objects[0]);
-        GetDepdenceAssetInfor(assetPath);
+        GetDependenceAssetInfor(assetPath);
     }
 
     [MenuItem("Assets/工具和扩展/引用/获取选择资源依赖信息")]
-    private static void GeSelectAssetDepdenceInfor_Asseta()
+    private static void GeSelectAssetDependenceInfor_Asseta()
     {
-        GeSelectAssetDepdenceInfor();
+        GeSelectAssetDependenceInfor();
     }
 
 
     [MenuItem("Assets/工具和扩展/引用/查找引用图集")]
-    private static void GeSelectAssetDepdenceInfor_ReferencePrefab()
+    private static void GeSelectAssetDependenceInfor_ReferencePrefab()
     {
         GetImgAssetReferencePrefab_All();
     }
 
     [MenuItem("Assets/工具和扩展/引用/查找多个图片引用图集")]
-    private static void GeSelectAssetDepdenceInfor_ReferencePrefab_multi()
+    private static void GeSelectAssetDependenceInfor_ReferencePrefab_multi()
     {
         var selectobjs = Selection.objects;
         if (selectobjs.Length == 0)
@@ -581,12 +581,12 @@ public class AssetReferenceManager
     /// 获取指定预制体依赖的资源信息
     /// </summary>
     /// <param name="prefabAsset"></param>
-    private static void GetDepdenceAssetInfor(string assetPath)
+    private static void GetDependenceAssetInfor(string assetPath)
     {
-        List<string> depdence = AssetDatabase.GetDependencies(assetPath).ToList(); //获取当前资源的依赖
-        depdence.Sort();
-        Debug.Log(string.Format("***********显示当前资源{0} 依赖的资源个数:{1}  Start ************", assetPath, depdence.Count));
-        foreach (var item in depdence)
+        List<string> dependence = AssetDatabase.GetDependencies(assetPath).ToList(); //获取当前资源的依赖
+        dependence.Sort();
+        Debug.Log(string.Format("***********显示当前资源{0} 依赖的资源个数:{1}  Start ************", assetPath, dependence.Count));
+        foreach (var item in dependence)
         {
             if (item == assetPath)
                 continue; //过滤自己
@@ -598,13 +598,13 @@ public class AssetReferenceManager
 
     private static void GetAllPrefabRelatveInfor()
     {
-        TextAsset logAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(mAssetsDepdenceInforLog);
+        TextAsset logAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(mAssetsDependenceInforLog);
         if (logAsset != null && string.IsNullOrEmpty(logAsset.text) == false)
         {
-            if (EditorUtility.DisplayDialog("提示", $"{mAssetsDepdenceInforLog}已经缓存了资源的依赖信息，是否使用缓存的信息", "使用缓存", "重新生成数据"))
+            if (EditorUtility.DisplayDialog("提示", $"{mAssetsDependenceInforLog}已经缓存了资源的依赖信息，是否使用缓存的信息", "使用缓存", "重新生成数据"))
             {
-                mAllPrefabsDepdence.Clear();
-                mAllPrefabsDepdence = JsonConvert.DeserializeObject<Dictionary<string, AssetInfor>>(logAsset.text);
+                mAllPrefabsDependence.Clear();
+                mAllPrefabsDependence = JsonConvert.DeserializeObject<Dictionary<string, AssetInfor>>(logAsset.text);
                 return;
             }
         }
@@ -615,7 +615,7 @@ public class AssetReferenceManager
             string[] allAssets = AssetDatabase.GetAllAssetPaths();
             int totalCount = 0;
             int index = 0;
-            mAllPrefabsDepdence.Clear();
+            mAllPrefabsDependence.Clear();
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start(); //  开始监视代码运行时间
 
@@ -647,13 +647,13 @@ public class AssetReferenceManager
                     continue;
 
 
-                string[] depdences = AssetDatabase.GetDependencies(asset);
-                if (depdences != null && depdences.Length > 1)
+                string[] dependences = AssetDatabase.GetDependencies(asset);
+                if (dependences != null && dependences.Length > 1)
                 {
-                    foreach (var item in depdences)
+                    foreach (var item in dependences)
                     {
                         if (item != asset && item.EndsWith(".cs") == false)
-                            infor.mDepdenceInfor.Add(item);
+                            infor.mDependenceInfor.Add(item);
                     }
                 }
 
@@ -678,23 +678,23 @@ public class AssetReferenceManager
                     }
                 }
 
-                mAllPrefabsDepdence[asset] = infor;
+                mAllPrefabsDependence[asset] = infor;
             }
 
             GameObject.DestroyImmediate(root);
             stopwatch.Stop(); //  停止监视
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间
 
-            string content = JsonConvert.SerializeObject(mAllPrefabsDepdence);
-            string fileSavePath = $"{IOUtility.GetFilePathParentDirectory(Application.dataPath, 1)}/{mAssetsDepdenceInforLog}";
+            string content = JsonConvert.SerializeObject(mAllPrefabsDependence);
+            string fileSavePath = $"{IOUtility.GetFilePathParentDirectory(Application.dataPath, 1)}/{mAssetsDependenceInforLog}";
             IOUtility.CreateOrSetFileContent(fileSavePath, content);
             Debug.Log("fileSavePath=" + fileSavePath);
-            Debug.Log("缓存资源依赖信息到目录 " + mAssetsDepdenceInforLog);
+            Debug.Log("缓存资源依赖信息到目录 " + mAssetsDependenceInforLog);
             AssetDatabase.Refresh();
 
             EditorUtility.ClearProgressBar();
 
-            Debug.Log($"一共获取了{totalCount}个资源,其中包含的依赖信息大于1个的详细信息的有{mAllPrefabsDepdence.Count}个,耗时{$"{timespan.Hours}H{timespan.Minutes}M{timespan.Seconds}s"}");
+            Debug.Log($"一共获取了{totalCount}个资源,其中包含的依赖信息大于1个的详细信息的有{mAllPrefabsDependence.Count}个,耗时{$"{timespan.Hours}H{timespan.Minutes}M{timespan.Seconds}s"}");
         }
         catch (Exception e)
         {
@@ -703,15 +703,15 @@ public class AssetReferenceManager
             GameObject.DestroyImmediate(root);
         }
 
-        //mAllPrefabsDepdence.Clear();
+        //mAllPrefabsDependence.Clear();
         //string[] assetGuidList = AssetDatabase.FindAssets("t:prefab", new string[] { "Assets/Resources" });  //获取Resources下所有的预制体
         //foreach (var assetguid in assetGuidList)
         //{
         //    string assetPath = AssetDatabase.GUIDToAssetPath(assetguid);
-        //    string[] depdence = AssetDatabase.GetDependencies(assetPath);  //获取当前资源的依赖
-        //    mAllPrefabsDepdence[assetPath] = new List<string>(depdence);
+        //    string[] dependence = AssetDatabase.GetDependencies(assetPath);  //获取当前资源的依赖
+        //    mAllPrefabsDependence[assetPath] = new List<string>(dependence);
         //}
-        //Debug.Log(string.Format("获取{0}下{1}个预制体的依赖信息", paths[0], mAllPrefabsDepdence.Count));
+        //Debug.Log(string.Format("获取{0}下{1}个预制体的依赖信息", paths[0], mAllPrefabsDependence.Count));
     }
 
     /// <summary>
@@ -721,7 +721,7 @@ public class AssetReferenceManager
     /// <returns></returns>
     private static Dictionary<string, List<string>> GetImageAssetReference(List<string> imagAsset)
     {
-        if (mAllPrefabsDepdence.Count == 0)
+        if (mAllPrefabsDependence.Count == 0)
         {
             GetAllPrefabRelatveInfor();
             // GetAllPrefabRelatveInfor(new string[] { "Assets/Resources" });
@@ -733,9 +733,9 @@ public class AssetReferenceManager
         foreach (var imgItem in imagAsset)
         {
             List<string> reference = new List<string>(10); //那些预制体资源引用
-            foreach (var prefabsAsset in mAllPrefabsDepdence)
+            foreach (var prefabsAsset in mAllPrefabsDependence)
             {
-                if (prefabsAsset.Value.mDepdenceInfor.Contains(imgItem))
+                if (prefabsAsset.Value.mDependenceInfor.Contains(imgItem))
                 {
                     reference.Add(prefabsAsset.Key);
                 }
@@ -755,7 +755,7 @@ public class AssetReferenceManager
     /// <returns></returns>
     public static List<string> GetAssetReference(string assetPath)
     {
-        if (mAllPrefabsDepdence.Count == 0)
+        if (mAllPrefabsDependence.Count == 0)
         {
             GetAllPrefabRelatveInfor();
 
@@ -763,9 +763,9 @@ public class AssetReferenceManager
         }
 
         List<string> reference = new List<string>(10); //那些预制体资源引用
-        foreach (var prefabsAsset in mAllPrefabsDepdence)
+        foreach (var prefabsAsset in mAllPrefabsDependence)
         {
-            if (prefabsAsset.Value.mDepdenceInfor.Contains(assetPath))
+            if (prefabsAsset.Value.mDependenceInfor.Contains(assetPath))
             {
                 reference.Add(prefabsAsset.Key);
             }

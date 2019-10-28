@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 namespace GameFramePro
 {
     /// <summary>
-    /// 加载得到的资源对象
+    /// 加载得到的资源对象 如果要使用对应的资源 请调用  ReferenceWithComponent 接口
     /// </summary>
     public sealed class LoadAssetResult<T> where T : UnityEngine.Object
     {
@@ -38,13 +38,15 @@ namespace GameFramePro
         /// <summary>
         /// 获取或者设置加载得到的对象
         /// </summary>
-        /// <param name="targetComponent">关联到哪个组件</param>
+        /// <param name="targetComponent">关联到哪个组件，这个参数为null 的话不关联任何组件</param>
         /// <param name="ConnectAssetReferenceComponentAtc">如果这个操作返回false 则资源关联失败，否则会记录引用关系</param>
         public void ReferenceWithComponent(Component targetComponent, Func<T, bool> ConnectAssetReferenceComponentAtc)
         {
-            if (mLoadAssetInstance == null || targetComponent == null || ConnectAssetReferenceComponentAtc == null)
+            if (mLoadAssetInstance == null || ConnectAssetReferenceComponentAtc == null)
                 return;
             bool isSuccess = ConnectAssetReferenceComponentAtc(mLoadAssetInstance);
+            if (targetComponent == null)
+                return;
             if (isSuccess)
             {
                 ReferenceAssetManager.S_Instance.StrongReferenceWithComponent(mLoadAssetInstance, targetComponent);

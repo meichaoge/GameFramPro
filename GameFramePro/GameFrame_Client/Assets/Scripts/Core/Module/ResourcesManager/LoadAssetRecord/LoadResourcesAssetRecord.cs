@@ -11,30 +11,35 @@ namespace GameFramePro.ResourcesEx
     public class LoadResourcesAssetRecord : ILoadAssetRecord
     {
         //无引用后默认存活60秒
-        private const  float sDefaultNoReferenceAliveTime = 60;
+        private const float sDefaultNoReferenceAliveTime = 60;
 
         public string mAssetFullUri { get; set; } // 完整的资源路径
 
         public LoadAssetSourceUsage mLoadAssetSourceUsage { get; protected set; } = LoadAssetSourceUsage.ResourcesAsset;
-        public bool IsRecordEnable { get { return mResourcesAsset != null; } }
 
-        public float mMaxAliveAfterNoReference { get; private set; } = sDefaultNoReferenceAliveTime; 
+        public bool IsRecordEnable
+        {
+            get { return mResourcesAsset != null; }
+        }
+
+        public float mMaxAliveAfterNoReference { get; private set; } = sDefaultNoReferenceAliveTime;
 
         protected UnityEngine.Object mResourcesAsset { get; set; } //加载的资源
 
 
-
         #region 对象池
 
-
         private static NativeObjectPool<LoadResourcesAssetRecord> s_LoadResourcesAssetRecordPoolMgr;
+
         private static void OnBeforeGeLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
         {
         }
 
         private static void OnBeforeRecycleLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
         {
-            //     record.NotifyReleaseRecord(); //回收时候销毁引用
+            if (record == null) return;
+            record.mResourcesAsset = null;
+            record.mLoadAssetSourceUsage = LoadAssetSourceUsage.ResourcesAsset;
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         /// <param name="fullUri"></param>
         /// <returns></returns>
-        public static LoadResourcesAssetRecord GetLoadResourcesAssetRecord(string fullUri, UnityEngine.Object asse,float noReferenceAliveTIme= sDefaultNoReferenceAliveTime)
+        public static LoadResourcesAssetRecord GetLoadResourcesAssetRecord(string fullUri, UnityEngine.Object asse, float noReferenceAliveTIme = sDefaultNoReferenceAliveTime)
         {
             var assetBundleAssetInfor = s_LoadResourcesAssetRecordPoolMgr.GetItemFromPool();
             assetBundleAssetInfor.mAssetFullUri = fullUri;
@@ -75,7 +80,6 @@ namespace GameFramePro.ResourcesEx
 
         #region 构造函数
 
-
         static LoadResourcesAssetRecord()
         {
             s_LoadResourcesAssetRecordPoolMgr = new NativeObjectPool<LoadResourcesAssetRecord>(50, OnBeforeGeLoadResourcesAssetRecord, OnBeforeRecycleLoadResourcesAssetRecord);
@@ -84,23 +88,28 @@ namespace GameFramePro.ResourcesEx
         public LoadResourcesAssetRecord()
         {
         }
+
         #endregion
 
 
         #region ILoadAssetRecord 接口实现
+
         public Object GetLoadAsset()
         {
             return mResourcesAsset;
         }
+
         public int GetLoadAssetInstanceID()
         {
             return mResourcesAsset != null ? mResourcesAsset.GetInstanceID() : -1;
         }
+
         public void ReleaseLoadAssetRecord()
         {
-            mLoadAssetSourceUsage = LoadAssetSourceUsage.None;
+            mLoadAssetSourceUsage = LoadAssetSourceUsage.ResourcesAsset;
             mResourcesAsset = null;
         }
+
         #endregion
     }
 }

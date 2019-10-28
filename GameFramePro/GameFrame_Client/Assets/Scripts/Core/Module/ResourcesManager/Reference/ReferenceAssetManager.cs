@@ -11,14 +11,18 @@ namespace GameFramePro.ResourcesEx.Reference
     public sealed class ReferenceAssetManager : Single<ReferenceAssetManager>
     {
         //一个资源 Object 中的某个子资源id 到整个资源Object 的映射关系，key =子资源Instanceid  value=加载的整个资源Instanceid 
-        private static readonly Dictionary<int, int> mInstanceIdConnectDic = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> s_InstanceIdMapRecord = new Dictionary<int, int>(100);
 
         //所有被引用的资源信息  key=加载的整个资源Instanceid 
-        private static readonly Dictionary<int, BeferenceAsset> mAllBeReferenceAssets = new Dictionary<int, BeferenceAsset>();
+        private static readonly Dictionary<int, ComponentReferenceAssetInfor> s_AllComponentReferenceAssetInfors = new Dictionary<int, ComponentReferenceAssetInfor>(100);
 
         //所有被弱引用的资源信息  key=加载的整个资源Instanceid 
-        private static readonly Dictionary<int, ILoadAssetRecord> mAllWeakReferenceAssets = new Dictionary<int, ILoadAssetRecord>();
+        private static readonly Dictionary<int, ILoadAssetRecord> s_AllWeakReferenceAssets = new Dictionary<int, ILoadAssetRecord>(100);
 
+        /// <summary>
+        /// 所有需要 被删除的整个资源  Instanceid 
+        /// </summary>
+        private static HashSet<int> s_AllNeedRemoveInstanceIds = new HashSet<int>();
 
 
         /// <summary>
@@ -26,58 +30,55 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         /// <param name="subAssey"></param>
         /// <param name="loadAsset"></param>
-        private int RecordInstanceID(Object subAssey, Object loadAsset)
+        /// <returns>子资源被包含的加载记录中的资源id</returns>
+        private int RecordInstanceIdDependence(Object subAssey, Object loadAsset)
         {
             if (subAssey == null || loadAsset == null)
                 return -1;
             int subInstanceID = subAssey.GetInstanceID();
             int loadAssetID = loadAsset.GetInstanceID();
 
-            mInstanceIdConnectDic[subInstanceID] = loadAssetID;
+            s_InstanceIdMapRecord[subInstanceID] = loadAssetID;
             return loadAssetID;
         }
-        private int GetInstanceIDFromRecord(Object asset)
+
+        private int GetInstanceIDFromRecord(Object subAssey)
         {
-            if (asset == null)
+            if (subAssey == null)
                 return -1;
-            int subInstanceID = asset.GetInstanceID();
-            if (mInstanceIdConnectDic.TryGetValue(subInstanceID, out int InstanceID))
+            int subInstanceID = subAssey.GetInstanceID();
+            if (s_InstanceIdMapRecord.TryGetValue(subInstanceID, out int InstanceID))
                 return InstanceID;
-            Debug.LogError($"没有记录的资源信息{asset.name}");  //可能不是通过制定接口加载的资源
+            Debug.LogError($"没有记录的资源信息{subAssey.name}"); //可能不是通过制定接口加载的资源
             return -1;
         }
 
         #region 强引用关系处理(组件引用某个资源)
 
         /// <summary>
-        /// 增加强引用关系
+        /// 增加强引用关系 (资源被关联到指定的组件上了)
         /// </summary>
         /// <param name="component"></param>
         /// <param name="directReferenceObject">直接引用的资源(可能是一个Object 中的某个组件资源)</param>
         /// <param name="loadAssetRecord"></param>
-        public void AddStrongReference<T>(Component component, Object directReferenceObject, ILoadAssetRecord loadAssetRecord) where T : UnityEngine.Object
+        private void AddStrongReference<T>(Component component, Object directReferenceObject, ILoadAssetRecord loadAssetRecord, int InstanceID) where T : UnityEngine.Object
         {
-            if (component == null || directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false)
+            if (component == null || directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false || InstanceID == -1)
                 return;
 
-            int InstanceID = RecordInstanceID(directReferenceObject, loadAssetRecord.GetLoadAsset());
-
-            var assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
+#if UNITY_EDITOR
+            AssetReferenceTag assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
             assetReferenceTag.RecordReference(component, typeof(T), directReferenceObject);
+#endif
 
-            if (InstanceID == -1)
-                return;
-            if (mAllBeReferenceAssets.TryGetValue(InstanceID, out var beferenceAsset))
+            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset) && beferenceAsset != null)
             {
-                if (beferenceAsset != null)
-                {
-                    beferenceAsset.AddReference(component, directReferenceObject);
-                    return;
-                }
+                beferenceAsset.AddReference(component, directReferenceObject);
+                return;
             }
-            beferenceAsset = BeferenceAsset.GetBeferenceAsset(loadAssetRecord, component);
-            mAllBeReferenceAssets[InstanceID] = beferenceAsset;
 
+            beferenceAsset = ComponentReferenceAssetInfor.GetBeferenceAsset(loadAssetRecord, component);
+            s_AllComponentReferenceAssetInfors[InstanceID] = beferenceAsset;
         }
 
         /// <summary>
@@ -89,13 +90,17 @@ namespace GameFramePro.ResourcesEx.Reference
         {
             if (component == null || asset == null)
                 return;
-            var assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
+
+
+#if UNITY_EDITOR
+            AssetReferenceTag assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
             assetReferenceTag.RomoveReference(component, typeof(T), asset);
+#endif
 
             int InstanceID = GetInstanceIDFromRecord(asset);
             if (InstanceID == -1)
                 return;
-            if (mAllBeReferenceAssets.TryGetValue(InstanceID, out var beferenceAsset))
+            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset))
             {
                 if (beferenceAsset != null)
                 {
@@ -114,32 +119,33 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         /// <param name="directReferenceObject">直接引用的资源(可能是一个Object 中的某个组件资源)</param>
         /// <param name="loadAssetRecord"></param>
-        public void AddWeakReference<T>(Object directReferenceObject, ILoadAssetRecord loadAssetRecord) where T : UnityEngine.Object
+        public void AddWeakReference(Object directReferenceObject, ILoadAssetRecord loadAssetRecord)
         {
             if (directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false)
                 return;
-            int InstanceID = RecordInstanceID(directReferenceObject, loadAssetRecord.GetLoadAsset());
+            int InstanceID = RecordInstanceIdDependence(directReferenceObject, loadAssetRecord.GetLoadAsset());
 
             if (InstanceID == -1)
                 return;
-            if (mAllWeakReferenceAssets.TryGetValue(InstanceID, out var beferenceAsset))
+            if (s_AllWeakReferenceAssets.TryGetValue(InstanceID, out var beferenceAsset))
             {
                 if (beferenceAsset != null)
                     return;
             }
+
             beferenceAsset = loadAssetRecord;
-            mAllWeakReferenceAssets[InstanceID] = beferenceAsset;
+            s_AllWeakReferenceAssets[InstanceID] = beferenceAsset;
         }
 
-        public void ReduceWeakReference<T>(Object directReferenceObject, ILoadAssetRecord loadAssetRecord) where T : UnityEngine.Object
+        public void ReduceWeakReference(Object directReferenceObject)
         {
-            if (directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false)
+            if (directReferenceObject == null)
                 return;
-            int InstanceID = RecordInstanceID(directReferenceObject, loadAssetRecord.GetLoadAsset());
+            int InstanceID = GetInstanceIDFromRecord(directReferenceObject);
 
             if (InstanceID == -1)
                 return;
-            mAllWeakReferenceAssets.Remove(InstanceID);
+            s_AllWeakReferenceAssets.Remove(InstanceID);
         }
 
         /// <summary>
@@ -148,18 +154,19 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <typeparam name="T"></typeparam>
         /// <param name="directReferenceObject"></param>
         /// <param name="component"></param>
-        public void StrongReferenceWithComponent<T>(Object directReferenceObject,T component) where T : Component
+        public void StrongReferenceWithComponent<T>(Object directReferenceObject, T component) where T : Component
         {
             if (directReferenceObject == null || component == null)
                 return;
             int instanceID = GetInstanceIDFromRecord(directReferenceObject);
             if (instanceID == -1)
                 return;
-            if (mAllWeakReferenceAssets.TryGetValue(instanceID, out var weakReferenceAssetRecord))
+            if (s_AllWeakReferenceAssets.TryGetValue(instanceID, out var weakReferenceAssetRecord))
             {
-                AddStrongReference<T>(component, directReferenceObject, weakReferenceAssetRecord);
+                AddStrongReference<T>(component, directReferenceObject, weakReferenceAssetRecord, instanceID);
                 return;
             }
+
             Debug.LogError($"强引用资源失败{directReferenceObject}  {component},没有找到资源记录");
         }
 
@@ -168,31 +175,30 @@ namespace GameFramePro.ResourcesEx.Reference
         #region 引用计数处理
 
         /// <summary>
-        /// 减少引用计数
+        /// 去除参数对象的所有引用计数
         /// </summary>
         /// <param name="component"></param>
         public void RemoveGameObjectReference(GameObject targetObject)
         {
             if (targetObject == null)
                 return;
-            foreach (var beReferenceAsset in mAllBeReferenceAssets.Values)
+
+            foreach (var beReferenceAsset in s_AllComponentReferenceAssetInfors.Values)
             {
                 if (beReferenceAsset == null) continue;
                 beReferenceAsset.ReduceAllReference(targetObject.transform);
             }
-
-
         }
 
         /// <summary>
         /// 获取所有没有被引用的资源
         /// </summary>
         /// <returns></returns>
-        public List<BeferenceAsset> GetAllNoReferenceAssetsForDelete()
+        public List<ComponentReferenceAssetInfor> GetAllNoReferenceAssetsForDelete()
         {
-            List<BeferenceAsset> noReferenceAssets = new List<BeferenceAsset>((int)(mAllBeReferenceAssets.Count * 0.5f));
+            List<ComponentReferenceAssetInfor> noReferenceAssets = new List<ComponentReferenceAssetInfor>((int) (s_AllComponentReferenceAssetInfors.Count * 0.5f));
 
-            foreach (var beReferenceAssets in mAllBeReferenceAssets.Values)
+            foreach (var beReferenceAssets in s_AllComponentReferenceAssetInfors.Values)
             {
                 if (beReferenceAssets == null) continue;
                 beReferenceAssets.UpdateReferenceCount();
@@ -200,7 +206,6 @@ namespace GameFramePro.ResourcesEx.Reference
                 {
                     beReferenceAssets.NotifyBeingReleasing();
                     noReferenceAssets.Add(beReferenceAssets);
-
                 }
             }
 
@@ -211,17 +216,24 @@ namespace GameFramePro.ResourcesEx.Reference
         /// 真正删除所有超时没有被使用的资源
         /// </summary>
         /// <param name=""></param>
-        public void DeleteAllNoReferenceAssets(List<BeferenceAsset> allNoReferenceAssets)
+        public void DeleteAllNoReferenceAssets(List<ComponentReferenceAssetInfor> allNoReferenceAssets)
         {
             foreach (var noReferenceAsset in allNoReferenceAssets)
             {
                 if (noReferenceAsset == null) continue;
                 noReferenceAsset.NotifyBeDelete();
-                mAllBeReferenceAssets.Remove(noReferenceAsset.mReferenceInstanceID);
+                s_AllComponentReferenceAssetInfors.Remove(noReferenceAsset.mReferenceInstanceID);
             }
+
+            s_AllNeedRemoveInstanceIds.Clear();
+
+            AssetBundleManager.S_Instance.RemoveAllUnReferenceAssetBundleRecord(ref s_AllNeedRemoveInstanceIds);
+            LocalResourcesManager.S_Instance.RemoveAllUnReferenceResourcesRecord(ref s_AllNeedRemoveInstanceIds);
+
+            s_InstanceIdMapRecord.RemoveAll(item => s_AllNeedRemoveInstanceIds.Contains(item.Value));
+            s_AllWeakReferenceAssets.RemoveAll(item => s_AllNeedRemoveInstanceIds.Contains(item.Key));
         }
 
         #endregion
-
     }
 }

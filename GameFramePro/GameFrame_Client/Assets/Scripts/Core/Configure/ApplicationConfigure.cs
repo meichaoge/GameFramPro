@@ -21,12 +21,8 @@ namespace GameFramePro
 
         #region 资源加载+安全+追踪 配置
 
-        [Tooltip("标示是否在优先加载Resources下资源, =false 时候优先加载外部AssetBundle资源")]
-        public bool mIsLoadResourcesAssetPriority = true;
 
-
-        [Tooltip("标示是否追踪资源的创建的开关, 以便需要的时候输出当前使用的资源，分析性能")]
-        public bool mIsTraceRecourceCreate = true;
+ 
 
 
         [Tooltip("标示是否追踪异步&协程任务")] public bool mIsTrackAsyncTask = true;
@@ -53,9 +49,6 @@ namespace GameFramePro
 
         [Tooltip("当前目标分辨率")]
         public Vector2 mReferenceResolution = new Vector2(640, 1134);
-
-        [Tooltip("标示是否启用 屏幕点击特效 (这里是在入口处判断，比ScreenClickManager 中的接口优先级和限制更高)")]
-        public bool mIsClickEffectEnable = true;
 
         #endregion
 

@@ -215,14 +215,14 @@ namespace GameFramePro.EditorEx
                     //Debug.LogEditorInfor("assetInfor=" + assetInfor);
                 } //包含的资源
 
-                string[] depdences = assetBundleManifest.GetAllDependencies(assetBundlePackage);
-                foreach (var depInfor in depdences)
+                string[] dependences = assetBundleManifest.GetAllDependencies(assetBundlePackage);
+                foreach (var depInfor in dependences)
                 {
                     Debug.Log("depInfor=" + depInfor);
                 }
 
-                string[] direcDepdences = assetBundleManifest.GetDirectDependencies(assetBundlePackage);
-                foreach (var directDepInfor in direcDepdences)
+                string[] direcDependences = assetBundleManifest.GetDirectDependencies(assetBundlePackage);
+                foreach (var directDepInfor in direcDependences)
                 {
                     Debug.Log("directDepInfor=" + directDepInfor);
                 }
@@ -339,12 +339,14 @@ namespace GameFramePro.EditorEx
             localAssetBundleConfig.mVersion = totalAssetBundleInfor.mVersion;
             localAssetBundleConfig.mConfigBuildTime = totalAssetBundleInfor.mConfigBuildTime;
             localAssetBundleConfig.mTotalSize = totalAssetBundleInfor.mTotalSize;
+            
             foreach (var bundleInfor in totalAssetBundleInfor.mTotalAssetBundleInfor.Values)
             {
                 string assetBundleNameStr = bundleInfor.mAssetBundlePackageName.GetPathStringEx();
-
+                
                 AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
-                assetBundleInfor.mBundleName = bundleInfor.mAssetBundlePackageName;
+                assetBundleInfor.mAssetBundleUri = bundleInfor.mAssetBundlePackageName;
+                assetBundleInfor.mAssetRelativeAssetBundleUri = bundleInfor.mAssetRelativePath; //相对路径
                 assetBundleInfor.mBundleSize = bundleInfor.mPackageSize;
                 assetBundleInfor.mBundleAssetsCount = bundleInfor.mAllContainAssetInfor.Count;
                 assetBundleInfor.mBundleMD5Code = bundleInfor.mMD5Code;
@@ -356,10 +358,10 @@ namespace GameFramePro.EditorEx
                     assetBundleInfor.mContainAssetPathInfor.Add(assetInfor.mAssetRelativePath);
                 } //获取包含的资源信息
 
-                assetBundleInfor.mDepdenceAssetBundleInfor = new string[bundleInfor.mDepdenceAssetBundle.Count];
-                for (int dex = 0; dex < bundleInfor.mDepdenceAssetBundle.Count; dex++)
+                assetBundleInfor.mDependenceAssetBundleInfor = new string[bundleInfor.mDependenceAssetBundle.Count];
+                for (int dex = 0; dex < bundleInfor.mDependenceAssetBundle.Count; dex++)
                 {
-                    assetBundleInfor.mDepdenceAssetBundleInfor[dex] = bundleInfor.mDepdenceAssetBundle[dex].mAssetBundlePackageName;
+                    assetBundleInfor.mDependenceAssetBundleInfor[dex] = bundleInfor.mDependenceAssetBundle[dex].mAssetBundlePackageName;
                 } //获取依赖信息 这里不是处理之后的AssetBundle Name
 
                 localAssetBundleConfig.mTotalAssetBundleInfor[assetBundleNameStr] = assetBundleInfor; //这里的key 不带路径分隔符

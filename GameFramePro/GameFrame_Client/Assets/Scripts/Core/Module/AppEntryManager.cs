@@ -12,8 +12,7 @@ using GameFramePro.Upgrade;
 
 namespace GameFramePro
 {
- 
-    
+
     /// <summary>
     /// 需要自己手动挂在 第一个执行的脚本(作为程序执行的入口) 需要尽可能少的脚本直接依赖Mono.
     /// </summary>
@@ -21,11 +20,17 @@ namespace GameFramePro
     {
         //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         [ReadOnly]
         public int ReadOnlyInt = 10;
-        #endif
-        
+
+        //[Tooltip("标示是否在优先加载Resources下资源, =false 时候优先加载外部AssetBundle资源")]
+        public bool mIsLoadResourcesAssetPriority = true;
+
+        [Tooltip("标示是否启用 屏幕点击特效 (这里是在入口处判断，比ScreenClickManager 中的接口优先级和限制更高)")]
+        public bool mIsClickEffectEnable = true;
+#endif
+
         protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不销毁
 
         public float CurrentRealTime
@@ -52,7 +57,7 @@ namespace GameFramePro
             yield return null;
             UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
 
-            SocketClientHelper.BaseLoginTcpClient.Connect(IPAddress.Parse("127.0.0.1"), 2500, 5000);
+            //       SocketClientHelper.BaseLoginTcpClient.Connect(IPAddress.Parse("127.0.0.1"), 2500, 5000);
         }
 
 

@@ -21,13 +21,16 @@ namespace GameFramePro.ResourcesEx.Reference
     /// <summary>
     /// 被组件引用的资源记录
     /// </summary>
-    public sealed class BeferenceAsset
+    public sealed class ComponentReferenceAssetInfor
     {
         /// <summary>
         /// 引用资源的实例id
         /// </summary>
-        public int mReferenceInstanceID { get { return mILoadAssetRecord == null ? -1 : mILoadAssetRecord.GetLoadAssetInstanceID(); } }
-           
+        public int mReferenceInstanceID
+        {
+            get { return mILoadAssetRecord == null ? -1 : mILoadAssetRecord.GetLoadAssetInstanceID(); }
+        }
+
 
         /// <summary>
         /// 被引用的次数
@@ -48,13 +51,18 @@ namespace GameFramePro.ResourcesEx.Reference
         private HashSet<Component> mComponeReferences { get; set; } = new HashSet<Component>(); //所有引用这个资源的组件
 
         public ILoadAssetRecord mILoadAssetRecord { get; set; } //引用的资源记录
-        public string ReferenceAssetUri { get { return mILoadAssetRecord == null ? string.Empty: mILoadAssetRecord.mAssetFullUri; } }
 
+        public string ReferenceAssetUri
+        {
+            get { return mILoadAssetRecord == null ? string.Empty : mILoadAssetRecord.mAssetFullUri; }
+        }
 
 
         #region 对象池
-        private static NativeObjectPool<BeferenceAsset> s_BeferenceAssetPoolMgr;
-        private static void OnBeforeGeBeferenceAsset(BeferenceAsset record)
+
+        private static NativeObjectPool<ComponentReferenceAssetInfor> s_BeferenceAssetPoolMgr;
+
+        private static void OnBeforeGeBeferenceAsset(ComponentReferenceAssetInfor record)
         {
             record.mReferenceCount = 0;
             record.mLastRecordReleaseTime = 0;
@@ -63,26 +71,26 @@ namespace GameFramePro.ResourcesEx.Reference
             record.mILoadAssetRecord?.ReleaseLoadAssetRecord();
         }
 
-        //private static void OnBeforeRecycleBeferenceAsset(BeferenceAsset record)
+        //private static void OnBeforeRecycleBeferenceAsset(ComponentReferenceAssetInfor record)
         //{
         //   
         //}
 
         /// <summary>
-        /// 获取 BeferenceAsset 实例对象
+        /// 获取 ComponentReferenceAssetInfor 实例对象
         /// </summary>
         /// <returns></returns>
-        public static BeferenceAsset GetBeferenceAsset()
+        public static ComponentReferenceAssetInfor GetBeferenceAsset()
         {
             return s_BeferenceAssetPoolMgr.GetItemFromPool();
         }
 
         /// <summary>
-        /// 获取 BeferenceAsset 实例对象
+        /// 获取 ComponentReferenceAssetInfor 实例对象
         /// </summary>
         /// <param name="fullUri"></param>
         /// <returns></returns>
-        public static BeferenceAsset GetBeferenceAsset(ILoadAssetRecord loadAssetRecord, Component component)
+        public static ComponentReferenceAssetInfor GetBeferenceAsset(ILoadAssetRecord loadAssetRecord, Component component)
         {
             var assetBundleAssetInfor = s_BeferenceAssetPoolMgr.GetItemFromPool();
 
@@ -93,32 +101,19 @@ namespace GameFramePro.ResourcesEx.Reference
             return assetBundleAssetInfor;
         }
 
-        /// <summary>
-        /// 释放 BeferenceAsset 对象
-        /// </summary>
-        /// <param name="resourcesAssetRecord"></param>
-        public static void ReleaseAssetBundleRecordInfor(BeferenceAsset resourcesAssetRecord)
-        {
-            if (resourcesAssetRecord == null) return;
-            resourcesAssetRecord.mReferenceCount = 0;
-            resourcesAssetRecord.mComponeReferences.Clear();
-            resourcesAssetRecord. mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;
-            resourcesAssetRecord.mILoadAssetRecord?.ReleaseLoadAssetRecord();
-            resourcesAssetRecord.mILoadAssetRecord = null;
-
-            s_BeferenceAssetPoolMgr.RecycleItemToPool(resourcesAssetRecord);
-        }
-
         #endregion
 
 
         #region 构造函数
-        static BeferenceAsset()
+
+        static ComponentReferenceAssetInfor()
         {
-            s_BeferenceAssetPoolMgr = new NativeObjectPool<BeferenceAsset>(50, OnBeforeGeBeferenceAsset, null);
+            s_BeferenceAssetPoolMgr = new NativeObjectPool<ComponentReferenceAssetInfor>(50, OnBeforeGeBeferenceAsset, null);
         }
 
-        public BeferenceAsset() { }
+        public ComponentReferenceAssetInfor()
+        {
+        }
 
         #endregion
 
@@ -170,6 +165,7 @@ namespace GameFramePro.ResourcesEx.Reference
                 OnTriggerNoReference();
                 return;
             }
+
             --mReferenceCount;
             if (mReferenceCount < 0)
                 mReferenceCount = 0;
@@ -177,7 +173,8 @@ namespace GameFramePro.ResourcesEx.Reference
 
         public void ReduceAllReference(Transform targetTrans)
         {
-            int count = mComponeReferences.RemoveWhere(item => item.transform == targetTrans);
+            int count = mComponeReferences.RemoveWhere(item => item != null ? item.transform == targetTrans : true);
+
             mReferenceCount -= count;
             if (mReferenceCount < 0)
                 mReferenceCount = 0;
@@ -186,9 +183,7 @@ namespace GameFramePro.ResourcesEx.Reference
                 OnTriggerNoReference();
                 return;
             }
-
         }
-
 
         #endregion
 
@@ -220,7 +215,7 @@ namespace GameFramePro.ResourcesEx.Reference
             if (mILoadAssetRecord == null)
                 return true;
 
-            if ( mILoadAssetRecord.mMaxAliveAfterNoReference < 0)
+            if (mILoadAssetRecord.mMaxAliveAfterNoReference < 0)
                 return false;
             if (mReferenceAssetStateUsage != ReferenceAssetStateUsage.Releasing)
                 return false;
@@ -270,11 +265,15 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         public void NotifyBeDelete()
         {
-            ReleaseAssetBundleRecordInfor(this);
+            mReferenceCount = 0;
+            mComponeReferences.Clear();
+            mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;
+            mILoadAssetRecord?.ReleaseLoadAssetRecord();
+            mILoadAssetRecord = null;
+
+            s_BeferenceAssetPoolMgr.RecycleItemToPool(this);
         }
 
-
         #endregion
-
     }
 }

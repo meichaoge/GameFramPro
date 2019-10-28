@@ -7,24 +7,31 @@ namespace GameFramePro
     /// <summary>
     /// 应用控制管理器
     /// </summary>
-    public class ApplicationManager : Single<ApplicationManager>
+    public static class ApplicationManager
     {
-        public ApplicationDynamicConfigure mApplicationDynamicConfigure { get; set; } = new ApplicationDynamicConfigure();
+        public static ApplicationDynamicConfigure mApplicationDynamicConfigure { get; set; } = new ApplicationDynamicConfigure();
 
-        private ApplicatonProperty ApplicatonPropertySettings = null;
+        private static ApplicatonProperty ApplicatonPropertySettings = null;
 
-        public ApplicatonProperty mApplicatonPropertySettings
+        public static ApplicatonProperty mApplicatonPropertySettings
         {
             get
             {
                 if (ApplicatonPropertySettings == null)
                 {
-#if UNITY_EDITOR
-                    Debug.LogEditorError($"这里需要修改加载方式");
-                    ApplicatonPropertySettings = Resources.Load<ApplicatonProperty>(string.Format(ConstDefine.S_ApplicationConfigureAssetPath, ConstDefine.S_ApplicatonPropertyName));
-#else
-   Debug.LogError($"还没有实现加载.asset");
-#endif
+                    LoadAssetResult<ApplicatonProperty> result = ResourcesManager.LoadAssetSync<ApplicatonProperty>(string.Format(ConstDefine.S_ApplicationConfigureAssetPath, ConstDefine.S_ApplicatonPropertyName));
+                    result.ReferenceWithComponent(null, (applicationProperty) =>
+                    {
+                        ApplicatonPropertySettings = applicationProperty;
+                        return false;
+                    });
+
+                    //#if UNITY_EDITOR
+                    //                    Debug.LogEditorError($"这里需要修改加载方式");
+                    //                    ApplicatonPropertySettings = Resources.Load<ApplicatonProperty>(string.Format(ConstDefine.S_ApplicationConfigureAssetPath, ConstDefine.S_ApplicatonPropertyName));
+                    //#else
+                    //   Debug.LogError($"还没有实现加载.asset");
+                    //#endif
                 }
 
                 return ApplicatonPropertySettings;
@@ -32,20 +39,27 @@ namespace GameFramePro
         }
 
 
-        private ApplicationConfigure ApplicationConfigureSettings = null;
+        private static ApplicationConfigure ApplicationConfigureSettings = null;
 
-        public ApplicationConfigure mApplicationConfigureSettings
+        public static ApplicationConfigure mApplicationConfigureSettings
         {
             get
             {
                 if (ApplicationConfigureSettings == null)
                 {
-#if UNITY_EDITOR
-                    Debug.LogEditorError($"这里需要修改加载方式");
-                    ApplicationConfigureSettings = Resources.Load<ApplicationConfigure>(string.Format(ConstDefine.S_ApplicationConfigureAssetPath, ConstDefine.S_ApplicationConfigureName));
-#else
-   Debug.LogError($"还没有实现加载.asset");
-#endif
+                    LoadAssetResult<ApplicationConfigure> result = ResourcesManager.LoadAssetSync<ApplicationConfigure>(string.Format(ConstDefine.S_ApplicationConfigureAssetPath, ConstDefine.S_ApplicationConfigureName));
+                    result.ReferenceWithComponent(null, (applicationSetting) =>
+                    {
+                        ApplicationConfigureSettings = applicationSetting;
+                        return false;
+                    });
+
+                    //#if UNITY_EDITOR
+                    //                    Debug.LogEditorError($"这里需要修改加载方式");
+                    //                    ApplicationConfigureSettings = Resources.Load<ApplicationConfigure>(string.Format(ConstDefine.S_ApplicationConfigureAssetPath, ConstDefine.S_ApplicationConfigureName));
+                    //#else
+                    //   Debug.LogError($"还没有实现加载.asset");
+                    //#endif
                 }
 
                 return ApplicationConfigureSettings;

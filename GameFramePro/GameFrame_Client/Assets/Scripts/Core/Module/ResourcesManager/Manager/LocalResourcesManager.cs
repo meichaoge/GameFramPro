@@ -7,135 +7,98 @@ using Object = UnityEngine.Object;
 namespace GameFramePro.ResourcesEx
 {
     /// <summary> /// 专用于从 Resources 加载和管理资源  /// </summary>
-    public sealed class LocalResourcesManager : Single<LocalResourcesManager>//, IAssetManager
+    public sealed class LocalResourcesManager : Single<LocalResourcesManager>
     {
-
-        //key  =assetpath 
+        //key  =assetFullUri 
         private static readonly Dictionary<string, LoadResourcesAssetRecord> mAllLoadResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(200); //Cache 所有加载的资源
 
 
-
-        #region IAssetManager 接口实现
-
-        public float MaxAliveTimeAfterNoReference
+        /// <summary>
+        /// 从缓存中加载一个资源 可能返回null(标示没有加载过这个资源，或者这个资源已经被释放了)
+        /// </summary>
+        private LoadResourcesAssetRecord LoadResourcesAssetFromCache(string assetFullUri)
         {
-            get { return 60; }
-        } //最多存在1分钟
-
-        //        public void NotifyAssetRelease(LoadAssetBaseRecord record)
-        //        {
-        //            if (record == null) return;
-
-        //            Debug.LogInfor("有资源记录被移除 " + record.AssetUrl);
-
-        //            if (mAllLoadResourcesAssetRecords.ContainsKey(record.AssetUrl))
-        //                mAllLoadResourcesAssetRecords.Remove(record.AssetUrl);
-        //            else
-        //                Debug.LogError("NotifyAssetRelease Error  不存在这个资源 {0}的记录", record.AssetUrl);
-        //        }
-
-        //        public void NotifyAssetReferenceChange(LoadAssetBaseRecord record, bool isAddReference)
-        //        {
-        //            if (record == null) return;
-
-        //            //处理Resources 资源加载和释放
-
-        ////            if (isAddReference)
-        ////            {
-        ////                if (mAllLoadResourcesAssetRecords.ContainsKey(record.AssetUrl) == false)
-        ////                    mAllLoadResourcesAssetRecords[record.AssetUrl] = record as LoadAssetResourcesAssetRecord;
-        ////            }
-        ////            else
-        ////            {
-        ////                if (record.ReferenceCount == 0)
-        ////                {
-        ////                    if (mAllLoadResourcesAssetRecords.ContainsKey(record.AssetUrl))
-        ////                        AssetDelayDeleteManager.RecycleNoReferenceLoadAssetRecord(record);
-        ////                    else
-        ////                        Debug.LogError("NotifyAssetReferenceChange Error !!" + record.AssetUrl);
-        ////                } //资源没有引用时候 释放资源
-        ////            }
-        //        }
-
-        #endregion
-
-
-        #region 同步& 异步 加载资源 (注意加载路径中不能带有扩展名否则加载失败)
-        /// <summary>///  从缓存中加载一个资源 可能返回null(标示没有加载过这个资源，或者这个资源已经被释放了)/// </summary>
-        private LoadResourcesAssetRecord LoadResourcesAssetFromCache(string assetpath)
-        {
-            if (mAllLoadResourcesAssetRecords.TryGetValue(assetpath, out var infor))
+            if (mAllLoadResourcesAssetRecords.TryGetValue(assetFullUri, out var infor))
                 return infor;
             return null;
         }
 
-        //Resources 同步加载资源
-        public void ResourcesLoadAssetSync(string assetpath, System.Action<ILoadAssetRecord> loadCallback)
+        /// <summary>
+        /// Resources 同步加载资源 (注意加载路径中不能带有扩展名否则加载失败)
+        /// </summary>
+        /// <param name="assetFullUri"></param>
+        /// <returns></returns>
+        public ILoadAssetRecord ResourcesLoadAssetSync(string assetFullUri)
         {
-            LoadResourcesAssetRecord record = LoadResourcesAssetFromCache(assetpath);
-            if (record != null)
-            {
-                loadCallback?.Invoke(record);
-                return;
-            }
+            LoadResourcesAssetRecord resourcesAssetRecord = LoadResourcesAssetFromCache(assetFullUri);
+            if (resourcesAssetRecord != null && resourcesAssetRecord.IsRecordEnable)
+                return resourcesAssetRecord;
 
-            Object asset = Resources.Load<UnityEngine.Object>(assetpath.GetPathWithOutExtension());
-            if (asset == null)
-            {
-                Debug.LogError(string.Format("LoadResourcesAssetSync Fail,AssetPath={0}  not exit", assetpath));
-                loadCallback?.Invoke(null);
-                return;
-            }
-            record = LoadResourcesAssetRecord.GetLoadResourcesAssetRecord(assetpath,asset);
-            RecordResourcesLoadAsset(assetpath, record);
-            loadCallback?.Invoke(record);
-        }
-
-        public ILoadAssetRecord ResourcesLoadAssetSync(string assetpath)
-        {
-            LoadResourcesAssetRecord record = LoadResourcesAssetFromCache(assetpath);
-            if (record != null)
-                return record;
-
-            Object asset = Resources.Load<UnityEngine.Object>(assetpath.GetPathWithOutExtension());
+            Object asset = Resources.Load<UnityEngine.Object>(assetFullUri.GetPathWithOutExtension());
             if (asset == null)
             {
 #if UNITY_EDITOR
-                Debug.LogInfor($"LoadResourcesAssetSync Fail,AssetPath={assetpath}  not exit");
+                Debug.LogInfor($"ResourcesLoadAssetSync Fail,assetFullUri={assetFullUri}  not exit");
 #endif
                 return null;
             }
-            record = LoadResourcesAssetRecord.GetLoadResourcesAssetRecord(assetpath, asset);
-            RecordResourcesLoadAsset(assetpath, record);
-            return record;
+
+            resourcesAssetRecord = LoadResourcesAssetRecord.GetLoadResourcesAssetRecord(assetFullUri, asset);
+            RecordResourcesLoadAsset(assetFullUri, resourcesAssetRecord);
+            return resourcesAssetRecord;
         }
 
 
-        //Resources 异步加载资源
-        public void ResourcesLoadAssetAsync(string assetpath, System.Action<ILoadAssetRecord> loadCallback, System.Action<string, float> procressCallback)
+        /// <summary>
+        /// Resources 异步加载资源 (注意加载路径中不能带有扩展名否则加载失败)
+        /// </summary>
+        /// <param name="assetFullUri"></param>
+        /// <param name="loadCallback"></param>
+        /// <param name="procressCallback"></param>
+        public void ResourcesLoadAssetAsync(string assetFullUri, System.Action<ILoadAssetRecord> loadCallback, System.Action<string, float> procressCallback)
         {
-            LoadResourcesAssetRecord resourcesAssetRecord = LoadResourcesAssetFromCache(assetpath);
-            if (resourcesAssetRecord != null)
+            LoadResourcesAssetRecord resourcesAssetRecord = LoadResourcesAssetFromCache(assetFullUri);
+            if (resourcesAssetRecord != null && resourcesAssetRecord.IsRecordEnable)
             {
                 loadCallback?.Invoke(resourcesAssetRecord);
                 return;
             }
-            ResourceRequest request = Resources.LoadAsync(assetpath.GetPathWithOutExtension());
+
+            ResourceRequest request = Resources.LoadAsync(assetFullUri.GetPathWithOutExtension());
             AsyncManager.StartAsyncOperation(request, () =>
             {
-                resourcesAssetRecord = LoadResourcesAssetRecord.GetLoadResourcesAssetRecord(assetpath, request.asset);
-                RecordResourcesLoadAsset(assetpath, resourcesAssetRecord);
+                resourcesAssetRecord = LoadResourcesAssetRecord.GetLoadResourcesAssetRecord(assetFullUri, request.asset);
+                RecordResourcesLoadAsset(assetFullUri, resourcesAssetRecord);
                 loadCallback?.Invoke(resourcesAssetRecord);
-            }, (procress) => { procressCallback?.Invoke(assetpath, procress); });
+            }, (procress) => { procressCallback?.Invoke(assetFullUri, procress); });
         }
 
-        #endregion
 
+        /// <summary>
+        /// 移除所有没有被引用的 Resources 记录
+        /// </summary>
+        public void RemoveAllUnReferenceResourcesRecord(ref HashSet<int> resourcesAssetInstanceIDs)
+        {
+            if (resourcesAssetInstanceIDs == null)
+                resourcesAssetInstanceIDs = new HashSet<int>();
+            Dictionary<string, LoadResourcesAssetRecord> tempResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(mAllLoadResourcesAssetRecords);
 
-        #region 辅助记录
+            foreach (var resourcesAssetRecordInfor in tempResourcesAssetRecords.Values)
+            {
+                if (resourcesAssetRecordInfor == null) continue;
+
+                int resourcesAssetInstanceID = resourcesAssetRecordInfor.GetLoadAssetInstanceID();
+                if (resourcesAssetInstanceID != -1 && resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID) == false)
+                    resourcesAssetInstanceIDs.Add(resourcesAssetInstanceID);
+
+                mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.mAssetFullUri);
+                LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor);
+            }
+        }
+
 
         /// <summary>/// / 记录加载的资源/// </summary>
-        public void RecordResourcesLoadAsset(String assetUrl, LoadResourcesAssetRecord asset)
+        private void RecordResourcesLoadAsset(String assetUrl, LoadResourcesAssetRecord asset)
         {
             if (asset == null)
                 return;
@@ -143,45 +106,12 @@ namespace GameFramePro.ResourcesEx
             {
                 if (infor == asset)
                     return;
-                Debug.LogError(string.Format("RecordLoadAsset Fail,Already Exit Asset at path={0} Not Equal", assetUrl));
+                Debug.LogError($"RecordResourcesLoadAsset Fail,Already Exit Asset at path={assetUrl} Not Equal");
                 mAllLoadResourcesAssetRecords[assetUrl] = asset;
                 return;
             }
 
-//            infor = AssetDelayDeleteManager.TryGetILoadAssetRecord(loadAssetInfor.AssetUrl) as LoadAssetResourcesAssetRecord;
-//            if (infor == null)
-//                infor = mResourcesLoadAssetRecordPoolMgr.GetItemFromPool();
-//
-//            infor.Initial(loadAssetInfor.AssetUrl, LoadedAssetTypeEnum.Resources_UnKnown, loadAssetInfor, this);
             mAllLoadResourcesAssetRecords[assetUrl] = asset;
         }
-
-//         /// <summary>/// 减少对象的引用 如果 isforceDelete =true,则会强制删除这个对象/// </summary>
-//         public void UnRecordResourcesLoadAsset(LoadBasicAssetInfor loadAssetInfor, bool isforceDelete)
-//         {
-//             if (loadAssetInfor == null || loadAssetInfor.IsLoadAssetEnable == false)
-//                 return;
-// 
-//             string assetpath = string.Empty;
-//             foreach (var item in mAllLoadResourcesAssetRecords)
-//             {
-//                 if (item.Value.LoadBasicObjectAssetInfor.IsEqual(loadAssetInfor))
-//                 {
-//                     assetpath = item.Key;
-//                     break;
-//                 }
-//             }
-// 
-//             if (string.IsNullOrEmpty(assetpath) == false)
-//             {
-//                 var resourcesAssetRecord = mAllLoadResourcesAssetRecords[assetpath];
-//                 resourcesAssetRecord.ReduceReference(isforceDelete);
-//                 return;
-//             }
-// 
-//             Debug.LogError(string.Format("UnRecordLoadAsset Fail,Not Exit asset={0}", loadAssetInfor.AssetUrl));
-//         }
-
-        #endregion
     }
 }

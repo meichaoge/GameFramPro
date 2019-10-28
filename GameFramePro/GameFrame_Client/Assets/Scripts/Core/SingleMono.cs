@@ -39,7 +39,7 @@ public class SingleMono<T> : MonoBehaviour where T : MonoBehaviour
     {
         if (s_Instance != null && isIgnoreCheck)
             return s_Instance;
-        if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsSingletonCreateSaftCheck)
+        if (ApplicationManager.mApplicationConfigureSettings.mIsSingletonCreateSaftCheck)
         {
             try
             {

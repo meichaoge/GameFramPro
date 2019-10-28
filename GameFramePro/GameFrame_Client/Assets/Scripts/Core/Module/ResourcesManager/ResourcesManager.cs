@@ -115,7 +115,7 @@ namespace GameFramePro
             }
 
 #if UNITY_EDITOR
-            Debug.LogInfor("卸载资源  " + asset.GetType() + "  " + asset.name);
+            Debug.LogInfor($"卸载资源  {asset.name}:{asset.GetType()}");
 #endif
             Resources.UnloadAsset(asset);
         }
@@ -142,9 +142,9 @@ namespace GameFramePro
         /// <param name="assetPath"></param>
         /// <param name="isForceReload"></param>
         /// <returns></returns>
-        public static LoadAssetResult<T> LoadAssetSync<T>(string assetPath, bool isForceReload = false) where T : UnityEngine.Object
+        public static LoadAssetResult<T> LoadAssetSync<T>(string assetBundleUri) where T : UnityEngine.Object
         {
-            var objectAssetRecord = LoadAssetRecordSync(assetPath);
+            var objectAssetRecord = LoadAssetRecordSync(assetBundleUri);
             if (objectAssetRecord == null)
                 return null;
             T result = null;
@@ -153,40 +153,46 @@ namespace GameFramePro
             else
                 result = objectAssetRecord.GetLoadAsset() as T;
 
-            ReferenceAssetManager.S_Instance.AddWeakReference<T>(result, objectAssetRecord);
-
+            ReferenceAssetManager.S_Instance.AddWeakReference(result, objectAssetRecord);
             return new LoadAssetResult<T>(result);
         }
 
 
-        //通用异步加载接口
-        public static void LoadAssetAsync<T>(string assetPath, System.Action<LoadAssetResult<T>> completeCallback, bool isForceReload = false) where T : UnityEngine.Object
+        /// <summary>
+        /// 通用异步加载接口
+        /// </summary>
+        /// <param name="assetBundleUri"></param>
+        /// <param name="completeCallback"></param>
+        /// <param name="isForceReload"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void LoadAssetAsync<T>(string assetBundleUri, System.Action<LoadAssetResult<T>> completeCallback) where T : UnityEngine.Object
         {
             if (completeCallback != null)
             {
-                LoadAssetRecordAsync(assetPath, (assetRecord) =>
+                LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
                 {
                     if (assetRecord == null)
                     {
                         completeCallback?.Invoke(null);
                         return;
                     }
+
                     T result = null;
                     if (typeof(T) == typeof(Sprite))
                         result = GetSpriteAssetFromLoadAsset(assetRecord.GetLoadAsset()) as T;
                     else
                         result = assetRecord.GetLoadAsset() as T;
-                    ReferenceAssetManager.S_Instance.AddWeakReference<T>(result, assetRecord);
+                    ReferenceAssetManager.S_Instance.AddWeakReference(result, assetRecord);
                     completeCallback?.Invoke(new LoadAssetResult<T>(result));
                 });
             }
             else
             {
-                LoadAssetRecordAsync(assetPath, null);
+                LoadAssetRecordAsync(assetBundleUri, null);
             }
         }
 
-    
+
         /// <summary>
         /// 从加载的资源中获取精灵对象
         /// </summary>
@@ -206,48 +212,69 @@ namespace GameFramePro
         }
 
 
-        //实例化GameObject 专用接口 
-        public static GameObject InstantiateAssetSync(string assetPath, Transform parent, Vector3 localPositon, Quaternion rotation)
+        /// <summary>
+        /// 实例化GameObject 专用接口 
+        /// </summary>
+        /// <param name="assetBundleUri"></param>
+        /// <param name="parent"></param>
+        /// <param name="localPositon"></param>
+        /// <param name="rotation"></param>
+        /// <returns></returns>
+        public static GameObject InstantiateAssetSync(string assetBundleUri, Transform parent, Vector3 localPositon, Quaternion rotation)
         {
-            var objectAssetRecord = LoadAssetRecordSync(assetPath);
+            var objectAssetRecord = LoadAssetRecordSync(assetBundleUri);
             if (objectAssetRecord == null)
                 return null;
 
             GameObject prefab = objectAssetRecord.GetLoadAsset() as GameObject;
             if (prefab == null)
             {
-                Debug.LogError($"加载资源{assetPath} 失败");
+                Debug.LogError($"加载资源{assetBundleUri} 失败");
                 return null;
             }
 
             GameObject go = Instantiate(prefab, localPositon, rotation, parent);
-            ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, objectAssetRecord);
+            if (go == null)
+                return null;
+            ReferenceAssetManager.S_Instance.AddWeakReference(go, objectAssetRecord);
+            ReferenceAssetManager.S_Instance.StrongReferenceWithComponent<Transform>(go, go.transform);
+            //    ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, objectAssetRecord);
             return go;
         }
-
-        public static GameObject InstantiateAssetSync(string assetPath, Transform parent, bool worldPositionStays)
+        public static GameObject InstantiateAssetSync(string assetBundleUri, Transform parent, bool worldPositionStays)
         {
-            var objectAssetRecord = LoadAssetRecordSync(assetPath);
+            var objectAssetRecord = LoadAssetRecordSync(assetBundleUri);
             if (objectAssetRecord == null)
                 return null;
             GameObject prefab = objectAssetRecord.GetLoadAsset() as GameObject;
             if (prefab == null)
             {
-                Debug.LogError($"加载资源{assetPath} 失败");
+                Debug.LogError($"加载资源{assetBundleUri} 失败");
                 return null;
             }
 
             GameObject go = Instantiate(prefab, parent, worldPositionStays);
-            ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, objectAssetRecord);
+            if (go == null)
+                return null;
+            ReferenceAssetManager.S_Instance.AddWeakReference(go, objectAssetRecord);
+            ReferenceAssetManager.S_Instance.StrongReferenceWithComponent<Transform>(go, go.transform);
+            // ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, objectAssetRecord);
             return go;
         }
 
-        //异步实例化对象
-        public static void InstantiateAssetAsync(string assetPath, System.Action<GameObject> completeCallback, Transform parent, Vector3 localPositon, Quaternion rotation)
+        /// <summary>
+        /// 异步实例化对象
+        /// </summary>
+        /// <param name="assetBundleUri"></param>
+        /// <param name="completeCallback"></param>
+        /// <param name="parent"></param>
+        /// <param name="localPositon"></param>
+        /// <param name="rotation"></param>
+        public static void InstantiateAssetAsync(string assetBundleUri, System.Action<GameObject> completeCallback, Transform parent, Vector3 localPositon, Quaternion rotation)
         {
             if (completeCallback != null)
             {
-                LoadAssetRecordAsync(assetPath, (assetRecord) =>
+                LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
                 {
                     if (assetRecord == null)
                     {
@@ -258,28 +285,33 @@ namespace GameFramePro
                     GameObject prefab = assetRecord.GetLoadAsset() as GameObject;
                     if (prefab == null)
                     {
-                        Debug.LogError($"加载资源{assetPath} 失败");
+                        Debug.LogError($"加载资源{assetBundleUri} 失败");
                         completeCallback.Invoke(null);
+                        return;
                     }
-                    else
+
+                    GameObject go = Instantiate(prefab, localPositon, rotation, parent);
+                    if (go == null)
                     {
-                        GameObject go = Instantiate(prefab, localPositon, rotation, parent);
-                        ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, assetRecord);
-                        completeCallback.Invoke(go);
+                        completeCallback.Invoke(null);
+                        return;
                     }
+
+                    ReferenceAssetManager.S_Instance.AddWeakReference(go, assetRecord);
+                    ReferenceAssetManager.S_Instance.StrongReferenceWithComponent<Transform>(go, go.transform);
+                    completeCallback.Invoke(go);
                 });
             }
             else
             {
-                LoadAssetRecordAsync(assetPath, null);
+                LoadAssetRecordAsync(assetBundleUri, null);
             }
         }
-
-        public static void InstantiateAssetAsync(string assetPath, System.Action<GameObject> completeCallback, Transform parent, bool worldPositionStays)
+        public static void InstantiateAssetAsync(string assetBundleUri, System.Action<GameObject> completeCallback, Transform parent, bool worldPositionStays)
         {
             if (completeCallback != null)
             {
-                LoadAssetRecordAsync(assetPath, (assetRecord) =>
+                LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
                 {
                     if (assetRecord == null)
                     {
@@ -290,101 +322,118 @@ namespace GameFramePro
                     GameObject prefab = assetRecord.GetLoadAsset() as GameObject;
                     if (prefab == null)
                     {
-                        Debug.LogError($"加载资源{assetPath} 失败");
+                        Debug.LogError($"加载资源{assetBundleUri} 失败");
                         completeCallback.Invoke(null);
                     }
                     else
                     {
                         GameObject go = Instantiate(prefab, parent, worldPositionStays);
-                        ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, assetRecord);
+                        ReferenceAssetManager.S_Instance.AddWeakReference(go, assetRecord);
+                        ReferenceAssetManager.S_Instance.StrongReferenceWithComponent<Transform>(go, go.transform);
+                        //  ReferenceAssetManager.S_Instance.AddStrongReference<GameObject>(go.transform, prefab, assetRecord);
                         completeCallback.Invoke(go);
                     }
                 });
             }
             else
             {
-                LoadAssetRecordAsync(assetPath, null);
+                LoadAssetRecordAsync(assetBundleUri, null);
             }
         }
 
         /// <summary>/// 同步下载资源接口/// </summary>
-        private static ILoadAssetRecord LoadAssetRecordSync(string assetPath)
+        private static ILoadAssetRecord LoadAssetRecordSync(string assetBundleUri)
         {
             ILoadAssetRecord record = null;
 
-            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsLoadResourcesAssetPriority)
+#if UNITY_EDITOR
+
+            if (AppEntryManager.S_Instance.mIsLoadResourcesAssetPriority)
             {
-                record = LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetPath);
+                record = LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetBundleUri);
                 if (record == null)
-                    record = AssetBundleManager.S_Instance.AssetBundleLoadAssetSync(assetPath);
+                    record = AssetBundleManager.S_Instance.AssetBundleLoadAssetSync(assetBundleUri);
             }
             else
             {
-                record = AssetBundleManager.S_Instance.AssetBundleLoadAssetSync(assetPath);
+                record = AssetBundleManager.S_Instance.AssetBundleLoadAssetSync(assetBundleUri);
                 if (record == null)
-                    record = LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetPath);
+                    record = LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetBundleUri);
             }
-
+#else
+            record = AssetBundleManager.S_Instance.AssetBundleLoadAssetSync(assetBundleUri);
+            if (record == null)
+                record = LocalResourcesManager.S_Instance.ResourcesLoadAssetSync(assetBundleUri);
+        
+#endif
             return record;
         }
 
         /// <summary>/// 异步下载资源的接口/// </summary>
-        private static void LoadAssetRecordAsync(string assetPath, System.Action<ILoadAssetRecord> loadCallback)
+        private static void LoadAssetRecordAsync(string assetBundleUri, System.Action<ILoadAssetRecord> loadCallback)
         {
-            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsLoadResourcesAssetPriority)
+#if UNITY_EDITOR
+            if (AppEntryManager.S_Instance.mIsLoadResourcesAssetPriority)
             {
-                LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetPath, (assetRecord) =>
+                LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetBundleUri, (assetRecord) =>
                 {
                     if (assetRecord != null)
                         loadCallback?.Invoke(assetRecord);
                     else
                     {
-                        AssetBundleManager.S_Instance.AssetBundleLoadAssetAsync(assetPath, (assetBundleAsset) =>
-                        {
-                            loadCallback?.Invoke(assetBundleAsset);
-                        });
+                        AssetBundleManager.S_Instance.AssetBundleLoadAssetAsync(assetBundleUri, (assetBundleAsset) => { loadCallback?.Invoke(assetBundleAsset); });
                     }
                 }, null);
             }
             else
             {
-                AssetBundleManager.S_Instance.AssetBundleLoadAssetAsync(assetPath, (assetRecord) =>
+                AssetBundleManager.S_Instance.AssetBundleLoadAssetAsync(assetBundleUri, (assetRecord) =>
                 {
                     if (assetRecord != null)
                         loadCallback?.Invoke(assetRecord);
                     else
                     {
-                        LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetPath, (localAsset) =>
-                        {
-                            loadCallback?.Invoke(localAsset);
-                        }, null);
+                        LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetBundleUri, (localAsset) => { loadCallback?.Invoke(localAsset); }, null);
                     }
                 });
             }
+#else
+             AssetBundleManager.S_Instance.AssetBundleLoadAssetAsync(assetBundleUri, (assetRecord) =>
+                {
+                    if (assetRecord != null)
+                        loadCallback?.Invoke(assetRecord);
+                    else
+                    {
+                        LocalResourcesManager.S_Instance.ResourcesLoadAssetAsync(assetBundleUri, (localAsset) => { loadCallback?.Invoke(localAsset); }, null);
+                    }
+                });
+#endif
         }
-
-
 
         #endregion
 
         #region 引用关系处理
+
         /// <summary>
         /// 释放某个组件对某个资源的依赖
         /// </summary>
         /// <param name="targetComponent"></param>
         /// <param name="targetReferenceAsset"></param>
-        public static void ReleaseComponentReferenceAsset<T>(Component targetComponent,Object targetReferenceAsset) where T : UnityEngine.Object
+        public static void ReleaseComponentReferenceAsset<T>(Component targetComponent, Object targetReferenceAsset) where T : UnityEngine.Object
         {
             ReferenceAssetManager.S_Instance.ReduceStrongReference<T>(targetComponent, targetReferenceAsset);
         }
 
+
+        /// <summary>
+        /// 某个Object 被释放移除所有的依赖
+        /// </summary>
+        /// <param name="targetObject"></param>
         public static void ReduceGameObjectReference(GameObject targetObject)
         {
             ReferenceAssetManager.S_Instance.RemoveGameObjectReference(targetObject);
         }
 
-
         #endregion
-
     }
 }

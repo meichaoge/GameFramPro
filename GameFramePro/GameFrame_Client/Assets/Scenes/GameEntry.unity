@@ -536,8 +536,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4c33754def34a84b8cbf8bb62f8ad75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mAllResourcesLoadAssets: []
-  mAllLoadedAssetBundleSubAssetRecord: []
 --- !u!1 &1268209834
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,8 +612,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9a0f8d71e0b35409af73c899629786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsLoadResourcesAssetPriorit: 1
-  IsClickEffectEnable: 1
   Debug_InforLevelColor: {r: 1, g: 0, b: 1, a: 1}
   Debug_EditorInforLevelColor: {r: 0.6792453, g: 0.35530883, b: 0.0032039948, a: 1}
   Debug_EditorErroColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -707,6 +703,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReadOnlyInt: 10
+  mIsLoadResourcesAssetPriority: 1
+  mIsClickEffectEnable: 1
 --- !u!1 &1652667699
 GameObject:
   m_ObjectHideFlags: 0

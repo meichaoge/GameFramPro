@@ -15,7 +15,7 @@ namespace GameFramePro.AnalysisEx
         /// <summary>/// 跟踪记录异步信息/// </summary>
         public static bool TrackAsyncTask(SuperCoroutine task)
         {
-            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTrackAsyncTask== false)
+            if (ApplicationManager.mApplicationConfigureSettings.mIsTrackAsyncTask== false)
                 return false;
 
             if (s_AllAsyncTaskRecord.TryGetValue(task.CoroutineID, out var infor))
@@ -39,7 +39,7 @@ namespace GameFramePro.AnalysisEx
         /// <summary>/// 取消 跟踪记录异步信息/// </summary>
         public static bool UnTrackAsyncTask(SuperCoroutine task)
         {
-            if (ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTrackAsyncTask == false)
+            if (ApplicationManager.mApplicationConfigureSettings.mIsTrackAsyncTask == false)
                 return false;
 
             if (s_AllAsyncTaskRecord.TryGetValue(task.CoroutineID, out var infor))

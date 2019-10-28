@@ -18,7 +18,7 @@ namespace GameFramePro.Upgrade
     internal class UpdateAssetBundleInfor
     {
         public AssetBundleAssetUpdateTagEnum mAssetBundleAssetUpdateTagEnum;
-        public string mNeedUpdateAssetName = string.Empty;
+        public string mNeedUpdateAssetBundleUri = string.Empty;
         public long mAssetByteSize = 0;
         public uint mAssetCRC = 0;
 
@@ -27,10 +27,10 @@ namespace GameFramePro.Upgrade
         {
         }
 
-        public UpdateAssetBundleInfor(AssetBundleAssetUpdateTagEnum tagEnum, string assetName, long byteSize, uint crc)
+        public UpdateAssetBundleInfor(AssetBundleAssetUpdateTagEnum tagEnum, string assetBundleUri, long byteSize, uint crc)
         {
             mAssetBundleAssetUpdateTagEnum = tagEnum;
-            mNeedUpdateAssetName = assetName;
+            mNeedUpdateAssetBundleUri = assetBundleUri;
             mAssetByteSize = byteSize;
             mAssetCRC = crc;
         }
@@ -38,7 +38,7 @@ namespace GameFramePro.Upgrade
         public UpdateAssetBundleInfor(AssetBundleAssetUpdateTagEnum tagEnum, AssetBundleInfor bundleInfor)
         {
             mAssetBundleAssetUpdateTagEnum = tagEnum;
-            mNeedUpdateAssetName = bundleInfor.mBundleName;
+            mNeedUpdateAssetBundleUri = bundleInfor.mAssetBundleUri;
             mAssetByteSize = bundleInfor.mBundleSize;
             mAssetCRC = bundleInfor.mBundleCRC;
         }

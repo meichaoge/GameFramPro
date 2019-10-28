@@ -25,9 +25,8 @@ namespace GameFramePro
         }
 
 
-        #region Data 
         private static Dictionary<int, TraceNativeobjectInfor> mAllTraceNativeobjectsInfor = new Dictionary<int, TraceNativeobjectInfor>();
-        #endregion
+        public static bool mIsTraceRecourceCreate { get; set; }= false;  //标示是否追踪资源的创建的开关, 以便需要的时候输出当前使用的资源，分析性能
 
         #region 追踪 原生 object  对象
 
@@ -39,7 +38,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool RegistTraceNativeobject(object obj, TraceNativeobjectStateEnum stateEnum)
         {
-              if (Application.isPlaying == false||ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTraceRecourceCreate==false)
+              if (Application.isPlaying == false||mIsTraceRecourceCreate==false)
                 return false;
             if (obj == null)
             {
@@ -79,7 +78,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool RegistTraceNativeobject(object obj)
         {
-              if (Application.isPlaying == false||ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTraceRecourceCreate==false)
+              if (Application.isPlaying == false||mIsTraceRecourceCreate==false)
                 return false;
             if (obj == null)
             {
@@ -114,7 +113,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool UnRegistTraceNativeobject(object obj, TraceNativeobjectStateEnum stateEnum)
         {
-              if (Application.isPlaying == false||ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTraceRecourceCreate==false)
+              if (Application.isPlaying == false||mIsTraceRecourceCreate==false)
                 return false;
             if (obj == null)
             {
@@ -146,7 +145,7 @@ namespace GameFramePro
                 return true;
             }
 
-            Debug.LogErrorFormat("UnRegistTraceResources Fail, No Record of HashCode", hashCode.ToString());
+            Debug.LogError($"UnRegistTraceResources Fail, No Record of HashCode {hashCode.ToString()}");
             return false;
         }
 
@@ -157,7 +156,7 @@ namespace GameFramePro
         /// <returns></returns>
         public static bool UnRegistTraceNativeobject(object obj)
         {
-              if (Application.isPlaying == false||ApplicationManager.S_Instance.mApplicationConfigureSettings.mIsTraceRecourceCreate==false)
+              if (Application.isPlaying == false||mIsTraceRecourceCreate==false)
                 return false;
             if (obj == null)
             {
