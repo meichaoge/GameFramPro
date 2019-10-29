@@ -39,9 +39,19 @@ namespace GameFramePro.ResourcesEx
         {
             if (CheckIfNeedUpdateTick(currentTime) == false)
                 return;
+            UnLoadNoReferenceAssets(currentTime);
+        }
+
+
+        #endregion
+
+        /// <summary>
+        /// 删除没有被引用的资源
+        /// </summary>
+        public void UnLoadNoReferenceAssets(float currentTime)
+        {
             float timeSpane = currentTime - lastRecordTime;
             lastRecordTime = currentTime;
-
 
             List<ComponentReferenceAssetInfor> allNoReferenceAssets = ReferenceAssetManager.S_Instance.GetAllNoReferenceAssetsForDelete();
             foreach (var noReferenceAsset in allNoReferenceAssets)
@@ -56,7 +66,7 @@ namespace GameFramePro.ResourcesEx
             {
                 bool isCanRelease = target.Value.CheckIfCanRealRelease();
                 temp = target.Next;
-                if (isCanRelease )
+                if (isCanRelease)
                 {
 #if UNITY_EDITOR
                     Debug.LogEditorInfor($"某个资源{target.Value.ReferenceAssetUri}   没有引用后超过可以存活的时间 被释放了！！");
@@ -69,11 +79,6 @@ namespace GameFramePro.ResourcesEx
             }
             ReferenceAssetManager.S_Instance.DeleteAllNoReferenceAssets(allNoReferenceAssets);
         }
-
-
-    
-
-        #endregion
 
         #region  添加或者删除节点
 

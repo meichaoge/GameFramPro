@@ -10,8 +10,11 @@ namespace GameFramePro
     /// <summary>/// 管理各个模块CDN 的URL/// </summary>
     internal static class AppUrlManager
     {
-        private static string s_TopCDNUrl { get; set; } = string.Format("https://superxu3d.tcmapi.cn/goalon/TestApplication/{0}/{1}", ApplicationManager.mApplicatonPropertySettings.mAppResourcesVersion,
+        public static string s_TopCDNUrl { get; set; } = string.Format("http://superxu3d.tcmapi.cn/goalon/TestApplication/{0}/{1}", ApplicationManager.mApplicatonPropertySettings.mAppResourcesVersion,
             AppPlatformManager.GetRuntimePlatformFolderName());
+
+        //private static string s_TopCDNUrl { get; set; } = string.Format("https://supergoal-content-bucket.oss-cn-hongkong.aliyuncs.com/goalon/TestApplication/{0}/{1}", ApplicationManager.mApplicatonPropertySettings.mAppResourcesVersion,
+        //AppPlatformManager.GetRuntimePlatformFolderName());
         //    $"https://superxu3d.tcmapi.cn/goalon/TestApplication/{ApplicationManager.mApplicatonPropertySettings.mAppResourcesVersion}/{AppPlatformManager.GetRuntimePlatformFolderName()}";
 
 

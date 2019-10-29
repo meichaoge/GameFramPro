@@ -171,6 +171,11 @@ namespace GameFramePro
         #endregion
 
 
+        public void InitialedNetWork()
+        {
+            NetWorkCertigicate.InitialedNetWorkCertigicate();
+        }
+
         #region IUpdateCountTick 接口
 
         public uint TickPerUpdateCount { get; private set; } = 1;

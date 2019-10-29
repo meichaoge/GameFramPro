@@ -68,15 +68,17 @@ namespace GameFramePro.Upgrade
 
         #region IUpgradeModule 接口实现
 
-        public event OnBeginUpgradeDelegate OnBeginUpgradeEvent;
-        public event OnUpgradeProcessDelegate OnUpgradeProcessEvent;
-        public event OnUpgradeFailDelegate OnUpgradeFailEvent;
-        public event OnUpgradeSuccessDelegate OnUpgradeSuccessEvent;
-        public event OnReBeginUpgradeDelegate OnReBeginUpgradeEvent;
+        public event System.Action OnBeginUpgradeEvent;
+        public event System.Action<string, float> OnUpgradeProcessEvent;
+        public event System.Action<string> OnUpgradeFailEvent;
+        public event System.Action OnUpgradeSuccessEvent;
+        public event System.Action OnReBeginUpgradeEvent;
         public float CurProcess { get; private set; } = 0f; //当前的下载进度
+        public UpgradeStateUsage mUpgradeState { get; private set; } = UpgradeStateUsage.Initialed; 
 
         public IEnumerator OnBeginUpgrade()
         {
+            mUpgradeState = UpgradeStateUsage.Begin;
             OnBeginUpgradeEvent?.Invoke();
 
             var preloadTextureSuperCoroutine = new SuperCoroutine(PreloadTextureUpgradeProcess(true));
@@ -85,6 +87,7 @@ namespace GameFramePro.Upgrade
 
         public void OnUpgradeProcess(string message, float process)
         {
+            mUpgradeState = UpgradeStateUsage.Upgrading;
             CurProcess = process;
 
 #if UNITY_EDITOR
@@ -95,12 +98,14 @@ namespace GameFramePro.Upgrade
 
         public void OnUpgradeFail(string message)
         {
+            mUpgradeState = UpgradeStateUsage.UpgradeFail;
             Debug.LogError(message);
             OnUpgradeFailEvent?.Invoke(message);
         }
 
         public void OnUpgradeSuccess()
         {
+            mUpgradeState = UpgradeStateUsage.UpgradeSuccess;
             Debug.LogInfor("所有的 预加载图片 资源更新已经完成!!");
 
 
@@ -109,6 +114,7 @@ namespace GameFramePro.Upgrade
 
         public IEnumerator OnReBeginUpgrade()
         {
+            mUpgradeState = UpgradeStateUsage.Begin;
             OnReBeginUpgradeEvent?.Invoke();
 
             OnUpgradeProcess("  准备重新下载 ", 0.2f);
@@ -263,7 +269,7 @@ namespace GameFramePro.Upgrade
 
 #if UNITY_EDITOR
 
-                Debug.LogEditorInfor($"---------------------Load Local Textures {file} : md5Code={md5Code} ");
+                Debug.LogEditorInfor($"--------------------->> Local Textures: {imgRelativetPath} : md5Code={md5Code} ");
 #endif
 
                 //****保存本地的图片数据 避免多次加载

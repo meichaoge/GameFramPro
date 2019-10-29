@@ -22,7 +22,7 @@ namespace GameFramePro
         #region 资源加载+安全+追踪 配置
 
 
- 
+
 
 
         [Tooltip("标示是否追踪异步&协程任务")] public bool mIsTrackAsyncTask = true;
@@ -54,15 +54,17 @@ namespace GameFramePro
 
 
     }
-    
-    
+
+#if UNITY_EDITOR
     public class ApplicationConfigure_Editor
     {
         [MenuItem("工具和扩展/项目配置/生成应用配置资源")]
         private static void CreateApplicationConfigure()
         {
-            ScriptableObjectUtility.CreateUnityAsset<ApplicationConfigure>($"Assets/Resources/{string.Format(ConstDefine.S_ApplicationConfigureAssetPath,ConstDefine.S_ApplicationConfigureName)}.asset");
+            ScriptableObjectUtility.CreateUnityAsset<ApplicationConfigure>($"Assets/Resources/{string.Format(ConstDefine.S_ApplicationConfigureAssetPath, ConstDefine.S_ApplicationConfigureName)}.asset");
         }
     }
-    
+
+#endif
+
 }

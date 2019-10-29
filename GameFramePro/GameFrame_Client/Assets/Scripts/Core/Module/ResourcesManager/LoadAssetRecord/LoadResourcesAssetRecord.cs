@@ -38,6 +38,8 @@ namespace GameFramePro.ResourcesEx
         private static void OnBeforeRecycleLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
         {
             if (record == null) return;
+            //   ResourcesManager.UnLoadAsset(record.mResourcesAsset);
+            //Object.Destroy(record.mResourcesAsset);
             record.mResourcesAsset = null;
             record.mLoadAssetSourceUsage = LoadAssetSourceUsage.ResourcesAsset;
         }

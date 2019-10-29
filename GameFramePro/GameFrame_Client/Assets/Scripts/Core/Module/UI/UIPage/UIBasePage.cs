@@ -184,7 +184,7 @@ namespace GameFramePro.UI
         public void DestroyAndRelease()
         {
             OnBeforeDestroyed();
-           // ConnectGameObjectInstance.ReduceReference();
+            ResourcesManager.Destroy(ConnectGameObjectInstance);
             mUIPageState = UIPageStateEnum.Destroyed;
             OnAfterDestroyed();
         }

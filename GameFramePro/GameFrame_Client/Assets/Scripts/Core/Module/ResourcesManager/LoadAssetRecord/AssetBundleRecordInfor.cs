@@ -20,7 +20,7 @@ namespace GameFramePro.ResourcesEx
         }
 
 
-        public string mAssetBundleUri { get; private set; } //得到AssetBundle 的路径
+        public string mAssetBundleNameUri { get; private set; } //得到AssetBundle 的文件名称
         private AssetBundle mAssetBundle { get; set; }
 
         public int mAssetBundleInstanceID
@@ -60,6 +60,7 @@ namespace GameFramePro.ResourcesEx
         private static void OnBeforeRecycleAssetBundleRecordInfor(AssetBundleRecordInfor record)
         {
             if (record == null) return;
+            ResourcesManager.UnLoadAssetBundle(record.mAssetBundle,false);
             record.mAssetBundle = null;
             record.mAllDependencesAssetBundleRecordInfors.Clear();
             record.mAllBeDependencesAssetBundleRecordInfors.Clear();
@@ -81,10 +82,10 @@ namespace GameFramePro.ResourcesEx
         /// <param name="assetBundleUri"></param>
         /// <param name="assetBundle"></param>
         /// <returns></returns>
-        public static AssetBundleRecordInfor GetAssetBundleRecordInfor(string assetBundleUri, AssetBundle assetBundle)
+        public static AssetBundleRecordInfor GetAssetBundleRecordInfor(string assetBundleNameUri, AssetBundle assetBundle)
         {
             var assetBundleRecordInfor = s_AssetBundleRecordInforrPoolMgr.GetItemFromPool();
-            assetBundleRecordInfor.mAssetBundleUri = assetBundleUri;
+            assetBundleRecordInfor.mAssetBundleNameUri = assetBundleNameUri;
             assetBundleRecordInfor.mAssetBundle = assetBundle;
             return assetBundleRecordInfor;
         }
@@ -152,9 +153,9 @@ namespace GameFramePro.ResourcesEx
 
             otherDependenceAssetBundleRecord.NotifyAddBeReferenceByAssetBundleRecord(this); //通知其他的记录被依赖
 
-            if (mAllDependencesAssetBundleRecordInfors.ContainsKey(otherDependenceAssetBundleRecord.mAssetBundleUri))
+            if (mAllDependencesAssetBundleRecordInfors.ContainsKey(otherDependenceAssetBundleRecord.mAssetBundleNameUri))
                 return;
-            mAllDependencesAssetBundleRecordInfors[otherDependenceAssetBundleRecord.mAssetBundleUri] = otherDependenceAssetBundleRecord;
+            mAllDependencesAssetBundleRecordInfors[otherDependenceAssetBundleRecord.mAssetBundleNameUri] = otherDependenceAssetBundleRecord;
         }
 
         /// <summary>
@@ -167,7 +168,7 @@ namespace GameFramePro.ResourcesEx
                 return;
             otherDependenceAssetBundleRecord.NotifyRemoveBeReferenceByAssetBundleRecord(this); //通知其他的记录被移除依赖
 
-            mAllDependencesAssetBundleRecordInfors.Remove(otherDependenceAssetBundleRecord.mAssetBundleUri);
+            mAllDependencesAssetBundleRecordInfors.Remove(otherDependenceAssetBundleRecord.mAssetBundleNameUri);
         }
         
         /// <summary>
@@ -215,7 +216,7 @@ namespace GameFramePro.ResourcesEx
             if (beReferenceAssetBundleRecordInfor == null || beReferenceAssetBundleRecordInfor.IsAssetBundleEnable == false)
                 return;
 
-            mAllBeDependencesAssetBundleRecordInfors[beReferenceAssetBundleRecordInfor.mAssetBundleUri] = beReferenceAssetBundleRecordInfor;
+            mAllBeDependencesAssetBundleRecordInfors[beReferenceAssetBundleRecordInfor.mAssetBundleNameUri] = beReferenceAssetBundleRecordInfor;
         }
 
         /// 通知 去除自己被其他的AssetBundle 资源引用
@@ -226,7 +227,7 @@ namespace GameFramePro.ResourcesEx
             if (beReferenceAssetBundleRecordInfor == null || beReferenceAssetBundleRecordInfor.IsAssetBundleEnable == false)
                 return;
 
-            mAllBeDependencesAssetBundleRecordInfors.Remove(beReferenceAssetBundleRecordInfor.mAssetBundleUri);
+            mAllBeDependencesAssetBundleRecordInfors.Remove(beReferenceAssetBundleRecordInfor.mAssetBundleNameUri);
         }
 
         #endregion

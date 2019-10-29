@@ -24,12 +24,12 @@ namespace GameFramePro
         [ReadOnly]
         public int ReadOnlyInt = 10;
 
-        //[Tooltip("标示是否在优先加载Resources下资源, =false 时候优先加载外部AssetBundle资源")]
+        [Tooltip("标示是否在优先加载Resources下资源, =false 时候优先加载外部AssetBundle资源")]
         public bool mIsLoadResourcesAssetPriority = true;
 
+#endif
         [Tooltip("标示是否启用 屏幕点击特效 (这里是在入口处判断，比ScreenClickManager 中的接口优先级和限制更高)")]
         public bool mIsClickEffectEnable = true;
-#endif
 
         protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不销毁
 
@@ -49,6 +49,7 @@ namespace GameFramePro
 
             UIPageManager.InitialedPageManager();
             LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
+            NetWorkManager.S_Instance.InitialedNetWork();
 
             var appUpgradeCoroutineEx = new SuperCoroutine(AppUpgradeManager.S_Instance.OnBeginUpgrade());
             yield return appUpgradeCoroutineEx.WaitDone(true); //等待完成项目的更新

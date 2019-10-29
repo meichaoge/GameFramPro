@@ -16,7 +16,7 @@ namespace GameFramePro.UI
         #region IUpdateTick 接口实现
 
         protected float lastRecordTime = 0; //上一次记录的时间
-        public float TickPerTimeInterval { get; private set; } = 30; //约等于1分钟检测一次
+        public float TickPerTimeInterval { get; private set; } = 10; //约等于1分钟检测一次
 
         protected bool CheckIfNeedUpdateTick(float curTime)
         {
@@ -36,10 +36,15 @@ namespace GameFramePro.UI
         {
             if (CheckIfNeedUpdateTick(currentTime) == false)
                 return;
+
+            UnLoadInVisibleUI(currentTime);
+        }
+
+        #endregion
+
+        public void UnLoadInVisibleUI(float currentTime)
+        {
             lastRecordTime = currentTime;
-
-            #region 刷新
-
             if (mTempInVisiblePage != null && mTempInVisiblePage.Count > 0)
             {
                 foreach (var item in mTempInVisiblePage)
@@ -67,6 +72,10 @@ namespace GameFramePro.UI
                         if (uiBasePage is UIBasePopWindow)
                             UIPageManager.RemoveUIPopWindowFromCache(uiBasePage as UIBasePopWindow);
 
+#if UNITY_EDITOR
+                        Debug.LogEditorInfor($"界面{uiBasePage.PageName} 隐藏超过{ uiBasePage.MaxAliveAfterInActivte} 秒后被释放资源");
+#endif
+
                         uiBasePage.DestroyAndRelease();
                         mAllInVisiblePage.Remove(targetNode);
                     }
@@ -74,14 +83,7 @@ namespace GameFramePro.UI
                     targetNode = next;
                 }
             }
-
-            #endregion
         }
-
-        #endregion
-
-
-        #region 记录隐藏了页面 以及定时刷新状态
 
         //注册等待超时删除的页面
         public void RegisterUIBasePageInvisible(UIBasePage page)
@@ -118,6 +120,5 @@ namespace GameFramePro.UI
             mTempInVisiblePage.Remove(page);
         }
 
-        #endregion
     }
 }

@@ -5,42 +5,36 @@ using System;
 
 namespace GameFramePro.Upgrade
 {
-    /// <summary>/// 标示更新Asset Bundle 资源时候的状态/// </summary>
-    internal enum AssetBundleAssetUpdateTagEnum
-    {
-        AddAsset, //新增资源
-        RemoveLocalAsset, //本地资源已经无效 需要删除
-        UpdateAsset, //本地资源需要更新
-    }
 
 
     [System.Serializable]
     internal class UpdateAssetBundleInfor
     {
-        public AssetBundleAssetUpdateTagEnum mAssetBundleAssetUpdateTagEnum;
         public string mNeedUpdateAssetBundleUri = string.Empty;
+        public string mAssetAbsFullUri = string.Empty; //本地资源的绝对路径 资源删除时候用
         public long mAssetByteSize = 0;
-        public uint mAssetCRC = 0;
+        public string mMd5Code = string.Empty;
 
 
         public UpdateAssetBundleInfor()
         {
         }
 
-        public UpdateAssetBundleInfor(AssetBundleAssetUpdateTagEnum tagEnum, string assetBundleUri, long byteSize, uint crc)
+        public UpdateAssetBundleInfor(string assetBundleUri, long byteSize, string md5, string fileAbsUri)
         {
-            mAssetBundleAssetUpdateTagEnum = tagEnum;
             mNeedUpdateAssetBundleUri = assetBundleUri;
             mAssetByteSize = byteSize;
-            mAssetCRC = crc;
+            mMd5Code = md5;
+            mAssetAbsFullUri = fileAbsUri;
         }
 
-        public UpdateAssetBundleInfor(AssetBundleAssetUpdateTagEnum tagEnum, AssetBundleInfor bundleInfor)
+        public UpdateAssetBundleInfor(string assetBundleFileName,AssetBundleInfor bundleInfor,  string fileAbsUri)
         {
-            mAssetBundleAssetUpdateTagEnum = tagEnum;
-            mNeedUpdateAssetBundleUri = bundleInfor.mAssetBundleUri;
-            mAssetByteSize = bundleInfor.mBundleSize;
-            mAssetCRC = bundleInfor.mBundleCRC;
+            mNeedUpdateAssetBundleUri = assetBundleFileName;
+
+            mAssetByteSize = bundleInfor.GetABundleDetail(assetBundleFileName).Size;
+            mMd5Code = bundleInfor.GetABundleDetail(assetBundleFileName).MD5;
+            mAssetAbsFullUri = fileAbsUri;
         }
     }
 }

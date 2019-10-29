@@ -265,6 +265,11 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         public void NotifyBeDelete()
         {
+
+#if UNITY_EDITOR
+            Debug.Log($"资源{ReferenceAssetUri} 释放资源");
+#endif
+
             mReferenceCount = 0;
             mComponeReferences.Clear();
             mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;

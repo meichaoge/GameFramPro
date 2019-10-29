@@ -69,6 +69,10 @@ namespace GameFramePro
 
         public UnityWebRequestDownloadTask GetByteDataFromUrl(string taskUrl, TaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
         {
+//#if UNITY_EDITOR
+//            Debug.LogEditorInfor($"taskUrl={taskUrl}");
+//#endif
+
             return ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
         }
 

@@ -90,7 +90,9 @@ namespace GameFramePro.ResourcesEx
                 int resourcesAssetInstanceID = resourcesAssetRecordInfor.GetLoadAssetInstanceID();
                 if (resourcesAssetInstanceID != -1 && resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID) == false)
                     resourcesAssetInstanceIDs.Add(resourcesAssetInstanceID);
-
+#if UNITY_EDITOR
+                Debug.Log($"释放Resources 资源： {resourcesAssetRecordInfor.mAssetFullUri}");
+#endif
                 mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.mAssetFullUri);
                 LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor);
             }

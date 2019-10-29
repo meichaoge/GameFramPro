@@ -20,27 +20,28 @@ namespace GameFramePro
         /// <summary>/// 请求登录/// </summary>
         public void RequestLogin(string name, string password)
         {
-            LoginRequest requset = new LoginRequest()
+            //LoginRequest requset = new LoginRequest()
+            //{
+            //    mUserName = name,
+            //    mUserPassword = password,
+            //};
+
+            //ByteArray loginData = ByteArray.GetByteArray();
+            //loginData.SerilizeGetBytes(requset);
+
+            //SocketClientHelper.BaseLoginTcpClient.Send((int) ProtocolCommand.RequestLogin, loginData);
+            //ByteArray.RecycleByteArray(loginData);
+
+            //测试代码
+            AsyncManager.Invoke(1f, () =>
             {
-                mUserName = name,
-                mUserPassword = password,
-            };
+                LoginResponse response = new LoginResponse();
+                response.mIsSuccess = true;
+                response.mUserName = name;
+                response.mToken = "123456";
 
-            ByteArray loginData = ByteArray.GetByteArray();
-            loginData.SerilizeGetBytes(requset);
-
-            SocketClientHelper.BaseLoginTcpClient.Send((int) ProtocolCommand.RequestLogin, loginData);
-            ByteArray.RecycleByteArray(loginData);
-//            //测试代码
-//            AsyncManager.Invoke(1f, () =>
-//            {
-//                LoginResponse response = new LoginResponse();
-//                response.mIsSuccess = true;
-//                response.mUserName = name;
-//                response.mToken = "123456";
-//
-//                OnResponseLogin(response);
-//            });
+                OnResponseLogin(response);
+            });
         }
 
         private void OnResponseLogin(object objectResponse)

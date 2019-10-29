@@ -21,15 +21,18 @@ namespace GameFramePro.Upgrade
 
         #region IUpgradeModule 接口的实现 (这里主要用于进入应用的时候的更新逻辑)
 
-        public event OnBeginUpgradeDelegate OnBeginUpgradeEvent;
-        public event OnUpgradeProcessDelegate OnUpgradeProcessEvent;
-        public event OnUpgradeFailDelegate OnUpgradeFailEvent;
-        public event OnUpgradeSuccessDelegate OnUpgradeSuccessEvent;
-        public event OnReBeginUpgradeDelegate OnReBeginUpgradeEvent;
+        public event System.Action OnBeginUpgradeEvent;
+        public event System.Action<string, float> OnUpgradeProcessEvent;
+        public event System.Action<string> OnUpgradeFailEvent;
+        public event System.Action OnUpgradeSuccessEvent;
+        public event System.Action OnReBeginUpgradeEvent;
         public float CurProcess { get; private set; }
+        public UpgradeStateUsage mUpgradeState { get; private set; } = UpgradeStateUsage.Initialed;
 
         public IEnumerator OnBeginUpgrade()
         {
+            mUpgradeState = UpgradeStateUsage.Begin;
+            OnBeginUpgradeEvent?.Invoke();
             Debug.LogInfor("开始应用启动时候的更新流程");
 
             mUIProgressChangePage = UIPageManager.OpenChangePage<UIProgressChangePage>(NameDefine.UIProgressChangePageName, PathDefine.UIProgressChangePagePath);
@@ -53,26 +56,33 @@ namespace GameFramePro.Upgrade
 
         public void OnUpgradeProcess(string message, float process)
         {
+            mUpgradeState = UpgradeStateUsage.Upgrading;
             CurProcess = process;
             Debug.LogInfor($"OnUpgradeProcess process={process}  message={message}  ");
             mUIProgressChangePage.ShowProgress(message, process);
+            OnUpgradeProcessEvent?.Invoke(message, process);
         }
 
         public void OnUpgradeFail(string message)
         {
+            mUpgradeState = UpgradeStateUsage.UpgradeFail;
             Debug.LogError(message);
             OnUpgradeFailEvent?.Invoke(message);
         }
 
         public void OnUpgradeSuccess()
         {
+            mUpgradeState = UpgradeStateUsage.UpgradeSuccess;
             Debug.LogError("下载 成功 ");
             mUIProgressChangePage.ShowProgress("应用更新完成", 1);
+            OnUpgradeSuccessEvent?.Invoke();
         }
 
         public IEnumerator OnReBeginUpgrade()
         {
+            mUpgradeState = UpgradeStateUsage.Begin;
             Debug.LogError("重新 下载 ");
+            OnReBeginUpgradeEvent?.Invoke();
             yield break;
         }
 

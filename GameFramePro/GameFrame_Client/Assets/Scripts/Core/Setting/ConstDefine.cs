@@ -16,6 +16,7 @@ namespace GameFramePro
         public static readonly string S_PrefabExtension = ".prefab"; //文件文件扩展名
         public static readonly string S_AssetBundleManifestExtension = ".manifest"; //AssetBundleManifest文件文件扩展名
         public static readonly string S_AssetBundleExtension = ".unity3d"; //AssetBundle t文件文件扩展名
+        public static readonly char S_AssetBundleAssetNameSeparatorChar = 'E'; //AssetBundle 资源中前面长度与后面Md5 分割符号
 
         public static readonly string S_LocalizationKeyFlag = "_@"; //本地化语言key 的前两个字符标示 ,也是查找本地化key的模式
 
@@ -31,7 +32,7 @@ namespace GameFramePro
 
 
         public static readonly string S_LocalizationDirectoryName = "Localization"; //本地化语言相对于Resources路径
-        public static readonly string S_AssetBundleConfigFileName = "AssetBundleContainAssetInfor.csv"; //所有关于AssetBundle 资源配置文件名
+        public static readonly string S_AssetBundleConfigFileName = "AssetBundleContainAssetInfor.txt"; //所有关于AssetBundle 资源配置文件名
         public static readonly string S_PreloadImgConfiFileName = "PreloadImageAssetConfig.json"; //预加载图片的名称配置
 
 

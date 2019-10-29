@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using GameFramePro.ResourcesEx;
 using Object = UnityEngine.Object;
 using GameFramePro.ResourcesEx.Reference;
+using GameFramePro.UI;
 
 namespace GameFramePro
 {
@@ -108,16 +109,44 @@ namespace GameFramePro
 
         public static void UnLoadAsset(UnityEngine.Object asset)
         {
-            if (asset == null)
+            try
             {
-                Debug.LogError("UnLoadAsset Fail!! 参数是null ");
-                return;
-            }
+                if (asset == null)
+                {
+                    Debug.LogError("UnLoadAsset Fail!! 参数是null ");
+                    return;
+                }
 
 #if UNITY_EDITOR
-            Debug.LogInfor($"卸载资源  {asset.name}:{asset.GetType()}");
+                Debug.LogInfor($"卸载资源  {asset.name}:{asset.GetType()}");
 #endif
-            Resources.UnloadAsset(asset);
+                Resources.UnloadAsset(asset);
+            }
+            catch (Exception e)
+            {
+                Debug.LogInfor($"卸载资源  {asset.name}:{asset.GetType()}  异常{e}");
+            }
+
+        }
+
+        /// <summary>
+        /// 强制系统回收资源
+        /// </summary>
+        public static void UnloadAllUnusedAssets()
+        {
+            try
+            {
+                UIPageManagerUtility.S_Instance.UnLoadInVisibleUI(Time.realtimeSinceStartup);
+                AssetDelayDeleteManager.S_Instance.UnLoadNoReferenceAssets(Time.realtimeSinceStartup);
+                Resources.UnloadUnusedAssets();
+
+                Debug.LogInfor($"主动清理所有没有引用的资源{DateTime.UtcNow}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"主动清理所有没有引用的资源{DateTime.UtcNow}  异常{e}");
+            }
+
         }
 
         public static void UnLoadAssetBundle(AssetBundle asset, bool isUnloadAllLoadedObjects)
@@ -127,8 +156,17 @@ namespace GameFramePro
                 Debug.LogError("UnLoadAsset Fail!! 参数是null ");
                 return;
             }
-
-            asset.Unload(isUnloadAllLoadedObjects);
+            try
+            {
+#if UNITY_EDITOR
+                Debug.Log($"释放AssetBundle 资源{asset.name}");
+#endif
+                asset.Unload(isUnloadAllLoadedObjects);
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"释放AssetBundle 资源{asset.name} 异常{e}");
+            }
         }
 
         #endregion

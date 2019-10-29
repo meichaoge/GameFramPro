@@ -10,7 +10,7 @@ namespace GameFramePro
     /// <summary>/// 对 System.IO 名称空间下类进行扩展/// </summary>
     public static class IOUtility
     {
-        #region 文件创建、追加
+        #region 文件创建、追加 、修改文件名
 
         /// <summary>/// 创建或者追加内容/// </summary>
         /// <param name="filePath">文件绝对路径</param>
@@ -49,7 +49,7 @@ namespace GameFramePro
                     operateStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, byteData.Length); //打开或者创建
 
                 if (isAppend)
-                    operateStream.Write(byteData, (int) operateStream.Length, byteData.Length);
+                    operateStream.Write(byteData, (int)operateStream.Length, byteData.Length);
                 else
                     operateStream.Write(byteData, 0, byteData.Length);
 
@@ -85,7 +85,7 @@ namespace GameFramePro
             return true;
         }
 
-            
+
         /// <summary>/// 读取指定路径上文件的全部信息/// </summary>
         /// <returns>返回值标示是否读取生成 返回一行一行的数据</returns>
         public static bool GetFileContentAllLines(string filePath, out string[] content)
@@ -100,27 +100,41 @@ namespace GameFramePro
             content = System.IO.File.ReadLines(filePath).ToArray();
             return true;
         }
-        
-        /// <summary>
-        /// 文件重命名
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="newFileName"></param>
-        /// <returns></returns>
-        public static bool FileModifyName(string filePath, string newFileName)
-        {
-            if (System.IO.File.Exists(filePath) == false)
-                return false;
 
-            string newFilePath = System.IO.Path.GetDirectoryName(filePath).CombinePathEx(newFileName);
-            if (System.IO.File.Exists(newFilePath))
+
+        /// <summary>
+        ///  文件重命名 
+        /// </summary>
+        /// <param name="filePath">资源的原始路径</param>
+        /// <param name="newFileName">新的文件名</param>
+        /// <returns>重命名后的文件路径</returns>
+        public static string FileModifyName(string filePath, string newFileName)
+        {
+            try
             {
-                Debug.LogError("存在同名的文件 ，无法修改文件名 " + newFilePath);
-                return false;
+                if (System.IO.File.Exists(filePath) == false)
+                {
+                    Debug.LogError($"指定的文件不存在{filePath}");
+                    return string.Empty;
+                }
+
+                string newFilePath = System.IO.Path.GetDirectoryName(filePath).CombinePathEx(newFileName);
+                if (System.IO.File.Exists(newFilePath))
+                {
+                    Debug.LogError("存在同名的文件 ，无法修改文件名 " + newFilePath);
+                    return string.Empty;
+                }
+
+                System.IO.File.Move(filePath, newFilePath);
+                return newFilePath;
+            }
+            catch (System.Exception e)
+            {
+
+                Debug.LogError($"异常错误 {filePath}==>{newFileName} {e}");
+                return string.Empty;
             }
 
-            System.IO.File.Move(filePath, newFileName);
-            return true;
         }
 
         /// <summary>/// 删除指定的文件/// </summary>
@@ -142,12 +156,14 @@ namespace GameFramePro
             return true;
         }
 
+
+
         #endregion
 
         #region 目录操作 (获取父目录、判断是否包含子目录、创建和销毁目录)
 
         /// <summary>
-        /// 获取指定目录下的第N级别的父目录
+        /// 获取指定目录下的第N级别的父目录 (Url 不能处理)
         /// </summary>
         /// <param name="currentPath"></param>
         /// <param name="parentDeeep">父目录的层次,=0时候返回自身，=1返回上一级目录，以此类推</param>
@@ -667,19 +683,14 @@ namespace GameFramePro
             else
                 byteSize = Mathf.FloorToInt(byteSize / 8f);
 
-            string[] units = new string[] {"B", "KB", "MB", "GB", "TB"};
+            string[] units = new string[] { "B", "KB", "MB", "GB", "TB" };
             int count = 0;
             while (byteSize >= 1024)
             {
                 if (isUptoConvert)
-                {
                     byteSize = Mathf.CeilToInt(byteSize / 1024f);
-                }
                 else
-                {
                     byteSize = Mathf.FloorToInt(byteSize / 1024f);
-                }
-
                 count++;
             }
 

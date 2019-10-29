@@ -110,7 +110,10 @@ namespace GameFramePro.ResourcesEx
         
         private void OnDestroy()
         {
+#if UNITY_EDITOR
             mAllReferenceInfors.Clear();
+            Debug.LogEditorInfor($"被标记的资源{gameObject.name}  被销毁，准备释放资源");
+#endif
             ResourcesManager.ReduceGameObjectReference(gameObject);
         }
     }

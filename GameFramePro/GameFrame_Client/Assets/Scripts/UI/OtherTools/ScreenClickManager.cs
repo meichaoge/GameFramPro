@@ -189,7 +189,7 @@ namespace GameFramePro
                 if (needCreateItem)
                 {
 
-                    GameObject go = ResourcesManager.InstantiateAssetSync(EffectDefine.S_ScreenClickEffectPath, mScreenEffectCanvasTrans, true);
+                    GameObject go = ResourcesManager.InstantiateAssetSync(EffectDefine.S_ScreenClickEffectPath, mScreenEffectCanvasTrans, false);
                     if (go == null)
                     {
                         Debug.LogError("获取资源为null ");

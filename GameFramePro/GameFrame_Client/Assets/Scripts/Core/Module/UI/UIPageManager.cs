@@ -391,7 +391,7 @@ namespace GameFramePro.UI
         {
             //    BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath, isForceCreateInstance);
 
-            GameObject go = ResourcesManager.InstantiateAssetSync(pagePath, parent, true);
+            GameObject go = ResourcesManager.InstantiateAssetSync(pagePath, parent, false);
             if (go != null)
             {
                 go.name = pageName;
