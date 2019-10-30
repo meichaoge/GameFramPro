@@ -20,13 +20,13 @@ namespace GameFramePro.EditorEx
 
         #region 图片格式优化
 
-        [MenuItem("Assets/工具和扩展/资源优化/设置图片被引用Prefabs关联Image格式(九宫格 Slider)")]
+        [MenuItem("Assets/工具和扩展/资源优化/图片被引用预制体关联Image格式(九宫格 Slider)")]
         private static void AutoSetImgReferencePrefabType_Sliced()
         {
             AutoSetImgReferencePrefabType(Image.Type.Sliced);
         }
 
-        [MenuItem("Assets/工具和扩展/资源优化/设置图片被引用Prefabs关联Image格式(九宫格 Tilied)")]
+        [MenuItem("Assets/工具和扩展/资源优化/图片被引用预制体关联Image格式(九宫格 Tilied)")]
         private static void AutoSetImgReferencePrefabType_Tilied()
         {
             AutoSetImgReferencePrefabType(Image.Type.Tiled);
@@ -41,7 +41,7 @@ namespace GameFramePro.EditorEx
 
             if (selectobjs.Length > 1)
             {
-                Debug.LogError("只能选择一个图片资源");
+                Debug.LogError("只能选择一个图片");
                 return;
             }
 
@@ -88,11 +88,11 @@ namespace GameFramePro.EditorEx
                 return;
             }
 
-            Debug.LogError("选择的资源不是图片资源 " + assetPath);
+            Debug.LogError("选择的资源不是图片 " + assetPath);
         }
 
 
-        [MenuItem("Assets/工具和扩展/资源优化/设置图片被引用Prefabs关联Image格式(水平分成2个)")]
+        [MenuItem("Assets/工具和扩展/资源优化/图片被引用预制体关联Image格式(水平分成2个)")]
         private static void AutoSetImgReferencePrefab_Horizontial()
         {
             var selectobjs = Selection.objects;
@@ -101,7 +101,7 @@ namespace GameFramePro.EditorEx
 
             if (selectobjs.Length > 1)
             {
-                Debug.LogError("只能选择一个图片资源");
+                Debug.LogError("只能选择一个图片");
                 return;
             }
 
@@ -203,12 +203,12 @@ namespace GameFramePro.EditorEx
                 return;
             }
 
-            Debug.LogError("选择的资源不是图片资源 " + assetPath);
+            Debug.LogError("选择的资源不是图片 " + assetPath);
         }
 
         #endregion
 
-        #region 图片资源替换
+        #region 图片替换
 
         [MenuItem("Assets/工具和扩展/资源优化/替换选中图片")]
         private static void AutoReplaceImgWithSelected()
@@ -219,7 +219,7 @@ namespace GameFramePro.EditorEx
 
             if (selectobjs.Length != 2)
             {
-                Debug.LogError("请选择两张图片资源");
+                Debug.LogError("请选择两张图片");
                 return;
             }
 

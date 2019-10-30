@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace GameFramePro.EditorEx
 {
-    /// <summary>/// 管理Unity 的图片资源/// </summary>
+    /// <summary>/// 管理Unity 的图片/// </summary>
     public class TextureAssetEditor
     {
         /// <summary>/// 记录导入UI图片的时候哪些图片格式可能有问题/// </summary>
@@ -20,7 +20,7 @@ namespace GameFramePro.EditorEx
 
         #region 检测Art目录下的资源是否都正确设置了PackingName
 
-        [MenuItem("Assets/工具和扩展/图片管理/检测 Assets&Art&UI 目录下的图片是否被正确设置")]
+        [MenuItem("Assets/工具和扩展/图片/检测 Assets&Art&UI下的图片是否被正确设置")]
         public static void AutoCheckArtTextureImportSetting()
         {
             string[] allTextur2DAssetsGuid = AssetDatabase.FindAssets("t:texture2d", new string[] {"Assets/Art/UI"});
@@ -79,7 +79,7 @@ namespace GameFramePro.EditorEx
         }
 
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 PackName(忽略Default 格式资源)", false, 25)]
+        [MenuItem("Assets/工具和扩展/图片/包含的图片设置 PackName(忽略Default 格式资源)", false, 25)]
         private static void AutoSetUITexturesPakeNames()
         {
             if (CheckIfSelectAnyAsset() == false) return;
@@ -87,7 +87,7 @@ namespace GameFramePro.EditorEx
             SetSelectAssetTexturePakeNameOrFormat(Selection.objects, true, false, false);
         }
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 格式(忽略Default 格式资源)", false, 26)]
+        [MenuItem("Assets/工具和扩展/图片/包含的图片设置 格式(忽略Default 格式资源)", false, 26)]
         private static void AutoSetUITexturesFormat()
         {
             if (CheckIfSelectAnyAsset() == false) return;
@@ -96,7 +96,7 @@ namespace GameFramePro.EditorEx
         }
 
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 PackName(自动导入)", false, 20)]
+        [MenuItem("Assets/工具和扩展/图片/包含的图片设置 PackName(自动导入)", false, 20)]
         private static void AutoSetUITexturesPakeNames_AutoImport()
         {
             if (CheckIfSelectAnyAsset() == false) return;
@@ -104,7 +104,7 @@ namespace GameFramePro.EditorEx
             SetSelectAssetTexturePakeNameOrFormat(Selection.objects, true, false, true);
         }
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 格式(自动导入)", false, 15)]
+        [MenuItem("Assets/工具和扩展/图片/包含的图片设置 格式(自动导入)", false, 15)]
         private static void AutoSetUITexturesFormat_AutoImport()
         {
             if (CheckIfSelectAnyAsset() == false) return;
@@ -112,7 +112,7 @@ namespace GameFramePro.EditorEx
             SetSelectAssetTexturePakeNameOrFormat(Selection.objects, false, true, true);
         }
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片设置 PackName和格式(自动导入)", false, 10)]
+        [MenuItem("Assets/工具和扩展/图片/包含的图片设置 PackName和格式(自动导入)", false, 10)]
         private static void AutoSetUITexturesPakeNamesAndFormat_AutoImport()
         {
             if (CheckIfSelectAnyAsset() == false) return;
@@ -120,7 +120,7 @@ namespace GameFramePro.EditorEx
             SetSelectAssetTexturePakeNameOrFormat(Selection.objects, true, true, true);
         }
 
-        /// <summary>/// 设置图片资源的格式和PackName/// </summary>
+        /// <summary>/// 设置图片的格式和PackName/// </summary>
         /// <param name="selectObjects"></param>
         /// <param name="isSetPackName">想要设置的packName</param>
         /// <param name="isSetFormat">格式设置是否有效</param>
@@ -151,7 +151,7 @@ namespace GameFramePro.EditorEx
                         EditorUtility.DisplayProgressBar("..", "Import Texture.." + assetRelativePath, currentCount * 1f / allContainAssetGuids.Length);
                         string extesion = System.IO.Path.GetExtension(assetRelativePath);
                         if (CheckIsTexture(assetRelativePath) == false)
-                            continue; //过滤非图片资源
+                            continue; //过滤非图片
                         ++realTextureCount;
 
                         string packName = System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetDirectoryName(assetRelativePath));
@@ -169,7 +169,7 @@ namespace GameFramePro.EditorEx
 
         #region 关联图片预制体
 
-        [MenuItem("Assets/工具和扩展/图片管理/包含的图片关联SpriteRender (过滤Default 格式资源)", false, 30)]
+        [MenuItem("Assets/工具和扩展/图片/包含的图片关联SpriteRender (过滤Default 格式资源)", false, 30)]
         private static void AutoSetUITexturesConnectSpriteRender()
         {
             var selectObjects = Selection.objects;
@@ -226,7 +226,7 @@ namespace GameFramePro.EditorEx
                             EditorUtility.DisplayProgressBar("..", "Import Texture.." + assetRelativePath, currentCount * 1f / allContainAssetGuids.Length);
                             string extesion = System.IO.Path.GetExtension(assetRelativePath);
                             if (CheckIsTexture(assetRelativePath) == false)
-                                continue; //过滤非图片资源
+                                continue; //过滤非图片
 
                             if (SpriteAssetConnectSpriteRender(assetRelativePath, saveDirectoryPath, directoryName))
                                 ++connectTextureCount;

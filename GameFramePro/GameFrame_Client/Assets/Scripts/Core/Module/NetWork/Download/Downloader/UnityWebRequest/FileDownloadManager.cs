@@ -38,24 +38,15 @@ namespace GameFramePro.NetWorkEx
             //TODO从下载的缓存中读取数据
 
             //将新的下载任务添加到缓存的下载队列中
-            UnityWebRequestDownloadTask newDownLoadTask = GetDownloadTaskInstance(taskUrl, saveFilePath, callback, priorityEnum);
+            UnityWebRequestDownloadTask newDownLoadTask = UnityWebRequestDownloadTask.GetUnityWebRequestDownloadTask(taskUrl, callback, priorityEnum);
+            newDownLoadTask.DownloadTaskCallbackData.downloadHandler = new DownloadHandlerFile(saveFilePath);
             newDownLoadTask.ChangeDownloadState(TaskStateEum.Initialed);
             AllCacheDownLoadTasks.Add(newDownLoadTask);
             return newDownLoadTask;
         }
 
 
-        protected UnityWebRequestDownloadTask GetDownloadTaskInstance(string taskUrl, string saveFilePath, Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum)
-        {
-            var newTask = UnityWebRequestDownloadTask.GetUnityWebRequestDownloadTaskFromPool();
-            UnityWebRequest webRequest = new UnityWebRequest(taskUrl)
-            {
-                timeout = UnityWebRequestDownloadTask.S_Timeout,
-                downloadHandler = new DownloadHandlerFile(saveFilePath)
-            };
-            newTask.InitialedDownloadTask(taskUrl, webRequest, priorityEnum, callback);
-            return newTask;
-        }
+    
 
         #endregion
     }

@@ -86,7 +86,7 @@ namespace GameFramePro.Localization
     {
         #region 菜单
 
-        [MenuItem("CONTEXT/LocalizationRectTransform/一键启用 IsEnableProperty 属性")]
+        [MenuItem("CONTEXT/LocalizationRectTransform/启用 IsEnableProperty 属性")]
         private static void EnableImageSpriteProperty(UnityEditor.MenuCommand cmd)
         {
             LocalizationRectTransform current = cmd.context as LocalizationRectTransform;
@@ -98,10 +98,10 @@ namespace GameFramePro.Localization
                 item.IsEnableProperty = true;
             }
 
-            Debug.Log("一键启用 IsEnableProperty 属性完成");
+            Debug.Log("启用 IsEnableProperty 属性完成");
         }
 
-        [MenuItem("CONTEXT/LocalizationRectTransform/一键禁用 IsEnableProperty 属性")]
+        [MenuItem("CONTEXT/LocalizationRectTransform/禁用 IsEnableProperty 属性")]
         private static void DisableImageSpriteProperty(UnityEditor.MenuCommand cmd)
         {
             LocalizationRectTransform current = cmd.context as LocalizationRectTransform;
@@ -113,7 +113,7 @@ namespace GameFramePro.Localization
                 item.IsEnableProperty = false;
             }
 
-            Debug.Log("一键禁用 IsEnableProperty 属性完成");
+            Debug.Log("禁用 IsEnableProperty 属性完成");
         }
 
         #endregion

@@ -134,7 +134,7 @@ public class AssetReferenceManager
             }
             else
             {
-                Debug.LogError("选择的资源不是图片资源 " + assetPath);
+                Debug.LogError("选择的资源不是图片 " + assetPath);
             }
         }
     }
@@ -149,7 +149,7 @@ public class AssetReferenceManager
 
         if (selectobjs.Length > 1)
         {
-            Debug.LogError("只能选择一个图片资源");
+            Debug.LogError("只能选择一个图片");
             return;
         }
 
@@ -157,7 +157,7 @@ public class AssetReferenceManager
 
         if (assetPath.EndsWith(".png") == false && assetPath.EndsWith(".jpg") == false)
         {
-            Debug.LogError("请选择图片资源" + assetPath);
+            Debug.LogError("请选择图片" + assetPath);
             return;
         }
 
@@ -168,7 +168,7 @@ public class AssetReferenceManager
             return;
         }
 
-        Debug.Log(string.Format("Begin 获取图片资源{0}被引用信息详情 ", assetPath));
+        Debug.Log(string.Format("Begin 获取图片{0}被引用信息详情 ", assetPath));
         foreach (var item in result)
         {
             if (item.EndsWith(".prefab"))
@@ -192,7 +192,7 @@ public class AssetReferenceManager
 
                     string path = AssetDatabase.GetAssetPath(img.sprite);
                     if (path == assetPath)
-                        Debug.Log($"图片资源被预制体{item,30} 子节点:{img.gameObject.name}  引用 ");
+                        Debug.Log($"图片被预制体{item,30} 子节点:{img.gameObject.name}  引用 ");
                 }
 
                 //**UI下的UguiAtlas
@@ -201,7 +201,7 @@ public class AssetReferenceManager
                 {
                     string path = AssetDatabase.GetAssetPath(uiAtlas.sprite);
                     if (path == assetPath)
-                        Debug.Log($"图片资源被 UguiAtlas 预制体{item,30} 子节点:{uiAtlas.gameObject.name}  引用 ");
+                        Debug.Log($"图片被 UguiAtlas 预制体{item,30} 子节点:{uiAtlas.gameObject.name}  引用 ");
                 }
 
                 GameObject.DestroyImmediate(go);
@@ -212,7 +212,7 @@ public class AssetReferenceManager
             }
         }
 
-        Debug.Log($"End 获取图片资源{assetPath}被引用信息详情 ");
+        Debug.Log($"End 获取图片{assetPath}被引用信息详情 ");
     }
 
 
@@ -246,7 +246,7 @@ public class AssetReferenceManager
 
     #region 单个资源
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件)/查找当前图片资源被引用的预制体信息_全部")]
+    [MenuItem("工具和扩展/资源管理/图片(文件)/当前图片被引用的预制体_全部")]
     private static void GetImgAssetReferencePrefab_All()
     {
         var selectobjs = Selection.objects;
@@ -255,7 +255,7 @@ public class AssetReferenceManager
 
         if (selectobjs.Length > 1)
         {
-            Debug.LogError("只能选择一个图片资源");
+            Debug.LogError("只能选择一个图片");
             return;
         }
 
@@ -266,10 +266,10 @@ public class AssetReferenceManager
             return;
         }
 
-        Debug.LogError("选择的资源不是图片资源 " + assetPath);
+        Debug.LogError("选择的资源不是图片 " + assetPath);
     }
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件)/查找当前图片资源被引用的预制体信息_无引用")]
+    [MenuItem("工具和扩展/资源管理/图片(文件)/当前图片被引用的预制体_无引用")]
     private static void GetImgAssetReferencePrefab_NoReference()
     {
         var selectobjs = Selection.objects;
@@ -278,7 +278,7 @@ public class AssetReferenceManager
 
         if (selectobjs.Length > 1)
         {
-            Debug.LogError("只能选择一个图片资源");
+            Debug.LogError("只能选择一个图片");
             return;
         }
 
@@ -289,11 +289,11 @@ public class AssetReferenceManager
             return;
         }
 
-        Debug.LogError("选择的资源不是图片资源 " + assetPath);
+        Debug.LogError("选择的资源不是图片 " + assetPath);
     }
 
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件)/查找当前图片资源被引用的预制体信息_引用")]
+    [MenuItem("工具和扩展/资源管理/图片(文件)/当前图片被引用的预制体_引用")]
     private static void GetImgAssetReferencePrefab_Reference()
     {
         var selectobjs = Selection.objects;
@@ -302,7 +302,7 @@ public class AssetReferenceManager
 
         if (selectobjs.Length > 1)
         {
-            Debug.LogError("只能选择一个图片资源");
+            Debug.LogError("只能选择一个图片");
             return;
         }
 
@@ -313,11 +313,11 @@ public class AssetReferenceManager
             return;
         }
 
-        Debug.LogError("选择的资源不是图片资源 " + assetPath);
+        Debug.LogError("选择的资源不是图片 " + assetPath);
     }
 
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件)/查找当前图片资源被引用的预制体信息_自动设置无用资源格式")]
+    [MenuItem("工具和扩展/资源管理/图片(文件)/当前图片被引用的预制体_设置无用格式")]
     private static void GetImgAssetReferencePrefab_AutoSet()
     {
         var selectobjs = Selection.objects;
@@ -326,7 +326,7 @@ public class AssetReferenceManager
 
         if (selectobjs.Length > 1)
         {
-            Debug.LogError("只能选择一个图片资源");
+            Debug.LogError("只能选择一个图片");
             return;
         }
 
@@ -337,7 +337,7 @@ public class AssetReferenceManager
             return;
         }
 
-        Debug.LogError("选择的资源不是图片资源 " + assetPath);
+        Debug.LogError("选择的资源不是图片 " + assetPath);
     }
 
 
@@ -345,7 +345,7 @@ public class AssetReferenceManager
 
     #region 多个资源
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/所有图片资源被引用的预制体信息_全部")]
+    [MenuItem("工具和扩展/资源管理/图片(文件夹)/所有图片被引用的预制体_全部")]
     private static void GetImgsAssetReferencePrefab_All()
     {
         var selectobjs = Selection.objects;
@@ -371,7 +371,7 @@ public class AssetReferenceManager
         ShowAllImageReference(allImageAsset);
     }
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/所有图片资源被引用的预制体信息_没引用")]
+    [MenuItem("工具和扩展/资源管理/图片(文件夹)/所有图片被引用的预制体_没引用")]
     private static void GetImgsAssetReferencePrefab_NoReference()
     {
         var selectobjs = Selection.objects;
@@ -397,7 +397,7 @@ public class AssetReferenceManager
         ShowAllImageReference_NoReference(allImageAsset);
     }
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/所有图片资源被引用的预制体信息_引用")]
+    [MenuItem("工具和扩展/资源管理/图片(文件夹)/所有图片被引用的预制体_引用")]
     private static void GetImgsAssetReferencePrefab_Reference()
     {
         var selectobjs = Selection.objects;
@@ -423,7 +423,7 @@ public class AssetReferenceManager
         ShowAllImageReference_Reference(allImageAsset);
     }
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/所有图片资源被引用的预制体信息_自动设置无用资源格式")]
+    [MenuItem("工具和扩展/资源管理/图片(文件夹)/所有图片被引用的预制体_设置无用格式")]
     private static void GetImgsAssetReferencePrefab_AutoSet()
     {
         var selectobjs = Selection.objects;
@@ -449,7 +449,7 @@ public class AssetReferenceManager
         ShowAndAutoSetAllImageReference_NoReference(allImageAsset);
     }
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/所有图片资源被引用的预制体信息_自动删除")]
+    [MenuItem("工具和扩展/资源管理/图片(文件夹)/所有图片被引用的预制体_自动删除")]
     private static void GetImgsAssetReferencePrefab_AutoDelete()
     {
         var selectobjs = Selection.objects;
@@ -472,7 +472,7 @@ public class AssetReferenceManager
         int totalCount = ShowAndAutoDeleteAllImageReference_NoReference(allImageAsset);
     }
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/自动删除DefaultType Image")]
+    [MenuItem("工具和扩展/资源管理/图片(文件夹)/自动删除DefaultType Image")]
     private static void DeleteDefaultTypeImage()
     {
         var selectobjs = Selection.objects;
@@ -509,7 +509,7 @@ public class AssetReferenceManager
     }
 
 
-    [MenuItem("工具和扩展/资源管理/图片管理(文件夹)/自动删除DefaultType和无引用的图片")]
+    [MenuItem("工具和扩展/资源管理/图片(文件夹)/自动删除DefaultType和无引用的图片")]
     private static void DeleteDefaultTypeAndNoRefenceImage()
     {
         GetImgsAssetReferencePrefab_AutoDelete();
@@ -715,7 +715,7 @@ public class AssetReferenceManager
     }
 
     /// <summary>
-    /// 获取参数图片资源被哪些资源引用
+    /// 获取参数图片被哪些资源引用
     /// </summary>
     /// <param name="imagAsset">key 资源路径  Value 哪些资源引用</param>
     /// <returns></returns>

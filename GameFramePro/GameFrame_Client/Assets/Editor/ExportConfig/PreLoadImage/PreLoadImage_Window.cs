@@ -14,7 +14,7 @@ namespace GameFramePro.EditorEx
         [MenuItem("工具和扩展/导出资源配置/生成预加载图片配置3")]
         private static void OnOpenPreloadImageAssetConfigWin()
         {
-            var win = GetWindow<PreLoadImage_Window>("生成活动图片资源预加载配置");
+            var win = GetWindow<PreLoadImage_Window>("生成活动图片预加载配置");
             win.minSize = new Vector2(600, 500);
             win.minSize = new Vector2(600, 800);
             win.Initialed();
@@ -24,7 +24,7 @@ namespace GameFramePro.EditorEx
         private void Initialed()
         {
             ConfigRelativePath = $"Assets/Editor/ExportConfig/PreLoadImage/{ConstDefine.S_PreloadImgConfiFileName}";
-            mPreloadImageExportTopPath = ConstDefine.S_ExportRealPath.CombinePathEx(ConstDefine.S_PreLoadTextureTopDirectoryName); //导出的图片资源顶层目录
+            mPreloadImageExportTopPath = ConstDefine.S_ExportRealPath.CombinePathEx(ConstDefine.S_PreLoadTextureTopDirectoryName); //导出的图片顶层目录
             mDeleteItemKey = string.Empty;
             outPutLanguageSupport = new List<UpgradeLanguage>(5);
 
@@ -238,7 +238,7 @@ namespace GameFramePro.EditorEx
                         string extensionName = System.IO.Path.GetExtension(path);
                         if (extensionName != ".png" && extensionName != ".jpg")
                         {
-                            Debug.LogError(extensionName + "选择的图片资源不是png 或者jpg：" + path);
+                            Debug.LogError(extensionName + "选择的图片不是png 或者jpg：" + path);
                         }
                         else
                         {

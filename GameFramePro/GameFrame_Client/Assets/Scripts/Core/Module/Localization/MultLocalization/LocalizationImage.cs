@@ -114,7 +114,7 @@ namespace GameFramePro.Localization
     {
         #region 菜单
 
-        [MenuItem("CONTEXT/LocalizationImage/一键启用 mIsImageSpriteEnable 属性")]
+        [MenuItem("CONTEXT/LocalizationImage/启用 mIsImageSpriteEnable 属性")]
         private static void EnableImageSpriteProperty(UnityEditor.MenuCommand cmd)
         {
             LocalizationImage current = cmd.context as LocalizationImage;
@@ -124,10 +124,10 @@ namespace GameFramePro.Localization
             foreach (var item in current.m_ImageLanguageConfige)
                 item.mIsImageSpriteEnable = true;
 
-            Debug.Log("一键启用 mIsImageSpriteEnable 属性完成");
+            Debug.Log("启用 mIsImageSpriteEnable 属性完成");
         }
 
-        [MenuItem("CONTEXT/LocalizationImage/一键禁用 mIsImageSpriteEnable 属性")]
+        [MenuItem("CONTEXT/LocalizationImage/禁用 mIsImageSpriteEnable 属性")]
         private static void DisableImageSpriteProperty(UnityEditor.MenuCommand cmd)
         {
             LocalizationImage current = cmd.context as LocalizationImage;
@@ -137,11 +137,11 @@ namespace GameFramePro.Localization
             foreach (var item in current.m_ImageLanguageConfige)
                 item.mIsImageSpriteEnable = false;
 
-            Debug.Log("一键禁用 mIsImageSpriteEnable 属性完成");
+            Debug.Log("禁用 mIsImageSpriteEnable 属性完成");
         }
 
 
-        [MenuItem("CONTEXT/LocalizationImage/一键启用 mIsImagePropertyEnable 属性")]
+        [MenuItem("CONTEXT/LocalizationImage/启用 mIsImagePropertyEnable 属性")]
         private static void EnableImageDetailProperty(UnityEditor.MenuCommand cmd)
         {
             LocalizationImage current = cmd.context as LocalizationImage;
@@ -151,10 +151,10 @@ namespace GameFramePro.Localization
             foreach (var item in current.m_ImageLanguageConfige)
                 item.mIsImagePropertyEnable = true;
 
-            Debug.Log("一键启用 mIsImagePropertyEnable 属性完成");
+            Debug.Log("启用 mIsImagePropertyEnable 属性完成");
         }
 
-        [MenuItem("CONTEXT/LocalizationImage/一键禁用 mIsImagePropertyEnable 属性")]
+        [MenuItem("CONTEXT/LocalizationImage/禁用 mIsImagePropertyEnable 属性")]
         private static void DisableImageDetailProperty(UnityEditor.MenuCommand cmd)
         {
             LocalizationImage current = cmd.context as LocalizationImage;
@@ -164,7 +164,7 @@ namespace GameFramePro.Localization
             foreach (var item in current.m_ImageLanguageConfige)
                 item.mIsImagePropertyEnable = false;
 
-            Debug.Log("一键禁用 mIsImagePropertyEnable 属性完成");
+            Debug.Log("禁用 mIsImagePropertyEnable 属性完成");
         }
 
         #endregion

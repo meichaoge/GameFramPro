@@ -9,7 +9,6 @@ namespace GameFramePro.NetWorkEx
     /// <summary>/// 使用 UnityWebRequest 的 下载任务/// </summary>
     public class UnityWebRequestDownloadTask : BaseDownloadTask<UnityWebRequest>
     {
-        public static int S_Timeout { get; protected set; } = 15; //超时时间15秒+
 
         static UnityWebRequestDownloadTask()
         {
@@ -26,11 +25,20 @@ namespace GameFramePro.NetWorkEx
 
 
         /// <summary>/// 从缓存中获取对象/// </summary>
-        public static UnityWebRequestDownloadTask GetUnityWebRequestDownloadTaskFromPool()
+        public static UnityWebRequestDownloadTask GetUnityWebRequestDownloadTask(string taskUrl,Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum, int timeOut=15)
         {
             UnityWebRequestDownloadTask task = mUnityWebRequestTaskPoolManager.GetItemFromPool();
+
+            UnityWebRequest webRequest = new UnityWebRequest(taskUrl)
+            {
+                timeout = timeOut,
+            };
+            task.InitialedDownloadTask(taskUrl, webRequest, priorityEnum, callback);
             return task;
         }
+     
+
+
 
         /// <summary>/// 回收对象/// </summary>
         public static void RecycleUnityWebRequestDownloadTask(UnityWebRequestDownloadTask task)

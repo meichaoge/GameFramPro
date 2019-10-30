@@ -10,7 +10,7 @@ namespace GameFramePro.EditorEx
     public class AssetBundleNameEditor
     {
 
-        [MenuItem("Assets/工具和扩展/设置AssetBundleName/文件夹所有资源设置对应的ABundleName(递归)")]
+        [MenuItem("Assets/工具和扩展/ABundleName/文件夹设置对应的ABundleName(递归)")]
         private static void CreateAssetBundleNameOfDirectory()
         {
             if (Selection.objects.Length == 0)
@@ -97,7 +97,7 @@ namespace GameFramePro.EditorEx
             static HashSet<string> AllSelectAssetPaths = new HashSet<string>();
             static AssetBundleNameModifyWindow window;
 
-            [MenuItem("Assets/工具和扩展/设置AssetBundleName/修改AssetBundle Name")]
+            [MenuItem("Assets/工具和扩展/AssetBundleName/修改AssetBundle Name")]
             private static void ModifyAassetBundleName()
             {
                 if (Selection.objects.Length == 0)

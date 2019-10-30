@@ -85,7 +85,7 @@ namespace GameFramePro.Localization
     {
         #region 菜单
 
-        [MenuItem("CONTEXT/LocalizationText/一键启用 mIsChangeFontProperty 属性")]
+        [MenuItem("CONTEXT/LocalizationText/启用 mIsChangeFontProperty 属性")]
         private static void EnableImageSpriteProperty(UnityEditor.MenuCommand cmd)
         {
             var current = cmd.context as LocalizationText;
@@ -95,10 +95,10 @@ namespace GameFramePro.Localization
             foreach (var item in current.mTextConfigures)
                 item.mIsChangeFontProperty = true;
 
-            Debug.Log("一键启用 mIsChangeFontProperty 属性完成");
+            Debug.Log("启用 mIsChangeFontProperty 属性完成");
         }
 
-        [MenuItem("CONTEXT/LocalizationText/一键禁用 mIsChangeFontProperty 属性")]
+        [MenuItem("CONTEXT/LocalizationText/禁用 mIsChangeFontProperty 属性")]
         private static void DisableImageSpriteProperty(UnityEditor.MenuCommand cmd)
         {
             var current = cmd.context as LocalizationText;
@@ -108,11 +108,11 @@ namespace GameFramePro.Localization
             foreach (var item in current.mTextConfigures)
                 item.mIsChangeFontProperty = false;
 
-            Debug.Log("一键禁用 mIsChangeFontProperty 属性完成");
+            Debug.Log("禁用 mIsChangeFontProperty 属性完成");
         }
 
 
-        [MenuItem("CONTEXT/LocalizationText/一键启用 mIsChangeWrapModeOrAnchor 属性")]
+        [MenuItem("CONTEXT/LocalizationText/启用 mIsChangeWrapModeOrAnchor 属性")]
         private static void EnableImageDetailProperty(UnityEditor.MenuCommand cmd)
         {
             var current = cmd.context as LocalizationText;
@@ -122,10 +122,10 @@ namespace GameFramePro.Localization
             foreach (var item in current.mTextConfigures)
                 item.mIsChangeWrapModeOrAnchor = true;
 
-            Debug.Log("一键启用 mIsChangeWrapModeOrAnchor 属性完成");
+            Debug.Log("启用 mIsChangeWrapModeOrAnchor 属性完成");
         }
 
-        [MenuItem("CONTEXT/LocalizationText/一键禁用 mIsChangeWrapModeOrAnchor 属性")]
+        [MenuItem("CONTEXT/LocalizationText/禁用 mIsChangeWrapModeOrAnchor 属性")]
         private static void DisableImageDetailProperty(UnityEditor.MenuCommand cmd)
         {
             var current = cmd.context as LocalizationText;
@@ -135,7 +135,7 @@ namespace GameFramePro.Localization
             foreach (var item in current.mTextConfigures)
                 item.mIsChangeWrapModeOrAnchor = false;
 
-            Debug.Log("一键禁用 mIsChangeWrapModeOrAnchor 属性完成");
+            Debug.Log("禁用 mIsChangeWrapModeOrAnchor 属性完成");
         }
 
         #endregion
