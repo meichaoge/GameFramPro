@@ -46,7 +46,7 @@ namespace GameFramePro.NetWorkEx
 
         protected UnityWebRequestDownloadTask GetDownloadTaskInstance(string taskUrl, AudioType type, Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum)
         {
-            var newTask = UnityWebRequestTaskUtility.S_Instance.GetUnityWebRequestDownloadTaskFromPool();
+            var newTask = UnityWebRequestDownloadTask.GetUnityWebRequestDownloadTaskFromPool();
             UnityWebRequest webRequest = new UnityWebRequest(taskUrl)
             {
                 timeout = UnityWebRequestDownloadTask.S_Timeout,

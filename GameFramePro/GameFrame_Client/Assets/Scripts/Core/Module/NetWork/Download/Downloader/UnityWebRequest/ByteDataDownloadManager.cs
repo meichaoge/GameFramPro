@@ -26,7 +26,6 @@ namespace GameFramePro.NetWorkEx
         } // 
 
 
-        #region  各种类型获取数据的接口
 
         /// <summary>/// 获取一个数据/// </summary>
         public UnityWebRequestDownloadTask GetDataFromUrl(string taskUrl, Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum = TaskPriorityEnum.Normal)
@@ -48,7 +47,7 @@ namespace GameFramePro.NetWorkEx
 
         protected UnityWebRequestDownloadTask GetDownloadTaskInstance(string taskUrl, Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum)
         {
-            var newTask = UnityWebRequestTaskUtility.S_Instance.GetUnityWebRequestDownloadTaskFromPool();
+            var newTask = UnityWebRequestDownloadTask.GetUnityWebRequestDownloadTaskFromPool();
             UnityWebRequest webRequest = new UnityWebRequest(taskUrl)
             {
                 timeout = UnityWebRequestDownloadTask.S_Timeout,
@@ -61,6 +60,5 @@ namespace GameFramePro.NetWorkEx
 
 
 
-        #endregion
     }
 }

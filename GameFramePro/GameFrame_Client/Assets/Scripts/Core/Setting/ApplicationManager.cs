@@ -22,7 +22,7 @@ namespace GameFramePro
     /// </summary>
     public  class ApplicationManager : Single<ApplicationManager>
     {
-        public static string S_TopCDNUrl { get; set; } = string.Format("http://superxu3d.tcmapi.cn/goalon/TestApplication/{0}/{1}", S_Instance.mAppResourcesVersion,  AppPlatformManager.GetRuntimePlatformFolderName());
+        public static string S_TopCDNUrl { get; set; } = string.Format("https://1superxu3d.tcmapi.cn/goalon/TestApplication/{0}/{1}", S_Instance.mAppResourcesVersion,  AppPlatformManager.GetRuntimePlatformFolderName());
 
         //private static string S_TopCDNUrl { get; set; } = string.Format("https://supergoal-content-bucket.oss-cn-hongkong.aliyuncs.com/goalon/TestApplication/{0}/{1}", ApplicationManager.S_Instance.mAppResourcesVersion,
         //AppPlatformManager.GetRuntimePlatformFolderName());

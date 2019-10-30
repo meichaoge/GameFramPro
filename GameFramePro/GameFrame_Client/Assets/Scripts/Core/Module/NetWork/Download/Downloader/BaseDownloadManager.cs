@@ -53,11 +53,11 @@ namespace GameFramePro.NetWorkEx
             var targetTaskNode = AllDownloadTaskLinkedList.First;
             while (targetTaskNode != null)
             {
-                if (targetTaskNode.Value == null || targetTaskNode.Value.TaskState == TaskStateEum.Complete)
+                if (targetTaskNode.Value == null || targetTaskNode.Value.TaskState >= TaskStateEum.Error)
                 {
                     var next = targetTaskNode.Next;
                     AllDownloadTaskLinkedList.Remove(targetTaskNode);
-                    UnityWebRequestTaskUtility.S_Instance.RecycleUnityWebRequestDownloadTask(targetTaskNode.Value as UnityWebRequestDownloadTask);
+                    UnityWebRequestDownloadTask.RecycleUnityWebRequestDownloadTask(targetTaskNode.Value as UnityWebRequestDownloadTask);
                     targetTaskNode = next;
                     continue;
                 }
@@ -103,7 +103,7 @@ namespace GameFramePro.NetWorkEx
                             {
                                 targetNodeValue.AddCompleteCallback(cacheTask);
                                 break;
-                            }
+                            } //正在运行中
 #if UNITY_EDITOR
                             else
                                 Debug.LogError($"当前下载任务{targetNodeValue.TaskUrl} 已经完成{targetNodeValue.TaskState}，无法添加回调 ");

@@ -212,7 +212,7 @@ namespace GameFramePro
                         break;
                     case SuperCoroutineStateUsage.Break:
                     case SuperCoroutineStateUsage.Error:
-                        return false;
+                    //       return false;  //2019/10/30 修改，是的可以再任务出错的时候正确的返回
                     case SuperCoroutineStateUsage.Complete:
                         if (CompleteSuperCoroutineEvent != null)
                             CompleteSuperCoroutineEvent.Invoke(this);

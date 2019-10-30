@@ -11,6 +11,42 @@ namespace GameFramePro.NetWorkEx
     {
         public static int S_Timeout { get; protected set; } = 15; //超时时间15秒+
 
+        static UnityWebRequestDownloadTask()
+        {
+            mUnityWebRequestTaskPoolManager = new NativeObjectPool<UnityWebRequestDownloadTask>(20, null, OnBeforRecycleWebRequestTaskItem);
+        }
+
+        #region 对象池
+        protected static NativeObjectPool<UnityWebRequestDownloadTask> mUnityWebRequestTaskPoolManager = null;
+
+        protected static void OnBeforRecycleWebRequestTaskItem(UnityWebRequestDownloadTask task)
+        {
+            task?.ClearDownloadTask();
+        }
+
+
+        /// <summary>/// 从缓存中获取对象/// </summary>
+        public static UnityWebRequestDownloadTask GetUnityWebRequestDownloadTaskFromPool()
+        {
+            UnityWebRequestDownloadTask task = mUnityWebRequestTaskPoolManager.GetItemFromPool();
+            return task;
+        }
+
+        /// <summary>/// 回收对象/// </summary>
+        public static void RecycleUnityWebRequestDownloadTask(UnityWebRequestDownloadTask task)
+        {
+            if (task == null)
+            {
+                Debug.LogError("RecycleUnityWebRequestDownloadTask Fail, Parameter is null");
+                return;
+            }
+
+            mUnityWebRequestTaskPoolManager.RecycleItemToPool(task);
+        }
+
+        #endregion
+
+
 
         #region IDownloadTaskProcess 接口实现
 
@@ -70,9 +106,9 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 完成下载任务的回调/// </summary>
         protected override void OnCompleteDownloadTask()
         {
-//#if UNITY_EDITOR
-//            Debug.LogEditorInfor($"完成下载任务 url={DownloadTaskCallbackData.url}");
-//#endif
+#if UNITY_EDITOR
+            Debug.LogEditorInfor($"完成下载任务 url={DownloadTaskCallbackData.url}");
+#endif
 
             OnCompleted(DownloadTaskCallbackData.isDone, DownloadTaskCallbackData.isNetworkError || DownloadTaskCallbackData.isNetworkError, DownloadTaskCallbackData.downloadProgress);
         }
