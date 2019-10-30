@@ -451,17 +451,7 @@ namespace GameFramePro.ResourcesEx
             Debug.LogError($"GetAssetBundleAllDependencies Fail,没有找到依赖关系 {assetBundleName}");
             return null;
         }
-        /// <summary>
-        ///保存下载的AssetBundel 资源
-        /// </summary>
-        public void SaveAssetBundleFromDownload(DownloadHandlerBuffer handle, string assetBundleName)
-        {
-            if (handle == null)
-                return;
-            string fileSavePath = ConstDefine.S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundleName);
-            IOUtility.CreateOrSetFileContent(fileSavePath, handle.data, false);
-            Debug.LogInfor($"保存下载的AssetBundle 资源{fileSavePath} ");
-        }
+
 
 
         /// <summary>

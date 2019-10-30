@@ -41,7 +41,7 @@ namespace GameFramePro
         private IEnumerator Start()
         {
             Debug.Log("AppEntryManager--->>>>");
-
+       
 
 #if UNITY_EDITOR
             Debug.LogInfor($"Application.persistentDataPath={Application.persistentDataPath}");
@@ -54,6 +54,11 @@ namespace GameFramePro
             var appUpgradeCoroutineEx = new SuperCoroutine(AppUpgradeManager.S_Instance.OnBeginUpgrade());
             yield return appUpgradeCoroutineEx.WaitDone(true); //等待完成项目的更新
 
+            if (AppUpgradeManager.S_Instance.mUpgradeState != UpgradeStateUsage.UpgradeSuccess)
+            {
+                Debug.LogError($"更新失败！！");
+                yield break;
+            }
 
             yield return null;
             UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);

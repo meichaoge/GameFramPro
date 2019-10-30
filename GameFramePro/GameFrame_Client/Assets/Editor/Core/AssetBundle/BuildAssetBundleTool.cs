@@ -7,6 +7,7 @@ using System.Text;
 using GameFramePro.ResourcesEx;
 using GameFramePro.Upgrade;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace GameFramePro.EditorEx
 {
@@ -44,7 +45,7 @@ namespace GameFramePro.EditorEx
         /// <param name="outputPath">打包成功后会从 Application.StreamPath 复制到这里</param>
         /// <param name="assetBundleOptions"></param>
         /// <param name="targetPlatforms"></param>
-        public static void BeginBuildAssetBundle(string saveAssetBundlePath, BuildAssetBundleOptions assetBundleOptions, List<AppPlatformEnum> targetPlatformEnums, System.Action OnSuccessBuildAct = null)
+        public static async Task BeginBuildAssetBundleAsync(string saveAssetBundlePath, BuildAssetBundleOptions assetBundleOptions, List<AppPlatformEnum> targetPlatformEnums, System.Action OnSuccessBuildAct = null)
         {
             foreach (var platform in targetPlatformEnums)
             {
@@ -68,7 +69,7 @@ namespace GameFramePro.EditorEx
                     EditorUserBuildSettings.SwitchActiveBuildTarget(targetGroup, targetPlatform);
                 }
 
-                BuildAssetBundleOfTargetPlatform(saveAssetBundlePath, assetBundleOptions, targetPlatform, OnSuccessBuildAct);
+                await BuildAssetBundleOfTargetPlatformAsync(saveAssetBundlePath, assetBundleOptions, targetPlatform, OnSuccessBuildAct);
             }
         }
 
@@ -79,7 +80,7 @@ namespace GameFramePro.EditorEx
         /// <param name="exportPath"></param>
         /// <param name="assetBundleOptions"></param>
         /// <param name="targetPlatform"></param>
-        private static void BuildAssetBundleOfTargetPlatform(string saveAssetBundlePath, BuildAssetBundleOptions assetBundleOptions, BuildTarget targetPlatform,System.Action OnSuccessBuildAct=null)
+        private static async Task BuildAssetBundleOfTargetPlatformAsync(string saveAssetBundlePath, BuildAssetBundleOptions assetBundleOptions, BuildTarget targetPlatform, System.Action OnSuccessBuildAct = null)
         {
             if (IOUtility.CheckOrCreateDirectory(saveAssetBundlePath) == false)
                 return;
@@ -104,6 +105,9 @@ namespace GameFramePro.EditorEx
             }
 
             #endregion
+
+            await Task.Delay(TimeSpan.FromSeconds(0.1f));
+
             EditorUtility.DisplayProgressBar("Create AssetBundle ..", ".Prepare..", 0.1f);
 
 
@@ -134,12 +138,22 @@ namespace GameFramePro.EditorEx
             EditorUtility.DisplayProgressBar("Create AssetBundle ..", ".处理日志记录..", 0.8f);
             AssetDatabase.Refresh();
             //    IOUtility.CopyDirectory(createAssetBundleSavePath, exportPath, new string[] { ConstDefine.S_MetaExtension, ConstDefine.S_AssetBundleManifestExtension });
-            EditorUtility.DisplayProgressBar("Create AssetBundle ..", ".处理日志记录..", 0.9f);
+            EditorUtility.DisplayProgressBar("Create AssetBundle ..", ".处理日志记录..", 0.85f);
             ExportAssetBundleInforToJson(assetBundleConfigPath, targetPlatform); //在复制完文件资源之后再生成配置，否则会被删除
+
+
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            EditorUtility.DisplayProgressBar("Create AssetBundle ..", "....开始压缩资源", 0.9f);
+            string zipOutputPath = saveAssetBundlePath.GetFilePathParentDirectory(1).CombinePathEx("TempZip.zip");
+            ZipUtility.Zip(new string[] { saveAssetBundlePath }, zipOutputPath);
+            await Task.Delay(TimeSpan.FromSeconds(0.1f));
+            Debug.Log($"完成压缩AssetBundle {zipOutputPath}");
+            #endregion
+
 
             EditorUtility.ClearProgressBar();
 
-            #endregion
 
             OnSuccessBuildAct?.Invoke();
         }
@@ -240,10 +254,6 @@ namespace GameFramePro.EditorEx
                 assetBundlePackInfor.RelDirctory = System.IO.Path.GetDirectoryName(assetBundlePackageUri);
 
                 string assetBundlePackagePath = saveAssetBundlePath.CombinePathEx(assetBundlePackageUri);
-
-
-            
-
                 //    Debug.LogInfor($"assetBundlePackageUri={assetBundlePackageUri}         assetBundlePackagePath={assetBundlePackagePath}");
                 bool isSuccess = BuildPipeline.GetCRCForAssetBundle(assetBundlePackagePath, out uint crcCode);
                 if (isSuccess == false)
@@ -253,7 +263,6 @@ namespace GameFramePro.EditorEx
                 }
 
                 string md5Code = MD5Helper.GetFileMD5OutLength(assetBundlePackagePath, out long fileSize); //当前AssetBundle 包大小]
-                                                                                                           //  assetBundlePackInfor.MD5 = md5Code;
                                                                                                            ////为了避免小概率MD5 相同 是文件长度 +分割字符串+ CRC+分割字符串+MD5
                 string newFileName = $"{fileSize}{ConstDefine.S_AssetBundleAssetNameSeparatorChar}{ crcCode}{ConstDefine.S_AssetBundleAssetNameSeparatorChar}{md5Code}";
                 string newFilePath = IOUtility.FileModifyName(assetBundlePackagePath, newFileName);
@@ -263,10 +272,8 @@ namespace GameFramePro.EditorEx
                     return string.Empty;
                 }
 
-                //Debug.Log($"indexOf={indexOf} {newFilePath}=={saveAssetBundlePath} ");
                 string newAssetBundlePackageUri = newFilePath.Substring(saveAssetBundlePath.Length + 1); //新的资源路径
-                //  Debug.Log($" assetBundlePackageUri={assetBundlePackageUri}  ====>>>>> newAssetBundlePackageUri={newAssetBundlePackageUri}");
-              //  assetBundlePackInfor.mABundleUri = newFileName;
+                                                                                                         //  Debug.Log($" assetBundlePackageUri={assetBundlePackageUri}  ====>>>>> newAssetBundlePackageUri={newAssetBundlePackageUri}");
 
                 #endregion
 
@@ -274,21 +281,11 @@ namespace GameFramePro.EditorEx
                 #region AssetBundle 包含的资源处理
 
                 string[] allContainAssetInfor = AssetDatabase.GetAssetPathsFromAssetBundle(assetBundlePackageUri);
-
-                //AssetBundle assetBundle = AssetBundle.LoadFromFile(newFilePath);
-                //if (assetBundle != null)
-                //{
-                //    string[] allAssets = assetBundle.GetAllAssetNames();
-                //    foreach (var item in allAssets)
-                //        Debug.LogError($"{assetBundle.name}  :: {item}");
-                //}
-                //assetBundle.Unload(true);
                 foreach (var containAssetUri in allContainAssetInfor)
                 {
-                    string assetRelativeResourcesUri =  containAssetUri.GetPathFromSpecialDirectoryName(ConstDefine.S_ResourcesName, false).GetPathWithOutExtension();
+                    string assetRelativeResourcesUri = containAssetUri.GetPathFromSpecialDirectoryName(ConstDefine.S_ResourcesName, false).GetPathWithOutExtension();
                     string relativeUri = assetRelativeResourcesUri.GetFileNameWithoutExtensionEx().ToLower(); //这里不需要任何扩展名
-                //   Debug.LogEditorInfor($"assetInfor={containAssetUri}     assetRelativeResourcesUri={assetRelativeResourcesUri}   relativeUri={relativeUri} ");
-                   // Debug.LogEditorInfor($"  relativeUri={relativeUri} ");
+                                                                                                              //   Debug.LogEditorInfor($"assetInfor={containAssetUri}     assetRelativeResourcesUri={assetRelativeResourcesUri}   relativeUri={relativeUri} ");
                     if (assetBundlePackInfor.ContainAssetReUri.TryGetValue(assetRelativeResourcesUri, out var assetNameUri))
                     {
                         if (assetNameUri != relativeUri)
@@ -323,7 +320,7 @@ namespace GameFramePro.EditorEx
                     return string.Empty;
                 }
 
-                s_AssetBundleAssetTotalInfor.mTotalAssetBundleInfor[newFileName]=assetBundlePackInfor;
+                s_AssetBundleAssetTotalInfor.mTotalAssetBundleInfor[newFileName] = assetBundlePackInfor;
             }
 
 
@@ -336,6 +333,7 @@ namespace GameFramePro.EditorEx
 
             IOUtility.CreateOrSetFileContent(realPath, content);
             Debug.LogEditorInfor("生成AssetBundle 信息成功！！保存在目录 {0}", realPath);
+
             return realPath;
         }
 

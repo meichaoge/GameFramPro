@@ -5,7 +5,7 @@ using System;
 
 namespace GameFramePro
 {
-    public static class ConstDefine
+    public  static partial class ConstDefine
     {
 #if UNITY_EDITOR
         public static readonly string S_EditorName = "Editor"; //Editor 目录名
@@ -27,6 +27,9 @@ namespace GameFramePro
 
         private static readonly string S_ExportDirectoryName = "Export"; //项目导出需要提交到CDN的目录名
         public static readonly string S_LocalStoreDirectoryName = "Download"; //外部下载保存本地的顶层目录
+        public static readonly string S_LocalStoreDirectoryTempName = "TempDownload"; //外部下载保存本地的顶层目录(缓存目录)
+
+
         public static readonly string S_AssetBundleDirectoryName = "AssetBundle"; //所有关于AssetBundle 资源生成的顶层目录
         public static readonly string S_PreLoadTextureTopDirectoryName = "PreloadTexture"; //所有关于 图片 资源生成的顶层目录
 
@@ -44,7 +47,10 @@ namespace GameFramePro
 
         public const string S_StringEmpty = ""; //空字符串
 
+    }
 
+    public static partial class ConstDefine
+    {
         /// <summary>/// Resources 绝对路径/// </summary>
         public static string S_ResourcesRealPath
         {
@@ -64,6 +70,24 @@ namespace GameFramePro
         }
 
 
+        private static string s_LoadDownloadAssetStoryDirectory = string.Empty;
+
+        /// <summary>
+        /// 本地下载资源的保存顶级目录(区分平台)
+        /// </summary>
+        public static string S_LoadDownloadAssetStoryDirectoryUri
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(s_LoadDownloadAssetStoryDirectory))
+                    s_LoadDownloadAssetStoryDirectory = Application.persistentDataPath.CombinePathEx(S_LocalStoreDirectoryName);
+
+                return s_LoadDownloadAssetStoryDirectory;
+            }
+        }
+
+
+
         private static string s_LocalAssetBundleTopDirectoryPath = string.Empty;
 
         /// <summary>
@@ -74,7 +98,7 @@ namespace GameFramePro
             get
             {
                 if (string.IsNullOrEmpty(s_LocalAssetBundleTopDirectoryPath))
-                    s_LocalAssetBundleTopDirectoryPath = Application.persistentDataPath.CombinePathEx(S_LocalStoreDirectoryName).CombinePathEx(S_AssetBundleDirectoryName);
+                    s_LocalAssetBundleTopDirectoryPath = S_LoadDownloadAssetStoryDirectoryUri.CombinePathEx(S_AssetBundleDirectoryName);
 
                 return s_LocalAssetBundleTopDirectoryPath;
             }

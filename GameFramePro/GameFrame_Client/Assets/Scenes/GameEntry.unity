@@ -669,6 +669,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1642776644}
   - component: {fileID: 1642776645}
+  - component: {fileID: 1642776646}
   m_Layer: 0
   m_Name: AppEntryManager
   m_TagString: Untagged
@@ -705,6 +706,20 @@ MonoBehaviour:
   ReadOnlyInt: 10
   mIsLoadResourcesAssetPriority: 0
   mIsClickEffectEnable: 1
+--- !u!114 &1642776646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1642776643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d119a0518bda44f93bbfc9d9b23614, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mLocalizationExportFormatType: 1
+  mReferenceResolution: {x: 640, y: 1134}
 --- !u!1 &1652667699
 GameObject:
   m_ObjectHideFlags: 0

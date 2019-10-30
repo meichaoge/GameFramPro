@@ -1,4 +1,7 @@
 
+
+36 跨版本更新  AssetBundleUpgradeProManager 
+35  ZipUtility 的多线程版本完善
 34 Unity 使用WebRequest 访问Https 时候授权失败
 33 Unity Addressable 资源管理器
 32 SuperCoutinue 多线程调用问题

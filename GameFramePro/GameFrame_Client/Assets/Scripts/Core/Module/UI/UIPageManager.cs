@@ -227,7 +227,7 @@ namespace GameFramePro.UI
                     debugShowScript.Initialed(targetPage);
 #endif
                 }
-            }, true);
+            });
             return targetPage;
         }
 
@@ -387,22 +387,14 @@ namespace GameFramePro.UI
         #region 辅助工具
 
         /// <summary>/// 创建页面实例/// </summary>
-        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction, bool isForceCreateInstance = false)
+        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction)
         {
-            //    BaseBeReferenceGameObjectInformation gameObjectInformation = ResourcesManager.InstantiateGameObjectByPathSync(parent, pagePath, isForceCreateInstance);
-
             GameObject go = ResourcesManager.InstantiateAssetSync(pagePath, parent, false);
             if (go != null)
             {
                 go.name = pageName;
-                afterInitialedInstanceAction?.Invoke(go);
             }
-            else
-            {
-                afterInitialedInstanceAction?.Invoke(null);
-            }
-
-            //    afterInitialedInstanceAction?.Invoke(gameObjectInformation);
+            afterInitialedInstanceAction?.Invoke(go);
         }
 
         #endregion

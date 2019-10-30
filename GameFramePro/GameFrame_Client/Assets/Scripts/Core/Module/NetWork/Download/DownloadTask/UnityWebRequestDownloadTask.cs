@@ -70,9 +70,9 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 完成下载任务的回调/// </summary>
         protected override void OnCompleteDownloadTask()
         {
-#if UNITY_EDITOR
-            Debug.LogEditorInfor($"完成下载任务 url={DownloadTaskCallbackData.url}");
-#endif
+//#if UNITY_EDITOR
+//            Debug.LogEditorInfor($"完成下载任务 url={DownloadTaskCallbackData.url}");
+//#endif
 
             OnCompleted(DownloadTaskCallbackData.isDone, DownloadTaskCallbackData.isNetworkError || DownloadTaskCallbackData.isNetworkError, DownloadTaskCallbackData.downloadProgress);
         }

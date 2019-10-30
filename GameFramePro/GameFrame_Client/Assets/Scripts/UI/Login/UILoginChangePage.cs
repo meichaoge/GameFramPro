@@ -115,8 +115,8 @@ namespace GameFramePro.UI
         /// <summary>/// 显示App 版本信息/// </summary>
         private void ShowAppVisonView()
         {
-            m_AppVersionText.text = AppUpgradeManager.S_Instance.AppVersion;
-            m_AssetVersionText.text = AppUpgradeManager.S_Instance.AppAssetsVersion;
+            m_AppVersionText.text = ApplicationManager.S_Instance.mAppVersion;
+            m_AssetVersionText.text = ApplicationManager.S_Instance.mAppResourcesVersion;
         }
 
         /// <summary>/// 用户名或者密码输入回调/// </summary>

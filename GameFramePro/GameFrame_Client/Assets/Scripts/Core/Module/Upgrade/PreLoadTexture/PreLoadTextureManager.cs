@@ -27,6 +27,18 @@ namespace GameFramePro.Upgrade
             }
         }
 
+        private static string s_TextureCDNTopUrl = string.Empty;
+
+        /// <summary>/// Texture CDN顶层目录url/// </summary>
+        public static string S_TextureCDNTopUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(s_TextureCDNTopUrl))
+                    s_TextureCDNTopUrl = ApplicationManager.S_TopCDNUrl.CombinePathEx(ConstDefine.S_PreLoadTextureTopDirectoryName);
+                return s_TextureCDNTopUrl;
+            }
+        }
 
         private string mPreloadTextureServerUrl = null;
 
@@ -36,7 +48,7 @@ namespace GameFramePro.Upgrade
             get
             {
                 if (string.IsNullOrEmpty(mPreloadTextureServerUrl))
-                    mPreloadTextureServerUrl = $"{AppUrlManager.S_TextureCDNTopUrl}/{AppUpgradeHelper.GetCurUpgradeLanguage()}/";
+                    mPreloadTextureServerUrl = $"{S_TextureCDNTopUrl}/{AppUpgradeHelper.GetCurUpgradeLanguage()}/";
                 return mPreloadTextureServerUrl;
             }
         }

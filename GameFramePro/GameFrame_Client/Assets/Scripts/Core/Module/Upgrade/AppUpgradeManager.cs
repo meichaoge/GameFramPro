@@ -10,11 +10,6 @@ namespace GameFramePro.Upgrade
     /// <summary>/// 负责控制整个项目的需要更新的模块信息/// </summary>
     public class AppUpgradeManager : Single<AppUpgradeManager>, IUpgradeModule
     {
-        /// <summary>/// 主代码版本号/// </summary>
-        public string AppVersion { get; private set; } = "1.0.1";
-
-        /// <summary>/// 资源版本号/// </summary>
-        public string AppAssetsVersion { get; private set; } = "a 1.0.1"; // a 代表资源
 
         private UIProgressChangePage mUIProgressChangePage = null; //下载进度
 
@@ -44,14 +39,29 @@ namespace GameFramePro.Upgrade
             yield return assetBundleSuperCoroutine.WaitDone(true);
             AssetBundleUpgradeManager.S_Instance.OnUpgradeProcessEvent -= OnUpgradeProcess;
 
+            if(AssetBundleUpgradeManager.S_Instance.mUpgradeState!= UpgradeStateUsage.UpgradeSuccess)
+            {
+                OnUpgradeFail("资源下载失败");
+                yield break;
+            }
+
+
             //预加载图片
             PreLoadTextureManager.S_Instance.OnUpgradeProcessEvent += OnUpgradeProcess;
             var preloadTextureSuperCoroutine = new SuperCoroutine(PreLoadTextureManager.S_Instance.OnBeginUpgrade());
             yield return preloadTextureSuperCoroutine.WaitDone(true);
             PreLoadTextureManager.S_Instance.OnUpgradeProcessEvent -= OnUpgradeProcess;
 
-
+            if (PreLoadTextureManager.S_Instance.mUpgradeState != UpgradeStateUsage.UpgradeSuccess)
+            {
+                OnUpgradeFail("资源下载失败");
+                yield break;
+            }
             OnUpgradeProcess("更新完成", 1f);
+
+
+            //更细成功
+            OnUpgradeSuccess();
         }
 
         public void OnUpgradeProcess(string message, float process)
@@ -73,7 +83,7 @@ namespace GameFramePro.Upgrade
         public void OnUpgradeSuccess()
         {
             mUpgradeState = UpgradeStateUsage.UpgradeSuccess;
-            Debug.LogError("下载 成功 ");
+            Debug.LogInfor("所有的资源更新完成-- 可以进入游戏 ");
             mUIProgressChangePage.ShowProgress("应用更新完成", 1);
             OnUpgradeSuccessEvent?.Invoke();
         }

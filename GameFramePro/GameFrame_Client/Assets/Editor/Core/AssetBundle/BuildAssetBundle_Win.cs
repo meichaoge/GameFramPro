@@ -145,7 +145,7 @@ namespace GameFramePro.EditorEx
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("生成AssetBundle", GUILayout.Width(150), GUILayout.Height(35)))
             {
-                BuildAssetBundleTool.BeginBuildAssetBundle(mSelectAssetBundleSavePath, mSelectBuildAssetBundleOptions, new List<AppPlatformEnum> { mSelectAppPlatform }, () =>
+                BuildAssetBundleTool.BeginBuildAssetBundleAsync(mSelectAssetBundleSavePath, mSelectBuildAssetBundleOptions, new List<AppPlatformEnum> { mSelectAppPlatform }, () =>
                 {
                     s_AssetBundleWin.Close();
                 });
