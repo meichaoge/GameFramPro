@@ -17,8 +17,8 @@ namespace GameFramePro.EditorEx
             s_AssetBundleWin = EditorWindow.GetWindow<BuildAssetBundle_Win>("Create AssetBundle Window");
             s_AssetBundleWin.minSize = new Vector2(600, 800);
             s_AssetBundleWin.maxSize = new Vector2(800, 800);
-            s_AssetBundleWin.Show();
             s_AssetBundleWin.Initialed();
+            s_AssetBundleWin.Show();
         }
 
 
@@ -41,7 +41,7 @@ namespace GameFramePro.EditorEx
         {
             mSelectAssetBundleSavePath = ConstDefine.S_ExportRealPath;
             mAssetDirectoryTreeView = new AssetDirectoryTreeView();
-
+            mSelectAppPlatform = AppPlatformManager.GetAppPlatformEnumFromBuildTarget(EditorUserBuildSettings.activeBuildTarget);
             InitialedTreeView();
         }
 

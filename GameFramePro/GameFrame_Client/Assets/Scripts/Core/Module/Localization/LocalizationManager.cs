@@ -187,12 +187,7 @@ namespace GameFramePro.Localization
             string content = string.Empty;
             if(assetResult!=null&& assetResult.IsLoadAssetEnable)
             {
-                assetResult.ReferenceWithComponent(null, (textAsset) =>
-                {
-                    if (textAsset != null)
-                        content = textAsset.text;
-                    return false;
-                });
+                assetResult.ReferenceWithComponent(null, textAsset => content = textAsset != null ? textAsset.text : string.Empty);
             }
 
             GetLocalizationConfigByFormat(content, language, ApplicationManager.S_Instance.mLocalizationExportFormatType);

@@ -24,7 +24,8 @@ namespace GameFramePro.EditorEx
         private void Initialed()
         {
             ConfigRelativePath = $"Assets/Editor/ExportConfig/PreLoadImage/{ConstDefine.S_PreloadImgConfiFileName}";
-            mPreloadImageExportTopPath = ConstDefine.S_ExportRealPath.CombinePathEx(ConstDefine.S_PreLoadTextureTopDirectoryName); //导出的图片顶层目录
+            mPreloadImageExportTopPath = ConstDefine.S_ExportRealPath.CombinePathEx(ConstDefine.S_PreLoadTextureTopDirectoryName).CombinePathEx(AppPlatformManager.GetCurBuildPlatformFolderName()); //导出的图片顶层目录
+
             mDeleteItemKey = string.Empty;
             outPutLanguageSupport = new List<UpgradeLanguage>(5);
 
@@ -325,7 +326,7 @@ namespace GameFramePro.EditorEx
         /// <summary>/// 输出数据到指定的目录/// </summary>
         private void OutExportConfigOfLanguage(string languageName, string data)
         {
-            var outputDirectory = $"{ConstDefine.S_ExportRealPath}/{ConstDefine.S_PreLoadTextureTopDirectoryName}/{languageName}/{ConstDefine.S_PreloadImgConfiFileName}";
+            var outputDirectory = $"{ConstDefine.S_ExportRealPath}/{AppPlatformManager.GetCurBuildPlatformFolderName()}/{ConstDefine.S_PreLoadTextureTopDirectoryName}/{languageName}/{ConstDefine.S_PreloadImgConfiFileName}";
 
             IOUtility.CreateOrSetFileContent(outputDirectory, data);
             EditorUtility.DisplayDialog("提示", $"导出 语言{languageName} 预加载图片配置文件到目录{outputDirectory}中，注意查看", "已知晓");

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+# if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace GameFramePro
 {
@@ -22,6 +24,30 @@ namespace GameFramePro
     /// </summary>
     public static class AppPlatformManager
     {
+
+        #region 平台相关数据
+
+#if UNITY_ANDROID
+
+        private static AndroidJavaObject _current;
+        public static AndroidJavaObject Current
+        {
+            get
+            {
+                if (_current == null)
+                {
+                    AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                    _current = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                }
+
+                return _current;
+            }
+        }
+#endif
+
+        #endregion
+
+
         /// <summary>
         /// 获取各个平台对应的目录
         /// </summary>
@@ -119,6 +145,18 @@ namespace GameFramePro
         public static string GetPlatformFolderName(UnityEditor.BuildTarget buildTarget)
         {
             return GetPlatformFolderName(GetAppPlatformEnumFromBuildTarget(buildTarget));
+        }
+
+
+        /// <summary>
+        /// 获取各个平台对应的目录
+        /// </summary>
+        /// <param name="platform"></param>
+        /// <returns></returns>
+        public static string GetCurBuildPlatformFolderName()
+        {
+            //EditorUserBuildSettings.activeBuildTarget
+            return GetPlatformFolderName(GetAppPlatformEnumFromBuildTarget(EditorUserBuildSettings.activeBuildTarget));
         }
 #endif
 

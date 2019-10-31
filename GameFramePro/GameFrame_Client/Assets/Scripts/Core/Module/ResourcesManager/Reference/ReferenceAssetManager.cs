@@ -154,20 +154,21 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <typeparam name="T"></typeparam>
         /// <param name="directReferenceObject"></param>
         /// <param name="component"></param>
-        public void StrongReferenceWithComponent<T>(Object directReferenceObject, T component) where T : Component
+        public bool StrongReferenceWithComponent<T>(Object directReferenceObject, T component) where T : Component
         {
             if (directReferenceObject == null || component == null)
-                return;
+                return false;
             int instanceID = GetInstanceIDFromRecord(directReferenceObject);
             if (instanceID == -1)
-                return;
+                return false;
             if (s_AllWeakReferenceAssets.TryGetValue(instanceID, out var weakReferenceAssetRecord))
             {
                 AddStrongReference<T>(component, directReferenceObject, weakReferenceAssetRecord, instanceID);
-                return;
+                return true;
             }
 
             Debug.LogError($"强引用资源失败{directReferenceObject}  {component},没有找到资源记录");
+            return false;
         }
 
         #endregion

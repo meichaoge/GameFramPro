@@ -79,11 +79,7 @@ namespace GameFramePro
             if (assetInfor == null || assetInfor.IsLoadAssetEnable == false)
                 return new byte[0];
             string luaAssetInfor = string.Empty;
-            assetInfor.ReferenceWithComponent(null, (textAsset) =>
-            {
-                luaAssetInfor = textAsset.text;
-                return false;
-            });
+            assetInfor.ReferenceWithComponent(null, textAsset => luaAssetInfor = textAsset != null ? textAsset.text : string.Empty);
 
             if (string.IsNullOrEmpty(luaAssetInfor) == false)
                 return new byte[0];

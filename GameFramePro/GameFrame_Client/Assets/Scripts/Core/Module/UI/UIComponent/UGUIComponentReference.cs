@@ -80,6 +80,7 @@ namespace GameFramePro.UI
     public enum UGUIComponentTypeEnum
     {
         Transform,
+        GameObject,
         RectTransform,
         UGUIText,
         UGUIImage,

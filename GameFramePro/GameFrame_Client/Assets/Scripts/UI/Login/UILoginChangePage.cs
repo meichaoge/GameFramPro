@@ -145,16 +145,20 @@ namespace GameFramePro.UI
         private void OnFacebookButtonClick()
         {
             Debug.Log("android facebook 登录");
-            PlatformManager.Current.Call("LoginFacebook");
+#if UNITY_ANDROID
+            AppPlatformManager.Current.Call("LoginFacebook");
+#endif
         }
         
         private void OnWetChatButtonClick()
         {
             Debug.Log("android 微信 登录");
-            PlatformManager.Current.Call("LoginWetchat");
+#if UNITY_ANDROID
+            AppPlatformManager.Current.Call("LoginWetchat");
+#endif
         }
-        
-        
+
+
         private void OnUserNameInputCallback(string inputName)
         {
         }
@@ -190,10 +194,10 @@ namespace GameFramePro.UI
             LoginNetworkModule.S_Instance.RequestLogin(m_NameInputField.text, m_PasswordInputField.text);
         }
 
-        #endregion
+#endregion
 
 
-        #region 网络事件回调
+#region 网络事件回调
 
         private void OnLoginCallback(int messageID, LoginResponse response)
         {
@@ -209,6 +213,6 @@ namespace GameFramePro.UI
             Debug.Log($" 测试向下转发的消息");
         }
 
-        #endregion
+#endregion
     }
 }

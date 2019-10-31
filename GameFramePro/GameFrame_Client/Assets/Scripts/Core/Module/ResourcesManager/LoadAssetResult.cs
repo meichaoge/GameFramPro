@@ -39,19 +39,21 @@ namespace GameFramePro
         /// 获取或者设置加载得到的对象
         /// </summary>
         /// <param name="targetComponent">关联到哪个组件，这个参数为null 的话不关联任何组件</param>
-        /// <param name="ConnectAssetReferenceComponentAtc">如果这个操作返回false 则资源关联失败，否则会记录引用关系</param>
-        public void ReferenceWithComponent(Component targetComponent, Func<T, bool> ConnectAssetReferenceComponentAtc)
+        /// <param name="ConnectAssetReferenceComponentAtc">则资源会记录引用关系(如果引用的对象是空，则默认不会引用)</param>
+        /// <returns>返回值标识是否成功的引用了资源 </returns>
+        public bool ReferenceWithComponent(Component targetComponent, System.Action<T> ConnectAssetReferenceComponentAtc)
         {
-            if (mLoadAssetInstance == null || ConnectAssetReferenceComponentAtc == null)
-                return;
-            bool isSuccess = ConnectAssetReferenceComponentAtc(mLoadAssetInstance);
+            if (ConnectAssetReferenceComponentAtc == null)
+                return false;
+            ConnectAssetReferenceComponentAtc(mLoadAssetInstance);
+
             if (targetComponent == null)
-                return;
-            if (isSuccess)
-            {
-                ReferenceAssetManager.S_Instance.StrongReferenceWithComponent(mLoadAssetInstance, targetComponent);
-            }
+                return false;
+            if (mLoadAssetInstance == null || IsLoadAssetEnable == false)
+                return false;
+            return ReferenceAssetManager.S_Instance.StrongReferenceWithComponent(mLoadAssetInstance, targetComponent);
         }
+
 
 
     }

@@ -129,10 +129,9 @@ namespace GameFramePro
 
             clipAsset.ReferenceWithComponent(mCurBackgroundAudioSource,(audioClip)=> {
                 if (mCurBackgroundAudioSource.clip == audioClip)
-                    return false;
+                    return ;
                 ResourcesManager.ReleaseComponentReferenceAsset<Sprite>(mCurBackgroundAudioSource, mCurBackgroundAudioSource.clip);
                 mCurBackgroundAudioSource.clip = audioClip;
-                return true;
             });
        
             mCurBackgroundAudioSource.volume = volume;
@@ -213,10 +212,9 @@ namespace GameFramePro
                 assetInfor.ReferenceWithComponent(curAudioSource, (audioClip) =>
                 {
                     if (curAudioSource.clip == audioClip)
-                        return false;
+                        return ;
                     ResourcesManager.ReleaseComponentReferenceAsset<AudioClip>(curAudioSource, curAudioSource.clip);
                     curAudioSource.clip = audioClip;
-                    return true;
                 });
                 curAudioSource.volume = volume;
                 mAllPlayingAudioSources.AddLast(curAudioSource);

@@ -25,12 +25,8 @@ public class TestLoadAsset : MonoBehaviour
             }
             loadAssetResult.ReferenceWithComponent(mTarget, (sprite) =>
             {
-                if (mTarget.sprite== sprite)
-                    return false;
-
                 ResourcesManager.ReleaseComponentReferenceAsset<Sprite>(mTarget, mTarget.sprite);
                 mTarget.sprite = sprite;
-                return true;
             });
         }
 
@@ -64,12 +60,8 @@ public class TestLoadAsset : MonoBehaviour
 
                 spriteResult.ReferenceWithComponent(mTarget, (sprite) =>
                 {
-                    if (mTarget.sprite == sprite)
-                        return false;
-
                     ResourcesManager.ReleaseComponentReferenceAsset<Sprite>(mTarget, mTarget.sprite);
                     mTarget.sprite = sprite;
-                    return true;
                 });
 
             });

@@ -18,18 +18,12 @@ public class TestTextAsset : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D))
         {
             LoadAssetResult<TextAsset> assetResult = ResourcesManager.LoadAssetSync<TextAsset>(mPath);
-            if(assetResult==null|| assetResult.IsLoadAssetEnable == false)
+            if (assetResult == null || assetResult.IsLoadAssetEnable == false)
             {
                 mTextAsset = string.Empty;
                 return;
             }
-            assetResult.ReferenceWithComponent(null, (textAsset) => {
-                if (textAsset == null)
-                    mTextAsset = string.Empty;
-                else
-                    mTextAsset = textAsset.text;
-                return false;
-            });
+            assetResult.ReferenceWithComponent(null, textAsset => mTextAsset = textAsset == null ? string.Empty : textAsset.text);
 
 
             Debug.Log("加载配置文件成功");

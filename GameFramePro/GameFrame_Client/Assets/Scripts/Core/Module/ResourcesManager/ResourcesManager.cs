@@ -188,6 +188,71 @@ namespace GameFramePro
 
         #endregion
 
+        #region 扩展资源加载接口
+
+        /// <summary>
+        /// 扩展了资源加载的方式 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="assetBundleUri"></param>
+        /// <param name="targetComponent">引用加载资源的组件</param>
+        /// <param name="ConnectAssetReferenceComponentAtc">得到资源后的操作，第一个参数标识是否加载成功，第三个参数标识是否需要引用这个资源</param>
+        /// <param name="loadAssetChannel">加载的渠道</param>
+        /// <returns></returns>
+        public static bool LoadAssetSync_Ex<T>(string assetBundleUri, Component targetComponent, System.Action<bool, T> ConnectAssetReferenceComponentAtc, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
+        {
+            LoadAssetResult<T> result = LoadAssetSync<T>(assetBundleUri, loadAssetChannel);
+            if (result == null)
+            {
+                Debug.LogError($"加载资源{assetBundleUri} 失败");
+                ConnectAssetReferenceComponentAtc?.Invoke(false, null);
+                return false;
+            }
+            return result.ReferenceWithComponent(targetComponent, resultAsset => ConnectAssetReferenceComponentAtc?.Invoke(true, resultAsset));
+        }
+
+
+        /// <summary>
+        /// 通用异步加载接口
+        /// </summary>
+        /// <param name="assetBundleUri"></param>
+        /// <param name="completeCallback"></param>
+        /// <param name="isForceReload"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void LoadAssetAsync_Ex<T>(string assetBundleUri, Component targetComponent, System.Action<bool, T> ConnectAssetReferenceComponentAtc, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
+        {
+            System.Action<LoadAssetResult<T>> completeCallback = (loadResult) =>
+            {
+                if (loadResult == null)
+                {
+                    ConnectAssetReferenceComponentAtc?.Invoke(false, null);
+                    return;
+                }
+
+                loadResult.ReferenceWithComponent(targetComponent, resultAsset => ConnectAssetReferenceComponentAtc?.Invoke(true, resultAsset));
+            };
+
+            LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
+            {
+                if (assetRecord == null)
+                {
+                    completeCallback?.Invoke(null);
+                    return;
+                }
+
+                T result = null;
+                if (typeof(T) == typeof(Sprite))
+                    result = GetSpriteAssetFromLoadAsset(assetRecord.GetLoadAsset()) as T;
+                else
+                    result = assetRecord.GetLoadAsset() as T;
+                ReferenceAssetManager.S_Instance.AddWeakReference(result, assetRecord);
+                completeCallback?.Invoke(new LoadAssetResult<T>(result));
+            }, loadAssetChannel);
+
+        }
+
+        #endregion
+
         #region 资源加载接口
 
         /// <summary>
