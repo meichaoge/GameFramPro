@@ -30,7 +30,7 @@ namespace GameFramePro.UI
         private static Dictionary<string, UIBaseChangePage> s_AllAliveUIChangePages = new Dictionary<string, UIBaseChangePage>(); //记录所有现在还在内存中的页面
 
         /// <summary>/// 切换到 另一个界面/// </summary>
-        public static T OpenChangePage<T>(string pageName, string pagePath) where T : UIBaseChangePage, new()
+        public static T OpenChangePage<T>(string pageName, string pagePath, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UIBaseChangePage, new()
         {
             if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
             {
@@ -66,7 +66,7 @@ namespace GameFramePro.UI
                         debugShowScript.Initialed(targetPage);
 #endif
                     }
-                });
+                }, loadAssetChannel);
             }
 
 
@@ -124,7 +124,7 @@ namespace GameFramePro.UI
                             debugShowScript.Initialed(previouPage);
 #endif
                         }
-                    });
+                    },LoadAssetChannelUsage.Default);
                 }
 
 
@@ -190,7 +190,7 @@ namespace GameFramePro.UI
         private static Dictionary<string, List<UIBasePopWindow>> s_AllAcivityPopWIndows = new Dictionary<string, List<UIBasePopWindow>>(10); //所有还在内存的弹窗
 
         /// <summary>/// 打开弹窗 isCreateInstanceIfIsShowing 标示已经有一个同名的弹窗存在并且现实中是否需要创建一个新的实例 默认不需要  /// </summary> 
-        public static T ShowPopWindow<T>(string pageName, string pagePath, bool isBelongCurPage, bool isCreateInstanceIfIsShowing = false) where T : UIBasePopWindow, new()
+        public static T ShowPopWindow<T>(string pageName, string pagePath, bool isBelongCurPage, bool isCreateInstanceIfIsShowing = false, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UIBasePopWindow, new()
         {
             if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
             {
@@ -227,7 +227,7 @@ namespace GameFramePro.UI
                     debugShowScript.Initialed(targetPage);
 #endif
                 }
-            });
+            }, loadAssetChannel);
             return targetPage;
         }
 
@@ -352,7 +352,7 @@ namespace GameFramePro.UI
         #region UIBaseWidget 组件接口 不提供关闭组件的接口 由每个父级自己管理
 
         /// <summary>/// 不会检测是否有缓存 每次都是重新创建 不受UIPageManager 管理生命周期，只受到父级页面管理/// </summary>
-        public static T CreateWidgetInstance<T>(string pageName, string pagePath, UIBasePage parentPage, Transform parentTrans) where T : UIBaseWidget, new()
+        public static T CreateWidgetInstance<T>(string pageName, string pagePath, UIBasePage parentPage, Transform parentTrans, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UIBaseWidget, new()
         {
             if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
             {
@@ -376,7 +376,7 @@ namespace GameFramePro.UI
                     debugShowScript.Initialed(targetWidget);
 #endif
                 }
-            });
+            }, loadAssetChannel);
 
             targetWidget.ShowPage();
             return targetWidget;
@@ -387,9 +387,9 @@ namespace GameFramePro.UI
         #region 辅助工具
 
         /// <summary>/// 创建页面实例/// </summary>
-        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction)
+        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction, LoadAssetChannelUsage loadAssetChannel )
         {
-            GameObject go = ResourcesManager.InstantiateAssetSync(pagePath, parent, false);
+            GameObject go = ResourcesManager.InstantiateAssetSync(pagePath, parent, false, loadAssetChannel);
             if (go != null)
             {
                 go.name = pageName;

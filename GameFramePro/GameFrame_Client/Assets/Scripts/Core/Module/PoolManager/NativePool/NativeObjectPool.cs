@@ -16,10 +16,10 @@ namespace GameFramePro
         public Stack<T> PoolContainer { get; protected set; } = null;
 
 
-        public NativeObjectPool(int capacity, System.Action<T> beforeGetAction, System.Action<T> beforeeRecycleAction)
+        public NativeObjectPool(int capacity, System.Action<T> beforeGetAction, System.Action<T> beforeRecycleAction)
         {
             BeforeGetAction = beforeGetAction;
-            BeforeRecycleAction = beforeeRecycleAction;
+            BeforeRecycleAction = beforeRecycleAction;
             PoolContainer = new Stack<T>(capacity);
             PoolObjectManager.TrackPoolManager(typeof(T), this);
         }

@@ -30,7 +30,7 @@ namespace GameFramePro.Upgrade
             OnBeginUpgradeEvent?.Invoke();
             Debug.LogInfor("开始应用启动时候的更新流程");
 
-            mUIProgressChangePage = UIPageManager.OpenChangePage<UIProgressChangePage>(NameDefine.UIProgressChangePageName, PathDefine.UIProgressChangePagePath);
+            mUIProgressChangePage = UIPageManager.OpenChangePage<UIProgressChangePage>(NameDefine.UIProgressChangePageName, PathDefine.UIProgressChangePagePath,LoadAssetChannelUsage.LocalResourcesPriority);
             mUIProgressChangePage.ShowProgress("开始应用启动时候的更新流程", 0);
 
             //AssetBundle 更新下载

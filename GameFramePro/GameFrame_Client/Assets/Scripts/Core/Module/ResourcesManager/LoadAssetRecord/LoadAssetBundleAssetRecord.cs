@@ -25,8 +25,8 @@ namespace GameFramePro.ResourcesEx
 
         public float mMaxAliveAfterNoReference { get; private set; } = sDefaultNoReferenceAliveTime;
 
-        protected string mBudleAssetRelativeUri { get; private set; } // 相对于所属包的资源路径
-        protected UnityEngine.Object mBundleAsset { get; private set; } //加载的资源
+        private string mBudleAssetRelativeUri { get;  set; } // 相对于所属包的资源路径
+        private UnityEngine.Object mBundleAsset { get;  set; } //加载的资源
 
         public AssetBundleRecordInfor mDependenceAssetBundleRecord { get; private set; } //当前资源依赖的AssetBundle 记录
 

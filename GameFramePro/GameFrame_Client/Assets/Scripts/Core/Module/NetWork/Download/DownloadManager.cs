@@ -62,24 +62,49 @@ namespace GameFramePro
 
         #region 通用的下载接口 对外隐藏实现 (这里不能是静态的 否则没法注册)
 
-        public void GetAssetBundleFromUrl(string taskUrl, uint crc, System.Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum = TaskPriorityEnum.Normal)
+        public void GetAssetBundleFromUrl(string taskUrl, uint crc, System.Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum = TaskPriorityEnum.Normal, int timeOut = 60)
         {
-            // AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,crc, callback, priorityEnum);
+            // AssetBundleDownloadManager.S_Instance.GetDataFromUrl(taskUrl,crc, callback, priorityEnum,timeOut);
         }
 
-        public UnityWebRequestDownloadTask GetByteDataFromUrl(string taskUrl, TaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
+        public UnityWebRequestDownloadTask GetByteDataFromUrl(string taskUrl, long rangeFrom, long rangEnd,  System.Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum = TaskPriorityEnum.Normal,int timeOut=60)
         {
 //#if UNITY_EDITOR
 //            Debug.LogEditorInfor($"taskUrl={taskUrl}");
 //#endif
 
-            return ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
+            return ByteDataDownloadManager.S_Instance.GetDataFromUrl(taskUrl, rangeFrom, rangEnd, callback, priorityEnum, timeOut);
         }
 
+
         /// <summary>/// 下载图片/// </summary>
-        public UnityWebRequestDownloadTask GetTextureDataFromUrl(string taskUrl, TaskPriorityEnum priorityEnum, System.Action<UnityWebRequest, bool, string> callback)
+        public UnityWebRequestDownloadTask GetTextureDataFromUrl(string taskUrl, System.Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum = TaskPriorityEnum.Normal, int timeOut = 60)
         {
-            return TextureDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum);
+            return TextureDownloadManager.S_Instance.GetDataFromUrl(taskUrl, callback, priorityEnum, timeOut);
+        }
+
+
+        public static SuperCoroutine  GetContentLength(string taskUrl, System.Action<bool, long> completeCallback)
+        {
+            return AsyncManager.StartCoroutineEx(UnityWebRequestGetHead(taskUrl, completeCallback));
+        }
+
+        private static IEnumerator UnityWebRequestGetHead(string taskUrl, System.Action<bool, long> completeCallback)
+        {
+            UnityWebRequest headRequest = UnityWebRequest.Head(taskUrl);
+            yield return headRequest.SendWebRequest();
+            if (headRequest == null || headRequest.isHttpError || headRequest.isNetworkError || headRequest.isDone == false)
+            {
+                Debug.LogError($"下载失败{headRequest?.error}  {headRequest?.url}");
+                completeCallback?.Invoke(false, 0);
+                yield break;
+            }
+            var totalLength = long.Parse(headRequest.GetResponseHeader("Content-Length"));
+
+
+            Debug.LogInfor($" 获取指定Url 头部长度成功{totalLength} ");
+            completeCallback?.Invoke(true, totalLength);
+
         }
 
         #endregion

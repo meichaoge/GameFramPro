@@ -8,16 +8,12 @@ using UnityEngine.Networking;
 using System.Threading;
 using GameFramePro.ResourcesEx;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace GameFramePro.Upgrade
 {
     /// <summary> 
     /// 负责AssetBundle 资源的更新逻辑
-    /// 1 获取本地的AssetBundle 版本信息和所有的本地资源信息 (如果本地资源配置文件被删除则取程序中的配置版本号)
-    /// 2 获取服务器的 AssetBundle 配置
-    /// 3 计算版本差异包的名称和下载地址{跨版本} 只需要下载一个指定的压缩包
-    /// 4 支持断点续传的下载一个大的压缩包(或者多个，多个的话需要服务器配置)
-    ///  5 解压覆盖本地版本
     /// </summary>
     public class AssetBundleUpgradeManager : Single<AssetBundleUpgradeManager>, IUpgradeModule
     {
@@ -231,79 +227,45 @@ namespace GameFramePro.Upgrade
                     isLocalAssetBundleExit = false;
             }
 
-            // 如果本地资源存在则获取本地资源的详细信息 并录入
-
-            #region 使用Loom
-
-            //            if (isLocalAssetBundleExit)
-            //            {
-            //                ///利用多线程计算本地资源的信息
-            //                Loom.S_Instance.RunAsync(() =>
-            //                {
-            //                    for (int dex = 0; dex < allAssetBundleFiles.Length; dex++)
-            //                    {
-            //                        var filePath = allAssetBundleFiles[dex];
-            //                        AssetBundleInfor assetBundleInfor = new AssetBundleInfor();
-            //                        assetBundleInfor.mBundleName = filePath.Substring(AssetBundleManager.S_LocalAssetBundleTopDirectoryPath.Length + 1);
-            //                        assetBundleInfor.mBundleMD5Code = MD5Helper.GetFileMD5(filePath, ref assetBundleInfor.Size);
-            //                        string assetBundleNameStr = assetBundleInfor.mBundleName.GetPathStringEx(); //去掉路径分隔符
-            //                        mAllLocalAssetBundleAssetFileInfor[assetBundleNameStr] = assetBundleInfor; //记录本地AssetBundle 资源信息
-            //                        mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length; //进度
-            //                    }
-            //
-            //                    isCompleteGetLocalFileInfor = true;
-            //                    //   Loom.S_Instance.QueueOnMainThread(OnCompleteAllLocalAssetBundleInfor);
-            //                });
-            //            } //获取本地的所有的AssetBundle 信息 (文件MD5 大小等)
-            //            else
-            //            {
-            //                Debug.LogInfor("BeginUpdateAssetBundle 本地没有资源 下载所有的资源");
-            //                mAllLocalAssetBundleLoadProcess = 1f;
-            //                isCompleteGetLocalFileInfor = true;
-            //            }
-            //
-            ////等待所有的本地资源信息的录入
-            //            while (isCompleteGetLocalFileInfor == false)
-            //                yield return AsyncManager.WaitFor_Null;
-
-            #endregion
-
-            if (isLocalAssetBundleExit)
-            {
-                yield return AsyncManager.JumpToBackground; //到子线程
-                int dex = 0;
-                foreach (var loadAssetBundlePath in allAssetBundleFiles)
-                {
-                    ++dex;
-                    ////***文件名称校验 必须符合指定的规则
-                    string assetUri = loadAssetBundlePath.Substring(ConstDefine.S_LocalAssetBundleTopDirectoryPath.Length + 1);
-                    string fileName = IOUtility.GetFileNameWithoutExtensionEx(assetUri);
-                    UpdateAssetBundleInfor assetBundleInfor = null;
-
-                    if (AsserBundleDetail.GetAsserBundleDetail(fileName, out AsserBundleDetail asserBundleDetail))
-                    {
-#if UNITY_EDITOR
-                        Debug.LogEditorInfor($"File={assetUri}    \t Size={asserBundleDetail.Size}    \t Md5={asserBundleDetail.MD5}");
-#endif
-                        assetBundleInfor = new UpdateAssetBundleInfor(assetUri, asserBundleDetail.Size, asserBundleDetail.MD5, loadAssetBundlePath);
-                    }
-                    else
-                    {
-                        assetBundleInfor = new UpdateAssetBundleInfor(string.Empty, 0, string.Empty, loadAssetBundlePath);
-                    }
-
-                    mAllLocalAssetBundleAssetFileInfor[fileName] = assetBundleInfor; //记录本地AssetBundle 资源信息
-                    mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length; //进度
-
-                }
-
-                yield return AsyncManager.JumpToUnity; //回到主线程
-            }
-            else
+            if (isLocalAssetBundleExit == false)
             {
                 Debug.LogInfor("BeginUpdateAssetBundle 本地没有资源 下载所有的资源");
                 mAllLocalAssetBundleLoadProcess = 1f;
+                yield break;
             }
+
+            // 如果本地资源存在则获取本地资源的详细信息 并录入
+            yield return AsyncManager.JumpToBackground; //到子线程
+            int dex = 0;
+            foreach (var loadAssetAbsUri in allAssetBundleFiles)
+            {
+                ++dex;
+                FileInfo fileInfor = IOUtility.GetFileInfo(loadAssetAbsUri); //获取文件的实际大小 断点续传
+
+                ////***文件名称校验 必须符合指定的规则
+                string assetUri = loadAssetAbsUri.Substring(ConstDefine.S_LocalAssetBundleTopDirectoryPath.Length + 1);
+                string fileName = IOUtility.GetFileNameWithoutExtensionEx(assetUri);
+                UpdateAssetBundleInfor assetBundleInfor = null;
+
+                if (AsserBundleDetail.GetAsserBundleDetail(fileName, out AsserBundleDetail asserBundleDetail))
+                {
+#if UNITY_EDITOR
+                    Debug.LogEditorInfor($"File={assetUri}    \t Size={asserBundleDetail.Size}<==>{fileInfor.Length}    \t Md5={asserBundleDetail.MD5}");
+#endif
+                    assetBundleInfor = new UpdateAssetBundleInfor(assetUri, fileInfor.Length, asserBundleDetail.Size, asserBundleDetail.MD5, loadAssetAbsUri);
+                }
+                else
+                {
+                    assetBundleInfor = new UpdateAssetBundleInfor(string.Empty, fileInfor.Length, 0, string.Empty, loadAssetAbsUri);
+                }
+
+                mAllLocalAssetBundleAssetFileInfor[fileName] = assetBundleInfor; //记录本地AssetBundle 资源信息
+                mAllLocalAssetBundleLoadProcess = dex * 1f / allAssetBundleFiles.Length; //进度
+
+            }
+
+            yield return AsyncManager.JumpToUnity; //回到主线程
+
         }
 
         /// <summary>/// 获取服务器的AssetBundle 配置/// </summary>
@@ -320,7 +282,7 @@ namespace GameFramePro.Upgrade
 
             while (mServerBundleAssetConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
-                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(ServerAssetBundleConfigUrl, TaskPriorityEnum.Immediately, null);
+                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(ServerAssetBundleConfigUrl,0,0, null, TaskPriorityEnum.Immediately);
                 if (downloadTask == null)
                 {
                     Debug.LogError("获取服务器配置的下载任务创建失败");
@@ -338,7 +300,7 @@ namespace GameFramePro.Upgrade
                         var downLoadCallback = downloadTask.DownloadTaskCallbackData;
 
                         if (downLoadCallback == null || downLoadCallback.isNetworkError || downLoadCallback.isDone == false || downLoadCallback.isHttpError)
-                            Debug.LogError($"OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null   {downLoadCallback?.url}");
+                            Debug.LogError($"OnCompleteGetServerAssetBundleConfig Fail Error  下载参数为null {downLoadCallback?.error}   {downLoadCallback?.url}");
                         else
                         {
                             mServerBundleAssetConfigStr = (downLoadCallback.downloadHandler as DownloadHandlerBuffer).text;
@@ -363,15 +325,21 @@ namespace GameFramePro.Upgrade
             //对比服务器配置 获取哪些资源需要更新或者新增
             foreach (var assetBunleInfor in mServerBundleAssetConfigInfor.mTotalAssetBundleInfor)
             {
+                var serverAssetBundleDetal = assetBunleInfor.Value.GetABundleDetail(assetBunleInfor.Key);
                 if (mAllLocalAssetBundleAssetFileInfor.TryGetValue(assetBunleInfor.Key, out var localAssetBundleConfig)) //标识为需要更新
                 {
                     mAllLocalAssetBundleAssetFileInfor.Remove(assetBunleInfor.Key);//处理完成这个记录
-                    if (localAssetBundleConfig.mMd5Code == assetBunleInfor.Value.GetABundleDetail(assetBunleInfor.Key).MD5)
+                 
+                    //2019/10/30 新增长度判断 支持断点续传
+                    if (localAssetBundleConfig.mMd5Code == serverAssetBundleDetal.MD5&& localAssetBundleConfig.mLocalAssetLength== serverAssetBundleDetal.Size) 
                         continue;
                 }
 
                 if (localAssetBundleConfig == null)
-                    localAssetBundleConfig = new UpdateAssetBundleInfor(assetBunleInfor.Key, assetBunleInfor.Value, string.Empty);
+                    localAssetBundleConfig = new UpdateAssetBundleInfor(assetBunleInfor.Key, 0, assetBunleInfor.Value, string.Empty);  //新增需要下载的资源
+                else
+                    localAssetBundleConfig.mExpectAsssetLength = serverAssetBundleDetal.Size;// 更新文件需要的长度
+
                 if (string.IsNullOrEmpty(assetBunleInfor.Value.RelDirctory))
                     mAllNeedUpdateAssetBundleAssetInfor.Add(assetBunleInfor.Key, localAssetBundleConfig); //需要更新
                 else
@@ -479,7 +447,7 @@ namespace GameFramePro.Upgrade
                 Debug.LogEditorInfor($"开始下载AssetBundle  url={updateAssetBundleUrl}");
 #endif
 
-                DownloadManager.S_Instance.GetByteDataFromUrl(updateAssetBundleUrl, TaskPriorityEnum.Immediately, OnDownloadAssetBundleCallback);
+                DownloadManager.S_Instance.GetByteDataFromUrl(updateAssetBundleUrl, assetBundleRecord.Value.mLocalAssetLength, assetBundleRecord.Value.mExpectAsssetLength,  OnDownloadAssetBundleCallback, TaskPriorityEnum.Immediately);
             }
         }
 
@@ -496,7 +464,18 @@ namespace GameFramePro.Upgrade
                     Debug.LogEditorInfor($"OnDownloadAssetBundleCallback Success  ---------------------->>> AssetBundleName= {assetBundleName}    \t  url={url}");
 #endif
                     DownloadHandlerBuffer handle = webRequest.downloadHandler as DownloadHandlerBuffer;
-                    SaveAssetBundleFromDownload(handle, assetBundleName);
+                    //    SaveAssetBundleFromDownload(handle, assetBundleName);
+                    if (handle == null)
+                        return;
+                    string fileSavePath = ConstDefine.S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundleName);
+
+                    if(bundleInfor.mLocalAssetLength == 0)
+                        IOUtility.CreateOrSetFileContent(fileSavePath, handle.data, false);
+                    else
+                        IOUtility.AppFileContent(fileSavePath, handle.data, bundleInfor.mLocalAssetLength); //追加数据
+
+
+                    Debug.LogInfor($"保存下载的AssetBundle 资源{assetBundleName} ");
                 }
                 else
                 {
@@ -512,17 +491,6 @@ namespace GameFramePro.Upgrade
             }
         }
 
-        /// <summary>
-        ///保存下载的AssetBundel 资源
-        /// </summary>
-        private void SaveAssetBundleFromDownload(DownloadHandlerBuffer handle, string assetBundleName)
-        {
-            if (handle == null)
-                return;
-                string fileSavePath = ConstDefine.S_LocalAssetBundleTopDirectoryPath.CombinePathEx(assetBundleName);
-            IOUtility.CreateOrSetFileContent(fileSavePath, handle.data, false);
-            Debug.LogInfor($"保存下载的AssetBundle 资源{assetBundleName} ");
-        }
 
         #endregion
 

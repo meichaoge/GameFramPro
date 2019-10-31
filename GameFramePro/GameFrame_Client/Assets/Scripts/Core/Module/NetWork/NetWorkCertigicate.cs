@@ -15,6 +15,7 @@ namespace GameFramePro.NetWorkEx
     {
         public static void  InitialedNetWorkCertigicate()
         {
+
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
         }
 

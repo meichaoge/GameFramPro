@@ -65,7 +65,7 @@ namespace GameFramePro.ResourcesEx.Reference
         private static void OnBeforeGeBeferenceAsset(ComponentReferenceAssetInfor record)
         {
             record.mReferenceCount = 0;
-            record.mLastRecordReleaseTime = 0;
+            record.mLastRecordReleaseTime = Time.realtimeSinceStartup;
             record.mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;
             record.mComponeReferences?.Clear();
             record.mILoadAssetRecord?.ReleaseLoadAssetRecord();
@@ -213,14 +213,21 @@ namespace GameFramePro.ResourcesEx.Reference
         public bool CheckIfCanRealRelease()
         {
             if (mILoadAssetRecord == null)
-                return true;
+                return true;  //关联的资源被释放了
 
             if (mILoadAssetRecord.mMaxAliveAfterNoReference < 0)
                 return false;
             if (mReferenceAssetStateUsage != ReferenceAssetStateUsage.Releasing)
                 return false;
 
-            return Time.realtimeSinceStartup - mLastRecordReleaseTime >= mILoadAssetRecord.mMaxAliveAfterNoReference;
+            bool isReleaseAble= Time.realtimeSinceStartup - mLastRecordReleaseTime >= mILoadAssetRecord.mMaxAliveAfterNoReference;
+
+#if UNITY_EDITOR
+            if(isReleaseAble)
+            Debug.LogEditorInfor($"可以释放资源 {ReferenceAssetUri}，Now={Time.realtimeSinceStartup} --Record={mLastRecordReleaseTime} >=Max{mILoadAssetRecord.mMaxAliveAfterNoReference}");
+#endif
+
+            return isReleaseAble;
         }
 
 
@@ -245,7 +252,7 @@ namespace GameFramePro.ResourcesEx.Reference
             if (mReferenceAssetStateUsage == ReferenceAssetStateUsage.Releasing)
             {
                 AssetDelayDeleteManager.RemoveDelayDeleteReferenceAsset(this);
-                mLastRecordReleaseTime = 0;
+                mLastRecordReleaseTime = Time.realtimeSinceStartup;
                 mReferenceAssetStateUsage = ReferenceAssetStateUsage.BeingReferenceed;
             }
         }

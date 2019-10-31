@@ -34,6 +34,14 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 回调回去的参数  刚开始又初始化的时候赋值传入，开始下载后更新这个对象/// </summary>
         public W DownloadTaskCallbackData { get; protected set; } = default(W);
 
+        /// <summary>
+        /// 2019/10/30 新增支持断点续传
+        /// </summary>
+        public long mRangeFrom { get; set; } = 0;
+        public long mRangeTo { get; set; } = 0;
+
+
+
         /// <summary>/// 下载任务变化事件 参数 Url 和 进度/// </summary>
         public event OnTaskProcessChangeHandler OnProgressChangedEvent; //下载进度的回调
 

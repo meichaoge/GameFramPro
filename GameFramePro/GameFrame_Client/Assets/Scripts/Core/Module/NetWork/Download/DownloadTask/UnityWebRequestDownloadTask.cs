@@ -12,7 +12,7 @@ namespace GameFramePro.NetWorkEx
 
         static UnityWebRequestDownloadTask()
         {
-            mUnityWebRequestTaskPoolManager = new NativeObjectPool<UnityWebRequestDownloadTask>(20, null, OnBeforRecycleWebRequestTaskItem);
+            mUnityWebRequestTaskPoolManager = new NativeObjectPool<UnityWebRequestDownloadTask>(25, null, OnBeforRecycleWebRequestTaskItem);
         }
 
         #region 对象池
@@ -25,12 +25,13 @@ namespace GameFramePro.NetWorkEx
 
 
         /// <summary>/// 从缓存中获取对象/// </summary>
-        public static UnityWebRequestDownloadTask GetUnityWebRequestDownloadTask(string taskUrl,Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum, int timeOut=15)
+        public static UnityWebRequestDownloadTask GetUnityWebRequestDownloadTask(string taskUrl,Action<UnityWebRequest, bool, string> callback, TaskPriorityEnum priorityEnum, int timeOut=60)
         {
             UnityWebRequestDownloadTask task = mUnityWebRequestTaskPoolManager.GetItemFromPool();
 
             UnityWebRequest webRequest = new UnityWebRequest(taskUrl)
             {
+             //   method="GET",
                 timeout = timeOut,
             };
             task.InitialedDownloadTask(taskUrl, webRequest, priorityEnum, callback);
@@ -103,6 +104,7 @@ namespace GameFramePro.NetWorkEx
                 DownloadTaskCallbackData = null;
             }
 
+            mRangeFrom = mRangeTo = 0;
 
             base.ClearDownloadTask();
         }

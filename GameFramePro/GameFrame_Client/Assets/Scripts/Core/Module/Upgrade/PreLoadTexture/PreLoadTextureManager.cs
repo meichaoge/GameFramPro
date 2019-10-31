@@ -9,9 +9,12 @@ using UnityEngine.Networking;
 
 namespace GameFramePro.Upgrade
 {
+
+
     /// <summary>/// 用于在进入登录界面前提前加载CDN 上图片/// </summary>
     public class PreLoadTextureManager : Single<PreLoadTextureManager>, IUpgradeModule
     {
+      
         #region 路径配置 
 
         private string mLocalStorePath = string.Empty;
@@ -215,7 +218,7 @@ namespace GameFramePro.Upgrade
             while (ServerPreloadImgConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
                 var url = PreloadTextureServerUrl.CombinePathEx(ConstDefine.S_PreloadImgConfiFileName);
-                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(url, TaskPriorityEnum.Immediately, null);
+                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(url,0,0,  null, TaskPriorityEnum.Immediately);
                 if (downloadTask == null)
                 {
                     Debug.LogError($"获取服务器配置的下载任务创建失败 第{mCurDownloadCount} 次 url={PreloadTextureServerUrl}");
@@ -310,8 +313,7 @@ namespace GameFramePro.Upgrade
                 if (LocalPreloadImgAssetMD5Infor.TryGetValue(textureInfor.mTextureRelativePath, out var textureMd5))
                 {
                     if (textureMd5.Equals(textureInfor.mAssetMD5, StringComparison.Ordinal))
-
-                        if (textureMd5 != textureInfor.mAssetMD5)
+                     //   if (textureMd5 != textureInfor.mAssetMD5)
                             AllNeedDownloadTextureAssetRecord.Add(textureInfor.mTextureRelativePath); //需要更新
                     continue;
                 }
@@ -392,7 +394,7 @@ namespace GameFramePro.Upgrade
                 Debug.LogEditorInfor($"开始下载 预加载图片  url={updatePreloadTextureUrl}");
 #endif
 
-                DownloadManager.S_Instance.GetTextureDataFromUrl(updatePreloadTextureUrl, TaskPriorityEnum.Immediately, OnDownloadPreloadTextureCallback);
+                DownloadManager.S_Instance.GetTextureDataFromUrl(updatePreloadTextureUrl,  OnDownloadPreloadTextureCallback,TaskPriorityEnum.Immediately);
             }
         }
 

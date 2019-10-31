@@ -47,8 +47,9 @@ namespace GameFramePro
             Debug.LogInfor($"Application.persistentDataPath={Application.persistentDataPath}");
 #endif
 
+
             UIPageManager.InitialedPageManager();
-            LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
+        
             NetWorkManager.S_Instance.InitialedNetWork();
 
             var appUpgradeCoroutineEx = new SuperCoroutine(AppUpgradeManager.S_Instance.OnBeginUpgrade());
@@ -59,10 +60,11 @@ namespace GameFramePro
                 Debug.LogError($"更新失败！！");
                 yield break;
             }
-
             yield return null;
-            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
+            Debug.LogInfor($"更新资源完成 ----进入游戏");
 
+            LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
+            UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
             //       SocketClientHelper.BaseLoginTcpClient.Connect(IPAddress.Parse("127.0.0.1"), 2500, 5000);
         }
 

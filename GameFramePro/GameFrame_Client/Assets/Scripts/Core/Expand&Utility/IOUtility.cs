@@ -13,40 +13,40 @@ namespace GameFramePro
         #region 文件创建、追加 、修改文件名
 
         /// <summary>/// 创建或者追加内容/// </summary>
-        /// <param name="filePath">文件绝对路径</param>
+        /// <param name="fileAbsUri">文件绝对路径</param>
         /// <param name="content">文本内容</param>
         /// <param name="isAppend">是否是追加模式</param>
-        public static void CreateOrSetFileContent(string filePath, string content, bool isAppend = false)
+        public static void CreateOrSetFileContent(string fileAbsUri, string content, bool isAppend = false)
         {
-            if (string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(fileAbsUri))
             {
                 Debug.LogError("CreateOrSetFileContent Path is Null  ");
                 return;
             }
 
             byte[] data = Encoding.UTF8.GetBytes(content);
-            CreateOrSetFileContent(filePath, data, isAppend);
+            CreateOrSetFileContent(fileAbsUri, data, isAppend);
         }
 
-        public static void CreateOrSetFileContent(string filePath, byte[] byteData, bool isAppend = false)
+        public static void CreateOrSetFileContent(string fileAbsUri, byte[] byteData, bool isAppend = false)
         {
             FileStream operateStream = null;
             try
             {
-                string directionaryPath = Path.GetDirectoryName(filePath);
+                string directionaryPath = Path.GetDirectoryName(fileAbsUri);
                 if (string.IsNullOrEmpty(directionaryPath))
                 {
-                    Debug.LogError("无法解析路径的目录" + filePath);
+                    Debug.LogError("无法解析路径的目录" + fileAbsUri);
                     return;
                 }
 
                 if (Directory.Exists(directionaryPath) == false)
                     Directory.CreateDirectory(directionaryPath);
 
-                if (File.Exists(filePath) && (isAppend == false))
-                    operateStream = new FileStream(filePath, FileMode.Truncate, FileAccess.Write, FileShare.Read, byteData.Length); //截断
+                if (File.Exists(fileAbsUri) && (isAppend == false))
+                    operateStream = new FileStream(fileAbsUri, FileMode.Truncate, FileAccess.Write, FileShare.Read, byteData.Length); //截断
                 else
-                    operateStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, byteData.Length); //打开或者创建
+                    operateStream = new FileStream(fileAbsUri, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, byteData.Length); //打开或者创建
 
                 if (isAppend)
                     operateStream.Write(byteData, (int)operateStream.Length, byteData.Length);
@@ -70,89 +70,156 @@ namespace GameFramePro
             }
         }
 
+        /// <summary>
+        /// 从指定位置开始追加数据
+        /// </summary>
+        /// <param name="fileAbsUri"></param>
+        /// <param name="byteData"></param>
+        /// <param name="OffsetIndex"></param>
+        public static void AppFileContent(string fileAbsUri, byte[] byteData, long OffsetIndex)
+        {
+            FileStream operateStream = null;
+            try
+            {
+                string directionaryPath = Path.GetDirectoryName(fileAbsUri);
+                if (string.IsNullOrEmpty(directionaryPath))
+                {
+                    Debug.LogError("无法解析路径的目录" + fileAbsUri);
+                    return;
+                }
+                if (byteData == null || byteData.Length == 0)
+                {
+                    Debug.LogError($"参数指定的数据长度为0   {fileAbsUri}");
+                    return;
+                }
+                if (Directory.Exists(directionaryPath) == false)
+                    Directory.CreateDirectory(directionaryPath);
+
+
+                if (System.IO.File.Exists(fileAbsUri) == false)
+                    operateStream = new FileStream(fileAbsUri, FileMode.Create, FileAccess.Write, FileShare.None, (int)(OffsetIndex + byteData.Length));
+                else
+                    operateStream = new FileStream(fileAbsUri, FileMode.Open, FileAccess.Write, FileShare.Read, byteData.Length); //打开或者创建
+
+                if (operateStream.Length < OffsetIndex + byteData.Length)
+                    operateStream.SetLength(OffsetIndex + byteData.Length);
+                operateStream.Seek(OffsetIndex, SeekOrigin.Begin);
+                operateStream.Write(byteData, 0, byteData.Length);
+
+                operateStream.Flush(); // 刷新
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("CreateOrSetFileContent  " + e);
+            }
+            finally
+            {
+                operateStream?.Close();
+
+#if UNITY_EDITOR
+                UnityEditor.AssetDatabase.Refresh();
+#endif
+            }
+        }
+
         /// <summary>/// 读取指定路径上文件的全部信息/// </summary>
         /// <returns>返回值标示是否读取生成</returns>
-        public static bool GetFileContent(string filePath, out string content)
+        public static bool GetFileContent(string fileAbsUri, out string content)
         {
             content = string.Empty;
-            if (System.IO.File.Exists(filePath) == false)
+            if (System.IO.File.Exists(fileAbsUri) == false)
             {
-                Debug.LogError("GetFileContent Fail,Not Exit File Path " + filePath);
+                Debug.LogError("GetFileContent Fail,Not Exit File Path " + fileAbsUri);
                 return false;
             }
 
-            content = System.IO.File.ReadAllText(filePath);
+            content = System.IO.File.ReadAllText(fileAbsUri);
             return true;
         }
-
 
         /// <summary>/// 读取指定路径上文件的全部信息/// </summary>
         /// <returns>返回值标示是否读取生成 返回一行一行的数据</returns>
-        public static bool GetFileContentAllLines(string filePath, out string[] content)
+        public static bool GetFileContentAllLines(string fileAbsUri, out string[] content)
         {
             content = null;
-            if (System.IO.File.Exists(filePath) == false)
+            if (System.IO.File.Exists(fileAbsUri) == false)
             {
-                Debug.LogError("GetFileContent Fail,Not Exit File Path " + filePath);
+                Debug.LogError("GetFileContent Fail,Not Exit File Path " + fileAbsUri);
                 return false;
             }
 
-            content = System.IO.File.ReadLines(filePath).ToArray();
+            content = System.IO.File.ReadLines(fileAbsUri).ToArray();
             return true;
         }
 
+        /// <summary>
+        /// 获取指定绝对路径的 文件信息
+        /// </summary>
+        /// <param name="fileAbsUri"></param>
+        /// <returns></returns>
+        public static FileInfo GetFileInfo(string fileAbsUri)
+        {
+            if (System.IO.File.Exists(fileAbsUri) == false)
+            {
+                Debug.LogError( $"GetFileInfo Fail,Not Exit File Path {fileAbsUri} ");
+                return null;
+            }
+
+            System.IO.FileInfo fileInfor = new System.IO.FileInfo(fileAbsUri);
+            return fileInfor;
+        }
 
         /// <summary>
         ///  文件重命名 
         /// </summary>
-        /// <param name="filePath">资源的原始路径</param>
+        /// <param name="fileAbsUri">资源的原始路径</param>
         /// <param name="newFileName">新的文件名</param>
         /// <returns>重命名后的文件路径</returns>
-        public static string FileModifyName(string filePath, string newFileName)
+        public static string FileModifyName(string fileAbsUri, string newFileName)
         {
             try
             {
-                if (System.IO.File.Exists(filePath) == false)
+                if (System.IO.File.Exists(fileAbsUri) == false)
                 {
-                    Debug.LogError($"指定的文件不存在{filePath}");
+                    Debug.LogError($"指定的文件不存在{fileAbsUri}");
                     return string.Empty;
                 }
 
-                string newFilePath = System.IO.Path.GetDirectoryName(filePath).CombinePathEx(newFileName);
-                if (System.IO.File.Exists(newFilePath))
+                string newfileAbsUri = System.IO.Path.GetDirectoryName(fileAbsUri).CombinePathEx(newFileName);
+                if (System.IO.File.Exists(newfileAbsUri))
                 {
-                    Debug.LogError("存在同名的文件 ，无法修改文件名 " + newFilePath);
+                    Debug.LogError("存在同名的文件 ，无法修改文件名 " + newfileAbsUri);
                     return string.Empty;
                 }
 
-                System.IO.File.Move(filePath, newFilePath);
-                return newFilePath;
+                System.IO.File.Move(fileAbsUri, newfileAbsUri);
+                return newfileAbsUri;
             }
             catch (System.Exception e)
             {
 
-                Debug.LogError($"异常错误 {filePath}==>{newFileName} {e}");
+                Debug.LogError($"异常错误 {fileAbsUri}==>{newFileName} {e}");
                 return string.Empty;
             }
 
         }
 
         /// <summary>/// 删除指定的文件/// </summary>
-        public static bool DeleteFile(string filePath)
+        public static bool DeleteFile(string fileAbsUri)
         {
-            if (string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(fileAbsUri))
             {
                 Debug.LogError("DeleteFile Fail,Parameter is null");
                 return false;
             }
 
-            if (System.IO.File.Exists(filePath) == false)
+            if (System.IO.File.Exists(fileAbsUri) == false)
             {
-                Debug.LogError("DeleteFile Fail,File Not Exit " + filePath);
+                Debug.LogError("DeleteFile Fail,File Not Exit " + fileAbsUri);
                 return false;
             }
 
-            System.IO.File.Delete(filePath);
+            System.IO.File.Delete(fileAbsUri);
             return true;
         }
 

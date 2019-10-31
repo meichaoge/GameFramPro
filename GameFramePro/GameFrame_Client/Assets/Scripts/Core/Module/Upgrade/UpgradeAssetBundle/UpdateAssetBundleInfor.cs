@@ -12,7 +12,9 @@ namespace GameFramePro.Upgrade
     {
         public string mNeedUpdateAssetBundleUri = string.Empty;
         public string mAssetAbsFullUri = string.Empty; //本地资源的绝对路径 资源删除时候用
-        public long mAssetByteSize = 0;
+        public long mLocalAssetLength = 0;  //本地资源的大小
+        public long mExpectAsssetLength = 0; //CDN 上资源大小
+
         public string mMd5Code = string.Empty;
 
 
@@ -20,19 +22,22 @@ namespace GameFramePro.Upgrade
         {
         }
 
-        public UpdateAssetBundleInfor(string assetBundleUri, long byteSize, string md5, string fileAbsUri)
+        public UpdateAssetBundleInfor(string assetBundleUri, long localByteSize, long serverByteSize, string md5, string fileAbsUri)
         {
             mNeedUpdateAssetBundleUri = assetBundleUri;
-            mAssetByteSize = byteSize;
+            mLocalAssetLength = localByteSize;
+            mExpectAsssetLength = serverByteSize;
+
             mMd5Code = md5;
             mAssetAbsFullUri = fileAbsUri;
         }
 
-        public UpdateAssetBundleInfor(string assetBundleFileName,AssetBundleInfor bundleInfor,  string fileAbsUri)
+        public UpdateAssetBundleInfor(string assetBundleFileName, long localByteSize, AssetBundleInfor bundleInfor,  string fileAbsUri)
         {
             mNeedUpdateAssetBundleUri = assetBundleFileName;
+            mLocalAssetLength = localByteSize;
 
-            mAssetByteSize = bundleInfor.GetABundleDetail(assetBundleFileName).Size;
+            mExpectAsssetLength = bundleInfor.GetABundleDetail(assetBundleFileName).Size;
             mMd5Code = bundleInfor.GetABundleDetail(assetBundleFileName).MD5;
             mAssetAbsFullUri = fileAbsUri;
         }
