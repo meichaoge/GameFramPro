@@ -8,6 +8,7 @@ namespace UnityEngine.UI
     [DisallowMultipleComponent]
     public class LoopVerticalScrollRect : LoopScrollRectAutoAdsorbent
     {
+
         protected override float GetSize(RectTransform item)
         {
             float size = contentSpacing;
@@ -50,7 +51,7 @@ namespace UnityEngine.UI
             if (viewBounds.min.y < contentBounds.min.y)
             {
                 float size = NewItemAtEnd(), totalSize = size;
-                while(size > 0 && viewBounds.min.y < contentBounds.min.y - totalSize)
+                while (size > 0 && viewBounds.min.y < contentBounds.min.y - totalSize)
                 {
                     size = NewItemAtEnd();
                     totalSize += size;
@@ -94,5 +95,26 @@ namespace UnityEngine.UI
             }
             return changed;
         }
+
+
+        protected override bool IsCanMoveOnBundary()
+        {
+            // return base.IsCanMoveOnBundary();
+            if (mIsBoundaryMoveCheck == false)
+                return true;
+
+            if (verticalNormalizedPosition >0f && verticalNormalizedPosition < 1f)
+                return true;
+            if (verticalNormalizedPosition < 0f)
+                verticalNormalizedPosition = 0f;
+
+            if (verticalNormalizedPosition >1f)
+                verticalNormalizedPosition = 1f;
+
+            return false;
+        }
+
+
+
     }
 }

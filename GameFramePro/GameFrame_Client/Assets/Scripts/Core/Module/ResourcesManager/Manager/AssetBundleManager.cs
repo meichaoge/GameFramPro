@@ -162,7 +162,7 @@ namespace GameFramePro.ResourcesEx
         /// <param name="completeCallback"></param>
         private void LoadAssetBundleRecordAsync(string assetBundleNameUri, string assetBundleDirectoryUri, Action<AssetBundleRecordInfor> completeCallback)
         {
-            if (string.IsNullOrEmpty(assetBundleNameUri) )
+            if (string.IsNullOrEmpty(assetBundleNameUri))
             {
                 Debug.LogError("LoadAssetBundleRecordAsync Fail,Parameter is null");
                 completeCallback?.Invoke(null);
@@ -369,27 +369,42 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         public void RemoveAllUnReferenceAssetBundleRecord(ref HashSet<int> assetBundleInstanceIDs)
         {
-            if (assetBundleInstanceIDs == null)
-                assetBundleInstanceIDs = new HashSet<int>();
-
             Dictionary<string, AssetBundleRecordInfor> tempAssetBundleRecordInfors = new Dictionary<string, AssetBundleRecordInfor>(s_AllAssetBundleRecordInfors);
 
-            foreach (var assetBundleRecordInfor in tempAssetBundleRecordInfors.Values)
+            foreach (var assetBundleRecordInfor in tempAssetBundleRecordInfors)
             {
-                if (assetBundleRecordInfor == null) continue;
-                if (assetBundleRecordInfor.mTotalReferenceCount != 0) continue;
+                if (assetBundleRecordInfor.Value == null)
+                {
+                    s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Key);
+                    continue;
+                }
+                if (assetBundleRecordInfor.Value.mTotalReferenceCount != 0)
+                {
+                    s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Key);
+                    continue;
+                }
 
 
-                int assetBundleInstanceID = assetBundleRecordInfor.mAssetBundleInstanceID;
-                if (assetBundleInstanceID != -1 && assetBundleInstanceIDs.Contains(assetBundleInstanceID) == false)
-                    assetBundleInstanceIDs.Add(assetBundleInstanceID);
+                int assetBundleInstanceID = assetBundleRecordInfor.Value.mAssetBundleInstanceID;
+                if (assetBundleInstanceID == -1)
+                {
+                    s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Key);
+                    continue;
+                }
 
+                if (assetBundleInstanceIDs == null || assetBundleInstanceIDs.Count == 0)
+                    continue;
+
+                if (assetBundleInstanceIDs.Contains(assetBundleInstanceID))
+                {
 #if UNITY_EDITOR
-                Debug.Log($"释放AssetBundle 资源： {assetBundleRecordInfor.mAssetBundleNameUri}");
+                    Debug.Log($"释放AssetBundle 资源： {assetBundleRecordInfor.Value.mAssetBundleNameUri}");
 #endif
 
-                s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.mAssetBundleNameUri);
-                AssetBundleRecordInfor.ReleaseAssetBundleRecordInfor(assetBundleRecordInfor);
+                    s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Value.mAssetBundleNameUri);
+                    AssetBundleRecordInfor.ReleaseAssetBundleRecordInfor(assetBundleRecordInfor.Value);
+                }
+
             }
         }
 
@@ -440,7 +455,7 @@ namespace GameFramePro.ResourcesEx
                 return null;
             }
 
-         //   assetBundleName = assetBundleName.GetPathStringEx();
+            //   assetBundleName = assetBundleName.GetPathStringEx();
 
             foreach (var assetBundleInfor in s_ServerBundleAssetConfigInfor.mTotalAssetBundleInfor)
             {
@@ -451,7 +466,6 @@ namespace GameFramePro.ResourcesEx
             Debug.LogError($"GetAssetBundleAllDependencies Fail,没有找到依赖关系 {assetBundleName}");
             return null;
         }
-
 
 
         /// <summary>

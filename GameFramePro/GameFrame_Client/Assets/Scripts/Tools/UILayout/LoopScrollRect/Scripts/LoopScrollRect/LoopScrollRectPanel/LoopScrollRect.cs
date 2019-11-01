@@ -391,6 +391,13 @@ namespace UnityEngine.UI
         public System.Action<int> m_OnItemViewFlushEvent;  //刷新时候 除非主动调用RefreshCells() ，否则不会被出发
         #endregion
 
+        #region 2019/11/1 新增
+        [SerializeField]
+        [Header("达到边界是否可以移动")] //Clamped 不能使用的替代
+        protected bool mIsBoundaryMoveCheck = false; //是否在边界处检测是否可以滑动或者拖动
+        #endregion
+
+
         #region  接口参数
         public virtual void CalculateLayoutInputHorizontal() { }
         public virtual void CalculateLayoutInputVertical() { }
@@ -520,27 +527,32 @@ namespace UnityEngine.UI
             Vector2 position = m_Content.anchoredPosition;
             for (int axis = 0; axis < 2; axis++)
             {
-                // Apply spring physics if movement is elastic and content has an offset from the view.
-                if (m_MovementType == MovementType.Elastic && offset[axis] != 0)
+                if (IsCanMoveOnBundary())
                 {
-                    float speed = m_Velocity[axis];
-                    position[axis] = Mathf.SmoothDamp(m_Content.anchoredPosition[axis], m_Content.anchoredPosition[axis] + offset[axis], ref speed, m_Elasticity, Mathf.Infinity, Time.unscaledDeltaTime);
-                    m_Velocity[axis] = speed;
-                }
-                // Else move content according to velocity with deceleration applied.
-                else if (m_Inertia)
-                {
-                    m_Velocity[axis] *= Mathf.Pow(m_DecelerationRate, Time.unscaledDeltaTime);
-                    if (Mathf.Abs(m_Velocity[axis]) < 1)
+                    // Apply spring physics if movement is elastic and content has an offset from the view.
+                    if (m_MovementType == MovementType.Elastic && offset[axis] != 0)
+                    {
+                        float speed = m_Velocity[axis];
+                        position[axis] = Mathf.SmoothDamp(m_Content.anchoredPosition[axis], m_Content.anchoredPosition[axis] + offset[axis], ref speed, m_Elasticity, Mathf.Infinity, Time.unscaledDeltaTime);
+                        m_Velocity[axis] = speed;
+                    }
+                    // Else move content according to velocity with deceleration applied.
+                    else if (m_Inertia)
+                    {
+                        m_Velocity[axis] *= Mathf.Pow(m_DecelerationRate, Time.unscaledDeltaTime);
+                        if (Mathf.Abs(m_Velocity[axis]) < 1)
+                            m_Velocity[axis] = 0;
+                        position[axis] += m_Velocity[axis] * Time.unscaledDeltaTime;
+                    }
+                    // If we have neither elaticity or friction, there shouldn't be any velocity.
+                    else
+                    {
                         m_Velocity[axis] = 0;
-                    position[axis] += m_Velocity[axis] * Time.unscaledDeltaTime;
-                }
-                // If we have neither elaticity or friction, there shouldn't be any velocity.
-                else
-                {
-                    m_Velocity[axis] = 0;
+                    }
                 }
             }
+
+               
 
             if (m_Velocity != Vector2.zero)
             {
@@ -1340,7 +1352,7 @@ namespace UnityEngine.UI
             // Offset to get content into place in the view.
             Vector2 offset = CalculateOffset(position - m_Content.anchoredPosition);
             position += offset;
-            if (m_MovementType == MovementType.Elastic)
+            if (m_MovementType == MovementType.Elastic&& IsCanMoveOnBundary())
             {
                 //==========LoopScrollRect==========
                 if (offset.x != 0)
@@ -1354,7 +1366,17 @@ namespace UnityEngine.UI
         }
 
         #endregion
+        #region 2019/11/1 新增
 
+        /// <summary>
+        /// 到达边界是否可以移动 需要自行判断边界
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool  IsCanMoveOnBundary()
+        {
+            return true;
+        }
+        #endregion
 
     }
 }

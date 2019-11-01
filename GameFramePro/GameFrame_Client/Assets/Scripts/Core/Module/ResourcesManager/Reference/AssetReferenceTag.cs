@@ -93,6 +93,10 @@ namespace GameFramePro.ResourcesEx
 
         public void RomoveReference(Component component, Type type, Object asset)
         {
+            if (component == null)
+                return;
+
+
             for (int dex = mAllReferenceInfors.Count - 1; dex >= 0; dex--)
             {
                 var referenceInfor = mAllReferenceInfors[dex];
@@ -103,16 +107,16 @@ namespace GameFramePro.ResourcesEx
                 }
             }
 
-            Debug.LogError($"移除引用记录失败{component} {asset.name}");
+            //   Debug.LogError($"移除引用记录失败{component} {asset.name}");
         }
 #endif
-        
-        
+
+
         private void OnDestroy()
         {
 #if UNITY_EDITOR
             mAllReferenceInfors.Clear();
-            Debug.LogEditorInfor($"被标记的资源{gameObject.name}  被销毁，准备释放资源");
+            Debug.LogEditorInfor($"被标记的资源{gameObject.name}  被销毁，立刻释放引用计数，并计时等待加载的资源被回收");
 #endif
             ResourcesManager.ReduceGameObjectReference(gameObject);
         }

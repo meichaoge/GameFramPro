@@ -6,7 +6,9 @@ using Object = UnityEngine.Object;
 
 namespace GameFramePro.ResourcesEx
 {
-    /// <summary> /// 专用于从 Resources 加载和管理资源  /// </summary>
+    /// <summary>
+    /// 专用于从 Resources 加载和管理资源 
+    /// </summary>
     public sealed class LocalResourcesManager : Single<LocalResourcesManager>
     {
         //key  =assetFullUri 
@@ -73,34 +75,46 @@ namespace GameFramePro.ResourcesEx
             }, (procress) => { procressCallback?.Invoke(assetFullUri, procress); });
         }
 
-
         /// <summary>
-        /// 移除所有没有被引用的 Resources 记录
+        /// / 移除参数指定的实例ID 对应的 Resources 记录
         /// </summary>
+        /// <param name="resourcesAssetInstanceIDs"></param>
         public void RemoveAllUnReferenceResourcesRecord(ref HashSet<int> resourcesAssetInstanceIDs)
         {
-            if (resourcesAssetInstanceIDs == null)
-                resourcesAssetInstanceIDs = new HashSet<int>();
             Dictionary<string, LoadResourcesAssetRecord> tempResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(mAllLoadResourcesAssetRecords);
 
-            foreach (var resourcesAssetRecordInfor in tempResourcesAssetRecords.Values)
+            foreach (var resourcesAssetRecordInfor in tempResourcesAssetRecords)
             {
-                if (resourcesAssetRecordInfor == null) continue;
+                if (resourcesAssetRecordInfor.Value == null)
+                {
+                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Key);
+                    continue;
+                }
 
-                int resourcesAssetInstanceID = resourcesAssetRecordInfor.GetLoadAssetInstanceID();
-                if (resourcesAssetInstanceID != -1 && resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID) == false)
-                    resourcesAssetInstanceIDs.Add(resourcesAssetInstanceID);
+                int resourcesAssetInstanceID = resourcesAssetRecordInfor.Value.GetLoadAssetInstanceID();
+                if (resourcesAssetInstanceID == -1)
+                {
+                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Key);
+                    continue;
+                }
+                if (resourcesAssetInstanceIDs == null || resourcesAssetInstanceIDs.Count == 0)
+                    continue;
+
+                if (resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID))
+                {
 #if UNITY_EDITOR
-                Debug.Log($"释放Resources 资源： {resourcesAssetRecordInfor.mAssetFullUri}");
+                    Debug.Log($"释放Resources 资源： {resourcesAssetRecordInfor.Value.mAssetFullUri}");
 #endif
-                mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.mAssetFullUri);
-                LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor);
+                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
+                    LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
+                }
+
             }
         }
 
 
         /// <summary>/// / 记录加载的资源/// </summary>
-        private void RecordResourcesLoadAsset(String assetUrl, LoadResourcesAssetRecord asset)
+        private void RecordResourcesLoadAsset(string assetUrl, LoadResourcesAssetRecord asset)
         {
             if (asset == null)
                 return;

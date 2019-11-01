@@ -159,9 +159,7 @@ namespace GameFramePro.ResourcesEx.Reference
             if (directReferenceObject == null || component == null)
                 return false;
             int instanceID = GetInstanceIDFromRecord(directReferenceObject);
-            if (instanceID == -1)
-                return false;
-            if (s_AllWeakReferenceAssets.TryGetValue(instanceID, out var weakReferenceAssetRecord))
+            if (instanceID!=-1 && s_AllWeakReferenceAssets.TryGetValue(instanceID, out var weakReferenceAssetRecord))
             {
                 AddStrongReference<T>(component, directReferenceObject, weakReferenceAssetRecord, instanceID);
                 return true;
@@ -197,11 +195,14 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <returns></returns>
         public List<ComponentReferenceAssetInfor> GetAllNoReferenceAssetsForDelete()
         {
-            List<ComponentReferenceAssetInfor> noReferenceAssets = new List<ComponentReferenceAssetInfor>((int) (s_AllComponentReferenceAssetInfors.Count * 0.5f));
+            List<ComponentReferenceAssetInfor> noReferenceAssets = new List<ComponentReferenceAssetInfor>((int)(s_AllComponentReferenceAssetInfors.Count * 0.5f));
 
             foreach (var beReferenceAssets in s_AllComponentReferenceAssetInfors.Values)
             {
                 if (beReferenceAssets == null) continue;
+                if (beReferenceAssets.mReferenceAssetStateUsage == ReferenceAssetStateUsage.Releasing)
+                    continue; //已经被记录了不需要再记录
+
                 beReferenceAssets.UpdateReferenceCount();
                 if (beReferenceAssets.mReferenceAssetStateUsage == ReferenceAssetStateUsage.NoReference)
                 {
@@ -219,14 +220,22 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <param name=""></param>
         public void DeleteAllNoReferenceAssets(List<ComponentReferenceAssetInfor> allNoReferenceAssets)
         {
+            if (allNoReferenceAssets == null || allNoReferenceAssets.Count == 0)
+                return;
+            s_AllNeedRemoveInstanceIds.Clear();
+
             foreach (var noReferenceAsset in allNoReferenceAssets)
             {
                 if (noReferenceAsset == null) continue;
+                int instanceID = noReferenceAsset.mReferenceInstanceID;
+
+                s_AllNeedRemoveInstanceIds.Add(instanceID);
                 noReferenceAsset.NotifyBeDelete();
-                s_AllComponentReferenceAssetInfors.Remove(noReferenceAsset.mReferenceInstanceID);
+                s_AllComponentReferenceAssetInfors.Remove(instanceID);
             }
 
-            s_AllNeedRemoveInstanceIds.Clear();
+            if (s_AllNeedRemoveInstanceIds == null || s_AllNeedRemoveInstanceIds.Count == 0)
+                return;
 
             AssetBundleManager.S_Instance.RemoveAllUnReferenceAssetBundleRecord(ref s_AllNeedRemoveInstanceIds);
             LocalResourcesManager.S_Instance.RemoveAllUnReferenceResourcesRecord(ref s_AllNeedRemoveInstanceIds);
