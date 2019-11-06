@@ -19,13 +19,13 @@ public class TestRectTransformExpand : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Debug.Log(mTarget1.GetCanvasRect(mCanvas));
+            Debug.Log(mTarget1.GetCanvasRect_Standard(mCanvas));
         }
 
 
         if (Input.GetKeyDown(KeyCode.B))
         {
-            Debug.Log(mTarget2.GetRelativeRect(mTarget1, mCanvas));
+            Debug.Log(mTarget2.GetRelativeRect_Standard(mTarget1, mCanvas));
         }
 
         if (Input.GetKeyDown(KeyCode.C))

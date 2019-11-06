@@ -11,6 +11,10 @@ namespace GameFramePro
     /// </summary>
     public class CsvUtility : Single<CsvUtility>
     {
+        /// <summary>
+        /// ** 避免不同平台对换行符的界定不一致 (System.Environment.NewLine 在不同平台下解析同一个文件得到的结果不一致) 
+        /// </summary>
+        public static readonly string CSVNewline = "\n";
         public static readonly char CsvSeparatorChar = ','; //csv 文件中分割两个数据的标识符
         public static readonly char CsvVectorSeparatorChar = '&'; //csv 文件中分割两个数据的标识符
 
@@ -43,13 +47,13 @@ namespace GameFramePro
 
         #region 写数据
 
-        // public  static System.Action<string> OnWriteCsvErroraCT = null;
 
 
         public static bool WriteCsv_NewLine(ref StringBuilder builder)
         {
             Debug.Assert(builder != null);
-            builder.Append(System.Environment.NewLine);
+            //   builder.Append(System.Environment.NewLine);
+            builder.Append(CSVNewline);
             return true;
         }
 
@@ -485,6 +489,21 @@ namespace GameFramePro
             }
 
             return csvData.Split(CsvSeparatorChar);
+        }
+
+
+        /// <summary>
+        /// 将CSV 文件字符串按照换行符切割
+        /// </summary>
+        /// <returns></returns>
+        public static string[] SplitCSVStringsToLines(string targetStr)
+        {
+            if (string.IsNullOrEmpty(targetStr))
+            {
+                Debug.LogError($"给定的字符串为null");
+                return new string[0];
+            }
+            return targetStr.Split(CSVNewline.ToCharArray());
         }
     }
 }

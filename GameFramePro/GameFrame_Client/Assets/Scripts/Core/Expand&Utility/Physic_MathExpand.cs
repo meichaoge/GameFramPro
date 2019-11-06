@@ -29,7 +29,15 @@ namespace GameFramePro
 
             return isInsideX && isInsideY;
         }
-        
+
+        #endregion
+
+        #region 相对大小
+        /// <summary>/// 两个矩形相加/// </summary>
+        public static Rect RelativeRect(this Rect a, Rect b)
+        {
+            return new Rect(a.x - b.x, a.y - b.y, a.width, a.height);
+        }
         #endregion
     }
 }

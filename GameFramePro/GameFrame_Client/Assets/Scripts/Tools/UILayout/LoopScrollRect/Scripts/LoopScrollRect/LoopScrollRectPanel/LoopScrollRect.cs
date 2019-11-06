@@ -571,10 +571,10 @@ namespace UnityEngine.UI
 
         #region  初始化/填充/刷新/清理数据 接口
 
-        private void DeleteScrollRectItem(Transform go, int index)
+        private void DeleteScrollRectItem(Transform go)
         {
             if (m_OnItemRemoveEvent != null)
-                m_OnItemRemoveEvent(go as RectTransform, index);
+                m_OnItemRemoveEvent(go as RectTransform, go.GetComponent<LoopScrollRectItemBase>().m_DataIndex);
             UIObjectPoolManager.Instance.ReturnObjectToPool(go.gameObject);
         }
 
@@ -588,7 +588,7 @@ namespace UnityEngine.UI
                 //             objectsToFill = null;
                 for (int i = content.childCount - 1; i >= 0; i--)
                 {
-                    DeleteScrollRectItem(content.GetChild(i), i);
+                    DeleteScrollRectItem(content.GetChild(i));
                 }
             }
         }
@@ -611,7 +611,7 @@ namespace UnityEngine.UI
                     }
                     else
                     {
-                        DeleteScrollRectItem(content.GetChild(i), i);
+                        DeleteScrollRectItem(content.GetChild(i));
                         i--;
                     }
                 }
@@ -633,7 +633,7 @@ namespace UnityEngine.UI
 
             for (int i = m_Content.childCount - 1; i >= 0; i--)
             {
-                DeleteScrollRectItem(m_Content.GetChild(i), i);
+                DeleteScrollRectItem(m_Content.GetChild(i));
             }
 
             float sizeToFill = 0, sizeFilled = 0;
@@ -674,7 +674,7 @@ namespace UnityEngine.UI
             // Don't `Canvas.ForceUpdateCanvases();` here, or it will new/delete cells to change ItemTypeStart/End
             for (int i = m_Content.childCount - 1; i >= 0; i--)
             {
-                DeleteScrollRectItem(m_Content.GetChild(i), i);
+                DeleteScrollRectItem(m_Content.GetChild(i));
             }
 
             float sizeToFill = 0, sizeFilled = 0;
@@ -750,7 +750,7 @@ namespace UnityEngine.UI
             {
                 RectTransform oldItem = content.GetChild(0) as RectTransform;
                 size = Mathf.Max(GetSize(oldItem), size);
-                DeleteScrollRectItem(oldItem, i);
+                DeleteScrollRectItem(oldItem);
 
                 ItemTypeStart++;
 
@@ -817,7 +817,7 @@ namespace UnityEngine.UI
             {
                 RectTransform oldItem = content.GetChild(content.childCount - 1) as RectTransform;
                 size = Mathf.Max(GetSize(oldItem), size);
-                DeleteScrollRectItem(oldItem, i);
+                DeleteScrollRectItem(oldItem);
 
                 ItemTypeEnd--;
                 if (ItemTypeEnd % contentConstraintCount == 0 || content.childCount == 0)

@@ -85,7 +85,7 @@ public class UILanternController : MonoBehaviour
         }
 
         mCanvas = GetComponentInParent<Canvas>();
-        mViewMaskRect = mViewMaskRectTrans.GetCanvasRect(mCanvas);
+        mViewMaskRect = mViewMaskRectTrans.GetCanvasRect_Standard(mCanvas);
         UIObjectPoolManager.Instance.InitPool(mContentPrefab, mMaxShowingItemCount + 1);
     }
 
@@ -107,7 +107,7 @@ public class UILanternController : MonoBehaviour
             UILanternMessageItem item = mAllShowingContentMessageItem.Dequeue();
             if (item != null)
             {
-                Rect itemRect = item.rectTransform.GetCanvasRect(mCanvas);
+                Rect itemRect = item.rectTransform.GetCanvasRect_Standard(mCanvas);
                 if (itemRect.x + itemRect.width > mViewMaskRect.x + mViewMaskRect.width)
                 {
                     //Debug.Log("需要重新播放 " + item.mInforData.mContentMessage);
@@ -200,7 +200,7 @@ public class UILanternController : MonoBehaviour
 
         if (tempLastMessageItem != null)
         {
-            Rect LastShowTargetRect = tempLastMessageItem.rectTransform.GetCanvasRect(mCanvas);
+            Rect LastShowTargetRect = tempLastMessageItem.rectTransform.GetCanvasRect_Standard(mCanvas);
 
             if (LastShowTargetRect.x + LastShowTargetRect.width >= mViewMaskRect.x + mViewMaskRect.width - mContentItemSpace) //这里-mContentItemSpace 为了确保两个项之间的距离最小是mContentItemSpace
             {
@@ -224,8 +224,8 @@ public class UILanternController : MonoBehaviour
         tweenTime = mBaseTweenTime * Mathf.Abs(endAnchorPos - viewItem.rectTransform.anchoredPosition.x) / mBaseTweenDistance;
         Tweener tween = viewItem.rectTransform.DOAnchorPosX(endAnchorPos, tweenTime).SetEase(Ease.Linear).OnComplete(() =>
         {
-            Rect viewTargetRect = viewItem.rectTransform.GetCanvasRect(mCanvas);
-            Rect mViewMaskRect = mViewMaskRectTrans.GetCanvasRect(mCanvas);
+            Rect viewTargetRect = viewItem.rectTransform.GetCanvasRect_Standard(mCanvas);
+            Rect mViewMaskRect = mViewMaskRectTrans.GetCanvasRect_Standard(mCanvas);
             if (mViewMaskRect.Overlaps(viewTargetRect) == false)
             {
                 //  Debug.Log("OnCompleteLastTween Recycle " + viewItem.gameObject.name);

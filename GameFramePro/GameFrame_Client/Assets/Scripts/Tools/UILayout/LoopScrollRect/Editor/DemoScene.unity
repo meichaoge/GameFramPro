@@ -1625,7 +1625,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
+  m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
 --- !u!114 &1193905517
@@ -1777,7 +1777,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce71017a2903f7c4c9a699e438d0b897, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PrefabSource: {fileID: 1192581830245336, guid: 5b97312eb6331764788a78b688645975,
+  m_PrefabSource: {fileID: 1192581830245336, guid: 32d8c2edbd47284439e55a9f0a68dfb7,
     type: 3}
   m_PoolSize: 5
   threshold: 100

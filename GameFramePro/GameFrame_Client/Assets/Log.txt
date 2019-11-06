@@ -1,7 +1,14 @@
+2019/11/6  11:00
+<1> CSV 新增定义换行符，避免不同平台解析时候报错问题
+<2> 扩展RectTransForm 新增参数来获取 RectTransform 偏移后的位置
+<3>UnityGameObjectPool 对象池扩展接口, 增加带有参数的构造函数
+<4> 实现一个从下到上的垂直布局 UIVerticalLoopScrollView (需要继续优化扩展)
+
 
 2019/11/1 16:00
 <1> LoopScrollRect  组件新增一个 IsCanMoveOnBundary接口，用于需要使用Clamped模式的替代方案
 <2> 修复资源还没有达到释放条件时候被释放的Bug
+<3> 扩展了RectTransform 的判断两个Rect 范围的问题
 
 2019/10/31 14:00
 <1> 优化了资源关联和加载接口 新增扩展接口方便资源加载

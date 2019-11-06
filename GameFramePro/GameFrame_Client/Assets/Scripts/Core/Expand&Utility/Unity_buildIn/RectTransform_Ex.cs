@@ -67,134 +67,90 @@ public static class RectTransform_Ex
     #endregion
 
 
-    #region 判断两个 RectTransform 是否有交集  (2019.9.20 注释4个方法 新增下面的通用方法)
-
-    //    /// <summary>/// 水平方向上 target 是否在trans 里面/// </summary>
-    //    public static bool IsInsideRect_Horizontial(this RectTransform trans, RectTransform target)
-    //    {
-    //        Vector2 relativePos = trans.InverseTransformPoint(target.position); //target相对于trans坐标
-    //        if (relativePos.x == 0)
-    //            return true;
-    //
-    //        bool IsoutsideLeft = false;
-    //        bool IsoutsideRight = false;
-    //
-    //        if (relativePos.x > 0)
-    //        {
-    //            IsoutsideRight = relativePos.x - target.rect.width / 2f >= trans.rect.width / 2f; //target左边界是否超出trans右边界
-    //        }
-    //        else
-    //        {
-    //            IsoutsideRight = relativePos.x + target.rect.width / 2f <= -1 * trans.rect.width / 2f; //target右边界是否超出trans左边界
-    //        }
-    //
-    //        return !(IsoutsideLeft || IsoutsideRight); //注意取反操作
-    //    }
-    //
-    //    /// <summary>
-    //    /// 垂直方向上 target 是否在trans 里面
-    //    /// </summary>
-    //    /// <param name="trans"></param>
-    //    /// <param name="target"></param>
-    //    /// <returns></returns>
-    //    public static bool IsInsideRect_Vertical(this RectTransform trans, RectTransform target)
-    //    {
-    //        Vector2 relativePos = trans.InverseTransformPoint(target.position); //target相对于trans坐标
-    //        if (relativePos.y == 0)
-    //            return true;
-    //
-    //        bool IsoutsideTop = false;
-    //        bool IsoutsideBottom = false;
-    //
-    //
-    //        if (relativePos.y > 0)
-    //        {
-    //            IsoutsideTop = relativePos.y - target.rect.height / 2f >= trans.rect.height / 2f; //target下边界是否超出trans上边界
-    //        }
-    //
-    //        if (relativePos.y < 0)
-    //        {
-    //            IsoutsideBottom = relativePos.y + target.rect.height / 2f <= -1 * trans.rect.height / 2f; //target上边界是否超出trans下边界
-    //        }
-    //
-    //        return !(IsoutsideTop || IsoutsideBottom); //注意取反操作
-    //    }
-    //
-    //
-    //    /// <summary>
-    //    /// 垂直方向上 世界左边点 是否在trans 里面
-    //    /// </summary>
-    //    /// <param name="trans"></param>
-    //    /// <param name="target"></param>
-    //    /// <returns></returns>
-    //    public static bool IsInsideRect_Vertical(this RectTransform trans, Vector3 wordPosition)
-    //    {
-    //        Vector2 relativePos = trans.InverseTransformPoint(wordPosition); //target相对于trans坐标
-    //        if (relativePos.y == 0)
-    //            return true;
-    //
-    //        bool IsoutsideTop = false;
-    //        bool IsoutsideBottom = false;
-    //
-    //
-    //        if (relativePos.y > 0)
-    //        {
-    //            IsoutsideTop = relativePos.y >= trans.rect.height / 2f; //target下边界是否超出trans上边界
-    //        }
-    //
-    //        if (relativePos.y < 0)
-    //        {
-    //            IsoutsideBottom = relativePos.y <= -1 * trans.rect.height / 2f; //target上边界是否超出trans下边界
-    //        }
-    //
-    //        return !(IsoutsideTop || IsoutsideBottom); //注意取反操作
-    //    }
-    //
-    //    /// <summary>
-    //    /// 水平方向上 世界坐标点 wordPosition 是否在trans 里面
-    //    /// </summary>
-    //    /// <param name="trans"></param>
-    //    /// <param name="target"></param>
-    //    /// <returns></returns>
-    //    public static bool IsInsideRect_Horizontial(this RectTransform trans, Vector3 wordPosition)
-    //    {
-    //        Vector2 relativePos = trans.InverseTransformPoint(wordPosition); //target相对于trans坐标
-    //        if (relativePos.x == 0)
-    //            return true;
-    //
-    //        bool IsoutsideLeft = false;
-    //        bool IsoutsideRight = false;
-    //
-    //        if (relativePos.x > 0)
-    //        {
-    //            IsoutsideRight = relativePos.x >= trans.rect.width / 2f; //target左边界是否超出trans右边界
-    //        }
-    //        else
-    //        {
-    //            IsoutsideLeft = relativePos.x <= -1 * trans.rect.width / 2f; //target右边界是否超出trans左边界
-    //        }
-    //
-    //        return !(IsoutsideLeft || IsoutsideRight); //注意取反操作
-    //    }
-
-    #endregion
-
-
     #region UI 坐标轴平行的优化
+    /// <summary>
+    /// 获取参数t 相对于画布的的坐标
+    /// </summary>
     public static Rect GetCanvasRect_Standard(this RectTransform trans, Canvas canvas)
+    {
+        return GetCanvasRect_Standard(trans, Vector2.zero, canvas);
+        //if (canvas == null)
+        //    return new Rect();
+        //Vector3[] m_WorldCorners = new Vector3[4];
+        //Vector3[] m_CanvasCorners = new Vector3[4];
+
+        //trans.GetWorldCorners(m_WorldCorners);
+        ////        for (int i = 0; i < 4; ++i)
+        ////            m_CanvasCorners[i] = canvas.transform.InverseTransformPoint(m_WorldCorners[i]);
+
+        ////2019/9/20 优化
+        //m_CanvasCorners[0] = canvas.transform.InverseTransformPoint(m_WorldCorners[0]); //左下角
+        //m_CanvasCorners[2] = canvas.transform.InverseTransformPoint(m_WorldCorners[2]); //右上角
+
+        //return new Rect(m_CanvasCorners[0].x, m_CanvasCorners[0].y, m_CanvasCorners[2].x - m_CanvasCorners[0].x, m_CanvasCorners[2].y - m_CanvasCorners[0].y);
+    }
+
+    public static Rect GetCanvasRect_Standard(this RectTransform trans, Vector2 offset, Canvas canvas)
     {
         if (canvas == null)
             return new Rect();
 
-        trans.GetWorldCorners(m_WorldCorners);
+        Vector3[] m_WorldCorners = new Vector3[4];
+        Vector3[] m_CanvasCorners = new Vector3[4];
+
+        //***    trans.GetWorldCorners(m_WorldCorners); 内部实现
+        Rect rect = trans.rect;
+        rect.center += offset;
+        float x = rect.x;
+        float y = rect.y;
+        float xMax = rect.xMax;
+        float yMax = rect.yMax;
+        m_WorldCorners[0] = new Vector3(x, y, 0.0f);
+        m_WorldCorners[1] = new Vector3(x, yMax, 0.0f);
+        m_WorldCorners[2] = new Vector3(xMax, yMax, 0.0f);
+        m_WorldCorners[3] = new Vector3(xMax, y, 0.0f);
+
+
+        Matrix4x4 localToWorldMatrix = trans.localToWorldMatrix;
+        //for (int index = 0; index < 4; ++index)
+        //    m_WorldCorners[index] = localToWorldMatrix.MultiplyPoint(m_WorldCorners[index]);
+
+        // trans.GetWorldCorners(m_WorldCorners);
         //        for (int i = 0; i < 4; ++i)
         //            m_CanvasCorners[i] = canvas.transform.InverseTransformPoint(m_WorldCorners[i]);
 
         //2019/9/20 优化
-        m_CanvasCorners[0] = canvas.transform.InverseTransformPoint(m_WorldCorners[0]); //左下角
-        m_CanvasCorners[2] = canvas.transform.InverseTransformPoint(m_WorldCorners[2]); //右上角
+        m_CanvasCorners[0] = canvas.transform.InverseTransformPoint(localToWorldMatrix.MultiplyPoint(m_WorldCorners[0])); //左下角
+        m_CanvasCorners[2] = canvas.transform.InverseTransformPoint(localToWorldMatrix.MultiplyPoint(m_WorldCorners[2])); //右上角
+
 
         return new Rect(m_CanvasCorners[0].x, m_CanvasCorners[0].y, m_CanvasCorners[2].x - m_CanvasCorners[0].x, m_CanvasCorners[2].y - m_CanvasCorners[0].y);
+    }
+
+    public static Vector3[] GetLocalCorners_Standard(this RectTransform trans, Vector2 offset)
+    {
+        Vector3[] m_WorldCorners = new Vector3[4];
+        Rect rect = trans.rect;
+        rect.center += offset;
+        float x = rect.x;
+        float y = rect.y;
+        float xMax = rect.xMax;
+        float yMax = rect.yMax;
+        m_WorldCorners[0] = new Vector3(x, y, 0.0f);
+        m_WorldCorners[1] = new Vector3(x, yMax, 0.0f);
+        m_WorldCorners[2] = new Vector3(xMax, yMax, 0.0f);
+        m_WorldCorners[3] = new Vector3(xMax, y, 0.0f);
+
+        return m_WorldCorners;
+    }
+
+    /// <summary>/// 获取相对于relativeTrans 的坐标范围/// </summary>
+    public static Rect GetRelativeRect_Standard(this RectTransform trans, RectTransform relativeTrans, Canvas canvas)
+    {
+        Rect transRect = GetCanvasRect_Standard(trans, canvas);
+        Rect relativeTransRect = GetCanvasRect_Standard(relativeTrans, canvas);
+
+        return transRect.RelativeRect(relativeTransRect);
     }
 
 
@@ -258,44 +214,27 @@ public static class RectTransform_Ex
 
 
 
-    static readonly Vector3[] m_WorldCorners = new Vector3[4];
-    static readonly Vector3[] m_CanvasCorners = new Vector3[4];
 
-    /// <summary>/// 获取参数t 相对于画布的的坐标/// </summary>
-    public static Rect GetCanvasRect(this RectTransform trans, Canvas canvas)
+
+
+
+  
+
+
+
+    public static bool IsIntersect(this RectTransform trans1, Vector2 offset, RectTransform trans2, Canvas canvas)
     {
-        if (canvas == null)
-            return new Rect();
+        Rect relativeRect1 = trans1.GetCanvasRect_Standard(offset, canvas);
+        Rect relativeRect2 = trans2.GetCanvasRect_Standard(canvas);
 
-        trans.GetWorldCorners(m_WorldCorners);
-        //        for (int i = 0; i < 4; ++i)
-        //            m_CanvasCorners[i] = canvas.transform.InverseTransformPoint(m_WorldCorners[i]);
-
-        //2019/9/20 优化
-        m_CanvasCorners[0] = canvas.transform.InverseTransformPoint(m_WorldCorners[0]); //左下角
-        m_CanvasCorners[2] = canvas.transform.InverseTransformPoint(m_WorldCorners[2]); //右上角
-
-
-        return new Rect(m_CanvasCorners[0].x, m_CanvasCorners[0].y, m_CanvasCorners[2].x - m_CanvasCorners[0].x, m_CanvasCorners[2].y - m_CanvasCorners[0].y);
+        return relativeRect1.IsIntersect_Rect2Rect(relativeRect2);
     }
-
-    /// <summary>/// 获取相对于relativeTrans 的坐标范围/// </summary>
-    public static Rect GetRelativeRect(this RectTransform trans, RectTransform relativeTrans, Canvas canvas)
-    {
-        Rect transRect = GetCanvasRect(trans, canvas);
-        Rect relativeTransRect = GetCanvasRect(relativeTrans, canvas);
-
-
-        return transRect.MinusRect(relativeTransRect);
-    }
-
-
     /// <summary>/// 判断两个矩形是否相交/// </summary>
     ///判断依据： 两个矩形相交的条件:两个矩形的中心距离在X和Y轴上都小于两个矩形长以及宽的一半
     public static bool IsIntersect(this RectTransform trans1, RectTransform trans2, Canvas canvas)
     {
-        Rect relativeRect1 = trans1.GetCanvasRect(canvas);
-        Rect relativeRect2 = trans2.GetCanvasRect(canvas);
+        Rect relativeRect1 = trans1.GetCanvasRect_Standard(canvas);
+        Rect relativeRect2 = trans2.GetCanvasRect_Standard(canvas);
 
         return relativeRect1.IsIntersect_Rect2Rect(relativeRect2);
     }
