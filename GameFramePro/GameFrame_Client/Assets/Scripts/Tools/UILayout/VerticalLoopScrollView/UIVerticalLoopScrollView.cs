@@ -380,6 +380,7 @@ namespace GameFramePro.UI
 
         private IEnumerator DoOffsetMove(float offsetLayout)
         {
+
             yield return AsyncManager.WaitFor_Null;
             //     OnScrollView(offsetLayout);
             mContent.anchoredPosition += new Vector2(0, OnScrollView(offsetLayout));
