@@ -107,7 +107,7 @@ namespace GameFramePro
 
 
         /// <summary>/// 获取指定Byte数组资源的MD5/// </summary>
-        public static string GetFileMD5(byte[] data)
+        public static string GetByteDataMD5(byte[] data)
         {
             if (data == null || data.Length == 0)
                 return string.Empty;
@@ -119,6 +119,18 @@ namespace GameFramePro
                 builder.Append(Convert.ToString(b, 16));
 
             return builder.ToString();
+        }
+
+
+        /// <summary>
+        /// 获取指定文本的MD5
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static string GetStringContentMD5(string data,Encoding encoding)
+        {
+            return GetByteDataMD5(encoding.GetBytes(data));
         }
     }
 }

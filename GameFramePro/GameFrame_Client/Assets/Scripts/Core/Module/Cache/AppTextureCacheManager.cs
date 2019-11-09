@@ -218,7 +218,7 @@ namespace GameFramePro.CacheEx
                 TextureData = data;
                 mTextureRelativePath = cacheRelativePath;
                 mTextureAliveTime = maxCacheTime;
-                mTextureMd5Code = MD5Helper.GetFileMD5(data);
+                mTextureMd5Code = MD5Helper.GetByteDataMD5(data);
             }
         }
     }

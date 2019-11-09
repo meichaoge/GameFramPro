@@ -60,7 +60,7 @@ namespace GameFramePro
                 case AppPlatformEnum.Android:
                     return "Android";
                 case AppPlatformEnum.IOS:
-                    return "Android";
+                    return "IOS";
                 case AppPlatformEnum.Windows64:
                     return "Windows64";
                 case AppPlatformEnum.Mac:

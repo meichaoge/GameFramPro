@@ -1,3 +1,7 @@
+
+2019/11/6 20:00
+<1> 新增数据加解密 DataDecryptUtility
+
 2019/11/6  11:00
 <1> CSV 新增定义换行符，避免不同平台解析时候报错问题
 <2> 扩展RectTransForm 新增参数来获取 RectTransform 偏移后的位置
