@@ -5,7 +5,6 @@ using UnityEditor;
 using System.IO;
 using System.Text;
 using GameFramePro;
-using Newtonsoft.Json;
 
 /// <summary>
 /// 分析美术资源
@@ -179,7 +178,7 @@ public class EffectResourceAnalysisEditor : EditorWindow
 
         if(mPrefabEffectDependenceConfig!=null&&string.IsNullOrEmpty(mPrefabEffectDependenceConfig.text)==false && mAllEffectDependenceInfor.Count == 0)
         {
-            mAllEffectDependenceInfor = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDependenceConfig.text);
+            mAllEffectDependenceInfor = SerializeManager.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDependenceConfig.text);
         }
 
         EditorGUILayout.BeginHorizontal();
@@ -189,7 +188,7 @@ public class EffectResourceAnalysisEditor : EditorWindow
             mAllEffectDependenceInfor.Clear();
             GetAllResourcesEffectReferece();
 
-            string conntent = JsonConvert.SerializeObject(mAllEffectDependenceInfor);
+            string conntent = SerializeManager.SerializeObject(mAllEffectDependenceInfor);
             string savePath = string.Format("{0}/{1}", IOUtility.GetFilePathParentDirectory(Application.dataPath, 1), mPrefabEffectDependencePath);
 
             IOUtility.CreateOrSetFileContent(savePath, conntent);
@@ -221,7 +220,7 @@ public class EffectResourceAnalysisEditor : EditorWindow
                 Debug.LogError("没有关于特效被预制体依赖的日志文件");
                 return;
             }
-            mAllEffectDependenceInfor = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDependenceLog.text);
+            mAllEffectDependenceInfor = SerializeManager.DeserializeObject<Dictionary<string, List<string>>>(mPrefabEffectDependenceLog.text);
             Debug.Log("加载特效被预制体依赖的日志文件 成功");
         }
 

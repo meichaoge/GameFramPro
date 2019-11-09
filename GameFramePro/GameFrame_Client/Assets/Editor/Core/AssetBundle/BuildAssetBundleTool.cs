@@ -6,7 +6,6 @@ using UnityEditor;
 using System.Text;
 using GameFramePro.ResourcesEx;
 using GameFramePro.Upgrade;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace GameFramePro.EditorEx

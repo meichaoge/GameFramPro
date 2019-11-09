@@ -26,22 +26,51 @@ namespace GameFramePro
         public Delegate HandlerFunction { get; protected set; }
         public HandlerTypeEnum HandlerType { get; protected set; }
 
+        #region 构造函数
+        static HandlerRecord() {
+            s_MessageHandlerRecordPool = new NativeObjectPool<HandlerRecord>(50, OnBeforeGetHandlerRecord, OnBeforeRecycleHandlerRecord);
+        }
         public HandlerRecord() { }
+        #endregion
 
 
-        public HandlerRecord(HandlerTypeEnum handlerType, Delegate handler)
+        private static NativeObjectPool<HandlerRecord> s_MessageHandlerRecordPool;
+
+        #region NativeObjectPool 接口
+
+        private static void OnBeforeGetHandlerRecord(HandlerRecord record)
         {
-            InitialedHandlerRecord(handlerType,handler);
         }
 
-        public void InitialedHandlerRecord(HandlerTypeEnum handlerType, Delegate handler)
+        private static void OnBeforeRecycleHandlerRecord(HandlerRecord record)
+        {
+            if (record == null) return;
+            record.ClearHandlerRecord();
+        }
+
+        #endregion
+
+        public static HandlerRecord  GetHandlerRecord(HandlerTypeEnum handlerType, Delegate handler)
+        {
+            HandlerRecord handlerRecord = s_MessageHandlerRecordPool.GetItemFromPool();
+            handlerRecord.InitialedHandlerRecord(handlerType, handler);
+            return handlerRecord;
+        }
+
+        public static void ReleaseHandlerRecord(HandlerRecord handler)
+        {
+            s_MessageHandlerRecordPool.RecycleItemToPool(handler);
+        }
+
+
+        private void InitialedHandlerRecord(HandlerTypeEnum handlerType, Delegate handler)
         {
             HandlerFunction = handler;
             HandlerType = handlerType;
         }
 
 
-        public void ClearHandlerRecord()
+        private void ClearHandlerRecord()
         {
             HandlerFunction = null;
             HandlerType = HandlerTypeEnum.None_Paramter;

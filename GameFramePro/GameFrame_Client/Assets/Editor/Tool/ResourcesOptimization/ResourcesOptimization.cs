@@ -9,7 +9,6 @@ using System;
 using GameFramePro;
 using GameFramePro.EditorEx;
 using GameFramePro.UI;
-using Newtonsoft.Json;
 
 namespace GameFramePro.EditorEx
 {

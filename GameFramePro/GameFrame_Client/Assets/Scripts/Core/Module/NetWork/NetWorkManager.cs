@@ -6,9 +6,6 @@ using GameFramePro.NetWorkEx;
 using UnityEngine;
 using System.Collections.Concurrent;
 using System.Text;
-using LitJson;
-using Newtonsoft.Json;
-using JsonReader = Newtonsoft.Json.JsonReader;
 
 
 namespace GameFramePro

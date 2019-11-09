@@ -8,7 +8,6 @@ using System.Text;
 using System;
 using GameFramePro;
 using GameFramePro.UI;
-using Newtonsoft.Json;
 
 /// <summary>/// 编辑器下UI资源管理
 /// 要求所有的图片都是Resources下预制体加载，而不是直接加载
@@ -604,7 +603,7 @@ public class AssetReferenceManager
             if (EditorUtility.DisplayDialog("提示", $"{mAssetsDependenceInforLog}已经缓存了资源的依赖信息，是否使用缓存的信息", "使用缓存", "重新生成数据"))
             {
                 mAllPrefabsDependence.Clear();
-                mAllPrefabsDependence = JsonConvert.DeserializeObject<Dictionary<string, AssetInfor>>(logAsset.text);
+                mAllPrefabsDependence = SerializeManager.DeserializeObject<Dictionary<string, AssetInfor>>(logAsset.text);
                 return;
             }
         }
@@ -685,7 +684,7 @@ public class AssetReferenceManager
             stopwatch.Stop(); //  停止监视
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间
 
-            string content = JsonConvert.SerializeObject(mAllPrefabsDependence);
+            string content = SerializeManager.SerializeObject(mAllPrefabsDependence);
             string fileSavePath = $"{IOUtility.GetFilePathParentDirectory(Application.dataPath, 1)}/{mAssetsDependenceInforLog}";
             IOUtility.CreateOrSetFileContent(fileSavePath, content);
             Debug.Log("fileSavePath=" + fileSavePath);
