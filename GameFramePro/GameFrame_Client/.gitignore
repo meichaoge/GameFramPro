@@ -14,5 +14,8 @@
 
 #只追踪 UnityPackages&Dll
 !/UnityPackages&Dll
-!/Localization
 !/Test
+
+#Export 资源导出文件+本地化
+!/Export
+!/Localization
