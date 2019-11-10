@@ -34,7 +34,9 @@ namespace GameFramePro
             {
                 if (namePathMap.ContainsKey(child.name))
                 {
-                    Debug.Log("GetGameObjectNamePathMap 包含重复的对象名 " + child.name);
+#if UNITY_EDITOR
+                    Debug.LogEditorError("GetGameObjectNamePathMap 包含重复的对象名 " + child.name);
+#endif
                     continue;
                 }
                 namePathMap[child.name] = child.GetTransRelativePathToRoot(go.transform);
@@ -42,38 +44,7 @@ namespace GameFramePro
             mAllGameObjectNamePathMap[go.name] = namePathMap;
             return GetNamePathMap(namePathMap); 
         }
-        ///// <summary>
-        ///// 获取指定对象的名称和路径的映射
-        ///// </summary>
-        ///// <param name="go"></param>
-        //public static Dictionary<string, string> GetGameObjectNamePathMap(GameObject gameObjectBaseBeReference)
-        //{
-        //    //if (gameObjectBaseBeReference == null)
-        //    //{
-        //    //    Debug.LogError("GetGameObjectNamePathMap Fail,parameter is null");
-        //    //    return null;
-        //    //}
-        //    //Dictionary<string, string> namePathMap = null;
-        //    //if (mAllGameObjectNamePathMap.TryGetValue(gameObjectBaseBeReference.AssetName, out namePathMap))
-        //    //    return GetNamePathMap(namePathMap);
-        //    //namePathMap = new Dictionary<string, string>();
-
-        //    //Transform[] allChildTrans = gameObjectBaseBeReference.GetComponentsInChildren<Transform>(true);
-        //    //foreach (var child in allChildTrans)
-        //    //{
-        //    //    if (namePathMap.ContainsKey(child.name))
-        //    //    {
-        //    //        Debug.Log("GetGameObjectNamePathMap 包含重复的对象名 " + child.name);
-        //    //        continue;
-        //    //    }
-        //    //    namePathMap[child.name] = gameObjectBaseBeReference.GetTransRelativePathToThis(child);            
-        //    //}
-        //    //mAllGameObjectNamePathMap[gameObjectBaseBeReference.AssetName] = namePathMap;
-        //    //return GetNamePathMap(namePathMap);
-
-        //    return null;
-        //}
-
+     
 
         /// <summary>
         /// 避免直接修改了缓存的原始数据
@@ -85,7 +56,6 @@ namespace GameFramePro
             Dictionary<string, string> temp = new Dictionary<string, string>(namePathMap);
             //if (namePathMap != null)
             //{
-
             //}
             //foreach (var item in namePathMap)
             //    temp[item.Key] = item.Value;

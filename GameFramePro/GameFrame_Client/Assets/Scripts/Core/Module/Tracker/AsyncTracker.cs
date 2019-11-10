@@ -32,7 +32,7 @@ namespace GameFramePro.AnalysisEx
             }
 
             s_AllAsyncTaskRecord[task.CoroutineID] = task;
-            Debug.Log($"TrackAsyncTask success! CoroutineID={task.CoroutineID}");
+            //Debug.Log($"TrackAsyncTask success! CoroutineID={task.CoroutineID}");
             return true;
         }
 

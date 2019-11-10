@@ -23,7 +23,7 @@ namespace GameFramePro.NetWorkEx
     public interface INetworkClient
     {
         /// <summary>/// 开始收发消息/// </summary>
-         void StartClient(IPEndPoint endPoint);
+  //       void StartClient(IPEndPoint endPoint);
         
         void StopClient();
 

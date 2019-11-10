@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using GameFramePro;
 
 
 namespace GameFramePro.NetWorkEx
 {
-    /// <summary>/// TCP 客户端基类/// </summary>
+    /// <summary>
+    /// TCP 客户端基类
+    ///  </summary>
     public class BaseTcpClient : BaseSocketClient, IConnectSocketClient
     {
         #region 属性
@@ -153,7 +152,6 @@ namespace GameFramePro.NetWorkEx
                 return;
             }
 
-
             try
             {
                 if (mClientSocket == null)
@@ -202,7 +200,6 @@ namespace GameFramePro.NetWorkEx
             catch (Exception e)
             {
                 OnConnectError($"TCP {remoteEP} 连接失败{e}");
-                throw;
             }
         }
 
@@ -456,7 +453,7 @@ namespace GameFramePro.NetWorkEx
 
                         int protocolId = SocketHead.GetPacketProtocolID(receiveByteArray.mBytes, 4);
 
-                        UnityEngine.Debug.Log($"解析的协议id={protocolId}   长度={receiveByteArray.mDataRealLength} ");
+                        Debug.Log($"解析的协议id={protocolId}   长度={receiveByteArray.mDataRealLength} ");
 
                         var receiveMessage = BaseSocketReceiveMessage.GetSocketReceiveMessageData(protocolId, receiveByteArray, mClientSocket.RemoteEndPoint);
                         mBaseSocketMessageManager.SaveReceiveData(receiveMessage);
@@ -557,7 +554,7 @@ namespace GameFramePro.NetWorkEx
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+               Debug.LogError(e);
             }
         }
 
@@ -578,7 +575,7 @@ namespace GameFramePro.NetWorkEx
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+               Debug.LogError(e);
             }
         }
 
@@ -592,7 +589,7 @@ namespace GameFramePro.NetWorkEx
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+               Debug.LogError(e);
             }
         }
 
@@ -606,7 +603,7 @@ namespace GameFramePro.NetWorkEx
             }
             catch (Exception e)
             {
-                global::Debug.LogError(e);
+               Debug.LogError(e);
             }
         }
 

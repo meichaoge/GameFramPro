@@ -75,15 +75,10 @@ namespace GameFramePro.NetWorkEx
 
         protected int S_BufferSize = 65536;
         protected readonly byte[] mBuffer;
-//        protected Thread mReceiveMessageThread = null;
-//        protected Thread mSendMessageThread = null;
         
-        
-        protected Thread mReceiveMessageask = null;
         public CancellationTokenSource mReceiveTaskCancleToken { get; protected set; }=new CancellationTokenSource();
         
         public CancellationTokenSource mSendTaskCancleToken { get; protected set; }=new CancellationTokenSource();
-        protected Thread mSendMessageTask= null;
 
         #endregion
 
@@ -125,7 +120,6 @@ namespace GameFramePro.NetWorkEx
         #endregion
 
 
-        #region 接口
 
         public virtual void StopClient()
         {
@@ -152,7 +146,6 @@ namespace GameFramePro.NetWorkEx
             }
         }
 
-        #endregion
 
         #region 内部实现
 

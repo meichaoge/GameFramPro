@@ -20,16 +20,14 @@ namespace GameFramePro
 #if UNITY_EDITOR
         public override string ToString()
         {
-            var builder = StringUtility.GetStringBuilder();
+            var builder =  new StringBuilder();
             for (int dex = 0; dex < mDataRealLength; dex++)
             {
                 builder.Append(mBytes[dex]);
                 builder.Append("-");
             }
 
-            string content = builder.ToString();
-            StringUtility.ReleaseStringBuilder(builder);
-            return content;
+            return  builder.ToString();
         }
 #endif
 

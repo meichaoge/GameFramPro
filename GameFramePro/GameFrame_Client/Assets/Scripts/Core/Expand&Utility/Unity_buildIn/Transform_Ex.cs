@@ -77,13 +77,13 @@ public static class Transform_Ex
     public static string GetTransRelativePathToRoot(this Transform target, Transform root)
     {
         string path = string.Empty;
-        List<StringBuilder> stringBuilders = StringUtility.GetStringBuilderList();
+        List<StringBuilder> stringBuilders = new List<StringBuilder>();
         Transform trans = target;
         while (trans != null)
         {
             if (trans == root)
                 break;
-            StringBuilder builder = StringUtility.GetStringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.Append(trans.name);
             stringBuilders.Add(builder);
 
@@ -91,7 +91,7 @@ public static class Transform_Ex
         }
 
         stringBuilders.Reverse();
-        StringBuilder pathBuilder = StringUtility.GetStringBuilder();
+        StringBuilder pathBuilder = new StringBuilder();
         for (int dex = 0; dex < stringBuilders.Count; dex++)
         {
             pathBuilder.Append(stringBuilders[dex]);
@@ -100,8 +100,6 @@ public static class Transform_Ex
         }
 
         path = pathBuilder.ToString();
-        StringUtility.ReleaseStringBuilder(pathBuilder);
-        StringUtility.ReleaseStringBuilderList(stringBuilders);
         return path;
     }
 

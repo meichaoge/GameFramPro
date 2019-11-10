@@ -26,7 +26,7 @@ namespace GameFramePro.EditorEx
             string[] allTextur2DAssetsGuid = AssetDatabase.FindAssets("t:texture2d", new string[] {"Assets/Art/UI"});
             int currentCount = 0;
             int recordCount = 0;
-            StringBuilder builder = StringUtility.GetStringBuilder();
+            StringBuilder builder = new StringBuilder();
             foreach (var assetGuid in allTextur2DAssetsGuid)
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
@@ -58,8 +58,6 @@ namespace GameFramePro.EditorEx
                 TextAsset asset = AssetDatabase.LoadAssetAtPath<TextAsset>(System.IO.Path.Combine("Assets", s_UITextureFormatErrorRecod));
                 AssetDatabase.OpenAsset(asset.GetInstanceID(), 0);
             }
-
-            StringUtility.ReleaseStringBuilder(builder);
         }
 
         #endregion

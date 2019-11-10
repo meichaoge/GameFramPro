@@ -143,6 +143,13 @@ namespace GameFramePro.EditorEx
             GUILayout.FlexibleSpace();
             if (GUILayout.Button($"一键加载 {ConstDefine.S_PreLoadTextureTopDirectoryName} 目录下所有的配置图片", GUILayout.ExpandWidth(true), GUILayout.Height(30)))
             {
+
+                if (System.IO.Directory.Exists(mPreloadImageExportTopPath) == false)
+                {
+                    Debug.LogError($"不存在目录{mPreloadImageExportTopPath}");
+                    return;
+                }
+
                 string[] topLanguageEnumes = System.IO.Directory.GetDirectories(mPreloadImageExportTopPath);
                 foreach (var item in topLanguageEnumes)
                 {

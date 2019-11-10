@@ -161,7 +161,7 @@ namespace GameFramePro
         {
             if (System.IO.File.Exists(fileAbsUri) == false)
             {
-                Debug.LogError( $"GetFileInfo Fail,Not Exit File Path {fileAbsUri} ");
+                Debug.LogError($"GetFileInfo Fail,Not Exit File Path {fileAbsUri} ");
                 return null;
             }
 
@@ -618,7 +618,7 @@ namespace GameFramePro
             }
 
             allDirectoryNames.Reverse();
-            StringBuilder builder = StringUtility.GetStringBuilder();
+            StringBuilder builder = new StringBuilder();
             for (int dex = 0; dex < allDirectoryNames.Count; dex++)
             {
                 builder.Append(allDirectoryNames[dex]);
@@ -626,9 +626,7 @@ namespace GameFramePro
                     builder.Append(System.IO.Path.AltDirectorySeparatorChar);
             }
 
-            string resultPath = builder.ToString();
-            StringUtility.ReleaseStringBuilder(builder);
-            return resultPath;
+            return builder.ToString();
         }
 
         /// <summary>
@@ -651,11 +649,10 @@ namespace GameFramePro
         public static string ConcatPathEx(this string path1, string path2)
         {
             string resultStr = string.Empty;
-            StringBuilder builder = StringUtility.GetStringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.Append(path1);
             builder.Append(path2);
             resultStr = builder.ToString();
-            StringUtility.ReleaseStringBuilder(builder);
             return resultStr;
         }
 

@@ -65,7 +65,7 @@ namespace GameFramePro
                 temp = treeNodeFrom;
                 while (temp != treeNodeTo)
                 {
-                    StringBuilder builder = StringUtility.GetStringBuilder();
+                    StringBuilder builder = new StringBuilder();
                     builder.Append(temp.TreeNodePathInfor);
                     builderList.Add(builder);
                     temp = temp.ParentTreeNode;
@@ -76,24 +76,22 @@ namespace GameFramePro
                 temp = treeNodeTo;
                 while (temp != treeNodeFrom)
                 {
-                    StringBuilder builder = StringUtility.GetStringBuilder();
+                    StringBuilder builder = new StringBuilder();
                     builder.Append(temp.TreeNodePathInfor);
                     builderList.Add(builder);
                     temp = temp.ParentTreeNode;
                 }
             }
             builderList.Reverse();//路径必须反着取
-            StringBuilder relativePathBuilder = StringUtility.GetStringBuilder();
+            StringBuilder relativePathBuilder = new StringBuilder();
             for (int dex = 0; dex < builderList.Count; dex++)
             {
                 var item = builderList[dex];
                 relativePathBuilder.Append(item.ToString());
-                StringUtility.ReleaseStringBuilder(item);
                 if (dex != builderList.Count - 1)
                     relativePathBuilder.Append(System.IO.Path.AltDirectorySeparatorChar); //手动增加路径分隔符
             }
             string relativePath = relativePathBuilder.ToString();
-            StringUtility.ReleaseStringBuilder(relativePathBuilder);
             return relativePath;
         }
 

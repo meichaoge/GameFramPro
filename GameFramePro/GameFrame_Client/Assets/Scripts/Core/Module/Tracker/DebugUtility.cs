@@ -21,7 +21,7 @@ namespace GameFramePro.AnalysisEx
             if (frames == null || frames.Length == 0)
                 return String.Empty;
 
-            StringBuilder builder = StringUtility.GetStringBuilder();
+            StringBuilder builder =  new StringBuilder();
             Dictionary<string, string> fileNamePathMap = new Dictionary<string, string>();
             for (int index = 0; index < frames.Length; index++)
             {
@@ -39,10 +39,7 @@ namespace GameFramePro.AnalysisEx
                 builder.Append($"{scriptRelativePath} : {targetFrame.GetMethod().Name}()  (at Line{targetFrame.GetFileLineNumber()})  \r\n ");
             }
 
-            string stackTraceInfor = builder.ToString();
-            StringUtility.ReleaseStringBuilder(builder);
-
-            return stackTraceInfor;
+            return builder.ToString();
         }
     }
 }
