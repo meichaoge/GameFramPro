@@ -22,6 +22,10 @@ namespace GameFramePro.ResourcesEx
         public string mAssetBundleNameUri { get; private set; } //得到AssetBundle 的文件名称
         private AssetBundle mAssetBundle { get; set; }
 
+        public bool IsAssetBundleEnable
+        {
+            get { return mAssetBundle != null; }
+        }
         public int mAssetBundleInstanceID
         {
             get { return mAssetBundle == null ? -1 : mAssetBundle.GetInstanceID(); }
@@ -43,10 +47,7 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         private Dictionary<string, LoadAssetBundleAssetRecord> mAllAssetBundleLoadAssetRecords { get; set; } = new Dictionary<string, LoadAssetBundleAssetRecord>(10);
 
-        public bool IsAssetBundleEnable
-        {
-            get { return mAssetBundle != null; }
-        }
+
 
         #region 对象池
 
@@ -59,10 +60,17 @@ namespace GameFramePro.ResourcesEx
         private static void OnBeforeRecycleAssetBundleRecordInfor(AssetBundleRecordInfor record)
         {
             if (record == null) return;
-            ResourcesManager.UnLoadAssetBundle(record.mAssetBundle,false);
+            ResourcesManager.UnLoadAssetBundle(record.mAssetBundle, false);
             record.mAssetBundle = null;
             record.mAllDependencesAssetBundleRecordInfors.Clear();
             record.mAllBeDependencesAssetBundleRecordInfors.Clear();
+
+            foreach (var assetBundleAssetRecord in record.mAllAssetBundleLoadAssetRecords.Values)
+            {
+                if (assetBundleAssetRecord == null) continue;
+                LoadAssetBundleAssetRecord.ReleaseAssetBundleRecordInfor(assetBundleAssetRecord);
+            }
+
             record.mAllAssetBundleLoadAssetRecords.Clear();
         }
 
@@ -169,7 +177,7 @@ namespace GameFramePro.ResourcesEx
 
             mAllDependencesAssetBundleRecordInfors.Remove(otherDependenceAssetBundleRecord.mAssetBundleNameUri);
         }
-        
+
         /// <summary>
         /// 减少所有 依赖其他的AssetBundle记录
         /// </summary>
@@ -177,7 +185,7 @@ namespace GameFramePro.ResourcesEx
         {
             foreach (var dependencesAssetBundleRecord in mAllDependencesAssetBundleRecordInfors.Values)
             {
-                if(dependencesAssetBundleRecord==null) continue;
+                if (dependencesAssetBundleRecord == null) continue;
                 dependencesAssetBundleRecord.NotifyRemoveBeReferenceByAssetBundleRecord(this);
             }
             mAllDependencesAssetBundleRecordInfors.Clear();

@@ -59,6 +59,11 @@ public class UIViewEditor : Editor
         {UGUIComponentTypeEnum.UGUIButton.ToString(), new TagObj(EmObjType.Component, "Button", "btn")},
         {UGUIComponentTypeEnum.UGUIDropDown.ToString(), new TagObj(EmObjType.Component, "Dropdown", "drop")},
         {UGUIComponentTypeEnum.UGUIInputField.ToString(), new TagObj(EmObjType.Component, "InputField", "input")},
+
+              {UGUIComponentTypeEnum.CanvasGroup.ToString(), new TagObj(EmObjType.Component, "CanvasGroup", "canvasGroup")},
+           {UGUIComponentTypeEnum.UILoopScrollRect_Vertical.ToString(), new TagObj(EmObjType.Component, "LoopVerticalScrollRect", "loopVertical")},
+           {UGUIComponentTypeEnum.UILoopScrollRect_Horizontial.ToString(), new TagObj(EmObjType.Component, "LoopHorizontalScrollRect", "loopHorizontial")},
+
     };
 
     public static string TemplatePath = Application.dataPath + "/Editor/Core/UI/Template"; //模本文件

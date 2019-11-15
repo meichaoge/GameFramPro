@@ -21,7 +21,15 @@ namespace GameFramePro.ResourcesEx
         private LoadResourcesAssetRecord LoadResourcesAssetFromCache(string assetFullUri)
         {
             if (mAllLoadResourcesAssetRecords.TryGetValue(assetFullUri, out var infor))
+            {
+                if (infor == null || infor.IsRecordEnable == false)
+                {
+                    mAllLoadResourcesAssetRecords.Remove(assetFullUri);
+                    LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(infor);
+                    return null;
+                }
                 return infor;
+            }
             return null;
         }
 
@@ -76,11 +84,14 @@ namespace GameFramePro.ResourcesEx
         }
 
         /// <summary>
-        /// / 移除参数指定的实例ID 对应的 Resources 记录
+        ///  移除参数指定的实例ID 对应的 Resources 记录
         /// </summary>
         /// <param name="resourcesAssetInstanceIDs"></param>
-        public void RemoveAllUnReferenceResourcesRecord(ref HashSet<int> resourcesAssetInstanceIDs)
+        public void RemoveAllUnReferenceResourcesRecord(HashSet<int> resourcesAssetInstanceIDs)
         {
+            if (resourcesAssetInstanceIDs == null || resourcesAssetInstanceIDs.Count == 0)
+                return;
+
             Dictionary<string, LoadResourcesAssetRecord> tempResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(mAllLoadResourcesAssetRecords);
 
             foreach (var resourcesAssetRecordInfor in tempResourcesAssetRecords)
@@ -91,14 +102,15 @@ namespace GameFramePro.ResourcesEx
                     continue;
                 }
 
-                int resourcesAssetInstanceID = resourcesAssetRecordInfor.Value.GetLoadAssetInstanceID();
-                if (resourcesAssetInstanceID == -1)
+                if (resourcesAssetRecordInfor.Value.IsRecordEnable == false)
                 {
-                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Key);
+                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
+                    LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
                     continue;
                 }
-                if (resourcesAssetInstanceIDs == null || resourcesAssetInstanceIDs.Count == 0)
-                    continue;
+
+
+                int resourcesAssetInstanceID = resourcesAssetRecordInfor.Value.GetLoadAssetInstanceID();
 
                 if (resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID))
                 {

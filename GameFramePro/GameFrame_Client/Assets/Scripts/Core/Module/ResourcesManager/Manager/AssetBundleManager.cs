@@ -236,7 +236,16 @@ namespace GameFramePro.ResourcesEx
         private LoadAssetBundleAssetRecord LoadAssetBundleSubAssetFromCache(string assetFullUri)
         {
             if (s_AllLoadedAssetBundleSubAssetRecord.TryGetValue(assetFullUri, out var record))
+            {
+                if (record == null || record.IsRecordEnable == false)
+                {
+                    s_AllLoadedAssetBundleSubAssetRecord.Remove(assetFullUri);
+                    LoadAssetBundleAssetRecord.ReleaseAssetBundleRecordInfor(record);
+                    return null;
+                }
+
                 return record;
+            }
             return null;
         }
 
@@ -267,7 +276,7 @@ namespace GameFramePro.ResourcesEx
 
             if (string.IsNullOrEmpty(assetRelativeUri))
             {
-                Debug.LogError($"AssetBundleLoadAssetSync Fail,assetRelativeUri Is Null {assetFullUri} ");
+                //  Debug.LogError($"AssetBundleLoadAssetSync Fail,assetRelativeUri Is Null {assetFullUri} ");
                 return null;
             }
 
@@ -367,8 +376,11 @@ namespace GameFramePro.ResourcesEx
         /// <summary>
         /// 移除所有没有被引用的AssetBundle 记录
         /// </summary>
-        public void RemoveAllUnReferenceAssetBundleRecord(ref HashSet<int> assetBundleInstanceIDs)
+        public void RemoveAllUnReferenceAssetBundleRecord(HashSet<int> assetBundleInstanceIDs)
         {
+            if (assetBundleInstanceIDs == null || assetBundleInstanceIDs.Count == 0)
+                return;
+
             Dictionary<string, AssetBundleRecordInfor> tempAssetBundleRecordInfors = new Dictionary<string, AssetBundleRecordInfor>(s_AllAssetBundleRecordInfors);
 
             foreach (var assetBundleRecordInfor in tempAssetBundleRecordInfors)
@@ -378,23 +390,15 @@ namespace GameFramePro.ResourcesEx
                     s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Key);
                     continue;
                 }
-                if (assetBundleRecordInfor.Value.mTotalReferenceCount != 0)
+
+                if (assetBundleRecordInfor.Value.mTotalReferenceCount == 0 || assetBundleRecordInfor.Value.IsAssetBundleEnable == false)
                 {
                     s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Key);
+                    AssetBundleRecordInfor.ReleaseAssetBundleRecordInfor(assetBundleRecordInfor.Value);
                     continue;
                 }
-
 
                 int assetBundleInstanceID = assetBundleRecordInfor.Value.mAssetBundleInstanceID;
-                if (assetBundleInstanceID == -1)
-                {
-                    s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Key);
-                    continue;
-                }
-
-                if (assetBundleInstanceIDs == null || assetBundleInstanceIDs.Count == 0)
-                    continue;
-
                 if (assetBundleInstanceIDs.Contains(assetBundleInstanceID))
                 {
 #if UNITY_EDITOR
@@ -466,6 +470,7 @@ namespace GameFramePro.ResourcesEx
             Debug.LogError($"GetAssetBundleAllDependencies Fail,没有找到依赖关系 {assetBundleName}");
             return null;
         }
+
 
 
         /// <summary>

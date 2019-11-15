@@ -69,6 +69,7 @@ namespace GameFramePro.ResourcesEx.Reference
             record.mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;
             record.mComponeReferences?.Clear();
             record.mILoadAssetRecord?.ReleaseLoadAssetRecord();
+            record.mILoadAssetRecord = null;
         }
 
         //private static void OnBeforeRecycleBeferenceAsset(ComponentReferenceAssetInfor record)
@@ -85,21 +86,20 @@ namespace GameFramePro.ResourcesEx.Reference
             return s_BeferenceAssetPoolMgr.GetItemFromPool();
         }
 
-        /// <summary>
-        /// 获取 ComponentReferenceAssetInfor 实例对象
-        /// </summary>
-        /// <param name="fullUri"></param>
-        /// <returns></returns>
-        public static ComponentReferenceAssetInfor GetBeferenceAsset(ILoadAssetRecord loadAssetRecord, Component component)
-        {
-            var assetBundleAssetInfor = s_BeferenceAssetPoolMgr.GetItemFromPool();
+        //  /// <summary>
+        //  /// 获取 ComponentReferenceAssetInfor 实例对象
+        //  /// </summary>
+        //  /// <param name="fullUri"></param>
+        //  /// <returns></returns>
+        //  public static ComponentReferenceAssetInfor GetBeferenceAsset(ILoadAssetRecord loadAssetRecord, Component component)
+        //  {
+        //      var assetBundleAssetInfor = s_BeferenceAssetPoolMgr.GetItemFromPool();
+        //      assetBundleAssetInfor.mILoadAssetRecord = loadAssetRecord;
+        // //     assetBundleAssetInfor.mComponeReferences.Add(component);
+        ////      assetBundleAssetInfor.mReferenceCount = 0;
 
-            assetBundleAssetInfor.mILoadAssetRecord = loadAssetRecord;
-            assetBundleAssetInfor.mComponeReferences.Add(component);
-            assetBundleAssetInfor.mReferenceCount = 1;
-
-            return assetBundleAssetInfor;
-        }
+        //      return assetBundleAssetInfor;
+        //  }
 
         #endregion
 
@@ -124,8 +124,13 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         /// <param name="component"></param>
         /// <param name="asset"></param>
-        public void AddReference(Component component, Object asset)
+        public void AddReference(Component component, Object asset, ILoadAssetRecord loadAssetRecord)
         {
+            if (mILoadAssetRecord == null)
+                mILoadAssetRecord = loadAssetRecord;
+            else
+                Debug.LogError($"增加引用时候记录的值不一致{mILoadAssetRecord} ::{loadAssetRecord}");
+
             if (mComponeReferences.Contains(component))
                 return;
             if (mReferenceCount < 0)
@@ -220,11 +225,11 @@ namespace GameFramePro.ResourcesEx.Reference
             if (mReferenceAssetStateUsage != ReferenceAssetStateUsage.Releasing)
                 return false;
 
-            bool isReleaseAble= Time.realtimeSinceStartup - mLastRecordReleaseTime >= mILoadAssetRecord.mMaxAliveAfterNoReference;
+            bool isReleaseAble = Time.realtimeSinceStartup - mLastRecordReleaseTime >= mILoadAssetRecord.mMaxAliveAfterNoReference;
 
 #if UNITY_EDITOR
-            if(isReleaseAble)
-            Debug.LogEditorInfor($"可以释放资源 {ReferenceAssetUri}，Now={Time.realtimeSinceStartup} --Record={mLastRecordReleaseTime} >=Max{mILoadAssetRecord.mMaxAliveAfterNoReference}");
+            if (isReleaseAble)
+                Debug.LogEditorInfor($"可以释放资源 {ReferenceAssetUri}，Now={Time.realtimeSinceStartup} --Record={mLastRecordReleaseTime} >=Max{mILoadAssetRecord.mMaxAliveAfterNoReference}");
 #endif
 
             return isReleaseAble;
@@ -272,14 +277,23 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         public void NotifyBeDelete()
         {
+            if (mReferenceAssetStateUsage == ReferenceAssetStateUsage.None && mILoadAssetRecord == null)
+            {
+                //     Debug.LogError($"没有被真正引用的资源");
+                s_BeferenceAssetPoolMgr.RecycleItemToPool(this);
+                return;
+            }
 
-#if UNITY_EDITOR
-            Debug.Log($"资源{ReferenceAssetUri} 释放资源");
-#endif
 
             mReferenceCount = 0;
             mComponeReferences.Clear();
             mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;
+
+#if UNITY_EDITOR
+            if(mILoadAssetRecord!=null)
+            Debug.Log($"资源{ReferenceAssetUri} 释放资源");
+#endif
+
             mILoadAssetRecord?.ReleaseLoadAssetRecord();
             mILoadAssetRecord = null;
 

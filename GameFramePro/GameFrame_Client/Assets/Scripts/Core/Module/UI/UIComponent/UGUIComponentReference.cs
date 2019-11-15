@@ -88,6 +88,8 @@ namespace GameFramePro.UI
         UGUIInputField,
         UGUIDropDown,
         CanvasGroup,
+        UILoopScrollRect_Vertical,  //循环ScrollRect组件
+        UILoopScrollRect_Horizontial,  //循环ScrollRect组件
     }
 
 
