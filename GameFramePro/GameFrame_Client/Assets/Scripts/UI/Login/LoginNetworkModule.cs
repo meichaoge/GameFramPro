@@ -48,7 +48,7 @@ namespace GameFramePro
         {
             LoginResponse response = objectResponse as LoginResponse;
             Debug.Log("登录网络回调成功");
-            EventTrigger.TriggerMessage<LoginResponse>((int) UIEventUsage.OnResponse_Login, response);
+            EventManager.TriggerMessage<LoginResponse>((int) UIEventUsage.OnResponse_Login, response);
         }
     }
 }

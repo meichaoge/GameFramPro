@@ -18,18 +18,21 @@ namespace GameFramePro.NetWorkEx
     /// </summary>
     public class SuperTcpClient : IDisposable, INetworkClient
     {
-        //需要发送的消息队列
-        protected readonly ConcurrentQueue<byte[]> mAllNeedSendMessages = new ConcurrentQueue<byte[]>();
+        #region TCP客户端配置
         protected TcpClient mTcpClient { get; set; } = null;
 
         protected SslStream mSslNetworkStream { get; set; } = null;  
-    
 
         protected IPEndPoint mConnectEndPoint { get; set; } //连接的远程节点
 
         protected bool mIsInitialed { get; set; } = false; //表示是否初始化
         protected bool mIsSendAndReceiveTaskRunning { get; set; } = false; //是否在运行接收和发送消息任务
+        #endregion
 
+
+     //   public bool IsConnect { get { } }
+
+        #region 数据收发配置
 
         protected const int s_ReceiveMessageThreadInterval = 50; //接收消息的线程 Sleep 时间间隔
         protected const int s_SendMessageThreadInterval = 50; //发送消息的线程 Sleep 时间间隔
@@ -39,12 +42,17 @@ namespace GameFramePro.NetWorkEx
         protected byte[] mBuffer { get; set; }  //接收数据的缓冲数组
         public int mMaxConnectTime { get; set; } = 2000; //连接超时 毫秒
 
-        #region 接受和发送消息的取消令牌
+        /// <summary>
+        /// 消息缓冲管理
+        /// </summary>
+        internal BaseSocketMessageManager mBaseSocketMessageManager { get; set; } = new BaseSocketMessageManager();
 
+        //接受和发送消息的取消令牌
         protected ManualResetEvent mTimeOutResetEvent = new ManualResetEvent(false);
         public CancellationTokenSource mReceiveTaskCancleToken { get; protected set; } = new CancellationTokenSource();
 
         public CancellationTokenSource mSendTaskCancleToken { get; protected set; } = new CancellationTokenSource();
+
         #endregion
 
 
@@ -156,10 +164,7 @@ namespace GameFramePro.NetWorkEx
                     SslStream sslStream = new SslStream(conncectTcpClient.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
                     sslStream.WriteTimeout = mSslStreamWriteTimeOut;
                    sslStream.BeginAuthenticateAsClient(mConnectEndPoint.Address.ToString(), SslAuthenCallback, sslStream);
-
                    // sslStream.AuthenticateAsClientAsync(mConnectEndPoint.Address.ToString(),)
-
-
                 }
             }
             catch (Exception e)
@@ -220,15 +225,14 @@ namespace GameFramePro.NetWorkEx
                     continue;
                 }
 
-                if (mAllNeedSendMessages.Count > 0)
+                if (mBaseSocketMessageManager!=null&& mBaseSocketMessageManager.mAllSendMessageQueue .Count> 0)
                 {
-                    if (mAllNeedSendMessages.TryDequeue(out var data))
+                    var sendData = mBaseSocketMessageManager.GetWillSendSocketData();
+                    if (sendData != null)
                     {
-                        mSslNetworkStream.Write(data, 0, data.Length);
-                        //if (dataLength != data.Length)
-                        //    Debug.LogError($"发送的实际数据量{dataLength} 需要发送的数据量{data.Length}");
-
-                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(data, mConnectEndPoint); });
+                        mSslNetworkStream.Write(sendData.mSendMessageByteArray.mBytes, 0, sendData.mSendMessageByteArray.mDataRealLength);
+                        Debug.Log($"发送的实际数据量{sendData.mSendMessageByteArray.mDataRealLength} ");
+                        Loom.S_Instance.QueueOnMainThread(() => { OnSendMessageEvent?.Invoke(sendData.mSendMessageByteArray.mBytes, mConnectEndPoint); });
                     }
                 }
 
@@ -292,12 +296,14 @@ namespace GameFramePro.NetWorkEx
                         receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, packageLength, packageLength, 0);
 
                         int protocolId = SocketHead.GetPacketProtocolID(receiveByteArray.mBytes, 4);
-
                         Debug.Log($"解析的协议id={protocolId}   长度={receiveByteArray.mDataRealLength} ");
 
-                      //  var receiveMessage = BaseSocketReceiveMessage.GetSocketReceiveMessageData(protocolId, receiveByteArray, mClientSocket.RemoteEndPoint);
-                   //     mBaseSocketMessageManager.SaveReceiveData(receiveMessage);
-                     //   OnReceiveMessage(receiveMessage);
+                        BaseSocketReceiveMessage receiveMessage = BaseSocketReceiveMessage.GetSocketReceiveMessageData(protocolId, receiveByteArray,null);
+                        mBaseSocketMessageManager.SaveReceiveData(receiveMessage);
+
+                        //  var receiveMessage = BaseSocketReceiveMessage.GetSocketReceiveMessageData(protocolId, receiveByteArray, mClientSocket.RemoteEndPoint);
+                        //     mBaseSocketMessageManager.SaveReceiveData(receiveMessage);
+                        //   OnReceiveMessage(receiveMessage);
 
                         receiveDataOffset += packageLength;
 
@@ -497,8 +503,6 @@ namespace GameFramePro.NetWorkEx
         }
 
         #endregion
-
-
 
         public void Dispose()
         {

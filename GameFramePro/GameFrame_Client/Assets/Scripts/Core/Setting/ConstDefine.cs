@@ -69,6 +69,11 @@ namespace GameFramePro
             get { return Application.dataPath.GetFilePathParentDirectory(1).CombinePathEx(S_ExportDirectoryName); }
         }
 
+        /// <summary>
+        /// 分享图片缓存目录
+        /// </summary>
+        public static string S_ShareImageTopDirectory { get { return Application.persistentDataPath.CombinePathEx("share"); } }
+
 
         private static string s_LoadDownloadAssetStoryDirectory = string.Empty;
 

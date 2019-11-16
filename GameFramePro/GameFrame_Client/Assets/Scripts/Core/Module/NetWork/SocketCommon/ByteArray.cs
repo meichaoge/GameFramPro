@@ -98,7 +98,9 @@ namespace GameFramePro
         }
 
 
-        /// <summary>      /// 从其他的Byte数组中获取指定的数据源    /// </summary>
+        /// <summary>     
+        /// 从其他的Byte数组中获取指定的数据源   
+        ///  </summary>
         public void CopyBytes(System.Array sourcesArrary, int sourcesStartIndex, int sourcesCopyLength, int realDataLength, int destinationStartIndex)
         {
             if (sourcesArrary == null)
@@ -122,7 +124,9 @@ namespace GameFramePro
             mDataRealLength = realDataLength;
         }
 
-        /// <summary>/// 根据指定内容 按照指定的编码格式编码得到结果/// </summary>
+        /// <summary>/// 
+        /// 根据指定内容 按照指定的编码格式编码得到结果
+        /// // </summary>
         public void EncodingGetBytes(string message, Encoding encoding, int byteStartIndex = 0)
         {
             if (message == null)
@@ -131,7 +135,9 @@ namespace GameFramePro
             mDataRealLength = message.Length;
         }
 
-        /// <summary>/// 根据序列化的结果自动填充/// </summary>
+        /// <summary>
+        /// 根据序列化的结果自动填充
+        /// </summary>
         public void SerilizeGetBytes(object objectMessage, int byteStartIndex = 0)
         {
             if (objectMessage == null)

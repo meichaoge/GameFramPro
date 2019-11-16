@@ -21,7 +21,7 @@ namespace GameFramePro
     /// <summary>
     /// 泛型版本
     /// /// </summary>
-    public static partial class EventTrigger
+    public static partial class EventManager
     {
         private static Dictionary<int, LinkedList<HandlerRecord>> mAllMessageHandlers = new Dictionary<int, LinkedList<HandlerRecord>>(); //所有的消息处理中心
 
@@ -343,7 +343,7 @@ namespace GameFramePro
     /// <summary>
     /// 通用object 类型参数
     ///  </summary>
-    public static partial class EventTrigger
+    public static partial class EventManager
     {
 
         #region 注册监听
@@ -398,7 +398,7 @@ namespace GameFramePro
     /// <summary>
     /// 非泛型版本 调用 泛型
     /// </summary>
-    public static partial class EventTrigger
+    public static partial class EventManager
     {
         private static readonly string UnRegisterMessageHandlerName = "UnRegisterMessageHandler";
         private static readonly string RegisterMessageHandlerName = "RegisterMessageHandler";
@@ -430,7 +430,7 @@ namespace GameFramePro
             foreach (var item in genericTypes)
                 delegateKey += item.Name;
 
-            Type classType = typeof(EventTrigger);
+            Type classType = typeof(EventManager);
 
             if (mIBaseMessageRegisterMap.TryGetValue(delegateKey, out var registerMessage) == false)
             {
@@ -506,7 +506,7 @@ namespace GameFramePro
         public static void RegisterMessageHandlerEx(int enumValue, Type type, MessageHandler<object> process)
         {
             //**反射调用
-            //MethodInfo mi = typeof(EventTrigger).GetMethod(RegisterMessageHandlerName);
+            //MethodInfo mi = typeof(EventManager).GetMethod(RegisterMessageHandlerName);
             //MethodInfo gmi = mi.MakeGenericMethod(type);
             //gmi.Invoke(new object[] { enumValue, process });
 
@@ -686,7 +686,7 @@ namespace GameFramePro
     }
 
 
-    public static partial class EventTrigger
+    public static partial class EventManager
     {
         /// <summary>
         /// 标示消息的监听处理的参数个数

@@ -8,7 +8,7 @@ public class TestEventTrigger : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //EventTrigger.RegisterMessageHandler<int, string, int, string>(10, (id, data, data2, data3, data4) =>
+        //EventManager.RegisterMessageHandler<int, string, int, string>(10, (id, data, data2, data3, data4) =>
         //{
         //    Debug.Log($"收到消息 {id} : {data} {data.GetType()} {data2} {data3}{data4}");
         //});
@@ -19,46 +19,46 @@ public class TestEventTrigger : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            EventTrigger.TriggerMessage(10, 100,"Hello44",88," bybye");
-            EventTrigger.TriggerMessage(10, 100, "Hello33", 88);
-            EventTrigger.TriggerMessage(10, 100, "Hello22");
-            EventTrigger.TriggerMessage(10, 10);
+            EventManager.TriggerMessage(10, 100,"Hello44",88," bybye");
+            EventManager.TriggerMessage(10, 100, "Hello33", 88);
+            EventManager.TriggerMessage(10, 100, "Hello22");
+            EventManager.TriggerMessage(10, 10);
 
         }
 
         if (Input.GetKeyDown(KeyCode.B))
         {
 
-            EventTrigger.RegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), typeof(string), MessageResponse_Ge4);
-            EventTrigger.RegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), MessageResponse_Ge3);
-            EventTrigger.RegisterMessageHandlerEx(10, typeof(int), typeof(string), MessageResponse_Ge2);
-            EventTrigger.RegisterMessageHandlerEx(10, typeof(int),  MessageResponse_Ge1);
+            EventManager.RegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), typeof(string), MessageResponse_Ge4);
+            EventManager.RegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), MessageResponse_Ge3);
+            EventManager.RegisterMessageHandlerEx(10, typeof(int), typeof(string), MessageResponse_Ge2);
+            EventManager.RegisterMessageHandlerEx(10, typeof(int),  MessageResponse_Ge1);
 
 
-            //        EventTrigger.RegisterMessageHandler(10, MessageResponse);
+            //        EventManager.RegisterMessageHandler(10, MessageResponse);
         }
 
         if (Input.GetKeyDown(KeyCode.C))
         {
 
-            EventTrigger.UnRegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), typeof(string), MessageResponse_Ge4);
-            EventTrigger.UnRegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), MessageResponse_Ge3);
-            EventTrigger.UnRegisterMessageHandlerEx(10, typeof(int), typeof(string), MessageResponse_Ge2);
-            EventTrigger.UnRegisterMessageHandlerEx(10, typeof(int),MessageResponse_Ge1);
+            EventManager.UnRegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), typeof(string), MessageResponse_Ge4);
+            EventManager.UnRegisterMessageHandlerEx(10, typeof(int), typeof(string), typeof(int), MessageResponse_Ge3);
+            EventManager.UnRegisterMessageHandlerEx(10, typeof(int), typeof(string), MessageResponse_Ge2);
+            EventManager.UnRegisterMessageHandlerEx(10, typeof(int),MessageResponse_Ge1);
 
 
-            //    EventTrigger.UnRegisterMessageHandler(10, MessageResponse);
+            //    EventManager.UnRegisterMessageHandler(10, MessageResponse);
         }
 
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            EventTrigger.RegisterMessageHandler(10, MessageResponse_Object4);
+            EventManager.RegisterMessageHandler(10, MessageResponse_Object4);
 
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            EventTrigger.UnRegisterMessageHandler(10, MessageResponse_Object4);
+            EventManager.UnRegisterMessageHandler(10, MessageResponse_Object4);
 
         }
     }

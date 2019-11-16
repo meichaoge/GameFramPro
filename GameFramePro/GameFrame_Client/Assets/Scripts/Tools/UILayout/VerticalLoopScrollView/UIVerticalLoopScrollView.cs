@@ -151,8 +151,8 @@ namespace GameFramePro.UI
        
         public UIVerticalLayoutItemInfor GetItemFromPool(int index)
         {
-            var obj = mUIVerticalLoopScrollViewUnityMonoPool.GetItemFromPool();
-            obj.transform.SetParent(mContent, false);
+            var obj = mUIVerticalLoopScrollViewUnityMonoPool.GetItemFromPool(mContent);
+          //  obj.transform.SetParent(mContent, false);
             obj.transform.localScale = Vector3.one;
 
             UIVerticalLayoutItemInfor uIVerticalLayoutItem = UIVerticalLayoutItemInfor.GetUIVerticalLayoutItemInfor(obj.transform.transform as RectTransform,index);

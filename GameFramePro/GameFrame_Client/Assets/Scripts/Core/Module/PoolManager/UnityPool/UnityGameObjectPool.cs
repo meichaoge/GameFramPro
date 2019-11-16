@@ -7,7 +7,6 @@ using GameFramePro.ResourcesEx;
 namespace GameFramePro
 {
 
-
     /// <summary>
     /// 管理Unity  GameObjec 对象池对象
     /// </summary>
@@ -19,15 +18,17 @@ namespace GameFramePro
         public GameObject PrefabTarget { get; protected set; }
         public string PoolNameUri { get; protected set; }
 
-        private Transform mPoolManagerTarget = null;
+        private Transform mPoolItemRecycleParent = null;
 
-        //挂载缓存的PrefabTarget实例对象
-        public Transform PoolManagerTarget
+        /// <summary>
+        /// 挂载缓存的PrefabTarget实例对象 (当池对象呗回收时候挂在在这里)
+        /// </summary>
+        public Transform PoolItemRecycleParent
         {
             get
             {
-                if (mPoolManagerTarget == null) mPoolManagerTarget = UnityMonoObjectPoolHelper.S_Instance.GetUnityPoolManagerTransParent(PoolNameUri);
-                return mPoolManagerTarget;
+                if (mPoolItemRecycleParent == null) mPoolItemRecycleParent = PoolObjectManager.GetUnityPoolManagerTransParent(PoolNameUri);
+                return mPoolItemRecycleParent;
             }
         }
 
@@ -43,6 +44,25 @@ namespace GameFramePro
             PoolNameUri = poolNameUri;
         }
 
+        /// <summary>
+        /// 初始化对象池 并且在元素回收时候会吧元素放在 ItemParent 节点下，某些情况下可以避免修改父节点带来的开销
+        /// </summary>
+        /// <param name="poolNameUri"></param>
+        /// <param name="ItemParent"></param>
+        public UnityGameObjectPool(string poolNameUri, Transform ItemParent)
+        {
+            PoolNameUri = poolNameUri;
+            SetPoolItemRecycleParent(ItemParent);
+        }
+
+        /// <summary>
+        /// 设置 元素回收时候会吧元素放在 ItemParent 节点下，某些情况下可以避免修改父节点带来的开销
+        /// </summary>
+        /// <param name="ItemParent"></param>
+        public void SetPoolItemRecycleParent(Transform ItemParent)
+        {
+            mPoolItemRecycleParent = ItemParent;
+        }
         #endregion
 
 
@@ -52,9 +72,7 @@ namespace GameFramePro
             BeforeRecycleAction = beforeRecycleAction;
             PrefabTarget = prefabTarget;
             if (PrefabTarget == null)
-            {
                 Debug.LogError(string.Format("InitialedPool Fail, parameter prefabTarget is null of PoolType={0}", typeof(GameObject)));
-            }
 
             PoolContainer = new Stack<GameObject>(capacity);
             PoolObjectManager.TrackPoolManager_Mono<GameObject>(this);
@@ -81,11 +99,12 @@ namespace GameFramePro
             PoolContainer = null;
 
             PoolObjectManager.UnTrackPoolManager_Mono<GameObject>(this);
-            UnityMonoObjectPoolHelper.S_Instance.RecycleUnityPoolManagerTransParent(PrefabTarget.name);
-            ResourcesManagerUtility.Destroy(PoolManagerTarget.gameObject); //销毁自己
+            PoolObjectManager.RecycleUnityPoolManagerTransParent(PrefabTarget.name);
+      //不能销毁自身
+             //   ResourcesManagerUtility.Destroy(this); //销毁自己
         }
 
-        public GameObject GetItemFromPool()
+        public GameObject GetItemFromPool(Transform parent)
         {
             GameObject resultObject = null;
             while (PoolContainer.Count > 0)
@@ -96,11 +115,17 @@ namespace GameFramePro
             }
 
             if (resultObject == null)
-                resultObject = ResourcesManagerUtility.Instantiate<GameObject>(PrefabTarget, PoolManagerTarget, false);
+                resultObject = ResourcesManagerUtility.Instantiate<GameObject>(PrefabTarget, parent, false);
+            else
+            {
+                if (resultObject.transform.parent != parent)
+                    resultObject.transform.SetParent(parent);
+            }
+
+            if (resultObject != null && resultObject.activeSelf == false)
+                resultObject.SetActive(true);
 
             BeforeGetAction?.Invoke(resultObject);
-
-
             return resultObject;
         }
 
@@ -116,7 +141,9 @@ namespace GameFramePro
             if (BeforeRecycleAction != null)
                 BeforeRecycleAction(item);
 
-            item.transform.SetParent(PoolManagerTarget);
+            item.transform.SetParent(PoolItemRecycleParent);
+            if (item != null && item.activeSelf == true)
+                item.SetActive(false);
             PoolContainer.Push(item);
         }
     }

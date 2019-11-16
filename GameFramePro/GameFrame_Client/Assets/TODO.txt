@@ -1,5 +1,7 @@
 
-38 Mono对象池直接关联到生成的Transform 上
+
+39 AssetBundle 加密和快速解密
+38 Mono对象池直接关联到生成的Transform 上																											(DONE)
 37 相机FOV 和Viewport 设置工具
 36 跨版本更新  AssetBundleUpgradeProManager 
 35  ZipUtility 的多线程版本完善

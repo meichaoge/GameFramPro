@@ -10,11 +10,10 @@ namespace GameFramePro.ResourcesEx
     /// </summary>
     public static class PoolObjectManager
     {
-        private static Dictionary<Type, INativeObjectPool<object>> mAllNativeObjectPoolManagers = new Dictionary<Type, INativeObjectPool<object>>();
 
-        private static Dictionary<Type, IUnityObjectPool> mAllUnityObjectPoolManagers = new Dictionary<Type, IUnityObjectPool>();
 
         #region 原生对象池接口
+        private static Dictionary<Type, INativeObjectPool<object>> mAllNativeObjectPoolManagers = new Dictionary<Type, INativeObjectPool<object>>();
 
 
         public static void TrackPoolManager<T>(INativeObjectPool<T> poolManager) where T : new()
@@ -60,6 +59,7 @@ namespace GameFramePro.ResourcesEx
 
         #region Unity  对象池接口
 
+        private static Dictionary<Type, IUnityObjectPool> mAllUnityObjectPoolManagers = new Dictionary<Type, IUnityObjectPool>();
 
         public static void TrackPoolManager_Mono<T>(IUnityObjectPool poolManager) where T : UnityEngine.Object
         {
@@ -101,5 +101,68 @@ namespace GameFramePro.ResourcesEx
 
         #endregion
 
+
+        #region 辅助生成 UnityMonoObjectPool 
+        private static readonly string R_UnityPoolManagerPrefix = "UnityPoolManger_"; //Unity 对象池父节点名称前缀
+        private static readonly Dictionary<string, Transform> mAllPoolMonoObjects = new Dictionary<string, Transform>();
+
+      //  protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不会一起销毁
+
+
+        /// <summary>
+        /// 获取Unity 对象池管理器所属的Hierachy 父节点
+        /// </summary>
+        /// <param name="poolName"></param>
+        /// <returns></returns>
+        public static Transform GetUnityPoolManagerTransParent(string poolName)
+        {
+            if (string.IsNullOrEmpty(poolName))
+            {
+                Debug.LogError("GetUnityPoolManagerTransParent Fail,Parameter poolName is null");
+                return null;
+            }
+
+            poolName = string.Format("{0}{1}", R_UnityPoolManagerPrefix, poolName);
+            Transform parent = null;
+            if (mAllPoolMonoObjects.TryGetValue(poolName, out parent))
+            {
+                if (parent != null)
+                    return parent;
+            }
+
+            parent = ResourcesManagerUtility.Instantiate(poolName).transform;
+        //    parent.SetParent(transform, false);
+            mAllPoolMonoObjects[poolName] = parent;
+            return parent;
+        }
+
+        /// <summary>
+        /// 销毁对象池时候回收父节点
+        /// </summary>
+        /// <param name="poolName"></param>
+        public static void RecycleUnityPoolManagerTransParent(string poolName)
+        {
+            if (string.IsNullOrEmpty(poolName))
+            {
+                Debug.LogError("RecycleUnityPoolManagerTransParents Fail,Parameter poolName is null");
+                return;
+            }
+
+            poolName = string.Format("{0}{1}", R_UnityPoolManagerPrefix, poolName);
+            Transform parent = null;
+            if (mAllPoolMonoObjects.TryGetValue(poolName, out parent))
+            {
+                if (parent != null)
+                {
+                    mAllPoolMonoObjects.Remove(poolName);
+                    ResourcesManagerUtility.Destroy(parent.gameObject);
+                    return;
+                }
+            }
+
+            Debug.LogError(string.Format("RecycleUnityPoolManagerTransParent Fail,the poolName={0} connect Transform Not Record Or Aleady Destroyed", poolName));
+            return;
+        }
+        #endregion
     }
 }

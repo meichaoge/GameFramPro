@@ -98,14 +98,14 @@ namespace GameFramePro.UI
 
         private void RegistEventMessage()
         {
-            EventTrigger.RegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
-            EventTrigger.RegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
+            EventManager.RegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
+            EventManager.RegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
         }
 
         private void UnRegistEventMessage()
         {
-            EventTrigger.UnRegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
-            EventTrigger.UnRegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
+            EventManager.UnRegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
+            EventManager.UnRegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
         }
 
         #endregion

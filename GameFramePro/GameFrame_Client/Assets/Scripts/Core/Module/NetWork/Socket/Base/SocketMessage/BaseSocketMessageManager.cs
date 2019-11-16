@@ -8,7 +8,9 @@ using UnityEngine;
 
 namespace GameFramePro.NetWorkEx
 {
-    /// <summary>   ///  作为Socket Tcp和Udp 客户端的一部分，提供统一的收发消息安全的队列管理  /// </summary>
+    /// <summary>   
+    /// 作为Socket Tcp和Udp 客户端的一部分，提供统一的收发消息安全的队列管理  
+    /// </summary>
     internal class BaseSocketMessageManager
     {
         internal readonly ConcurrentQueue<BaseSocketReceiveMessage> mAllReceiveMessageQueue = new ConcurrentQueue<BaseSocketReceiveMessage>(); //接受到的所有来自服务器的数据

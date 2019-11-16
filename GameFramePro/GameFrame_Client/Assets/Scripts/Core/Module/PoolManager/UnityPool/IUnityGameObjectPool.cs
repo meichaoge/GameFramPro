@@ -15,7 +15,7 @@ namespace GameFramePro.ResourcesEx
         System.Action<GameObject> BeforeRecycleAction { get; }
         Stack<GameObject> PoolContainer { get; }
         GameObject PrefabTarget { get; }
-        Transform PoolManagerTarget { get; } //池对象管理器自身
+        Transform PoolItemRecycleParent { get; } //池对象管理器自身
 
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace GameFramePro.ResourcesEx
         /// 获取对象
         /// </summary>
         /// <returns></returns>
-        GameObject GetItemFromPool();
+        GameObject GetItemFromPool(Transform parent);
 
         /// <summary>
         /// 回收对象
