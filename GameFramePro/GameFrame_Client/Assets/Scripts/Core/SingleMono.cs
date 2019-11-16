@@ -31,7 +31,7 @@ public class SingleMono<T> : MonoBehaviour where T : MonoBehaviour
 
     protected static T Instantiate()
     {
-        s_Instance = ResourcesManager.Instantiate(typeof(T).Name).AddComponent<T>(); //测试发现当运行时如果报错，下一次运行会生成多个对象
+        s_Instance = ResourcesManagerUtility.Instantiate(typeof(T).Name).AddComponent<T>(); //测试发现当运行时如果报错，下一次运行会生成多个对象
         return s_Instance;
     }
 
@@ -60,7 +60,7 @@ public class SingleMono<T> : MonoBehaviour where T : MonoBehaviour
                         s_Instance = result[result.Length - 1]; //Keep the First Initialed one  Be The Available
                         Debug.LogError("There are " + result.Length + " " + typeof(T));
                         for (int dex = 0; dex < result.Length - 1; ++dex)
-                            ResourcesManager.DestroyImmediate(result[dex]);
+                            ResourcesManagerUtility.DestroyImmediate(result[dex]);
                     }
                 }
             }
@@ -92,7 +92,7 @@ public class SingleMono<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         if (IsNotDestroyedOnLoad)
-            ResourcesManager.MarkNotDestroyOnLoad(gameObject);
+            ResourcesManagerUtility.MarkNotDestroyOnLoad(gameObject);
     }
 
 

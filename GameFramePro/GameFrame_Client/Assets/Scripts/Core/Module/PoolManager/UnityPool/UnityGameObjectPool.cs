@@ -71,7 +71,7 @@ namespace GameFramePro
                     if (target == null) continue;
                     BeforeRecycleAction?.Invoke(target);
 
-                    ResourcesManager.Destroy(target);
+                    ResourcesManagerUtility.Destroy(target);
                 } //移除对象
             } //删除缓存对象
 
@@ -82,7 +82,7 @@ namespace GameFramePro
 
             PoolObjectManager.UnTrackPoolManager_Mono<GameObject>(this);
             UnityMonoObjectPoolHelper.S_Instance.RecycleUnityPoolManagerTransParent(PrefabTarget.name);
-            ResourcesManager.Destroy(PoolManagerTarget.gameObject); //销毁自己
+            ResourcesManagerUtility.Destroy(PoolManagerTarget.gameObject); //销毁自己
         }
 
         public GameObject GetItemFromPool()
@@ -96,7 +96,7 @@ namespace GameFramePro
             }
 
             if (resultObject == null)
-                resultObject = ResourcesManager.Instantiate<GameObject>(PrefabTarget, PoolManagerTarget, false);
+                resultObject = ResourcesManagerUtility.Instantiate<GameObject>(PrefabTarget, PoolManagerTarget, false);
 
             BeforeGetAction?.Invoke(resultObject);
 

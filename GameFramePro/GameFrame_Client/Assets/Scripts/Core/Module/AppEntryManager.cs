@@ -6,6 +6,7 @@ using GameFramePro.ResourcesEx;
 using GameFramePro.Localization;
 using GameFramePro.UI;
 using GameFramePro.Upgrade;
+using GameFramePro.ResourcesEx.Reference;
 
 namespace GameFramePro
 {

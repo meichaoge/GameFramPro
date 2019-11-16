@@ -17,7 +17,7 @@ public class TeslLoadPrefab : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            ResourcesManager.InstantiateAssetSync( prefabPath,parent, false);
+            ResourcesManagerUtility.InstantiateAssetSync( prefabPath,parent, false);
         }
     }
 }

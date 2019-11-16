@@ -74,7 +74,7 @@ namespace GameFramePro
         private byte[] CustomerLuaLoader(ref string filePath)
         {
             Debug.LogError("TODO Customer loader");
-            LoadAssetResult<TextAsset> assetInfor = ResourcesManager.LoadAssetSync<TextAsset>(filePath);
+            LoadAssetResult<TextAsset> assetInfor = ResourcesManagerUtility.LoadAssetSync<TextAsset>(filePath);
 
             if (assetInfor == null || assetInfor.IsLoadAssetEnable == false)
                 return new byte[0];

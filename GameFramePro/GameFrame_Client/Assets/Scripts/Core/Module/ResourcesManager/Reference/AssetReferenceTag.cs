@@ -15,7 +15,6 @@ namespace GameFramePro.ResourcesEx
         [System.Serializable]
         internal class ReferenceAssetInfor
         {
-            public string mReferenceAssetTypeStr;
             public string mReferenceAssetName;
             public Component mComponentReference;
             public Object mReferenceAsset;
@@ -51,11 +50,10 @@ namespace GameFramePro.ResourcesEx
             /// <param name="assetBundleUri"></param>
             /// <param name="assetBundle"></param>
             /// <returns></returns>
-            public static ReferenceAssetInfor GetReferenceAssetInfor(Component component, Type type, Object asset)
+            public static ReferenceAssetInfor GetReferenceAssetInfor(Component component, Object asset)
             {
                 var assetBundleRecordInfor = s_ReferenceAssetInforrPoolMgr.GetItemFromPool();
                 assetBundleRecordInfor.mComponentReference = component;
-                assetBundleRecordInfor.mReferenceAssetTypeStr = type.Name;
                 assetBundleRecordInfor.mReferenceAsset = asset;
                 assetBundleRecordInfor.mReferenceAssetName = asset.name;
                 return assetBundleRecordInfor;
@@ -85,13 +83,13 @@ namespace GameFramePro.ResourcesEx
 
         [SerializeField] internal List<ReferenceAssetInfor> mAllReferenceInfors = new List<ReferenceAssetInfor>();
 
-        public void RecordReference(Component component, Type type, Object asset)
+        public void RecordReference(Component component, Object asset)
         {
-            ReferenceAssetInfor referenceAssetInfor = ReferenceAssetInfor.GetReferenceAssetInfor(component, type, asset);
+            ReferenceAssetInfor referenceAssetInfor = ReferenceAssetInfor.GetReferenceAssetInfor(component, asset);
             mAllReferenceInfors.Add(referenceAssetInfor);
         }
 
-        public void RomoveReference(Component component, Type type, Object asset)
+        public void RomoveReference(Component component, Object asset)
         {
             if (component == null)
                 return;
@@ -118,7 +116,7 @@ namespace GameFramePro.ResourcesEx
             mAllReferenceInfors.Clear();
             Debug.LogEditorInfor($"被标记的资源{gameObject.name}  被销毁，立刻释放引用计数，并计时等待加载的资源被回收");
 #endif
-            ResourcesManager.ReduceGameObjectReference(gameObject);
+            ResourcesManagerUtility.ReduceGameObjectReference(gameObject);
         }
     }
 }

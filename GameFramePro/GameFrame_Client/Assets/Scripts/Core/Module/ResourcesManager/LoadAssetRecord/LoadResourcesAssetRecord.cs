@@ -27,21 +27,32 @@ namespace GameFramePro.ResourcesEx
         protected UnityEngine.Object mResourcesAsset { get; set; } //加载的资源
 
 
+        #region 构造函数
+
+        static LoadResourcesAssetRecord()
+        {
+            s_LoadResourcesAssetRecordPoolMgr = new NativeObjectPool<LoadResourcesAssetRecord>(50, null, OnBeforeRecycleLoadResourcesAssetRecord);
+        }
+
+        public LoadResourcesAssetRecord()
+        {
+        }
+
+        #endregion
+
+
         #region 对象池
 
         private static NativeObjectPool<LoadResourcesAssetRecord> s_LoadResourcesAssetRecordPoolMgr;
 
-        private static void OnBeforeGeLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
-        {
-        }
+        //private static void OnBeforeGeLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
+        //{
+        //}
 
         private static void OnBeforeRecycleLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
         {
             if (record == null) return;
-            //   ResourcesManager.UnLoadAsset(record.mResourcesAsset);
-            //Object.Destroy(record.mResourcesAsset);
             record.mResourcesAsset = null;
-            record.mLoadAssetSourceUsage = LoadAssetSourceUsage.ResourcesAsset;
         }
 
         /// <summary>
@@ -80,19 +91,6 @@ namespace GameFramePro.ResourcesEx
         #endregion
 
 
-        #region 构造函数
-
-        static LoadResourcesAssetRecord()
-        {
-            s_LoadResourcesAssetRecordPoolMgr = new NativeObjectPool<LoadResourcesAssetRecord>(50, OnBeforeGeLoadResourcesAssetRecord, OnBeforeRecycleLoadResourcesAssetRecord);
-        }
-
-        public LoadResourcesAssetRecord()
-        {
-        }
-
-        #endregion
-
 
         #region ILoadAssetRecord 接口实现
 
@@ -108,8 +106,8 @@ namespace GameFramePro.ResourcesEx
 
         public void ReleaseLoadAssetRecord()
         {
-            mLoadAssetSourceUsage = LoadAssetSourceUsage.ResourcesAsset;
             mResourcesAsset = null;
+            ReleaseAssetBundleRecordInfor(this);
         }
 
         #endregion

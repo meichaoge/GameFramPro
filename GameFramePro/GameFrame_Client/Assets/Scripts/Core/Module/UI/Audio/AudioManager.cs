@@ -96,7 +96,7 @@ namespace GameFramePro
                 } //当前正在播放这个背景音
             }
 
-              LoadAssetResult<AudioClip> clipAsset = ResourcesManager.LoadAssetSync<AudioClip>(audioPath);
+              LoadAssetResult<AudioClip> clipAsset = ResourcesManagerUtility.LoadAssetSync<AudioClip>(audioPath);
 
             if (clipAsset == null)
                 return false;
@@ -130,7 +130,7 @@ namespace GameFramePro
             clipAsset.ReferenceWithComponent(mCurBackgroundAudioSource,(audioClip)=> {
                 if (mCurBackgroundAudioSource.clip == audioClip)
                     return ;
-                ResourcesManager.ReleaseComponentReferenceAsset<Sprite>(mCurBackgroundAudioSource, mCurBackgroundAudioSource.clip);
+                ResourcesManagerUtility.ReleaseComponentReferenceAsset(mCurBackgroundAudioSource, mCurBackgroundAudioSource.clip);
                 mCurBackgroundAudioSource.clip = audioClip;
             });
        
@@ -153,7 +153,7 @@ namespace GameFramePro
             {
                 AudioClip clip = mCurBackgroundAudioSource.clip;
                 mCurBackgroundAudioSource.clip = null;
-                ResourcesManager.ReleaseComponentReferenceAsset<AudioClip>(mCurBackgroundAudioSource, clip);
+                ResourcesManagerUtility.ReleaseComponentReferenceAsset(mCurBackgroundAudioSource, clip);
 
             }
         }
@@ -171,7 +171,7 @@ namespace GameFramePro
             {
                 AudioClip clip = mCurBackgroundAudioSource.clip;
                 mCurBackgroundAudioSource.clip = null;
-                ResourcesManager.ReleaseComponentReferenceAsset<AudioClip>(mCurBackgroundAudioSource, clip);
+                ResourcesManagerUtility.ReleaseComponentReferenceAsset(mCurBackgroundAudioSource, clip);
             }
         }
 
@@ -200,7 +200,7 @@ namespace GameFramePro
             }
 
             curAudioSource = GetNextAvailableAudioSource();
-            LoadAssetResult<AudioClip> assetInfor = ResourcesManager.LoadAssetSync<AudioClip>(audioPath);
+            LoadAssetResult<AudioClip> assetInfor = ResourcesManagerUtility.LoadAssetSync<AudioClip>(audioPath);
 
             if (assetInfor == null)
             {
@@ -213,7 +213,7 @@ namespace GameFramePro
                 {
                     if (curAudioSource.clip == audioClip)
                         return ;
-                    ResourcesManager.ReleaseComponentReferenceAsset<AudioClip>(curAudioSource, curAudioSource.clip);
+                    ResourcesManagerUtility.ReleaseComponentReferenceAsset(curAudioSource, curAudioSource.clip);
                     curAudioSource.clip = audioClip;
                 });
                 curAudioSource.volume = volume;
@@ -239,7 +239,7 @@ namespace GameFramePro
             {
                 AudioClip clip = curAudioSources.clip;
                 curAudioSources.clip = null;
-                ResourcesManager.ReleaseComponentReferenceAsset<AudioClip>(curAudioSources, clip);
+                ResourcesManagerUtility.ReleaseComponentReferenceAsset(curAudioSources, clip);
             }
 
             RecycleNormalAudioSource(curAudioSources);
@@ -296,7 +296,7 @@ namespace GameFramePro
         /// <returns></returns>
         private AudioSource InstantiateAudioSourceInstance(string name)
         {
-            GameObject goInstance = ResourcesManager.Instantiate(name);
+            GameObject goInstance = ResourcesManagerUtility.Instantiate(name);
             goInstance.transform.SetParent(transform);
             return goInstance.GetAddComponentEx<AudioSource>();
         }

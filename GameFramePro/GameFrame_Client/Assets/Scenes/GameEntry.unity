@@ -440,8 +440,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReadOnlyInt: 10
-  mIsLoadResourcesAssetPriority: 0
-  mIsClickEffectEnable: 1
+  mIsLoadResourcesAssetPriority: 1
+  mIsClickEffectEnable: 0
 --- !u!1 &1888035052
 GameObject:
   m_ObjectHideFlags: 0

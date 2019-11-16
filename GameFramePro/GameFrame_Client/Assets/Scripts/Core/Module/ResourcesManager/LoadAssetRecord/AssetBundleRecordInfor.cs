@@ -8,80 +8,91 @@ namespace GameFramePro.ResourcesEx
     /// 所有加载的AssetBundle 信息
     /// </summary>
     [System.Serializable]
-    public sealed class AssetBundleRecordInfor
+    internal sealed class AssetBundleRecordInfor
     {
         /// <summary>
         /// 被创建的资源引用的次数 (间接依赖+直接依赖)
         /// </summary>
-        public int mTotalReferenceCount
-        {
-            get { return mAllBeDependencesAssetBundleRecordInfors.Count + mAllAssetBundleLoadAssetRecords.Count; }
-        }
+        public int mTotalReferenceCount { get { return mDependencesOtherABundleRecords.Count + mBeDependencesABundleRecord.Count; } }
 
 
         public string mAssetBundleNameUri { get; private set; } //得到AssetBundle 的文件名称
         private AssetBundle mAssetBundle { get; set; }
 
-        public bool IsAssetBundleEnable
-        {
-            get { return mAssetBundle != null; }
-        }
-        public int mAssetBundleInstanceID
-        {
-            get { return mAssetBundle == null ? -1 : mAssetBundle.GetInstanceID(); }
-        }
+        public bool IsAssetBundleEnable { get { return mAssetBundle != null; } }
+        public int mAssetBundleInstanceID { get { return mAssetBundle == null ? -1 : mAssetBundle.GetInstanceID(); } }
 
 
         /// <summary>
         /// 所有依赖的 其他 AssetBundle 记录
         /// </summary>
-        private Dictionary<string, AssetBundleRecordInfor> mAllDependencesAssetBundleRecordInfors { get; set; } = new Dictionary<string, AssetBundleRecordInfor>(10);
+        private Dictionary<string, AssetBundleRecordInfor> mDependencesOtherABundleRecords { get; set; } = new Dictionary<string, AssetBundleRecordInfor>(10);
 
         /// <summary>
         /// 所有被其他AssetBundle 依赖的记录(相当于被其他创建的资源间接依赖)
         /// </summary>
-        private Dictionary<string, AssetBundleRecordInfor> mAllBeDependencesAssetBundleRecordInfors { get; set; } = new Dictionary<string, AssetBundleRecordInfor>(10);
+        private Dictionary<string, AssetBundleRecordInfor> mBeDependencesABundleRecord { get; set; } = new Dictionary<string, AssetBundleRecordInfor>(10);
 
         /// <summary>
         /// 所有从当前这个AssetBundle 中加载的资源记录 (直接依赖)
         /// </summary>
-        private Dictionary<string, LoadAssetBundleAssetRecord> mAllAssetBundleLoadAssetRecords { get; set; } = new Dictionary<string, LoadAssetBundleAssetRecord>(10);
+        private Dictionary<string, LoadAssetBundleAssetRecord> mABundleLoadAssetRecords { get; set; } = new Dictionary<string, LoadAssetBundleAssetRecord>(10);
 
 
+        #region 构造函数
+
+        static AssetBundleRecordInfor()
+        {
+            s_AssetBundleRecordInforrPoolMgr = new NativeObjectPool<AssetBundleRecordInfor>(50, null, OnBeforeRecycleAssetBundleRecordInfor);
+        }
+
+        public AssetBundleRecordInfor()
+        {
+        }
+
+        #endregion
 
         #region 对象池
 
         private static NativeObjectPool<AssetBundleRecordInfor> s_AssetBundleRecordInforrPoolMgr;
 
-        private static void OnBeforeGeAssetBundleRecordInfor(AssetBundleRecordInfor record)
-        {
-        }
+        //private static void OnBeforeGeAssetBundleRecordInfor(AssetBundleRecordInfor record)
+        //{
+        //}
 
         private static void OnBeforeRecycleAssetBundleRecordInfor(AssetBundleRecordInfor record)
         {
             if (record == null) return;
-            ResourcesManager.UnLoadAssetBundle(record.mAssetBundle, false);
-            record.mAssetBundle = null;
-            record.mAllDependencesAssetBundleRecordInfors.Clear();
-            record.mAllBeDependencesAssetBundleRecordInfors.Clear();
+    
+            //移除被依赖
+            foreach (var beReferenceABundle in record.mBeDependencesABundleRecord.Values)
+            {
+                if (beReferenceABundle == null) continue;
+                beReferenceABundle.RemoveDependenceAssetBudleRecord(record);
+            }
+            record.mBeDependencesABundleRecord.Clear();
 
-            foreach (var assetBundleAssetRecord in record.mAllAssetBundleLoadAssetRecords.Values)
+            //移除加载的资源
+            foreach (var assetBundleAssetRecord in record.mABundleLoadAssetRecords.Values)
             {
                 if (assetBundleAssetRecord == null) continue;
                 LoadAssetBundleAssetRecord.ReleaseAssetBundleRecordInfor(assetBundleAssetRecord);
             }
+            record.mABundleLoadAssetRecords.Clear();
 
-            record.mAllAssetBundleLoadAssetRecords.Clear();
+            //移除依赖
+            foreach (var dependencesAssetBundleRecord in record.mDependencesOtherABundleRecords.Values)
+            {
+                if (dependencesAssetBundleRecord == null) continue;
+                dependencesAssetBundleRecord.NotifyRemoveBeReferenceByABundleRecord(record);
+            }
+            record.mDependencesOtherABundleRecords.Clear();
+
+
+            ResourcesManagerUtility.UnLoadAssetBundle(record.mAssetBundle, false);
+            record.mAssetBundle = null;
         }
 
-        /// <summary>
-        /// 获取 AssetBundleRecordInfor 实例对象
-        /// </summary>
-        /// <returns></returns>
-        public static AssetBundleRecordInfor GetAssetBundleRecordInfor()
-        {
-            return s_AssetBundleRecordInforrPoolMgr.GetItemFromPool();
-        }
 
         /// <summary>
         /// 获取 AssetBundleRecordInfor 实例对象
@@ -110,20 +121,6 @@ namespace GameFramePro.ResourcesEx
         #endregion
 
 
-        #region 构造函数
-
-        static AssetBundleRecordInfor()
-        {
-            s_AssetBundleRecordInforrPoolMgr = new NativeObjectPool<AssetBundleRecordInfor>(50, OnBeforeGeAssetBundleRecordInfor, OnBeforeRecycleAssetBundleRecordInfor);
-        }
-
-        public AssetBundleRecordInfor()
-        {
-        }
-
-        #endregion
-
-
         #region 加载AssetBundle 中指定的资源
 
         /// <summary>
@@ -147,50 +144,70 @@ namespace GameFramePro.ResourcesEx
 
         #endregion
 
+
+
         #region AssetBundle 之间的依赖处理+ 加载的资源对AssetBundle 的依赖
 
         /// <summary>
-        /// 增加 依赖其他的AssetBundle记录
+        /// 增加 依赖其他的AssetBundle记录 (依赖的AsetBundle 也会记录自己)
         /// </summary>
-        /// <param name="otherDependenceAssetBundleRecord"></param>
-        public void AddDependenceAssetBudleRecord(AssetBundleRecordInfor otherDependenceAssetBundleRecord)
+        /// <param name="otherABundleRecord"></param>
+        public void AddDependenceAssetBudleRecord(AssetBundleRecordInfor otherABundleRecord)
         {
-            if (otherDependenceAssetBundleRecord == null || otherDependenceAssetBundleRecord.IsAssetBundleEnable == false)
+            if (IsAssetBundleEnable==false || otherABundleRecord == null || otherABundleRecord.IsAssetBundleEnable == false)
                 return;
 
-            otherDependenceAssetBundleRecord.NotifyAddBeReferenceByAssetBundleRecord(this); //通知其他的记录被依赖
+            otherABundleRecord.NotifyAddBeReferenceByABundleRecord(this); //通知其他的记录被依赖
 
-            if (mAllDependencesAssetBundleRecordInfors.ContainsKey(otherDependenceAssetBundleRecord.mAssetBundleNameUri))
+            if (mDependencesOtherABundleRecords.TryGetValue(otherABundleRecord.mAssetBundleNameUri, out var dependenceAssetBundle) || dependenceAssetBundle != null && dependenceAssetBundle.IsAssetBundleEnable)
                 return;
-            mAllDependencesAssetBundleRecordInfors[otherDependenceAssetBundleRecord.mAssetBundleNameUri] = otherDependenceAssetBundleRecord;
+
+            if (dependenceAssetBundle != null && dependenceAssetBundle.IsAssetBundleEnable == false)
+                ReleaseAssetBundleRecordInfor(dependenceAssetBundle);
+            mDependencesOtherABundleRecords[otherABundleRecord.mAssetBundleNameUri] = otherABundleRecord;
         }
 
         /// <summary>
         /// 减少 依赖其他的AssetBundle记录
         /// </summary>
         /// <param name="otherDependenceAssetBundleRecord"></param>
-        public void RemoveDependenceAssetBudleRecord(AssetBundleRecordInfor otherDependenceAssetBundleRecord)
+        public void RemoveDependenceAssetBudleRecord(AssetBundleRecordInfor otherABundleRecord)
         {
-            if (otherDependenceAssetBundleRecord == null)
+            if (otherABundleRecord == null)
                 return;
-            otherDependenceAssetBundleRecord.NotifyRemoveBeReferenceByAssetBundleRecord(this); //通知其他的记录被移除依赖
+            otherABundleRecord.NotifyRemoveBeReferenceByABundleRecord(this); //通知其他的记录被移除依赖
 
-            mAllDependencesAssetBundleRecordInfors.Remove(otherDependenceAssetBundleRecord.mAssetBundleNameUri);
+            mDependencesOtherABundleRecords.Remove(otherABundleRecord.mAssetBundleNameUri);
         }
+
+
 
         /// <summary>
-        /// 减少所有 依赖其他的AssetBundle记录
+        /// 通知 增加自己被其他的AssetBundle 资源引用
         /// </summary>
-        public void RemoveAllDependenceAssetBudleRecord()
+        /// <param name="beReferenceAssetBundleRecordInfor"></param>
+        private void NotifyAddBeReferenceByABundleRecord(AssetBundleRecordInfor beReferenceAssetBundleRecordInfor)
         {
-            foreach (var dependencesAssetBundleRecord in mAllDependencesAssetBundleRecordInfors.Values)
-            {
-                if (dependencesAssetBundleRecord == null) continue;
-                dependencesAssetBundleRecord.NotifyRemoveBeReferenceByAssetBundleRecord(this);
-            }
-            mAllDependencesAssetBundleRecordInfors.Clear();
+            if (beReferenceAssetBundleRecordInfor == null || beReferenceAssetBundleRecordInfor.IsAssetBundleEnable == false)
+                return;
+
+            mBeDependencesABundleRecord[beReferenceAssetBundleRecordInfor.mAssetBundleNameUri] = beReferenceAssetBundleRecordInfor;
         }
 
+        /// 通知 去除自己被其他的AssetBundle 资源引用
+        /// </summary>
+        /// <param name="beReferenceAssetBundleRecordInfor"></param>
+        private void NotifyRemoveBeReferenceByABundleRecord(AssetBundleRecordInfor beReferenceAssetBundleRecordInfor)
+        {
+            if (beReferenceAssetBundleRecordInfor == null || beReferenceAssetBundleRecordInfor.IsAssetBundleEnable == false)
+                return;
+
+            mBeDependencesABundleRecord.Remove(beReferenceAssetBundleRecordInfor.mAssetBundleNameUri);
+        }
+
+        #endregion
+
+        #region 记录从当前AssetBundle 加载的资源
         /// <summary>
         /// 通知 有从当前AssetBundle 中加载的资源依赖当前对象
         /// </summary>
@@ -199,7 +216,7 @@ namespace GameFramePro.ResourcesEx
         {
             if (loadAssetBundleAssetRecord == null || loadAssetBundleAssetRecord.IsRecordEnable == false)
                 return;
-            mAllAssetBundleLoadAssetRecords[loadAssetBundleAssetRecord.mAssetFullUri] = loadAssetBundleAssetRecord;
+            mABundleLoadAssetRecords[loadAssetBundleAssetRecord.mAssetFullUri] = loadAssetBundleAssetRecord;
         }
 
         /// <summary>
@@ -210,31 +227,7 @@ namespace GameFramePro.ResourcesEx
         {
             if (loadAssetBundleAssetRecord == null || loadAssetBundleAssetRecord.IsRecordEnable == false)
                 return;
-            mAllAssetBundleLoadAssetRecords.Remove(loadAssetBundleAssetRecord.mAssetFullUri);
-        }
-
-
-        /// <summary>
-        /// 通知 增加自己被其他的AssetBundle 资源引用
-        /// </summary>
-        /// <param name="beReferenceAssetBundleRecordInfor"></param>
-        public void NotifyAddBeReferenceByAssetBundleRecord(AssetBundleRecordInfor beReferenceAssetBundleRecordInfor)
-        {
-            if (beReferenceAssetBundleRecordInfor == null || beReferenceAssetBundleRecordInfor.IsAssetBundleEnable == false)
-                return;
-
-            mAllBeDependencesAssetBundleRecordInfors[beReferenceAssetBundleRecordInfor.mAssetBundleNameUri] = beReferenceAssetBundleRecordInfor;
-        }
-
-        /// 通知 去除自己被其他的AssetBundle 资源引用
-        /// </summary>
-        /// <param name="beReferenceAssetBundleRecordInfor"></param>
-        public void NotifyRemoveBeReferenceByAssetBundleRecord(AssetBundleRecordInfor beReferenceAssetBundleRecordInfor)
-        {
-            if (beReferenceAssetBundleRecordInfor == null || beReferenceAssetBundleRecordInfor.IsAssetBundleEnable == false)
-                return;
-
-            mAllBeDependencesAssetBundleRecordInfors.Remove(beReferenceAssetBundleRecordInfor.mAssetBundleNameUri);
+            mABundleLoadAssetRecords.Remove(loadAssetBundleAssetRecord.mAssetFullUri);
         }
 
         #endregion

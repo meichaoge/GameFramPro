@@ -183,7 +183,7 @@ namespace GameFramePro.Localization
         private string LoadLocalizationConfig(Language language)
         {
             string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(ApplicationManager.S_Instance.mLocalizationExportFormatType, language));
-            LoadAssetResult<TextAsset> assetResult = ResourcesManager.LoadAssetSync<TextAsset>(filePath.GetPathWithOutExtension());
+            LoadAssetResult<TextAsset> assetResult = ResourcesManagerUtility.LoadAssetSync<TextAsset>(filePath.GetPathWithOutExtension());
             string content = string.Empty;
             if(assetResult!=null&& assetResult.IsLoadAssetEnable)
             {

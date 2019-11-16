@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using GameFramePro.ResourcesEx.Reference;
 
-namespace GameFramePro.ResourcesEx
+namespace GameFramePro.ResourcesEx.Reference
 {
     /// <summary>
     /// 管理当资源的引用为0时候,继续等待一段时间，如果再起被启用则不销毁
@@ -53,7 +52,7 @@ namespace GameFramePro.ResourcesEx
             float timeSpane = currentTime - lastRecordTime;
             lastRecordTime = currentTime;
 
-            List<ComponentReferenceAssetInfor> allNoReferenceAssets = ReferenceAssetManager.S_Instance.GetAllNoReferenceAssetsForDelete();
+            List<ComponentReferenceAssetInfor> allNoReferenceAssets = ReferenceAssetManager.GetAllNoReferenceAssetsForDelete();
             foreach (var noReferenceAsset in allNoReferenceAssets)
                 s_AllDelayDeleteAssetInfor.AddLast(noReferenceAsset);
             if (s_AllDelayDeleteAssetInfor.Count == 0)
@@ -77,27 +76,8 @@ namespace GameFramePro.ResourcesEx
 
                 target = temp;
             }
-            ReferenceAssetManager.S_Instance.DeleteAllNoReferenceAssets(allNoReferenceAssets);
+            ReferenceAssetManager.DeleteAllNoReferenceAssets(allNoReferenceAssets);
         }
 
-        #region  添加或者删除节点
-
-
-        /// <summary>
-        /// 移除重新被引用的资源
-        /// </summary>
-        /// <param name="reReferenceAssetInfor"></param>
-        public static void RemoveDelayDeleteReferenceAsset(ComponentReferenceAssetInfor reReferenceAssetInfor)
-        {
-            if (reReferenceAssetInfor == null)
-                return;
-            s_AllDelayDeleteAssetInfor.Remove(reReferenceAssetInfor);
-#if UNITY_EDITOR
-            if (reReferenceAssetInfor.mILoadAssetRecord != null)
-                Debug.LogEditorInfor($"资源{reReferenceAssetInfor.mILoadAssetRecord.mAssetFullUri} 重新被引用 ");
-#endif
-        }
-
-        #endregion
     }
 }

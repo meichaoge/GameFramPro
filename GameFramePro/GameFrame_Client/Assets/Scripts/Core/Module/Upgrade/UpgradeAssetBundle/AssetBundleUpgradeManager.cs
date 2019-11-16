@@ -117,7 +117,7 @@ namespace GameFramePro.Upgrade
 
             string filePath = ConstDefine.S_LocalAssetBundleTopDirectoryPath.GetFilePathParentDirectory(1).CombinePathEx(ConstDefine.S_AssetBundleConfigFileName);
             IOUtility.CreateOrSetFileContent(filePath, mServerBundleAssetConfigStr);
-            AssetBundleManager.S_Instance.SaveAssetBundleTotalConfigInfor(mServerBundleAssetConfigInfor); //保存得到的配置
+            AssetBundleManager.SaveAssetBundleTotalConfigInfor(mServerBundleAssetConfigInfor); //保存得到的配置
 
             OnUpgradeSuccessEvent?.Invoke();
             mServerBundleAssetConfigStr = string.Empty;

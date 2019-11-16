@@ -8,7 +8,7 @@ namespace GameFramePro.ResourcesEx.Reference
     /// <summary>
     /// 资源引用管理器
     /// </summary>
-    public sealed class ReferenceAssetManager : Single<ReferenceAssetManager>
+    public static class  ReferenceAssetManager 
     {
         //一个资源 Object 中的某个子资源id 到整个资源Object 的映射关系，key =子资源Instanceid  value=加载的整个资源Instanceid 
         private static readonly Dictionary<int, int> s_InstanceIdMapRecord = new Dictionary<int, int>(100);
@@ -22,7 +22,7 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <summary>
         /// 所有需要 被删除的整个资源  Instanceid 
         /// </summary>
-        private static HashSet<int> s_AllNeedRemoveInstanceIds = new HashSet<int>();
+        private static readonly HashSet<int> s_AllNeedRemoveInstanceIds = new HashSet<int>();
 
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <param name="subAssey"></param>
         /// <param name="loadAsset"></param>
         /// <returns>子资源被包含的加载记录中的资源id</returns>
-        private int RecordInstanceIdDependence(Object subAssey, Object loadAsset)
+        private static int RecordInstanceIdDependence(Object subAssey, Object loadAsset)
         {
             if (subAssey == null || loadAsset == null)
                 return -1;
@@ -42,7 +42,7 @@ namespace GameFramePro.ResourcesEx.Reference
             return loadAssetID;
         }
 
-        private int GetInstanceIDFromRecord(Object subAssey)
+        private static int GetInstanceIDFromRecord(Object subAssey)
         {
             if (subAssey == null)
                 return -1;
@@ -64,17 +64,17 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <param name="component"></param>
         /// <param name="directReferenceObject">直接引用的资源(可能是一个Object 中的某个组件资源)</param>
         /// <param name="loadAssetRecord"></param>
-        private void AddStrongReference<T>(Component component, Object directReferenceObject, ILoadAssetRecord loadAssetRecord, int InstanceID) where T : UnityEngine.Object
+        private static void AddStrongReference(Component component, Object directReferenceObject, ILoadAssetRecord loadAssetRecord, int InstanceID) 
         {
             if (component == null || directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false || InstanceID == -1)
                 return;
 
 #if UNITY_EDITOR
             AssetReferenceTag assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
-            assetReferenceTag.RecordReference(component, typeof(T), directReferenceObject);
+            assetReferenceTag.RecordReference(component,  directReferenceObject);
 #endif
 
-            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset) == false || beferenceAsset != null)
+            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset) == false || beferenceAsset == null)
             {
                 beferenceAsset = ComponentReferenceAssetInfor.GetBeferenceAsset();
                 s_AllComponentReferenceAssetInfors[InstanceID] = beferenceAsset;
@@ -87,15 +87,14 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         /// <param name="component"></param>
         /// <param name="asset"></param>
-        public void ReduceStrongReference<T>(Component component, Object asset) where T : UnityEngine.Object
+        public static void ReduceStrongReference(Component component, Object asset) 
         {
             if (component == null || asset == null)
                 return;
 
-
 #if UNITY_EDITOR
             AssetReferenceTag assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
-            assetReferenceTag.RomoveReference(component, typeof(T), asset);
+            assetReferenceTag.RomoveReference(component,  asset);
 #endif
 
             int InstanceID = GetInstanceIDFromRecord(asset);
@@ -120,7 +119,7 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         /// <param name="directReferenceObject">直接引用的资源(可能是一个Object 中的某个组件资源)</param>
         /// <param name="loadAssetRecord"></param>
-        public void AddWeakReference(Object directReferenceObject, ILoadAssetRecord loadAssetRecord)
+        public static void AddWeakReference(Object directReferenceObject, ILoadAssetRecord loadAssetRecord)
         {
             if (directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false)
                 return;
@@ -130,15 +129,16 @@ namespace GameFramePro.ResourcesEx.Reference
                 return;
             if (s_AllWeakReferenceAssets.TryGetValue(InstanceID, out var beferenceAsset))
             {
-                if (beferenceAsset != null)
+                if (beferenceAsset != loadAssetRecord)
+                {
+                    Debug.LogError($"记录了弱引用关系，但是{beferenceAsset} 不对应{loadAssetRecord}");
                     return;
+                }
             }
-
-            beferenceAsset = loadAssetRecord;
-            s_AllWeakReferenceAssets[InstanceID] = beferenceAsset;
+            s_AllWeakReferenceAssets[InstanceID] = loadAssetRecord;
         }
 
-        public void ReduceWeakReference(Object directReferenceObject)
+        public static void ReduceWeakReference(Object directReferenceObject)
         {
             if (directReferenceObject == null)
                 return;
@@ -155,14 +155,14 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <typeparam name="T"></typeparam>
         /// <param name="directReferenceObject"></param>
         /// <param name="component"></param>
-        public bool StrongReferenceWithComponent<T>(Object directReferenceObject, T component) where T : Component
+        public static bool StrongReferenceWithComponent(Object directReferenceObject,Component component) 
         {
             if (directReferenceObject == null || component == null)
                 return false;
             int instanceID = GetInstanceIDFromRecord(directReferenceObject);
             if (instanceID != -1 && s_AllWeakReferenceAssets.TryGetValue(instanceID, out var weakReferenceAssetRecord))
             {
-                AddStrongReference<T>(component, directReferenceObject, weakReferenceAssetRecord, instanceID);
+                AddStrongReference(component, directReferenceObject, weakReferenceAssetRecord, instanceID);
                 return true;
             }
 
@@ -179,7 +179,7 @@ namespace GameFramePro.ResourcesEx.Reference
         /// 去除参数对象的所有引用计数
         /// </summary>
         /// <param name="component"></param>
-        public void RemoveGameObjectReference(GameObject targetObject)
+        public static void RemoveGameObjectReference(GameObject targetObject)
         {
             if (targetObject == null)
                 return;
@@ -195,7 +195,7 @@ namespace GameFramePro.ResourcesEx.Reference
         /// 获取所有没有被引用的资源
         /// </summary>
         /// <returns></returns>
-        public List<ComponentReferenceAssetInfor> GetAllNoReferenceAssetsForDelete()
+        internal static List<ComponentReferenceAssetInfor> GetAllNoReferenceAssetsForDelete()
         {
             List<ComponentReferenceAssetInfor> noReferenceAssets = new List<ComponentReferenceAssetInfor>((int)(s_AllComponentReferenceAssetInfors.Count * 0.5f));
 
@@ -220,7 +220,7 @@ namespace GameFramePro.ResourcesEx.Reference
         /// 真正删除所有超时没有被使用的资源
         /// </summary>
         /// <param name=""></param>
-        public void DeleteAllNoReferenceAssets(List<ComponentReferenceAssetInfor> allNoReferenceAssets)
+        internal static void DeleteAllNoReferenceAssets(List<ComponentReferenceAssetInfor> allNoReferenceAssets)
         {
             if (allNoReferenceAssets == null || allNoReferenceAssets.Count == 0)
                 return;
@@ -239,8 +239,8 @@ namespace GameFramePro.ResourcesEx.Reference
             if (s_AllNeedRemoveInstanceIds == null || s_AllNeedRemoveInstanceIds.Count == 0)
                 return;
 
-            AssetBundleManager.S_Instance.RemoveAllUnReferenceAssetBundleRecord( s_AllNeedRemoveInstanceIds);
-            LocalResourcesManager.S_Instance.RemoveAllUnReferenceResourcesRecord( s_AllNeedRemoveInstanceIds);
+            AssetBundleManager.RemoveAllUnReferenceAssetBundleRecord( s_AllNeedRemoveInstanceIds);
+            LocalResourcesManager.RemoveAllUnReferenceResourcesRecord( s_AllNeedRemoveInstanceIds);
 
             s_InstanceIdMapRecord.RemoveAll(item => s_AllNeedRemoveInstanceIds.Contains(item.Value));
             s_AllWeakReferenceAssets.RemoveAll(item => s_AllNeedRemoveInstanceIds.Contains(item.Key));

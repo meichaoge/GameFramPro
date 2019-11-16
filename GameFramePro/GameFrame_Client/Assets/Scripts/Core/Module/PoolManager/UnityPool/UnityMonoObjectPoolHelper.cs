@@ -38,7 +38,7 @@ namespace GameFramePro
                     return parent;
             }
 
-            parent = ResourcesManager.Instantiate(poolName).transform;
+            parent = ResourcesManagerUtility.Instantiate(poolName).transform;
             parent.SetParent(transform, false);
             mAllPoolMonoObjects[poolName] = parent;
             return parent;
@@ -63,7 +63,7 @@ namespace GameFramePro
                 if (parent != null)
                 {
                     mAllPoolMonoObjects.Remove(poolName);
-                    ResourcesManager.Destroy(parent.gameObject);
+                    ResourcesManagerUtility.Destroy(parent.gameObject);
                     return;
                 }
             }

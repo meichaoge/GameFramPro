@@ -285,11 +285,11 @@ namespace GameFramePro.EditorEx
 
             string assetName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
             //***创建预制体并关联图片
-            GameObject go = ResourcesManager.Instantiate(assetName);
+            GameObject go = ResourcesManagerUtility.Instantiate(assetName);
             go.GetAddComponentEx<SpriteRenderer>().sprite = sprite;
 
             PrefabUtility.SaveAsPrefabAsset(go, spriteRenderAssetPrefabPath);
-            ResourcesManager.DestroyImmediate(go);
+            ResourcesManagerUtility.DestroyImmediate(go);
             return true;
         }
 

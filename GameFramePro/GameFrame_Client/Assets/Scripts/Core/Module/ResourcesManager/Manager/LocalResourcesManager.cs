@@ -9,8 +9,11 @@ namespace GameFramePro.ResourcesEx
     /// <summary>
     /// 专用于从 Resources 加载和管理资源 
     /// </summary>
-    public sealed class LocalResourcesManager : Single<LocalResourcesManager>
+    public static class LocalResourcesManager
     {
+        private static float s_LastFullCheckTime { get; set; } = 0;  //上一次全资源检测的时间 
+        private static float s_FullCheckTimeInterval { get { return 300; } } //全资源空引用检测时间间隔
+
         //key  =assetFullUri 
         private static readonly Dictionary<string, LoadResourcesAssetRecord> mAllLoadResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(200); //Cache 所有加载的资源
 
@@ -18,14 +21,14 @@ namespace GameFramePro.ResourcesEx
         /// <summary>
         /// 从缓存中加载一个资源 可能返回null(标示没有加载过这个资源，或者这个资源已经被释放了)
         /// </summary>
-        private LoadResourcesAssetRecord LoadResourcesAssetFromCache(string assetFullUri)
+        private static LoadResourcesAssetRecord LoadResourcesAssetFromCache(string assetFullUri)
         {
             if (mAllLoadResourcesAssetRecords.TryGetValue(assetFullUri, out var infor))
             {
                 if (infor == null || infor.IsRecordEnable == false)
                 {
                     mAllLoadResourcesAssetRecords.Remove(assetFullUri);
-                    LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(infor);
+                    infor?.ReleaseLoadAssetRecord();
                     return null;
                 }
                 return infor;
@@ -38,7 +41,7 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         /// <param name="assetFullUri"></param>
         /// <returns></returns>
-        public ILoadAssetRecord ResourcesLoadAssetSync(string assetFullUri)
+        public static ILoadAssetRecord ResourcesLoadAssetSync(string assetFullUri)
         {
             LoadResourcesAssetRecord resourcesAssetRecord = LoadResourcesAssetFromCache(assetFullUri);
             if (resourcesAssetRecord != null && resourcesAssetRecord.IsRecordEnable)
@@ -65,7 +68,7 @@ namespace GameFramePro.ResourcesEx
         /// <param name="assetFullUri"></param>
         /// <param name="loadCallback"></param>
         /// <param name="procressCallback"></param>
-        public void ResourcesLoadAssetAsync(string assetFullUri, System.Action<ILoadAssetRecord> loadCallback, System.Action<string, float> procressCallback)
+        public static void ResourcesLoadAssetAsync(string assetFullUri, System.Action<ILoadAssetRecord> loadCallback, System.Action<string, float> procressCallback)
         {
             LoadResourcesAssetRecord resourcesAssetRecord = LoadResourcesAssetFromCache(assetFullUri);
             if (resourcesAssetRecord != null && resourcesAssetRecord.IsRecordEnable)
@@ -87,46 +90,51 @@ namespace GameFramePro.ResourcesEx
         ///  移除参数指定的实例ID 对应的 Resources 记录
         /// </summary>
         /// <param name="resourcesAssetInstanceIDs"></param>
-        public void RemoveAllUnReferenceResourcesRecord(HashSet<int> resourcesAssetInstanceIDs)
+        public static void RemoveAllUnReferenceResourcesRecord(HashSet<int> resourcesAssetInstanceIDs)
         {
-            if (resourcesAssetInstanceIDs == null || resourcesAssetInstanceIDs.Count == 0)
-                return;
+            if (s_LastFullCheckTime == 0)
+                s_LastFullCheckTime = Time.realtimeSinceStartup;
 
-            Dictionary<string, LoadResourcesAssetRecord> tempResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(mAllLoadResourcesAssetRecords);
-
-            foreach (var resourcesAssetRecordInfor in tempResourcesAssetRecords)
+            if (resourcesAssetInstanceIDs != null && resourcesAssetInstanceIDs.Count > 0 || (Time.realtimeSinceStartup - s_LastFullCheckTime) >= s_FullCheckTimeInterval)
             {
-                if (resourcesAssetRecordInfor.Value == null)
+                s_LastFullCheckTime = Time.realtimeSinceStartup;
+                Dictionary<string, LoadResourcesAssetRecord> tempResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(mAllLoadResourcesAssetRecords);
+                foreach (var resourcesAssetRecordInfor in tempResourcesAssetRecords)
                 {
-                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Key);
-                    continue;
-                }
+                    if (resourcesAssetRecordInfor.Value == null)
+                    {
+                        mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Key);
+                        continue;
+                    }
 
-                if (resourcesAssetRecordInfor.Value.IsRecordEnable == false)
-                {
-                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
-                    LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
-                    continue;
-                }
+                    if (resourcesAssetRecordInfor.Value.IsRecordEnable == false)
+                    {
+                        mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
+                        LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
+                        continue;
+                    }
 
+                    if (resourcesAssetInstanceIDs == null || resourcesAssetInstanceIDs.Count == 0)
+                        continue;
 
-                int resourcesAssetInstanceID = resourcesAssetRecordInfor.Value.GetLoadAssetInstanceID();
-
-                if (resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID))
-                {
+                    int resourcesAssetInstanceID = resourcesAssetRecordInfor.Value.GetLoadAssetInstanceID();
+                    if (resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID))
+                    {
 #if UNITY_EDITOR
-                    Debug.Log($"释放Resources 资源： {resourcesAssetRecordInfor.Value.mAssetFullUri}");
+                        Debug.Log($"释放Resources 资源： {resourcesAssetRecordInfor.Value.mAssetFullUri}");
 #endif
-                    mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
-                    LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
-                }
+                        mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
+                        LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
+                    }
 
+                }
             }
         }
 
 
+
         /// <summary>/// / 记录加载的资源/// </summary>
-        private void RecordResourcesLoadAsset(string assetUrl, LoadResourcesAssetRecord asset)
+        private static void RecordResourcesLoadAsset(string assetUrl, LoadResourcesAssetRecord asset)
         {
             if (asset == null)
                 return;

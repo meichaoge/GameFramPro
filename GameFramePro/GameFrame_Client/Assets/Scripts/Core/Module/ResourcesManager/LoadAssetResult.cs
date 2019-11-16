@@ -51,7 +51,7 @@ namespace GameFramePro
                 return false;
             if (mLoadAssetInstance == null || IsLoadAssetEnable == false)
                 return false;
-            return ReferenceAssetManager.S_Instance.StrongReferenceWithComponent(mLoadAssetInstance, targetComponent);
+            return ReferenceAssetManager.StrongReferenceWithComponent(mLoadAssetInstance, targetComponent);
         }
 
 

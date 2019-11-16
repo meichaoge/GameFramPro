@@ -389,7 +389,7 @@ namespace GameFramePro.UI
         /// <summary>/// 创建页面实例/// </summary>
         private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction, LoadAssetChannelUsage loadAssetChannel )
         {
-            GameObject go = ResourcesManager.InstantiateAssetSync(pagePath, parent, false, loadAssetChannel);
+            GameObject go = ResourcesManagerUtility.InstantiateAssetSync(pagePath, parent, false, loadAssetChannel);
             if (go != null)
             {
                 go.name = pageName;

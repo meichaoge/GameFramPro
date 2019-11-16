@@ -40,9 +40,6 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         LoadAssetSourceUsage mLoadAssetSourceUsage { get; }
 
-     
-
-
 
         /// <summary>
         /// 获取加载的资源对象

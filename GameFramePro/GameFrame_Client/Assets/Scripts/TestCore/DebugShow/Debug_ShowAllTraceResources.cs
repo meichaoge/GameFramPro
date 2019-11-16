@@ -23,7 +23,7 @@
 //        #region Resources
 //
 //        mAllResourcesLoadAssets.Clear();
-//        foreach (var item in LocalResourcesManager.S_Instance.Debug_mAllLoadedAssetRecord.Values)
+//        foreach (var item in LocalResourcesManager.Debug_mAllLoadedAssetRecord.Values)
 //        {
 //            item.UpdateData();
 //            mAllResourcesLoadAssets.Add(item);
@@ -36,7 +36,7 @@
 //        #region  AssetBundle
 //
 //        mAllLoadAssetBundleCache.Clear();
-//        foreach (var item in AssetBundleManager.S_Instance.Debug_mAllLoadAssetBundleCache.Values)
+//        foreach (var item in AssetBundleManager.Debug_mAllLoadAssetBundleCache.Values)
 //        {
 //            item.UpdateData();
 //            mAllLoadAssetBundleCache.Add(item);
@@ -46,7 +46,7 @@
 //
 //
 //        mAllLoadedAssetBundleSubAssetRecord.Clear();
-//        foreach (var item in AssetBundleManager.S_Instance.Debug_mAllLoadedAssetBundleSubAssetRecord.Values)
+//        foreach (var item in AssetBundleManager.Debug_mAllLoadedAssetBundleSubAssetRecord.Values)
 //        {
 //            item.UpdateData();
 //            mAllLoadedAssetBundleSubAssetRecord.Add(item);
