@@ -8,11 +8,18 @@ using UnityEngine;
 
 namespace GameFramePro
 {
+
+    /// <summary>
+    /// 长度为 2048 的全局共享复用Byte[] 数组
+    /// </summary>
     [System.Serializable]
-    // 长度为 2048 的全局共享复用Byte[] 数组
     public class ByteArray
     {
-        /// <summary>  /// 不要重定向这个数组，只能在里面读写数据   /// </summary>
+        public const int S_ByteLength = 2048; //表示每个 byte[] 数组的长度
+
+        /// <summary>  
+        /// 不要重定向这个数组，只能在里面读写数据   
+        /// </summary>
         public byte[] mBytes { get; private set; }
 
         public int mDataRealLength { get; set; } //数据的真实长度
@@ -20,21 +27,22 @@ namespace GameFramePro
 #if UNITY_EDITOR
         public override string ToString()
         {
-            var builder =  new StringBuilder();
+            var builder = new StringBuilder();
             for (int dex = 0; dex < mDataRealLength; dex++)
             {
                 builder.Append(mBytes[dex]);
                 builder.Append("-");
             }
 
-            return  builder.ToString();
+            return builder.ToString();
         }
 #endif
 
         #region ByteArray 对象池 接口
 
         private static readonly ConcurrentQueue<ByteArray> mByteArrayQueue = new ConcurrentQueue<ByteArray>(); //复用的Socket byte[] 数组
-        public const int S_ByteLength = 2048; //表示每个 byte[] 数组的长度
+
+
         private static object S_GetByteLocker = new object();
 
         /// <summary>      /// 获取一个 ByteArray 对象   /// </summary>
@@ -98,20 +106,24 @@ namespace GameFramePro
         }
 
 
-        /// <summary>     
+        /// <summary>
         /// 从其他的Byte数组中获取指定的数据源   
-        ///  </summary>
-        public void CopyBytes(System.Array sourcesArrary, int sourcesStartIndex, int sourcesCopyLength, int realDataLength, int destinationStartIndex)
+        /// </summary>
+        /// <param name="sourcesArrary">源数据</param>
+        /// <param name="sourcesStartIndex">开始复制的起点</param>
+        /// <param name="sourcesCopyLength">复制的数据长度</param>
+        /// <param name="destinationStartIndex">目标保存的起点</param>
+        public void CopyBytes(System.Array sourcesArrary, int sourcesStartIndex, int sourcesCopyLength, int destinationStartIndex)
         {
             if (sourcesArrary == null)
             {
-                global::Debug.LogError($"参数sourcesArrary 为null");
+                Debug.LogError($"参数sourcesArrary 为null");
                 return;
             }
 
-            if (sourcesCopyLength >= ByteArray.S_ByteLength)
+            if (sourcesCopyLength >= S_ByteLength)
             {
-                Debug.LogError($"最多允许{ByteArray.S_ByteLength} 长度，实际参数值为{sourcesCopyLength}");
+                Debug.LogError($"最多允许{S_ByteLength} 长度，实际参数值为{sourcesCopyLength}");
                 return;
             }
 
@@ -121,7 +133,7 @@ namespace GameFramePro
             }
 
             Array.Copy(sourcesArrary, sourcesStartIndex, mBytes, destinationStartIndex, sourcesCopyLength);
-            mDataRealLength = realDataLength;
+            mDataRealLength = sourcesCopyLength;
         }
 
         /// <summary>/// 
@@ -146,7 +158,7 @@ namespace GameFramePro
                 return;
             }
 
-           
+
             string message = SerializeManager.SerializeObject(objectMessage);
             EncodingGetBytes(message, Encoding.UTF8, byteStartIndex);
         }

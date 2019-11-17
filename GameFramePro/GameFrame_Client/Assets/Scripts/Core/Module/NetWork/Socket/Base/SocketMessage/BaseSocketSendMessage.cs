@@ -8,7 +8,9 @@ using UnityEngine;
 
 namespace GameFramePro.NetWorkEx
 {
-    /// <summary>/// Socket 发送消息基类/// </summary>
+    /// <summary>/// 
+    /// Socket 发送消息基类
+    /// // </summary>
     public class BaseSocketSendMessage
     {
         public int mProtocolID { get; set; } //协议id
@@ -24,7 +26,10 @@ namespace GameFramePro.NetWorkEx
         internal static readonly ConcurrentQueue<BaseSocketSendMessage> mAllSendMessageDataPool = new ConcurrentQueue<BaseSocketSendMessage>(); //发送Socket 消息池
 
 
-        //获取一个指定的对象
+        /// <summary>
+        /// 获取一个指定的对象
+        /// </summary>
+        /// <returns></returns>
         public static BaseSocketSendMessage GetSocketSendMessageData()
         {
             if (mAllSendMessageDataPool.TryDequeue(out var messageData) == false)
@@ -38,15 +43,15 @@ namespace GameFramePro.NetWorkEx
         public static BaseSocketSendMessage GetSocketSendMessageData(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
         {
             if (mAllSendMessageDataPool.TryDequeue(out var messageData) == false)
-                messageData = new BaseSocketSendMessage(protocolId, message, endPoint, isBrocast);
-            else
-                messageData.InitialedSocketSendMessage(protocolId, message, endPoint, isBrocast);
+                messageData = new BaseSocketSendMessage();
 
+            messageData.InitialedSocketSendMessage(protocolId, message, endPoint, isBrocast);
             return messageData;
         }
 
 
-        /// <summary>/// 回收数据/// </summary>
+        /// <summary>///
+        /// 回收数据/// </summary>
         public static void RecycleSocketMessageData(BaseSocketSendMessage socketSendMessage)
         {
             if (socketSendMessage == null)
@@ -64,18 +69,18 @@ namespace GameFramePro.NetWorkEx
 
         #region 构造函数
 
-        private BaseSocketSendMessage()
+        protected BaseSocketSendMessage()
         {
         }
 
-        public BaseSocketSendMessage(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
-        {
-            InitialedSocketSendMessage(protocolId, message, endPoint, isBrocast);
-        }
+        //public BaseSocketSendMessage(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
+        //{
+        //    InitialedSocketSendMessage(protocolId, message, endPoint, isBrocast);
+        //}
 
         #endregion
 
-        public void InitialedSocketSendMessage(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
+        protected void InitialedSocketSendMessage(int protocolId, ByteArray message, EndPoint endPoint, bool isBrocast)
         {
             mSendMessageByteArray = message;
             mProtocolID = protocolId;

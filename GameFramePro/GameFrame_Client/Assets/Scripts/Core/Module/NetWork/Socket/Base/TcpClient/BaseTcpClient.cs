@@ -433,6 +433,9 @@ namespace GameFramePro.NetWorkEx
                         //  Thread.Sleep(S_ReceiveMessageThreadInterval);
                     }
 
+                    if (mBuffer.Length < 4)
+                        continue; //确保能够获取到数据长度
+
                     if (packageLength == 0)
                         packageLength = SocketHead.GetPacketLength(mBuffer, 0); //避免如果上一次有一个半包数据在缓存中解析错误
 
@@ -449,7 +452,10 @@ namespace GameFramePro.NetWorkEx
                     while (packageLength + receiveDataOffset <= totalReceiveDataLength)
                     {
                         ByteArray receiveByteArray = ByteArray.GetByteArray();
-                        receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, packageLength, packageLength, 0);
+                        receiveByteArray.CopyBytes(mBuffer, receiveDataOffset, packageLength,  0);
+
+                        if (receiveByteArray.mBytes.Length < 8)
+                            break;     //数据不够解析出协议id
 
                         int protocolId = SocketHead.GetPacketProtocolID(receiveByteArray.mBytes, 4);
 

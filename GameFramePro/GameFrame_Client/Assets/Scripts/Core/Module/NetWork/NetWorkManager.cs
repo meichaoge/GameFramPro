@@ -363,7 +363,7 @@ namespace GameFramePro
                 mAllSocketClients.Add(socketClient.mClientName, socketClient);
             }
 
-            socketClient.OnInitialedFailEvent += OnSocketInitialFailCallback;
+            socketClient.OnSocketStateChangeEvent += OnSockeStateChangeCallback;
             socketClient.OnSocketErrorEvent += OnSocketErrorCallback;
             socketClient.OnSendMessageEvent += OnSendMessageCallback;
             socketClient.OnReceiveMessageEvent += OnReceiveMessageCallback;
@@ -403,19 +403,19 @@ namespace GameFramePro
 
         #region BaseSocketClient 事件
 
-        private void OnSocketInitialFailCallback(BaseSocketClient socketClient)
+        private void OnSockeStateChangeCallback(ISocketClient socketClient, NetWorkStateUsage netWorkState)
         {
         }
 
-        private void OnSocketErrorCallback(BaseSocketClient socketClient, string message)
+        private void OnSocketErrorCallback(ISocketClient socketClient, string message)
         {
         }
 
-        private void OnSendMessageCallback(BaseSocketClient socketClient, BaseSocketSendMessage messageData)
+        private void OnSendMessageCallback(ISocketClient socketClient, BaseSocketSendMessage messageData)
         {
         }
 
-        private void OnReceiveMessageCallback(BaseSocketClient socketClient, BaseSocketReceiveMessage messageData)
+        private void OnReceiveMessageCallback(ISocketClient socketClient, BaseSocketReceiveMessage messageData)
         {
         }
 

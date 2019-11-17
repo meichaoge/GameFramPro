@@ -197,7 +197,7 @@ namespace GameFramePro.NetWorkEx
                         }
 
                         var receiveData = ByteArray.GetByteArray();
-                        receiveData.CopyBytes(mBuffer, 0, packetLength, packetLength, 0);
+                        receiveData.CopyBytes(mBuffer, 0, packetLength,  0);
 
 
                         var receiveMessage = BaseSocketReceiveMessage.GetSocketReceiveMessageData(0, receiveData, endPoint);

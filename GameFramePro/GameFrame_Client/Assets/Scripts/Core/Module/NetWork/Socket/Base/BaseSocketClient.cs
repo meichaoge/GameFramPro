@@ -85,11 +85,11 @@ namespace GameFramePro.NetWorkEx
 
         #region INetWorkEventCallback 接口实现
 
-        public event System.Action<BaseSocketClient> OnInitialedFailEvent; //创建Socket 失败
-        public event System.Action<BaseSocketClient, string> OnSocketErrorEvent; //Socket异常败
+        public event System.Action<ISocketClient, NetWorkStateUsage> OnSocketStateChangeEvent; //Socket 数据改变
+        public event System.Action<ISocketClient, string> OnSocketErrorEvent; //Socket异常败
 
-        public event System.Action<BaseSocketClient, BaseSocketSendMessage> OnSendMessageEvent; //发送消息
-        public event System.Action<BaseSocketClient, BaseSocketReceiveMessage> OnReceiveMessageEvent; //接受到消息
+        public event System.Action<ISocketClient, BaseSocketSendMessage> OnSendMessageEvent; //发送消息
+        public event System.Action<ISocketClient, BaseSocketReceiveMessage> OnReceiveMessageEvent; //接受到消息
 
         #endregion
 
@@ -181,7 +181,7 @@ namespace GameFramePro.NetWorkEx
         /// <summary>/// 清理事件/// </summary>
         protected virtual void RemoveAllEvents()
         {
-            OnInitialedFailEvent = null;
+            OnSocketStateChangeEvent = null;
             OnSocketErrorEvent = null;
             OnSendMessageEvent = null;
             OnReceiveMessageEvent = null;
@@ -196,7 +196,8 @@ namespace GameFramePro.NetWorkEx
                 if (string.IsNullOrEmpty(message) == false)
                     Debug.LogError(message);
                 mIsSocketInitialed = false;
-                OnInitialedFailEvent?.Invoke(this);
+                OnSocketStateChangeEvent?.Invoke(this, NetWorkStateUsage.InitialFail);
+               // OnInitialedFailEvent?.Invoke(this);
             }
             catch (Exception e)
             {
@@ -212,6 +213,8 @@ namespace GameFramePro.NetWorkEx
                 if (string.IsNullOrEmpty(message) == false)
                     Debug.LogError(message);
                 OnSocketErrorEvent?.Invoke(this, message);
+                OnSocketStateChangeEvent?.Invoke(this, NetWorkStateUsage.Error);
+
             }
             catch (Exception e)
             {

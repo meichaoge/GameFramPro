@@ -18,6 +18,11 @@ namespace GameFramePro.NetWorkEx
 
         public const int S_HeadLength = 3 * sizeof(int); //头部字节长度
 
+        /// <summary>
+        /// buffer 的最小长度 默认最小为4 以便于能解析数据
+        /// </summary>
+        public static int BufferMinLength { get; } = 4; 
+
         #endregion
 
         #region SocketHead 缓存池
@@ -69,21 +74,25 @@ namespace GameFramePro.NetWorkEx
 
         #region 静态辅助接口
 
-        /// <summary>     /// 获取数据包的真实长度    /// </summary> 
+        /// <summary>  
+        /// /// 获取数据包的真实长度     (需要在调用前确保数据最少长度能解析出需要的真实长度)
+        /// /// </summary> 
         public static int GetPacketLength(byte[] buffer, int startIndex)
         {
-            byte[] LengthBuffer = new byte[4];
-            if (buffer == null || buffer.Length < 4)
-                throw new ArgumentNullException($"数据包长度异常 参数为null  或者小于4");
+            byte[] LengthBuffer = new byte[BufferMinLength];
+            if (buffer == null || buffer.Length < BufferMinLength)
+                throw new ArgumentNullException($"数据包长度异常 参数为null  或者小于{BufferMinLength}");
             if (startIndex >= buffer.Length)
                 throw new ArgumentOutOfRangeException($"参数 startIndex 的值 超过了数据包的实际长度 ");
-            Array.Copy(buffer, startIndex, LengthBuffer, 0, 4);
+            Array.Copy(buffer, startIndex, LengthBuffer, 0, BufferMinLength);
             return BitConverter.ToInt32(LengthBuffer, 0);
         }
 
 
 
-        /// <summary>     /// 获取数据包的协议id    /// </summary> 
+        /// <summary>     
+        /// 获取数据包的协议id (需要在调用前确保数据最少长度能解析出需要的协议id)
+        /// /// </summary> 
         public static int GetPacketProtocolID(byte[] buffer, int startIndex)
         {
             byte[] CommandIDBuffer = new byte[4];
@@ -130,7 +139,7 @@ namespace GameFramePro.NetWorkEx
      //       Debug.Log($"源+版本号 {mVersion} {sourceData}");
 
 
-            sourceData.CopyBytes(temp.mBytes,0,mMessageLength + S_HeadLength,mMessageLength + S_HeadLength,0);
+            sourceData.CopyBytes(temp.mBytes,0,mMessageLength + S_HeadLength,0);
             
             ByteArray.RecycleByteArray(temp);
         }
