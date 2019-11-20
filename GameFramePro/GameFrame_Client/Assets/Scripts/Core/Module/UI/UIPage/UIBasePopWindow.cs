@@ -50,7 +50,18 @@ namespace GameFramePro.UI
         #endregion
 
 
+        #region 基类重写
+        protected override void OnAfterInVisible(bool isForceDestroyed)
+        {
+            base.OnAfterInVisible(isForceDestroyed);
 
+            if (mBelongChangePage != null)
+            {
+                mBelongChangePage.RemovePopWindow(PageName);
+                mBelongChangePage = null;
+            }
+        }
+        #endregion
 
     }
 }

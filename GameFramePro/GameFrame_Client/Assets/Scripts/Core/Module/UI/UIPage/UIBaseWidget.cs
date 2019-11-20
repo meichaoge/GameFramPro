@@ -66,10 +66,13 @@ namespace GameFramePro.UI
             //}
         }
 
-        //protected override void OnAfterDestroyed()
-        //{
-        //    base.OnAfterDestroyed();
-        //}
+        protected override void OnBeforeDestroyed()
+        {
+            if (mParentUIPage != null)
+                mParentUIPage.RemoveWidget(this);
+            base.OnBeforeDestroyed();
+        }
+
 
         #endregion
     }

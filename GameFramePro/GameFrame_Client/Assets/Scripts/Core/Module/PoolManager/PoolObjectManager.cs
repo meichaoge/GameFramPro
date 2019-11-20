@@ -22,7 +22,7 @@ namespace GameFramePro.ResourcesEx
         }
         public static void TrackPoolManager<T>(Type type, INativeObjectPool<T> poolManager) where T : new()
         {
-       //     if (Application.isPlaying == false) return; //过滤编辑器代码
+            //     if (Application.isPlaying == false) return; //过滤编辑器代码
 
             INativeObjectPool<object> pool = null;
 
@@ -43,7 +43,7 @@ namespace GameFramePro.ResourcesEx
 
         public static void UnTrackPoolManager<T>(Type type, INativeObjectPool<T> poolManager) where T : new()
         {
-    //        if (Application.isPlaying == false) return; //过滤编辑器代码
+            //        if (Application.isPlaying == false) return; //过滤编辑器代码
             INativeObjectPool<object> pool = null;
 
             if (mAllNativeObjectPoolManagers.TryGetValue(type, out pool))
@@ -63,39 +63,39 @@ namespace GameFramePro.ResourcesEx
 
         public static void TrackPoolManager_Mono<T>(IUnityObjectPool poolManager) where T : UnityEngine.Object
         {
-            TrackPoolManager_Mono<T>(typeof(T), poolManager);
+            //    TrackPoolManager_Mono<T>(typeof(T), poolManager);
         }
         public static void TrackPoolManager_Mono<T>(Type type, IUnityObjectPool poolManager) where T : UnityEngine.Object
         {
-            if (Application.isPlaying == false) return; //过滤编辑器代码
-            IUnityObjectPool pool = null;
+            //if (Application.isPlaying == false) return; //过滤编辑器代码
+            //IUnityObjectPool pool = null;
 
-            if (mAllUnityObjectPoolManagers.TryGetValue(type, out pool))
-            {
-                Debug.LogError(string.Format("TrackPoolManager Fail,Already Exit Pool of Type {0}", type));
-                return;
-            }
-            mAllUnityObjectPoolManagers[type] = poolManager as IUnityObjectPool;
+            //if (mAllUnityObjectPoolManagers.TryGetValue(type, out pool))
+            //{
+            //    Debug.LogError(string.Format("TrackPoolManager Fail,Already Exit Pool of Type {0}", type));
+            //    return;
+            //}
+            //mAllUnityObjectPoolManagers[type] = poolManager as IUnityObjectPool;
         }
 
 
 
         public static void UnTrackPoolManager_Mono<T>(IUnityObjectPool poolManager) where T : UnityEngine.Object
         {
-            UnTrackPoolManager_Mono<T>(typeof(T), poolManager);
+            // UnTrackPoolManager_Mono<T>(typeof(T), poolManager);
         }
 
         public static void UnTrackPoolManager_Mono<T>(Type type, IUnityObjectPool poolManager) where T : UnityEngine.Object
         {
-            if (Application.isPlaying == false) return; //过滤编辑器代码
-            IUnityObjectPool pool = null;
+            //if (Application.isPlaying == false) return; //过滤编辑器代码
+            //IUnityObjectPool pool = null;
 
-            if (mAllUnityObjectPoolManagers.TryGetValue(type, out pool))
-            {
-                mAllUnityObjectPoolManagers.Remove(type);
-                return;
-            }
-            Debug.LogError(string.Format("UnTrackPoolManager_Mono Fail,Not Exit Pool of Type {0}", type));
+            //if (mAllUnityObjectPoolManagers.TryGetValue(type, out pool))
+            //{
+            //    mAllUnityObjectPoolManagers.Remove(type);
+            //    return;
+            //}
+            //Debug.LogError(string.Format("UnTrackPoolManager_Mono Fail,Not Exit Pool of Type {0}", type));
 
         }
 
@@ -106,7 +106,7 @@ namespace GameFramePro.ResourcesEx
         private static readonly string R_UnityPoolManagerPrefix = "UnityPoolManger_"; //Unity 对象池父节点名称前缀
         private static readonly Dictionary<string, Transform> mAllPoolMonoObjects = new Dictionary<string, Transform>();
 
-      //  protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不会一起销毁
+        //  protected override bool IsNotDestroyedOnLoad { get; } = true; //标示不会一起销毁
 
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace GameFramePro.ResourcesEx
             }
 
             parent = ResourcesManagerUtility.Instantiate(poolName).transform;
-        //    parent.SetParent(transform, false);
+            //    parent.SetParent(transform, false);
             mAllPoolMonoObjects[poolName] = parent;
             return parent;
         }

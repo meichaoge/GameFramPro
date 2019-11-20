@@ -60,8 +60,12 @@ namespace GameFramePro.UI
 
             if (mAllContainSubPopWindows != null && mAllContainSubPopWindows.Count != 0)
             {
-                foreach (var page in mAllContainSubPopWindows)
+                HashSet<string> temp = new HashSet<string>(mAllContainSubPopWindows);
+                foreach (var page in temp)
+                {
+                    //   Debug.Log($"关闭页面关联弹窗{page}");
                     UIPageManager.HidePopwindow(page);
+                }
                 mAllContainSubPopWindows.Clear();
             }
         }

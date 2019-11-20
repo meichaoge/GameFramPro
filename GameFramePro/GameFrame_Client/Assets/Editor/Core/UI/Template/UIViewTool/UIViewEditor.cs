@@ -24,24 +24,56 @@ public class UIViewEditor : Editor
         public EmObjType objType;
         public string objName;
         public string prefix;
-        public string tplText;
+
+        public bool mIsSelfTrans;
+
+        public string tplText
+        {
+            get
+            {
+                if (objType == EmObjType.Transform)
+                {
+                    if (mIsSelfTrans == false)
+                        return "\t\t\t{0} {1} = transform.Find(\"{2}\");\n";
+                    else
+                        return "\t\t\t{0} {1} = transform;\n";
+                }
+                else if (objType == EmObjType.Gameobject)
+                {
+                    if (mIsSelfTrans == false)
+                        return "\t\t\t{0} {1} = transform.Find(\"{2}\").gameObject;\n";
+                    else
+                        return "\t\t\t{0} {1} = gameObject;\n";
+                }
+                else if (objType == EmObjType.Component)
+                {
+                    if (mIsSelfTrans == false)
+                        return "\t\t\t{0} {1} = transform.Find(\"{2}\").GetComponent<{0}>();\n";
+                    else
+                        return "\t\t\t{0} {1} = gameObject.GetComponent<{0}>();\n";
+
+                }
+                else if (objType == EmObjType.RectTransform)
+                {
+                    if (mIsSelfTrans == false)
+                        return "\t\t\t{0} {1} = transform.Find(\"{2}\") as RectTransform;\n";
+                    else
+                        return "\t\t\t{0} {1} = transform as RectTransform;\n";
+                }
+
+                Debug.LogError($"没有定义的类型{objType}");
+                return string.Empty;
+            }
+        }
 
 
-        public TagObj(EmObjType objType, string objName, string prefix)
+        public TagObj(EmObjType objType, string objName, string prefix, bool isSelfTrans = true)
         {
             this.objType = objType;
             this.objName = objName;
             this.prefix = prefix;
-            this.tplText = "";
+            mIsSelfTrans = isSelfTrans;
 
-            if (objType == EmObjType.Transform)
-                this.tplText = "\t\t\t{0} {1} = transform.Find(\"{2}\");\n";
-            else if (objType == EmObjType.Gameobject)
-                this.tplText = "\t\t\t{0} {1} = transform.Find(\"{2}\").gameObject;\n";
-            else if (objType == EmObjType.Component)
-                this.tplText = "\t\t\t{0} {1} = transform.Find(\"{2}\").gameObject.GetComponent<{0}>();\n";
-            else if (objType == EmObjType.RectTransform)
-                this.tplText = "\t\t\t{0} {1} = transform.Find(\"{2}\") as RectTransform;\n";
         }
     }
 
@@ -59,17 +91,12 @@ public class UIViewEditor : Editor
         {UGUIComponentTypeEnum.UGUIButton.ToString(), new TagObj(EmObjType.Component, "Button", "btn")},
         {UGUIComponentTypeEnum.UGUIDropDown.ToString(), new TagObj(EmObjType.Component, "Dropdown", "drop")},
         {UGUIComponentTypeEnum.UGUIInputField.ToString(), new TagObj(EmObjType.Component, "InputField", "input")},
-
-              {UGUIComponentTypeEnum.CanvasGroup.ToString(), new TagObj(EmObjType.Component, "CanvasGroup", "canvasGroup")},
-           {UGUIComponentTypeEnum.UILoopScrollRect_Vertical.ToString(), new TagObj(EmObjType.Component, "LoopVerticalScrollRect", "loopVertical")},
-           {UGUIComponentTypeEnum.UILoopScrollRect_Horizontial.ToString(), new TagObj(EmObjType.Component, "LoopHorizontalScrollRect", "loopHorizontial")},
-
     };
 
     public static string TemplatePath = Application.dataPath + "/Editor/Core/UI/Template"; //模本文件
 
 
-    [MenuItem("Assets/工具/辅助/选中UI预制体，生成View代码")]
+    [MenuItem("Assets/工具和扩展/辅助/选中UI预制体，生成View代码")]
     public static void GenViewCode()
     {
         GameObject goSelected = Selection.activeGameObject;
@@ -97,7 +124,7 @@ public class UIViewEditor : Editor
         List<Transform> goChildsTrans = goSelected.GetComponentsInChildren<Transform>(true).ToList();
         foreach (var item in goChildsTrans)
         {
-//            if (item.gameObject != goSelected) ;  //2019/10/17 这个判断条件一直成立！！ 原因未知
+            //            if (item.gameObject != goSelected) ;  //2019/10/17 这个判断条件一直成立！！ 原因未知
             if (item.gameObject.GetInstanceID() != goSelected.GetInstanceID())
                 goChilds.Add(item.gameObject);
         }
@@ -116,8 +143,22 @@ public class UIViewEditor : Editor
                 string objName = tagObj.objName;
                 string propertyName = tagObj.prefix + UnityExtentionMethod.FormatName(go.name);
                 UnityExtentionMethod.UniqueName(ref propertyNames, ref propertyName);
-                string path = go.transform.GetPath(goSelected.transform);
-                string value = string.Format(tagObj.tplText, objName, propertyName, path);
+                string path = string.Empty;
+                string value = string.Empty;
+
+                if (go.GetInstanceID() != goSelected.GetInstanceID())
+                {
+                    path = go.transform.GetPath(goSelected.transform);
+                    tagObj.mIsSelfTrans = false;
+                    value = string.Format(tagObj.tplText, objName, propertyName, path);
+                }
+                else
+                {
+                    path = go.transform.name;
+                    tagObj.mIsSelfTrans = true;
+                    value = string.Format(tagObj.tplText, objName, propertyName);
+                }
+
                 sbInitView.Append(value);
                 uiParameter.Append("private " + objName + " m_" + propertyName + " ;\n");
                 viewTouiParameter.Append("m_" + propertyName + "=" + propertyName + ";\n");
@@ -154,7 +195,7 @@ public class UIViewEditor : Editor
         Debug.Log("生成View代码完成！");
     }
 
-    [MenuItem("Assets/工具/辅助/选中UI预制体，拷贝View代码到剪贴板")]
+    [MenuItem("Assets/工具和扩展/辅助/选中UI预制体，拷贝View代码到剪贴板")]
     public static void CopyViewCodeToClipbord()
     {
         GameObject goSelected = Selection.activeGameObject;
@@ -184,8 +225,22 @@ public class UIViewEditor : Editor
                 string objName = tagObj.objName;
                 string propertyName = tagObj.prefix + UnityExtentionMethod.FormatName(go.name);
                 UnityExtentionMethod.UniqueName(ref propertyNames, ref propertyName);
-                string path = go.transform.GetPath(goSelected.transform);
-                string value = string.Format(tagObj.tplText, objName, propertyName, path);
+                string path = string.Empty;
+                string value = string.Empty;
+                if (go.GetInstanceID() != goSelected.GetInstanceID())
+                {
+                    path = go.transform.GetPath(goSelected.transform);
+                    tagObj.mIsSelfTrans = false;
+                    value = string.Format(tagObj.tplText, objName, propertyName, path);
+                }
+                else
+                {
+                    path = go.transform.name;
+                    tagObj.mIsSelfTrans = true;
+                    value = string.Format(tagObj.tplText, objName, propertyName);
+                }
+                //string path = go.transform.GetPath(goSelected.transform);
+                //string value = string.Format(tagObj.tplText, objName, propertyName, path);
                 sbInitView.Append(value);
             }
         }
@@ -207,66 +262,66 @@ public class UIViewEditor : Editor
         Debug.Log("拷贝View代码到剪贴板完成！");
     }
 
-//    [MenuItem("Assets/工具/UI 视图/获取本地化配置")]
-//    public static string GetLocalizationTextInfor()
-//    {
-//        GameObject goSelected = Selection.activeGameObject;
-//        if (goSelected == null)
-//        {
-//            Debug.LogError("没有选中Prefab！");
-//            return null;
-//        }
-//
-//        string strTplPath = TemplatePath + "/" + "View.tpl.txt";
-//        if (!File.Exists(strTplPath))
-//        {
-//            Debug.LogError("模板文件不存在！");
-//            return null;
-//        }
-//
-//        List<GameObject> goChilds = new List<GameObject>();
-//        List<Transform> goChildsTrans = goSelected.GetComponentsInChildren<Transform>(true).ToList();
-//        foreach (var item in goChildsTrans)
-//        {
-//            if (item.gameObject != goSelected) ;
-//            goChilds.Add(item.gameObject);
-//        }
-//        goChilds.Insert(0, goSelected);
-//        StringBuilder sbInitView = new StringBuilder();
-//        Dictionary<string, int> propertyNames = new Dictionary<string, int>();
-//        foreach (GameObject go in goChilds)
-//        {
-//            //***2019/5/6 只获取需要修改多语言配置的项
-//            if (go.tag != "UI.Text")
-//                continue;
-//            Text goText = go.GetComponent<Text>();
-//            if (string.IsNullOrEmpty(goText.text) || goText.text.StartsWith("@") == false)
-//                continue;
-//
-//
-//            if (TagObjs.ContainsKey(go.tag))
-//            {
-//                TagObj tagObj = TagObjs[go.tag];
-//                string objName = tagObj.objName;
-//                string propertyName = tagObj.prefix + Util.FormatName(go.name);
-//                string path = go.transform.GetPath(goSelected.transform);
-//                string localizationStr_Left = string.Format(tagObj.tplText, objName, propertyName, path);
-//
-//                sbInitView.Append(localizationStr_Left);
-//                string value = string.Format("{0}.text=LanguageController.GetString(\"{1}\");", propertyName, goText.text);
-//                sbInitView.Append(value);
-//                sbInitView.Append(Environment.NewLine);
-//                sbInitView.Append(Environment.NewLine);
-//
-//                string localizate = LanguageController.GetString(goText.text);
-//                goText.text = localizate;
-//            }
-//        }
-//
-//        string strInitView = sbInitView.ToString();
-//        GUIUtility.systemCopyBuffer = strInitView;  //复制到剪切板
-//
-//        Debug.Log("获取和替换本地化完成！"+ strInitView);
-//        return strInitView;
-//    }
+    //    [MenuItem("Assets/工具/UI 视图/获取本地化配置")]
+    //    public static string GetLocalizationTextInfor()
+    //    {
+    //        GameObject goSelected = Selection.activeGameObject;
+    //        if (goSelected == null)
+    //        {
+    //            Debug.LogError("没有选中Prefab！");
+    //            return null;
+    //        }
+    //
+    //        string strTplPath = TemplatePath + "/" + "View.tpl.txt";
+    //        if (!File.Exists(strTplPath))
+    //        {
+    //            Debug.LogError("模板文件不存在！");
+    //            return null;
+    //        }
+    //
+    //        List<GameObject> goChilds = new List<GameObject>();
+    //        List<Transform> goChildsTrans = goSelected.GetComponentsInChildren<Transform>(true).ToList();
+    //        foreach (var item in goChildsTrans)
+    //        {
+    //            if (item.gameObject != goSelected) ;
+    //            goChilds.Add(item.gameObject);
+    //        }
+    //        goChilds.Insert(0, goSelected);
+    //        StringBuilder sbInitView = new StringBuilder();
+    //        Dictionary<string, int> propertyNames = new Dictionary<string, int>();
+    //        foreach (GameObject go in goChilds)
+    //        {
+    //            //***2019/5/6 只获取需要修改多语言配置的项
+    //            if (go.tag != "UI.Text")
+    //                continue;
+    //            Text goText = go.GetComponent<Text>();
+    //            if (string.IsNullOrEmpty(goText.text) || goText.text.StartsWith("@") == false)
+    //                continue;
+    //
+    //
+    //            if (TagObjs.ContainsKey(go.tag))
+    //            {
+    //                TagObj tagObj = TagObjs[go.tag];
+    //                string objName = tagObj.objName;
+    //                string propertyName = tagObj.prefix + Util.FormatName(go.name);
+    //                string path = go.transform.GetPath(goSelected.transform);
+    //                string localizationStr_Left = string.Format(tagObj.tplText, objName, propertyName, path);
+    //
+    //                sbInitView.Append(localizationStr_Left);
+    //                string value = string.Format("{0}.text=LanguageController.GetString(\"{1}\");", propertyName, goText.text);
+    //                sbInitView.Append(value);
+    //                sbInitView.Append(Environment.NewLine);
+    //                sbInitView.Append(Environment.NewLine);
+    //
+    //                string localizate = LanguageController.GetString(goText.text);
+    //                goText.text = localizate;
+    //            }
+    //        }
+    //
+    //        string strInitView = sbInitView.ToString();
+    //        GUIUtility.systemCopyBuffer = strInitView;  //复制到剪切板
+    //
+    //        Debug.Log("获取和替换本地化完成！"+ strInitView);
+    //        return strInitView;
+    //    }
 }
