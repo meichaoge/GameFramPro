@@ -11,6 +11,9 @@ public class InitOnStart : MonoBehaviour
     public int m_DataCount = 50;
     LoopScrollRect m_LoopScrollRect;
 
+    [SerializeField]
+    private GameObject mItemPrefab;
+
     public Dictionary<int, CustomerScrollRectItem> m_AllItems = new Dictionary<int, CustomerScrollRectItem>();
     private void Awake()
     {
@@ -23,6 +26,8 @@ public class InitOnStart : MonoBehaviour
         m_LoopScrollRect.m_OnItemCreateEvent += OnItemCreate;
         m_LoopScrollRect.m_OnItemRemoveEvent += OnItemRemove;
         m_LoopScrollRect.m_OnItemViewFlushEvent += OnItemFlush;
+
+        m_LoopScrollRect.SetLoopItemPrefab(mItemPrefab);
     }
 
     private void Update()

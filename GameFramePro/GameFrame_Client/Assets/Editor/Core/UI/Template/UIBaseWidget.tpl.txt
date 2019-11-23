@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace GameFramePro.UI
 {
-   	public class #CLASSNAME# : UIBaseChangePage
+   	public class #CLASSNAME# : UIBaseWidget
   	{
      #region UI
         #UIPARAMETER#

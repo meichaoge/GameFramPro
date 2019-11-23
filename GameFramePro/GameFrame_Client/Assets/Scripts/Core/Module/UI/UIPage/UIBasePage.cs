@@ -216,7 +216,8 @@ namespace GameFramePro.UI
                 mAudioController.StopAllAudios(false); //背景音保留
             if (mAllContainWidgets != null && mAllContainWidgets.Count != 0)
             {
-                foreach (var widget in mAllContainWidgets)
+                List<UIBaseWidget> temp = new List<UIBaseWidget>(mAllContainWidgets);
+                foreach (var widget in temp)
                 {
                     if (widget == null) continue;
                     if (widget.mIsActivite == false) continue;

@@ -28,8 +28,7 @@ namespace UnityEngine.UI
             AutoHideAndExpandViewport,
         }
 
-        [Tooltip("Prefab Source")]
-        public GameObject m_PrefabSource;
+        private GameObject m_PrefabSource;
 
         public int m_PoolSize = 5;
         private bool m_IsInitialed = false;  //标识是否已经初始化
@@ -432,22 +431,6 @@ namespace UnityEngine.UI
         {
             base.OnEnable();
 
-#if UNITY_EDITOR
-            if (m_PrefabSource == null)
-                Debug.LogError("Not Set Item Prefab to Show " + gameObject.name+"(需要在LoopScrollRect 上设置要显示的预制体)");
-
-            HorizontalOrVerticalLayoutGroup layout1 = content.GetComponent<HorizontalOrVerticalLayoutGroup>();
-            if(layout1!=null)
-            {
-                LayoutElement layoutelement = m_PrefabSource.GetComponent<LayoutElement>();
-                if(layoutelement = null)
-                {
-                    Debug.LogError("非网格布局(content 上有GriadLayout)  必须添加LayoutElement 组件 并设置合理的值"+m_PrefabSource.gameObject.name);
-                }
-            }
-#endif
-
-
             if (m_HorizontalScrollbar)
                 m_HorizontalScrollbar.onValueChanged.AddListener(SetHorizontalNormalizedPosition);
             if (m_VerticalScrollbar)
@@ -570,6 +553,28 @@ namespace UnityEngine.UI
 
 
         #region  初始化/填充/刷新/清理数据 接口
+        /// <summary>
+        /// 动态设置关联的预制体
+        /// </summary>
+        /// <param name="prefab"></param>
+        public void SetLoopItemPrefab(GameObject prefab)
+        {
+            m_PrefabSource = prefab;
+#if UNITY_EDITOR
+            if (m_PrefabSource == null)
+                Debug.LogError("Not Set Item Prefab to Show " + gameObject.name + "(需要在LoopScrollRect 上设置要显示的预制体)");
+
+            HorizontalOrVerticalLayoutGroup layout1 = content.GetComponent<HorizontalOrVerticalLayoutGroup>();
+            if (layout1 != null)
+            {
+                LayoutElement layoutelement = m_PrefabSource.GetComponent<LayoutElement>();
+                if (layoutelement = null)
+                {
+                    Debug.LogError("非网格布局(content 上有GriadLayout)  必须添加LayoutElement 组件 并设置合理的值" + m_PrefabSource.gameObject.name);
+                }
+            }
+#endif
+        }
 
         private void DeleteScrollRectItem(Transform go)
         {
@@ -662,8 +667,14 @@ namespace UnityEngine.UI
 
         public void RefillCells(int dataCount, int offset = 0)
         {
-            if (!Application.isPlaying || m_PrefabSource == null)
+            if (!Application.isPlaying )
                 return;
+
+            if (m_PrefabSource == null)
+            {
+                Debug.LogError("请设置正确的预制体");
+                return;
+            }
 
             m_TotalCount = dataCount;
             InitialedPoolManager();

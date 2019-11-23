@@ -89,6 +89,19 @@ namespace GameFramePro.UI
             return targetPage;
         }
 
+        /// <summary>
+        /// 特殊页面关闭当前页面，切换到空白的页面，主要用于场景切换时候后台加载UI
+        /// </summary>
+        public static void ChangeToBlankPage(bool isForceDestroyed)
+        {
+            if (CurUIBaseChangePage == null)
+                return;
+
+            CurUIBaseChangePage.HidePage(isForceDestroyed);
+            CurUIBaseChangePage = null;
+        }
+
+
         /// <summary>/// 返回到上一个界面/// </summary>
         public static void BackPage()
         {
@@ -182,6 +195,11 @@ namespace GameFramePro.UI
             return null;
         }
 
+        /// <summary>/// 只在弹窗被真正销毁时候调用/// </summary>
+        public static void RemoveUIChangePageFromCache(UIBaseChangePage pageName)
+        {
+            s_AllAliveUIChangePages.Remove(pageName.PageName);
+        }
         #endregion
 
 
@@ -384,7 +402,6 @@ namespace GameFramePro.UI
 
         #endregion
 
-        #region 辅助工具
 
         /// <summary>/// 创建页面实例/// </summary>
         private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction, LoadAssetChannelUsage loadAssetChannel )
@@ -397,6 +414,5 @@ namespace GameFramePro.UI
             afterInitialedInstanceAction?.Invoke(go);
         }
 
-        #endregion
     }
 }
