@@ -8,6 +8,8 @@ namespace GameFramePro
 {
     public static class MathfUtility
     {
+        #region 2 的幂次方处理
+
         /// <summary>
         /// 获取最接近的2次幂的值 (最接近data 的2次幂)
         /// </summary>
@@ -58,7 +60,53 @@ namespace GameFramePro
             return temple1;
         }
 
+        #endregion
 
+
+        #region 随机数处理
+        /// <summary>
+        /// 获取指定随机数生成概率的随机数
+        /// </summary>
+        /// <param name="probabity"指定范围内元素生成的概率数组</param>
+        /// <returns>返回对应每个概率值的数组索引</returns>
+        public static int GetRandomOnProbability(int[] probabity)
+        {
+            int total = 100;
+            int random = UnityEngine.Random.Range(1, 1 + total);
+            int sum = 0;
+            for (int dex = 0; dex < probabity.Length; dex++)
+            {
+                sum += probabity[dex];
+                if (random < sum)
+                    return dex;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// 随机重排 (Fisher–Yates shuffle算法) 复杂度O(n)
+        /// </summary>
+        /// <param name="sources"></param>
+        /// <returns></returns>
+        public static int[] RandomSort(int[] sources)
+        {
+            int[] result = new int[sources.Length];
+            System.Array.Copy(sources, result, sources.Length);
+
+            for (int dex = result.Length - 1; dex >= 0; dex--)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, dex + 1);
+                if (randomIndex == dex) continue;
+                int temp = result[dex];
+                result[dex] = result[randomIndex];
+                result[randomIndex] = temp;
+            }
+
+            return result;
+        }
+
+
+        #endregion
 
     }
 }
