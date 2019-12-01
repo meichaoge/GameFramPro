@@ -19,9 +19,9 @@ Shader "UnityShaderBook/8/AlphaBlendShader_2Side"
 		 Pass
         {
 		  Tags{"LightMode"="ForwardBase"}
-		  ZWrite off
-		  Blend SrcAlpha OneMinusSrcAlpha
 		  Cull Front
+		  ZWrite Off
+		  Blend SrcAlpha OneMinusSrcAlpha
 
 
             CGPROGRAM
@@ -79,7 +79,7 @@ Shader "UnityShaderBook/8/AlphaBlendShader_2Side"
 
 			   fixed3 diffuse=_LightColor0.rgb*aldebo*saturate(dot(worldNormal,llightDir));
 
-                return fixed4(ambient+diffuse,col.r*_AlphaScale);
+                return fixed4(ambient+diffuse,col.a*_AlphaScale);
             }
             ENDCG
         }
@@ -88,9 +88,11 @@ Shader "UnityShaderBook/8/AlphaBlendShader_2Side"
         Pass
         {
 		  Tags{"LightMode"="ForwardBase"}
-		  ZWrite off
-		  Blend SrcAlpha OneMinusSrcAlpha
 		  Cull Back
+
+		  ZWrite Off
+
+		  Blend SrcAlpha OneMinusSrcAlpha
 
             CGPROGRAM
             #pragma vertex vert
@@ -147,7 +149,7 @@ Shader "UnityShaderBook/8/AlphaBlendShader_2Side"
 
 			   fixed3 diffuse=_LightColor0.rgb*aldebo*saturate(dot(worldNormal,llightDir));
 
-                return fixed4(ambient+diffuse,col.r*_AlphaScale);
+                return fixed4(ambient+diffuse,col.a*_AlphaScale);
             }
             ENDCG
         }
