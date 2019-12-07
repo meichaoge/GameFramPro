@@ -71,8 +71,7 @@ namespace GameFramePro.UI
                     {
                         if (uiBasePage is UIBasePopWindow)
                             UIPageManager.RemoveUIPopWindowFromCache(uiBasePage as UIBasePopWindow);
-                        else if (uiBasePage is UIBaseChangePage)
-                            UIPageManager.RemoveUIChangePageFromCache(uiBasePage as UIBaseChangePage);
+                 
 #if UNITY_EDITOR
                         Debug.LogEditorInfor($"界面{uiBasePage.PageName} 隐藏超过{ uiBasePage.MaxAliveAfterInActivte} 秒后被释放资源");
 #endif
