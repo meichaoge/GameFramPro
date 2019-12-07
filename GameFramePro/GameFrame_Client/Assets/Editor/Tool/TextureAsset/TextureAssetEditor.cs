@@ -349,6 +349,12 @@ namespace GameFramePro.EditorEx
                     import.spritePackingTag = packingTag;
                 }
             }
+            if (width_Power2 >= 512 && height_Power2 >= 512)
+            {
+                import.spritePackingTag = string.Empty;
+                isNeedReImport = true;
+            }  //过滤512*512 以上的图片资源
+
 
             if (isFormatSetEnable)
             {

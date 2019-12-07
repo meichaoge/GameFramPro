@@ -195,11 +195,11 @@ namespace GameFramePro.UI
             return null;
         }
 
-        /// <summary>/// 只在弹窗被真正销毁时候调用/// </summary>
-        public static void RemoveUIChangePageFromCache(UIBaseChangePage pageName)
-        {
-            s_AllAliveUIChangePages.Remove(pageName.PageName);
-        }
+        ///// <summary>/// 只在弹窗被真正销毁时候调用 不能删除/// </summary>
+        //public static void RemoveUIChangePageFromCache(UIBaseChangePage pageName)
+        //{
+        //    s_AllAliveUIChangePages.Remove(pageName.PageName);
+        //}
         #endregion
 
 
