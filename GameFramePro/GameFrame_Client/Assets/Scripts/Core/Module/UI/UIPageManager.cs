@@ -105,15 +105,19 @@ namespace GameFramePro.UI
         /// <summary>/// 返回到上一个界面/// </summary>
         public static void BackPage()
         {
-            if (s_ChangePageRecord.Count == 0) return;
             string perviousPageName = string.Empty;
             UIBaseChangePage previouPage = null;
 
             while (true)
             {
+                if (s_ChangePageRecord.Count == 0) return;
+
                 perviousPageName = s_ChangePageRecord.Pop();
                 if (string.IsNullOrEmpty(perviousPageName))
                     continue;
+                if (CurUIBaseChangePage != null && perviousPageName == CurUIBaseChangePage.PageName)
+                    continue; //避免回退到当前界面后无法继续回退
+
                 previouPage = TryGetUIChangePageFromCache(perviousPageName);
                 if (previouPage == null)
                 {

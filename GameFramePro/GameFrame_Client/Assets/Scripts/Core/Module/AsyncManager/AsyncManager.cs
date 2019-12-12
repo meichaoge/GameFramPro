@@ -81,11 +81,22 @@ namespace GameFramePro
 
             return StartCoroutineEx(DelayDoAction(delayTime, action));
         }
+        /// <summary>/// 延迟一段时间后执行操作(类似MonoBehavior.Invoke)/// </summary>
+        public static SuperCoroutine Invoke(YieldInstruction instruction, System.Action action)
+        {
+            if (instruction == null)
+            {
+                action?.Invoke();
+                return null;
+            }
+            return StartCoroutineEx(DelayDoAction(instruction, action));
+        }
+
 
         /// <summary>/// 延迟一段时间后每repeatRate 秒执行一次操作操作(类似MonoBehavior.InvokeRepeating)/// </summary>
         public static SuperCoroutine InvokeRepeating(float time, float repeatRate, System.Action action)
         {
-            if ((double) repeatRate <= 9.99999974737875E-06 && (double) repeatRate != 0.0)
+            if ((double)repeatRate <= 9.99999974737875E-06 && (double)repeatRate != 0.0)
                 throw new UnityException("Invoke repeat rate has to be larger than 0.00001F)");
 
             return StartCoroutineEx(DelayDoActionRepeat(time, repeatRate, action));
@@ -102,16 +113,22 @@ namespace GameFramePro
         #region 内部实现
 
         //延迟一段时间后执行一次
-        private static IEnumerator DelayDoAction(float delayTime, System.Action action)
+        public static IEnumerator DelayDoAction(float delayTime, System.Action action)
         {
             if (delayTime >= 0f)
                 yield return new WaitForSeconds(delayTime);
             action?.Invoke();
-            yield break;
+        }
+        //延迟一段时间后执行一次
+        public static IEnumerator DelayDoAction(YieldInstruction instruction, System.Action action)
+        {
+            if (instruction != null)
+                yield return instruction;
+            action?.Invoke();
         }
 
         /// <summary>/// 延迟一段时间后每repeatRate 秒执行一次 执行一次/// </summary>
-        private static IEnumerator DelayDoActionRepeat(float time, float repeatRate, System.Action action)
+        public static IEnumerator DelayDoActionRepeat(float time, float repeatRate, System.Action action)
         {
             if (time > 0)
                 yield return new WaitForSeconds(time);
@@ -127,7 +144,7 @@ namespace GameFramePro
         }
 
         //开启一个协程任务
-        private static IEnumerator StartAsyncOperate(AsyncOperation async, Action completeCallback, Action<float> processCallback)
+        public static IEnumerator StartAsyncOperate(AsyncOperation async, Action completeCallback, Action<float> processCallback)
         {
             float progress = 0f;
             while (true)
