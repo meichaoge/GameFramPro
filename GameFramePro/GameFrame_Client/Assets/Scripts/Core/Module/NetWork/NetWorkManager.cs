@@ -158,6 +158,12 @@ namespace GameFramePro
         }
 
 
+        protected override void InitialSingleton()
+        {
+            base.InitialSingleton();
+            AppEntryManager.RegisterUpdateTick(this);
+        }
+
         #region 数据
 
         private Dictionary<string, BaseSocketClient> mAllSocketClients = new Dictionary<string, BaseSocketClient>(5);

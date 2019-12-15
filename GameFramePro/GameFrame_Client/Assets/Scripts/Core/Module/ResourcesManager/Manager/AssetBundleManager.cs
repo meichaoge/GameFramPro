@@ -25,6 +25,20 @@ namespace GameFramePro.ResourcesEx
         private static readonly Dictionary<string, LoadAssetBundleAssetRecord> s_AllLoadedAssetBundleSubAssetRecord = new Dictionary<string, LoadAssetBundleAssetRecord>(50);
 
 
+        #region 无效资源检测
+        static AssetBundleManager()
+        {
+            AsyncManager.InvokeRepeating(0, s_FullCheckTimeInterval, FullCheckUnReferenceAset);
+        }
+
+        //定时删除无效的资源
+        private static void FullCheckUnReferenceAset()
+        {
+            RemoveAllUnReferenceAssetBundleRecord(false);
+        }
+        #endregion
+
+
         #region 内部加载AssetBundle 方法，对 AssetBundle类加载方式的封装
 
         public static AssetBundle LoadAssetBundleFromFile(string assetBundleRelativePath)
@@ -428,12 +442,12 @@ namespace GameFramePro.ResourcesEx
         /// <summary>
         /// 移除所有没有被引用的AssetBundle 记录
         /// </summary>
-        public static void RemoveAllUnReferenceAssetBundleRecord(HashSet<int> assetBundleInstanceIDs)
+        public static void RemoveAllUnReferenceAssetBundleRecord(bool isForceCheck)
         {
             if (s_LastFullCheckTime == 0)
                 s_LastFullCheckTime = Time.realtimeSinceStartup;
 
-            if (assetBundleInstanceIDs != null && assetBundleInstanceIDs.Count > 0 || (Time.realtimeSinceStartup - s_LastFullCheckTime) >= s_FullCheckTimeInterval)
+            if (isForceCheck||(Time.realtimeSinceStartup - s_LastFullCheckTime) >= s_FullCheckTimeInterval)
             {
                 s_LastFullCheckTime = Time.realtimeSinceStartup;
 
@@ -453,20 +467,6 @@ namespace GameFramePro.ResourcesEx
                         AssetBundleRecordInfor.ReleaseAssetBundleRecordInfor(assetBundleRecordInfor.Value);
                         continue;
                     }
-                    if (assetBundleInstanceIDs == null || assetBundleInstanceIDs.Count == 0)
-                        continue;
-
-
-                    int assetBundleInstanceID = assetBundleRecordInfor.Value.mAssetBundleInstanceID;
-                    if (assetBundleInstanceIDs.Contains(assetBundleInstanceID))
-                    {
-#if UNITY_EDITOR
-                        Debug.Log($"释放AssetBundle 资源： {assetBundleRecordInfor.Value.mAssetBundleNameUri}");
-#endif
-                        s_AllAssetBundleRecordInfors.Remove(assetBundleRecordInfor.Value.mAssetBundleNameUri);
-                        AssetBundleRecordInfor.ReleaseAssetBundleRecordInfor(assetBundleRecordInfor.Value);
-                    }
-
                 }
             }
         }
@@ -498,6 +498,18 @@ namespace GameFramePro.ResourcesEx
             return null;
         }
 
+
+        #region 卸载
+        /// <summary>
+        /// 资源已经卸载了 移除加载记录
+        /// </summary>
+        internal static void RemoveAssetBundleAssetRecord(LoadAssetBundleAssetRecord assetRecord)
+        {
+            if (assetRecord == null) return;
+        //    mAllLoadResourcesAssetRecords.Remove(assetRecord.mAssetFullUri);
+            assetRecord.ReleaseLoadAssetRecord();
+        }
+        #endregion
 
     }
 }

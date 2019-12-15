@@ -76,6 +76,8 @@ namespace GameFramePro
             }
         }
 
+
+
         #region Reference
 
         private Camera mUICamera
@@ -106,6 +108,7 @@ namespace GameFramePro
         {
             base.InitialSingleton();
             GetTargetScreenEffectCanvasTrans();
+            AppEntryManager.RegisterUpdateTick(this);
         }
 
 

@@ -16,7 +16,7 @@ namespace GameFramePro
     /// </summary>
     public class AppEntryManager : SingleMono<AppEntryManager>
     {
-        //  private HashSet<IUpdateTick> mAllControllUpdateTicks = new HashSet<IUpdateTick>();
+         private static HashSet<IUpdateTick> sAllControllUpdateTicks = new HashSet<IUpdateTick>();
 
 #if UNITY_EDITOR
         [ReadOnly]
@@ -99,39 +99,32 @@ namespace GameFramePro
 
         private void UpdateTick(float realtimeSinceStartup)
         {
-            ScreenClickManager.S_Instance.UpdateTick(realtimeSinceStartup); //屏幕点击特效
-            XluaManager.S_Instance.UpdateTick(realtimeSinceStartup);
-            DownloadManager.S_Instance.UpdateTick(realtimeSinceStartup);
-            AssetDelayDeleteManager.S_Instance.UpdateTick(realtimeSinceStartup);
-            UIPageManagerUtility.S_Instance.UpdateTick(realtimeSinceStartup);
-            TimeTickUtility.S_Instance.UpdateTick(realtimeSinceStartup); //计时器
-
-            NetWorkManager.S_Instance.UpdateTick(realtimeSinceStartup); //网络消息中心
-            //foreach (var updateTick in mAllControllUpdateTicks)
-            //{
-            //    updateTick.Tick(realtimeSinceStartup);
-            //}
+            foreach (var updateTick in sAllControllUpdateTicks)
+            {
+                updateTick.UpdateTick(realtimeSinceStartup);
+            }
         }
 
+
         ////注册需要定时刷新的模块
-        //public void RegisterUpdateTick(IUpdateTick ticker)
-        //{
-        //    if (mAllControllUpdateTicks.Contains(ticker))
-        //    {
-        //        Debug.LogError("RegisterUpdateTick Fail!! Already Exit " + ticker.GetType());
-        //        return;
-        //    }
-        //    mAllControllUpdateTicks.Add(ticker);
-        //}
-        //public void UnRegisterUpdateTick(IUpdateTick ticker)
-        //{
-        //    if (mAllControllUpdateTicks.Contains(ticker))
-        //    {
-        //        mAllControllUpdateTicks.Remove(ticker);
-        //        return;
-        //    }
-        //    Debug.LogError("UnRegisterUpdateTick Fail!! Not Exit " + ticker.GetType());
-        //}
+        public static void RegisterUpdateTick(IUpdateTick ticker)
+        {
+            if (sAllControllUpdateTicks.Contains(ticker))
+            {
+                Debug.LogError("RegisterUpdateTick Fail!! Already Exit " + ticker.GetType());
+                return;
+            }
+            sAllControllUpdateTicks.Add(ticker);
+        }
+        public static void UnRegisterUpdateTick(IUpdateTick ticker)
+        {
+            if (sAllControllUpdateTicks.Contains(ticker))
+            {
+                sAllControllUpdateTicks.Remove(ticker);
+                return;
+            }
+            Debug.LogError("UnRegisterUpdateTick Fail!! Not Exit " + ticker.GetType());
+        }
 
         //private void GetAllNeedControllUpdateInstance()
         //{
