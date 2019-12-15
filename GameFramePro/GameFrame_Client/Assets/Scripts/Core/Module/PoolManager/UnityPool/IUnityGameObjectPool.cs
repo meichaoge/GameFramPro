@@ -13,6 +13,10 @@ namespace GameFramePro.ResourcesEx
     {
         System.Action<GameObject> BeforeGetAction { get; }
         System.Action<GameObject> BeforeRecycleAction { get; }
+        /// <summary>
+        /// 用于记录栈中记录元素的hashCode  避免重复缓存
+        /// </summary>
+        HashSet<int> PollItemRecord { get; }
         Stack<GameObject> PoolContainer { get; }
         GameObject PrefabTarget { get; }
         Transform PoolItemRecycleParent { get; } //池对象管理器自身

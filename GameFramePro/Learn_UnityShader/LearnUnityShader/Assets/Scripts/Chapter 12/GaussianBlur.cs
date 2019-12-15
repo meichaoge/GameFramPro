@@ -4,16 +4,6 @@ using System.Collections;
 public class GaussianBlur : BasePostProcessEffect
 {
 
-	public Shader gaussianBlurShader;
-	private Material gaussianBlurMaterial = null;
-
-	//public Material material {  
-	//	get {
-	//		gaussianBlurMaterial = CheckShaderAndCreateMaterial(gaussianBlurShader, gaussianBlurMaterial);
-	//		return gaussianBlurMaterial;
-	//	}  
-	//}
-
 	// Blur iterations - larger number means more blur.
 	[Range(0, 4)]
 	public int iterations = 3;

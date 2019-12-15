@@ -1,4 +1,4 @@
-﻿Shader "Unlit/BrightnessSaturateContrast"
+﻿Shader "UnityShaderBook/12/BrightnessSaturateContrast"
 {
     Properties
     {

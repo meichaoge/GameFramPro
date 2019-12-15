@@ -14,9 +14,11 @@ namespace GameFramePro
     {
         public System.Action<GameObject> BeforeGetAction { get; protected set; }
         public System.Action<GameObject> BeforeRecycleAction { get; protected set; }
+        public HashSet<int> PollItemRecord { get; protected set; } = new HashSet<int>();
         public Stack<GameObject> PoolContainer { get; protected set; }
         public GameObject PrefabTarget { get; protected set; }
         public string PoolNameUri { get; protected set; }
+        public bool mIsDontDestroyed { get; protected set; }
 
         private Transform mPoolItemRecycleParent = null;
 
@@ -27,7 +29,12 @@ namespace GameFramePro
         {
             get
             {
-                if (mPoolItemRecycleParent == null) mPoolItemRecycleParent = PoolObjectManager.GetUnityPoolManagerTransParent(PoolNameUri);
+                if (mPoolItemRecycleParent == null)
+                {
+                    mPoolItemRecycleParent = PoolObjectManager.GetUnityPoolManagerTransParent(PoolNameUri);
+                    if (mIsDontDestroyed && mPoolItemRecycleParent != null)
+                        ResourcesManagerUtility.MarkNotDestroyOnLoad(mPoolItemRecycleParent.gameObject);
+                }
                 return mPoolItemRecycleParent;
             }
         }
@@ -39,9 +46,12 @@ namespace GameFramePro
         /// 创建池管理器  
         /// </summary>
         /// <param name="poolNameUri">唯一标识一个池管理器</param>
-        public UnityGameObjectPool(string poolNameUri)
+        public UnityGameObjectPool(string poolNameUri, bool isMarkDontDestroyedOnLoad = true)
         {
-            PoolNameUri = poolNameUri;
+            PoolNameUri = poolNameUri + System.Guid.NewGuid().ToString();
+            mIsDontDestroyed = isMarkDontDestroyedOnLoad;
+            if (mIsDontDestroyed && PoolItemRecycleParent != null)
+                ResourcesManagerUtility.MarkNotDestroyOnLoad(PoolItemRecycleParent.gameObject);
         }
 
         /// <summary>
@@ -49,20 +59,27 @@ namespace GameFramePro
         /// </summary>
         /// <param name="poolNameUri"></param>
         /// <param name="ItemParent"></param>
-        public UnityGameObjectPool(string poolNameUri, Transform ItemParent)
+        public UnityGameObjectPool(string poolNameUri, Transform ItemParent, bool isMarkDontDestroyedOnLoad = true)
         {
-            PoolNameUri = poolNameUri;
-            SetPoolItemRecycleParent(ItemParent);
+            PoolNameUri = poolNameUri + System.Guid.NewGuid().ToString();
+            mIsDontDestroyed = isMarkDontDestroyedOnLoad;
+            mPoolItemRecycleParent = ItemParent;
+
+            //SetPoolItemRecycleParent(ItemParent);
+            if (mIsDontDestroyed && ItemParent != null)
+                ResourcesManagerUtility.MarkNotDestroyOnLoad(ItemParent.gameObject);
         }
 
-        /// <summary>
-        /// 设置 元素回收时候会吧元素放在 ItemParent 节点下，某些情况下可以避免修改父节点带来的开销
-        /// </summary>
-        /// <param name="ItemParent"></param>
-        public void SetPoolItemRecycleParent(Transform ItemParent)
-        {
-            mPoolItemRecycleParent = ItemParent;
-        }
+        ///// <summary>
+        ///// 设置 元素回收时候会吧元素放在 ItemParent 节点下，某些情况下可以避免修改父节点带来的开销
+        ///// </summary>
+        ///// <param name="ItemParent"></param>
+        //public void SetPoolItemRecycleParent(Transform ItemParent)
+        //{
+        //    mPoolItemRecycleParent = ItemParent;
+        //    if (mIsDontDestroyed && ItemParent != null)
+        //        ResourcesManagerUtility.MarkNotDestroyOnLoad(ItemParent.gameObject);
+        //}
         #endregion
 
 
@@ -94,14 +111,15 @@ namespace GameFramePro
             } //删除缓存对象
 
 
+            PollItemRecord.Clear();
             PrefabTarget = null;
             BeforeGetAction = BeforeRecycleAction = null;
             PoolContainer = null;
 
             PoolObjectManager.UnTrackPoolManager_Mono<GameObject>(this);
             PoolObjectManager.RecycleUnityPoolManagerTransParent(PrefabTarget.name);
-      //不能销毁自身
-             //   ResourcesManagerUtility.Destroy(this); //销毁自己
+            //不能销毁自身
+            //   ResourcesManagerUtility.Destroy(this); //销毁自己
         }
 
         public GameObject GetItemFromPool(Transform parent)
@@ -118,6 +136,9 @@ namespace GameFramePro
                 resultObject = ResourcesManagerUtility.Instantiate<GameObject>(PrefabTarget, parent, false);
             else
             {
+                int hashCode = resultObject.GetHashCode();
+                PollItemRecord.Remove(hashCode);
+
                 if (resultObject.transform.parent != parent)
                     resultObject.transform.SetParent(parent);
             }
@@ -137,6 +158,13 @@ namespace GameFramePro
                 Debug.LogError("RecycleItemToPool Fail,Parameter item is null");
                 return;
             }
+            int hashCode = item.GetHashCode();
+            if (PollItemRecord.Contains(hashCode))
+            {
+                Debug.LogError($"检测到重复缓存对象{item} 请确保只回收一次");
+                return;
+            }
+            PollItemRecord.Add(hashCode);
 
             if (BeforeRecycleAction != null)
                 BeforeRecycleAction(item);
