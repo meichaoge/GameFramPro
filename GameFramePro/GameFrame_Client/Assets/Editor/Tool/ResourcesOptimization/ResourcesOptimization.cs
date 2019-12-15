@@ -47,7 +47,7 @@ namespace GameFramePro.EditorEx
             string assetPath = AssetDatabase.GetAssetPath(selectobjs[0]);
             if (TextureAssetEditor.CheckIsTexture(assetPath))
             {
-                List<string> result = AssetReferenceManager.GetAssetReference(assetPath);
+                List<string> result = EditorAssetReferenceManager.GetAssetReference(assetPath);
                 foreach (var item in result)
                 {
                     Debug.Log($"资源{assetPath,-30} 被预制体引用{item}");
@@ -107,7 +107,7 @@ namespace GameFramePro.EditorEx
             string assetPath = AssetDatabase.GetAssetPath(selectobjs[0]);
             if (TextureAssetEditor.CheckIsTexture(assetPath))
             {
-                List<string> result = AssetReferenceManager.GetAssetReference(assetPath);
+                List<string> result = EditorAssetReferenceManager.GetAssetReference(assetPath);
                 foreach (var item in result)
                 {
                     Debug.Log(string.Format("资源{0,-30} 被预制体引用{1}", assetPath, item));
@@ -247,7 +247,7 @@ namespace GameFramePro.EditorEx
                 return;
             }
 
-            List<string> result = AssetReferenceManager.GetAssetReference(oldAssetPath);
+            List<string> result = EditorAssetReferenceManager.GetAssetReference(oldAssetPath);
             foreach (var item in result)
             {
                 Debug.Log($"资源{oldAssetPath,-30} 被预制体引用{item}");

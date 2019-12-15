@@ -12,6 +12,11 @@ namespace GameFramePro.UI
         private LinkedList<UIBasePage> mAllInVisiblePage = new LinkedList<UIBasePage>();
         private List<UIBasePage> mTempInVisiblePage = new List<UIBasePage>(); //用于记录那些页面不可见了
 
+        protected override void InitialSingleton()
+        {
+            base.InitialSingleton();
+            AppEntryManager.RegisterUpdateTick(this);
+        }
 
         #region IUpdateTick 接口实现
 

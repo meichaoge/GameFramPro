@@ -154,7 +154,10 @@ namespace GameFramePro
             try
             {
                 UIPageManagerUtility.S_Instance.UnLoadInVisibleUI(Time.realtimeSinceStartup);
-                AssetDelayDeleteManager.S_Instance.UnLoadNoReferenceAssets(Time.realtimeSinceStartup);
+                LocalResourcesManager.RemoveAllUnReferenceResourcesRecord(true);
+                AssetBundleManager.RemoveAllUnReferenceAssetBundleRecord(true);
+
+
                 Resources.UnloadUnusedAssets();
 
                 Debug.LogInfor($"主动清理所有没有引用的资源{DateTime.UtcNow}");

@@ -10,10 +10,15 @@ namespace GameFramePro
         private Dictionary<int, BaseTimeTicker> m_AllTimerCallback = new Dictionary<int, BaseTimeTicker>();
         private List<BaseTimeTicker> m_AllDeadTimers = new List<BaseTimeTicker>(); //需要被注销的计时器
 
-#if UNITY_EDITOR
-        public List<BaseTimeTicker> m_AllTestTimers = new List<BaseTimeTicker>(); //测试显示数据
-#endif
+//#if UNITY_EDITOR
+//        public List<BaseTimeTicker> m_AllTestTimers = new List<BaseTimeTicker>(); //测试显示数据
+//#endif
 
+        protected override void InitialSingleton()
+        {
+            base.InitialSingleton();
+            AppEntryManager.RegisterUpdateTick(this);
+        }
 
         #region IUpdateTick 接口
 
@@ -29,11 +34,11 @@ namespace GameFramePro
 
         private void UpdateAllTickers()
         {
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
 
-            m_AllTestTimers.Clear();
-            m_AllTestTimers.AddRange(m_AllTimerCallback.Values);
-#endif
+//            m_AllTestTimers.Clear();
+//            m_AllTestTimers.AddRange(m_AllTimerCallback.Values);
+//#endif
             if (m_AllTimerCallback.Count == 0) return;
             if (m_AllDeadTimers.Count != 0)
             {

@@ -20,7 +20,7 @@ namespace GameFramePro
                 LuaEngine = new LuaEnv();
                 ResourcesTracker.RegistTraceNativeobject(LuaEngine, TraceNativeobjectStateEnum.Singtion);
                 LuaEngine.AddLoader(CustomerLuaLoader);  //注册自定义的加载器
-
+                AppEntryManager.RegisterUpdateTick(this);
             }
             base.InitialSingleton();
         }

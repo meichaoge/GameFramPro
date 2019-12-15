@@ -14,6 +14,18 @@ namespace GameFramePro.ResourcesEx
         ResourcesAsset,
         AssetBundleAsset,
     }
+    /// <summary>
+    /// 被引用的资源的状态
+    /// </summary>
+    [System.Serializable]
+    public enum ReferenceAssetStateUsage
+    {
+        None, //初始状态
+        BeingReferenceed, //被使用中
+        NoReference, //无引用中 等待被删除
+        Releasing, //释放资源中
+    }
+
 
     /// <summary>
     /// 加载的资源记录
@@ -40,6 +52,12 @@ namespace GameFramePro.ResourcesEx
         /// </summary>
         LoadAssetSourceUsage mLoadAssetSourceUsage { get; }
 
+        /// <summary>
+        /// 资源引用状态
+        /// </summary>
+        ReferenceAssetStateUsage mReferenceAssetStateUsage { get; }
+
+
 
         /// <summary>
         /// 获取加载的资源对象
@@ -57,6 +75,15 @@ namespace GameFramePro.ResourcesEx
         /// 清理释放加载的资源信息
         /// </summary>
         void ReleaseLoadAssetRecord();
+
+        /// <summary>
+        /// 标记资源没有被引用了
+        /// </summary>
+        /// <param name="isForceMark">是否强制删除</param>
+        void MarkNoReferenceAssetRecord(bool isForceMark);
+
+        //标记资源要被引用
+        void MarkReferenceAssetRecord();
 
     }
 }

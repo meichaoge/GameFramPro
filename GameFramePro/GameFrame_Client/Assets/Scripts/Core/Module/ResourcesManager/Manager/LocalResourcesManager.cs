@@ -18,6 +18,21 @@ namespace GameFramePro.ResourcesEx
         private static readonly Dictionary<string, LoadResourcesAssetRecord> mAllLoadResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(200); //Cache 所有加载的资源
 
 
+        #region 计时器删除无效资源
+        static LocalResourcesManager()
+        {
+            AsyncManager.InvokeRepeating(0, s_FullCheckTimeInterval, FullCheckUnReferenceAset);
+        }
+
+        //定时删除无效的资源
+        private static void FullCheckUnReferenceAset()
+        {
+            RemoveAllUnReferenceResourcesRecord(false);
+        }
+        #endregion
+
+
+
         /// <summary>
         /// 从缓存中加载一个资源 可能返回null(标示没有加载过这个资源，或者这个资源已经被释放了)
         /// </summary>
@@ -90,12 +105,12 @@ namespace GameFramePro.ResourcesEx
         ///  移除参数指定的实例ID 对应的 Resources 记录
         /// </summary>
         /// <param name="resourcesAssetInstanceIDs"></param>
-        public static void RemoveAllUnReferenceResourcesRecord(HashSet<int> resourcesAssetInstanceIDs)
+        public static void RemoveAllUnReferenceResourcesRecord(bool isForceCheck)
         {
             if (s_LastFullCheckTime == 0)
                 s_LastFullCheckTime = Time.realtimeSinceStartup;
 
-            if (resourcesAssetInstanceIDs != null && resourcesAssetInstanceIDs.Count > 0 || (Time.realtimeSinceStartup - s_LastFullCheckTime) >= s_FullCheckTimeInterval)
+            if (isForceCheck ||(Time.realtimeSinceStartup - s_LastFullCheckTime) >= s_FullCheckTimeInterval)
             {
                 s_LastFullCheckTime = Time.realtimeSinceStartup;
                 Dictionary<string, LoadResourcesAssetRecord> tempResourcesAssetRecords = new Dictionary<string, LoadResourcesAssetRecord>(mAllLoadResourcesAssetRecords);
@@ -109,28 +124,13 @@ namespace GameFramePro.ResourcesEx
 
                     if (resourcesAssetRecordInfor.Value.IsRecordEnable == false)
                     {
-                        mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
-                        LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
+                       mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
+                        resourcesAssetRecordInfor.Value.ReleaseLoadAssetRecord();
                         continue;
                     }
-
-                    if (resourcesAssetInstanceIDs == null || resourcesAssetInstanceIDs.Count == 0)
-                        continue;
-
-                    int resourcesAssetInstanceID = resourcesAssetRecordInfor.Value.GetLoadAssetInstanceID();
-                    if (resourcesAssetInstanceIDs.Contains(resourcesAssetInstanceID))
-                    {
-#if UNITY_EDITOR
-                        Debug.Log($"释放Resources 资源： {resourcesAssetRecordInfor.Value.mAssetFullUri}");
-#endif
-                        mAllLoadResourcesAssetRecords.Remove(resourcesAssetRecordInfor.Value.mAssetFullUri);
-                        LoadResourcesAssetRecord.ReleaseAssetBundleRecordInfor(resourcesAssetRecordInfor.Value);
-                    }
-
                 }
             }
         }
-
 
 
         /// <summary>/// / 记录加载的资源/// </summary>
@@ -143,11 +143,30 @@ namespace GameFramePro.ResourcesEx
                 if (infor == asset)
                     return;
                 Debug.LogError($"RecordResourcesLoadAsset Fail,Already Exit Asset at path={assetUrl} Not Equal");
-                mAllLoadResourcesAssetRecords[assetUrl] = asset;
-                return;
+                infor.ReleaseLoadAssetRecord();
+                mAllLoadResourcesAssetRecords.Remove(assetUrl);
             }
 
             mAllLoadResourcesAssetRecords[assetUrl] = asset;
         }
+
+        #region 卸载
+
+        /// <summary>
+        /// 资源已经卸载了 移除加载记录
+        /// </summary>
+        public static void RemoveLocalResourcesAssetRecord(LoadResourcesAssetRecord assetRecord)
+        {
+            if (assetRecord == null) return;
+            mAllLoadResourcesAssetRecords.Remove(assetRecord.mAssetFullUri);
+            assetRecord.ReleaseLoadAssetRecord();
+        }
+
+
+     
+
+        #endregion
+
+
     }
 }

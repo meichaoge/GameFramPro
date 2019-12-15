@@ -69,7 +69,7 @@ namespace GameFramePro.UI
             string path = string.Empty;
             if (NamePathMapInfor.TryGetValue(gameObjectName, out path))
                 return FindComponentByPath<T>(gameObjectName, path);
-            Debug.LogError("没有找到{0} 上节点{0} 的路径名称映射", mConnectUIBasePageName, gameObjectName);
+            Debug.LogError("没有找到{0} 上节点{1} 的路径名称映射", mConnectUIBasePageName, gameObjectName);
             return null;
         }
 

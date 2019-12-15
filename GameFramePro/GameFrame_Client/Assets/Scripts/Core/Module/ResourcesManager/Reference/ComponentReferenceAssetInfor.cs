@@ -5,40 +5,16 @@ using Object = UnityEngine.Object;
 
 namespace GameFramePro.ResourcesEx.Reference
 {
-    /// <summary>
-    /// 被引用的资源的状态
-    /// </summary>
-    [System.Serializable]
-    internal enum ReferenceAssetStateUsage
-    {
-        None, //初始状态
-        BeingReferenceed, //被使用中
-        NoReference, //无引用中 等待被删除
-        Releasing, //释放资源中
-    }
-
     [System.Serializable]
     /// <summary>
     /// 被组件引用的资源记录
     /// </summary>
     internal sealed class ComponentReferenceAssetInfor
     {
-
         /// <summary>
         /// 被引用的次数
         /// </summary>
         internal int mReferenceCount { get; private set; } = 0;
-
-        /// <summary>
-        /// 记录上一次准备释放资源的时间
-        /// </summary>
-        internal float mLastRecordReleaseTime { get; private set; } = 0;
-
-
-        /// <summary>
-        /// 表示是否是在回收队列中等待最后的回收
-        /// </summary>
-        internal ReferenceAssetStateUsage mReferenceAssetStateUsage { get; private set; } = ReferenceAssetStateUsage.None;
 
         private HashSet<Component> mComponeReferences { get; set; } = new HashSet<Component>(); //所有引用这个资源的组件
 
@@ -55,7 +31,7 @@ namespace GameFramePro.ResourcesEx.Reference
 
         static ComponentReferenceAssetInfor()
         {
-            s_BeferenceAssetPoolMgr = new NativeObjectPool<ComponentReferenceAssetInfor>(50, OnBeforeGeBeferenceAsset, null);
+            s_BeferenceAssetPoolMgr = new NativeObjectPool<ComponentReferenceAssetInfor>(50, null, OnBeforeRecycleBeferenceAsset);
         }
 
         public ComponentReferenceAssetInfor()
@@ -68,33 +44,25 @@ namespace GameFramePro.ResourcesEx.Reference
 
         private static NativeObjectPool<ComponentReferenceAssetInfor> s_BeferenceAssetPoolMgr;
 
-        private static void OnBeforeGeBeferenceAsset(ComponentReferenceAssetInfor record)
+
+        private static void OnBeforeRecycleBeferenceAsset(ComponentReferenceAssetInfor record)
         {
             record.mReferenceCount = 0;
-            record.mLastRecordReleaseTime = Time.realtimeSinceStartup;
-            record.mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;
             record.mComponeReferences?.Clear();
             record.mILoadAssetRecord?.ReleaseLoadAssetRecord();
             record.mILoadAssetRecord = null;
         }
 
-        //private static void OnBeforeRecycleBeferenceAsset(ComponentReferenceAssetInfor record)
-        //{
-        //   
-        //}
-
         /// <summary>
         /// 获取 ComponentReferenceAssetInfor 实例对象
         /// </summary>
         /// <returns></returns>
-        internal static ComponentReferenceAssetInfor GetBeferenceAsset()
+        internal static ComponentReferenceAssetInfor GetComponentReferenceAssetInforInstance()
         {
             return s_BeferenceAssetPoolMgr.GetItemFromPool();
         }
 
         #endregion
-
-
 
 
         #region 引用计数处理
@@ -110,8 +78,9 @@ namespace GameFramePro.ResourcesEx.Reference
                 mILoadAssetRecord = loadAssetRecord;
             else
             {
-                if(mILoadAssetRecord!= loadAssetRecord)
-                Debug.LogError($"增加引用时候记录的值不一致{mILoadAssetRecord} ::{loadAssetRecord}");
+                if (mILoadAssetRecord != loadAssetRecord)
+                    Debug.LogError($"增加引用时候记录的值不一致{mILoadAssetRecord} ::{loadAssetRecord}");
+                return;
             }
 
             if (mComponeReferences.Contains(component))
@@ -120,21 +89,7 @@ namespace GameFramePro.ResourcesEx.Reference
                 mReferenceCount = 0;
             mComponeReferences.Add(component);
             ++mReferenceCount;
-            switch (mReferenceAssetStateUsage)
-            {
-                case ReferenceAssetStateUsage.None:
-                case ReferenceAssetStateUsage.NoReference:
-                    mReferenceAssetStateUsage = ReferenceAssetStateUsage.BeingReferenceed;
-                    break;
-                case ReferenceAssetStateUsage.BeingReferenceed:
-                    break;
-                case ReferenceAssetStateUsage.Releasing:
-                    OnTriggerReReference();
-                    break;
-                default:
-                    Debug.LogError($"没有处理的状态{mReferenceAssetStateUsage}");
-                    break;
-            }
+            mILoadAssetRecord.MarkReferenceAssetRecord();
         }
 
         /// <summary>
@@ -195,83 +150,21 @@ namespace GameFramePro.ResourcesEx.Reference
         }
 
         /// <summary>
-        /// 检测是否可以真正删除释放资源
-        /// </summary>
-        /// <returns></returns>
-        internal bool CheckIfCanRealRelease()
-        {
-            if (mILoadAssetRecord == null)
-                return true;  //关联的资源被释放了
-
-            if (mILoadAssetRecord.mMaxAliveAfterNoReference < 0)
-                return false;
-            if (mReferenceAssetStateUsage != ReferenceAssetStateUsage.Releasing)
-                return false;
-
-            return Time.realtimeSinceStartup - mLastRecordReleaseTime >= mILoadAssetRecord.mMaxAliveAfterNoReference;
-        }
-
-
-        /// <summary>
         /// 当资源没有引用时候触发
         /// </summary>
         private void OnTriggerNoReference()
         {
             if (mReferenceCount != 0) return;
             if (mILoadAssetRecord != null && mILoadAssetRecord.mMaxAliveAfterNoReference < 0)
-                mReferenceAssetStateUsage = ReferenceAssetStateUsage.BeingReferenceed; //不会自动删除的对象
+            {
+                mILoadAssetRecord.MarkReferenceAssetRecord();
+            }
             else
-                mReferenceAssetStateUsage = ReferenceAssetStateUsage.NoReference;
-        }
-
-        /// <summary>
-        /// 当资源被重新引用使用
-        /// </summary>
-        private void OnTriggerReReference()
-        {
-            if (mReferenceCount == 0) return;
-            if (mReferenceAssetStateUsage == ReferenceAssetStateUsage.Releasing)
             {
-                mLastRecordReleaseTime = Time.realtimeSinceStartup;
-                mReferenceAssetStateUsage = ReferenceAssetStateUsage.BeingReferenceed;
-            }
-        }
-
-
-        /// <summary>
-        /// 通知正在被回收中
-        /// </summary>
-        internal void NotifyBeingReleasing()
-        {
-            mReferenceAssetStateUsage = ReferenceAssetStateUsage.Releasing;
-            mLastRecordReleaseTime = Time.realtimeSinceStartup;
-        }
-
-        /// <summary>
-        /// 通知需要删除自身引用的资源
-        /// </summary>
-        internal void NotifyBeDelete()
-        {
-            if (mReferenceAssetStateUsage == ReferenceAssetStateUsage.None && mILoadAssetRecord == null)
-            {
-                //     Debug.LogError($"没有被真正引用的资源");
+                ReferenceAssetManager.RemoveNoReferenceAssetRecord(this);
+                mILoadAssetRecord.MarkNoReferenceAssetRecord(false);
                 s_BeferenceAssetPoolMgr.RecycleItemToPool(this);
-                return;
             }
-
-            mReferenceCount = 0;
-            mComponeReferences.Clear();
-            mReferenceAssetStateUsage = ReferenceAssetStateUsage.None;
-
-#if UNITY_EDITOR
-            if (mILoadAssetRecord != null&& mILoadAssetRecord.IsRecordEnable)
-                Debug.Log($"资源{ReferenceAssetUri} 释放资源");
-#endif
-
-            mILoadAssetRecord?.ReleaseLoadAssetRecord();
-            mILoadAssetRecord = null;
-
-            s_BeferenceAssetPoolMgr.RecycleItemToPool(this);
         }
 
         #endregion

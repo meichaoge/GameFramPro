@@ -8,7 +8,7 @@ namespace GameFramePro.ResourcesEx
     /// 从Resources 加载的资源
     /// </summary>
     [System.Serializable]
-    public class LoadResourcesAssetRecord : ILoadAssetRecord
+    public sealed class LoadResourcesAssetRecord : ILoadAssetRecord
     {
         //无引用后默认存活60秒
         private const float sDefaultNoReferenceAliveTime = 60;
@@ -31,7 +31,7 @@ namespace GameFramePro.ResourcesEx
 
         static LoadResourcesAssetRecord()
         {
-            s_LoadResourcesAssetRecordPoolMgr = new NativeObjectPool<LoadResourcesAssetRecord>(50, null, OnBeforeRecycleLoadResourcesAssetRecord);
+            s_LoadResourcesAssetRecordPoolMgr = new NativeObjectPool<LoadResourcesAssetRecord>(50, null, null);
         }
 
         public LoadResourcesAssetRecord()
@@ -39,7 +39,6 @@ namespace GameFramePro.ResourcesEx
         }
 
         #endregion
-
 
         #region 对象池
 
@@ -49,11 +48,12 @@ namespace GameFramePro.ResourcesEx
         //{
         //}
 
-        private static void OnBeforeRecycleLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
-        {
-            if (record == null) return;
-            record.mResourcesAsset = null;
-        }
+        //private static void OnBeforeRecycleLoadResourcesAssetRecord(LoadResourcesAssetRecord record)
+        //{
+        //    if (record == null) return;
+        //    record.mResourcesAsset = null;
+        //    record. mAssetFullUri = string.Empty;
+        //}
 
         /// <summary>
         /// 获取 LoadResourcesAssetRecord 实例对象
@@ -75,22 +75,21 @@ namespace GameFramePro.ResourcesEx
             assetBundleAssetInfor.mAssetFullUri = fullUri;
             assetBundleAssetInfor.mResourcesAsset = asse;
             assetBundleAssetInfor.mMaxAliveAfterNoReference = noReferenceAliveTIme;
-
+            assetBundleAssetInfor. mReferenceAssetStateUsage = ReferenceAssetStateUsage.BeingReferenceed;
+            assetBundleAssetInfor. mTimerHashCode = 0;
             return assetBundleAssetInfor;
         }
 
-        /// <summary>
-        /// 释放 LoadResourcesAssetRecord 对象
-        /// </summary>
-        /// <param name="resourcesAssetRecord"></param>
-        public static void ReleaseAssetBundleRecordInfor(LoadResourcesAssetRecord resourcesAssetRecord)
-        {
-            s_LoadResourcesAssetRecordPoolMgr.RecycleItemToPool(resourcesAssetRecord);
-        }
+        ///// <summary>
+        ///// 释放 LoadResourcesAssetRecord 对象
+        ///// </summary>
+        ///// <param name="resourcesAssetRecord"></param>
+        //private static void ReleaseAssetBundleRecordInfor(LoadResourcesAssetRecord resourcesAssetRecord)
+        //{
+        //    s_LoadResourcesAssetRecordPoolMgr.RecycleItemToPool(resourcesAssetRecord);
+        //}
 
         #endregion
-
-
 
         #region ILoadAssetRecord 接口实现
 
@@ -107,9 +106,64 @@ namespace GameFramePro.ResourcesEx
         public void ReleaseLoadAssetRecord()
         {
             mResourcesAsset = null;
-            ReleaseAssetBundleRecordInfor(this);
+            mAssetFullUri = string.Empty;
+            s_LoadResourcesAssetRecordPoolMgr.RecycleItemToPool(this);
+          //  ReleaseAssetBundleRecordInfor(this);
         }
 
+        #endregion
+
+        #region 资源标记卸载和真正卸载
+
+
+        /// <summary>
+        /// 表示是否是在回收队列中等待最后的回收
+        /// </summary>
+        public ReferenceAssetStateUsage mReferenceAssetStateUsage { get; protected set; } = ReferenceAssetStateUsage.None;
+
+        private float mMarkNoReferenceTime { get; set; } = 0;
+        private int mTimerHashCode { get; set; } = 0;
+
+        public void MarkNoReferenceAssetRecord(bool isForceMark)
+        {
+            if (isForceMark==false&& mMaxAliveAfterNoReference <= 0)
+                return; //不释放的资源
+            if(isForceMark&& mMaxAliveAfterNoReference <= 0)
+            {
+                RemveUnReferenceAsset();
+                return;
+            }//强制移除
+
+            mMarkNoReferenceTime = Time.realtimeSinceStartup;
+            mReferenceAssetStateUsage = ReferenceAssetStateUsage.NoReference;
+            mTimerHashCode = TimeTickUtility.S_Instance.RegisterCountDownTimer(mMaxAliveAfterNoReference, 0, RegisterDeleteAssetRecordCallback);
+        }
+
+        private void RegisterDeleteAssetRecordCallback(float time,int timerHashcode)
+        {
+            if (mTimerHashCode != timerHashcode)
+                return;
+            if(mReferenceAssetStateUsage== ReferenceAssetStateUsage.NoReference)
+            {
+                RemveUnReferenceAsset();
+                return;
+            }
+        }
+
+        //移除超时没有被引用的资源
+        private void RemveUnReferenceAsset()
+        {
+            LocalResourcesManager.RemoveLocalResourcesAssetRecord(this);
+            if (mTimerHashCode != 0)
+                TimeTickUtility.S_Instance.UnRegisterTimer_Delay(mTimerHashCode);
+        }
+
+        public void MarkReferenceAssetRecord()
+        {
+            mReferenceAssetStateUsage = ReferenceAssetStateUsage.BeingReferenceed;
+            if(mTimerHashCode!=0)
+            TimeTickUtility.S_Instance.UnRegisterTimer_Delay(mTimerHashCode);
+        }
         #endregion
     }
 }

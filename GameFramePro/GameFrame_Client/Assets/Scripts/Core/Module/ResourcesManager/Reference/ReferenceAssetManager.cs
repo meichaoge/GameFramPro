@@ -10,6 +10,7 @@ namespace GameFramePro.ResourcesEx.Reference
     /// </summary>
     public static class  ReferenceAssetManager 
     {
+        private static float s_FullCheckTimeInterval { get { return 10; } } //全资源空引用检测时间间隔
         //一个资源 Object 中的某个子资源id 到整个资源Object 的映射关系，key =子资源Instanceid  value=加载的整个资源Instanceid 
         private static readonly Dictionary<int, int> s_InstanceIdMapRecord = new Dictionary<int, int>(100);
 
@@ -19,26 +20,57 @@ namespace GameFramePro.ResourcesEx.Reference
         //所有被弱引用的资源信息  key=加载的整个资源Instanceid 
         private static readonly Dictionary<int, ILoadAssetRecord> s_AllWeakReferenceAssets = new Dictionary<int, ILoadAssetRecord>(100);
 
-        /// <summary>
-        /// 所有需要 被删除的整个资源  Instanceid 
-        /// </summary>
-        private static readonly HashSet<int> s_AllNeedRemoveInstanceIds = new HashSet<int>();
+        #region 计时器删除无效资源
+        static ReferenceAssetManager()
+        {
+            AsyncManager.InvokeRepeating(0, s_FullCheckTimeInterval, FullCheckUnReferenceAset);
+        }
+
+        //定时删除无效的资源
+        private static void FullCheckUnReferenceAset()
+        {
+            Dictionary<int, ComponentReferenceAssetInfor> temp = new Dictionary<int, ComponentReferenceAssetInfor>(s_AllComponentReferenceAssetInfors);
+
+            foreach (var beReferenceAssets in temp)
+            {
+                if (beReferenceAssets.Value == null)
+                {
+                    s_AllComponentReferenceAssetInfors.Remove(beReferenceAssets.Key);
+                    continue;
+                }
+                beReferenceAssets.Value.UpdateReferenceCount();
+            }
+        }
+        #endregion
 
 
         /// <summary>
         /// 记录子资源与加载的资源的实例ID 关系
         /// </summary>
-        /// <param name="subAssey"></param>
+        /// <param name="subAsset"></param>
         /// <param name="loadAsset"></param>
         /// <returns>子资源被包含的加载记录中的资源id</returns>
-        private static int RecordInstanceIdDependence(Object subAssey, Object loadAsset)
+        private static int RecordInstanceIdDependence(Object subAsset, Object loadAsset)
         {
-            if (subAssey == null || loadAsset == null)
+            if (subAsset == null || loadAsset == null)
                 return -1;
-            int subInstanceID = subAssey.GetInstanceID();
+            int subInstanceID = subAsset.GetInstanceID();
             int loadAssetID = loadAsset.GetInstanceID();
 
-            s_InstanceIdMapRecord[subInstanceID] = loadAssetID;
+            if(s_InstanceIdMapRecord.TryGetValue(subInstanceID,out var recordID))
+            {
+                if(recordID!= loadAssetID)
+                {
+                    Debug.LogError($"异常 记录的值{recordID} 与新的值不一致{loadAssetID}");
+                    s_InstanceIdMapRecord.Remove(subInstanceID);
+                    s_InstanceIdMapRecord[subInstanceID] = loadAssetID;
+                }
+            }
+            else
+            {
+                s_InstanceIdMapRecord[subInstanceID] = loadAssetID;
+            }
+          
             return loadAssetID;
         }
 
@@ -73,10 +105,10 @@ namespace GameFramePro.ResourcesEx.Reference
             AssetReferenceTag assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
             assetReferenceTag.RecordReference(component,  directReferenceObject);
 #endif
-
-            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset) == false || beferenceAsset == null)
+            //2019/12/14 修改 增加 ReferenceAssetStateUsage 状态判断，避免在回收过程中被引用的错误
+            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset) == false || beferenceAsset == null )
             {
-                beferenceAsset = ComponentReferenceAssetInfor.GetBeferenceAsset();
+                beferenceAsset = ComponentReferenceAssetInfor.GetComponentReferenceAssetInforInstance();
                 s_AllComponentReferenceAssetInfors[InstanceID] = beferenceAsset;
             }
             beferenceAsset.AddReference(component, directReferenceObject, loadAssetRecord);
@@ -107,6 +139,10 @@ namespace GameFramePro.ResourcesEx.Reference
                     beferenceAsset.ReduceReference(component, asset);
                     return;
                 }
+                else
+                {
+                    s_AllComponentReferenceAssetInfors.Remove(InstanceID);
+                }
             }
         }
 
@@ -134,6 +170,8 @@ namespace GameFramePro.ResourcesEx.Reference
                     Debug.LogError($"记录了弱引用关系，但是{beferenceAsset} 不对应{loadAssetRecord}");
                     return;
                 }
+                else
+                    return;
             }
             s_AllWeakReferenceAssets[InstanceID] = loadAssetRecord;
         }
@@ -183,68 +221,35 @@ namespace GameFramePro.ResourcesEx.Reference
         {
             if (targetObject == null)
                 return;
+            Dictionary<int, ComponentReferenceAssetInfor> temp = new Dictionary<int, ComponentReferenceAssetInfor>(s_AllComponentReferenceAssetInfors);
 
-            foreach (var beReferenceAsset in s_AllComponentReferenceAssetInfors.Values)
+            foreach (var beReferenceAsset in temp)
             {
-                if (beReferenceAsset == null) continue;
-                beReferenceAsset.ReduceAllReference(targetObject.transform);
-            }
-        }
-
-        /// <summary>
-        /// 获取所有没有被引用的资源
-        /// </summary>
-        /// <returns></returns>
-        internal static List<ComponentReferenceAssetInfor> GetAllNoReferenceAssetsForDelete()
-        {
-            List<ComponentReferenceAssetInfor> noReferenceAssets = new List<ComponentReferenceAssetInfor>((int)(s_AllComponentReferenceAssetInfors.Count * 0.5f));
-
-            foreach (var beReferenceAssets in s_AllComponentReferenceAssetInfors.Values)
-            {
-                if (beReferenceAssets == null) continue;
-                if (beReferenceAssets.mReferenceAssetStateUsage == ReferenceAssetStateUsage.Releasing)
-                    continue; //已经被记录了不需要再记录
-
-                beReferenceAssets.UpdateReferenceCount();
-                if (beReferenceAssets.mReferenceAssetStateUsage == ReferenceAssetStateUsage.NoReference)
+                if (beReferenceAsset.Value == null)
                 {
-                    beReferenceAssets.NotifyBeingReleasing();
-                    noReferenceAssets.Add(beReferenceAssets);
-                }
-            }
+                    s_AllComponentReferenceAssetInfors.Remove(beReferenceAsset.Key);
 
-            return noReferenceAssets;
+                    continue;
+                }
+                beReferenceAsset.Value.ReduceAllReference(targetObject.transform);
+            }
         }
+
 
         /// <summary>
-        /// 真正删除所有超时没有被使用的资源
+        /// 当引用计数为0 时候需要移除加载记录
         /// </summary>
-        /// <param name=""></param>
-        internal static void DeleteAllNoReferenceAssets(List<ComponentReferenceAssetInfor> allNoReferenceAssets)
+        /// <param name="componentReference"></param>
+        internal static void RemoveNoReferenceAssetRecord(ComponentReferenceAssetInfor componentReference)
         {
-            if (allNoReferenceAssets == null || allNoReferenceAssets.Count == 0)
-                return;
-            s_AllNeedRemoveInstanceIds.Clear();
+            if (componentReference == null) return;
+            if (componentReference.mILoadAssetRecord.GetLoadAsset() == null) return;
+            int instanceID = componentReference.mILoadAssetRecord.GetLoadAsset().GetInstanceID();
 
-            foreach (var noReferenceAsset in allNoReferenceAssets)
-            {
-                if (noReferenceAsset == null) continue;
-                int instanceID = noReferenceAsset.mReferenceInstanceID;
-
-                s_AllNeedRemoveInstanceIds.Add(instanceID);
-                noReferenceAsset.NotifyBeDelete();
-                s_AllComponentReferenceAssetInfors.Remove(instanceID);
-            }
-
-            if (s_AllNeedRemoveInstanceIds == null || s_AllNeedRemoveInstanceIds.Count == 0)
-                return;
-
-            AssetBundleManager.RemoveAllUnReferenceAssetBundleRecord( s_AllNeedRemoveInstanceIds);
-            LocalResourcesManager.RemoveAllUnReferenceResourcesRecord( s_AllNeedRemoveInstanceIds);
-
-            s_InstanceIdMapRecord.RemoveAll(item => s_AllNeedRemoveInstanceIds.Contains(item.Value));
-            s_AllWeakReferenceAssets.RemoveAll(item => s_AllNeedRemoveInstanceIds.Contains(item.Key));
+            s_AllComponentReferenceAssetInfors.Remove(instanceID);
+            s_InstanceIdMapRecord.RemoveAll((item) => item.Value == instanceID);
         }
+
 
         #endregion
     }

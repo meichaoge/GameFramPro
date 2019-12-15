@@ -47,17 +47,16 @@ namespace GameFramePro
 
         #endregion
 
-//          protected override void InitialSingleton()
-//          {
-//              base.InitialSingleton();
-//         //     AppEntryManager.S_Instance.RegisterUpdateTick(this);
-//
-//          }
-//          public override void DisposeInstance()
-//          {
-//        //      AppEntryManager.S_Instance.UnRegisterUpdateTick(this);
-//              base.DisposeInstance();
-//          }
+        protected override void InitialSingleton()
+        {
+            base.InitialSingleton();
+            AppEntryManager.RegisterUpdateTick(this);
+        }
+        //          public override void DisposeInstance()
+        //          {
+        //        //      AppEntryManager.S_Instance.UnRegisterUpdateTick(this);
+        //              base.DisposeInstance();
+        //          }
 
 
         #region 通用的下载接口 对外隐藏实现 (这里不能是静态的 否则没法注册)

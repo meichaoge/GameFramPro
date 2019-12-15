@@ -8,3 +8,7 @@
 	#除bin文件夹外
 	!/bin 
 	#总的效果就是git只跟踪src和bin两个文件夹				
+	
+3 git pull early EOF unpack-objects failed
+
+git config --global core.compression 0
