@@ -15,6 +15,8 @@ public abstract class BasePostProcessEffect : MonoBehaviour
     protected Shader mEffectShader;
     public Material mTargetMaterial { get; protected set; }
 
+    protected Camera mTargetCamera { get;  set; }
+
     private void Awake()
     {
         IsEffectSupport = CheckIfSupportEffect();
@@ -22,6 +24,8 @@ public abstract class BasePostProcessEffect : MonoBehaviour
             this.enabled = false;
         else
             mTargetMaterial = CheckMaterial(mEffectShader, mTargetMaterial);
+        mTargetCamera = GetComponent<Camera>();
+     //   mTargetCamera.depthTextureMode
     }
 
     // Start is called before the first frame update

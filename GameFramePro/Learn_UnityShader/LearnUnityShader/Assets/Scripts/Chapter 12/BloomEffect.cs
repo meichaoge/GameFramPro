@@ -19,19 +19,21 @@ public class BloomEffect : BasePostProcessEffect
 
     [SerializeField]
     [Range(1, 4)]
-    private int DownSample = 0;//降低采样的幂次方
+    private int DownSample = 0;//降低采样
 
     protected override void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
         if (mTargetMaterial != null)
         {
-            int width = (int)(Screen.width / Mathf.Pow(2, DownSample));
-            int height = (int)(Screen.height / Mathf.Pow(2, DownSample));
+            mTargetMaterial.SetFloat("_LuminanceThreshold", luminanceTheshold);
+
+            int width = (int)(Screen.width / DownSample);
+            int height = (int)(Screen.height / DownSample);
+
 
             RenderTexture temp0= RenderTexture.GetTemporary(width, height, 0);
             temp0.filterMode = FilterMode.Bilinear;
 
-            mTargetMaterial.SetFloat("_LuminanceThreshold", luminanceTheshold);
             Graphics.Blit(src, temp0, mTargetMaterial, 0);
 
             for (int dex = 0; dex < LoopTime; dex++)

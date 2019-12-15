@@ -297,9 +297,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mEffectShader: {fileID: 4800000, guid: 6297d25843c5ad54fb5324ce21c41ca6, type: 3}
-  luminanceTheshold: 0.219
+  luminanceTheshold: 1
   LoopTime: 3
-  blurSpread: 2.9
+  blurSpread: 2.3
   DownSample: 2
 --- !u!114 &698601679
 MonoBehaviour:
@@ -315,9 +315,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mEffectShader: {fileID: 4800000, guid: 6297d25843c5ad54fb5324ce21c41ca6, type: 3}
   iterations: 2
-  blurSpread: 1.82
+  blurSpread: 1.24
   downSample: 2
-  luminanceThreshold: 0.46
+  luminanceThreshold: 0
 --- !u!1 &1522947590
 GameObject:
   m_ObjectHideFlags: 0
