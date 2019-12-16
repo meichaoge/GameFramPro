@@ -132,7 +132,7 @@ namespace GameFramePro
                     var messageHandler = handlerNode.Value;
                     if (messageHandler.HandlerType == handlerType && messageHandler.HandlerFunction == handler)
                     {
-                        Debug.Log($"UnRegisterMessageHandler<T,V,W,U> Fail, ID={enumValue}  Handler={handler}");
+                        //Debug.Log($"UnRegisterMessageHandler<T,V,W,U> Fail, ID={enumValue}  Handler={handler}");
                         messageHandlers.Remove(handlerNode);
                         HandlerRecord.ReleaseHandlerRecord(messageHandler);
                         return;

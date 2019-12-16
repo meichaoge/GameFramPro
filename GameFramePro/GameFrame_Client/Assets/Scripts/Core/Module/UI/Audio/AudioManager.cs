@@ -96,7 +96,7 @@ namespace GameFramePro
                 } //当前正在播放这个背景音
             }
 
-              LoadAssetResult<AudioClip> clipAsset = ResourcesManagerUtility.LoadAssetSync<AudioClip>(audioPath);
+            LoadAssetResult<AudioClip> clipAsset = ResourcesManagerUtility.LoadAssetSync<AudioClip>(audioPath, null, null);
 
             if (clipAsset == null)
                 return false;
@@ -127,13 +127,15 @@ namespace GameFramePro
                     mCurBackgroundAudioSource.Stop(); //结束当前的背景音
             }
 
-            clipAsset.ReferenceWithComponent(mCurBackgroundAudioSource,(audioClip)=> {
+            clipAsset.ReferenceWithComponent(mCurBackgroundAudioSource, (audioClip) =>
+            {
                 if (mCurBackgroundAudioSource.clip == audioClip)
-                    return ;
+                    return;
                 ResourcesManagerUtility.ReleaseComponentReferenceAsset(mCurBackgroundAudioSource, mCurBackgroundAudioSource.clip);
                 mCurBackgroundAudioSource.clip = audioClip;
+                return;
             });
-       
+
             mCurBackgroundAudioSource.volume = volume;
             mCurBackgroundAudioSource.loop = isLoop;
             mCurBackgroundAudioSource.Play();
@@ -200,7 +202,7 @@ namespace GameFramePro
             }
 
             curAudioSource = GetNextAvailableAudioSource();
-            LoadAssetResult<AudioClip> assetInfor = ResourcesManagerUtility.LoadAssetSync<AudioClip>(audioPath);
+            LoadAssetResult<AudioClip> assetInfor = ResourcesManagerUtility.LoadAssetSync<AudioClip>(audioPath, null, null);
 
             if (assetInfor == null)
             {
@@ -212,7 +214,7 @@ namespace GameFramePro
                 assetInfor.ReferenceWithComponent(curAudioSource, (audioClip) =>
                 {
                     if (curAudioSource.clip == audioClip)
-                        return ;
+                        return;
                     ResourcesManagerUtility.ReleaseComponentReferenceAsset(curAudioSource, curAudioSource.clip);
                     curAudioSource.clip = audioClip;
                 });
@@ -256,8 +258,8 @@ namespace GameFramePro
         /// <param name="perfectCount"></param>
         private void InitialedNormalAudioSources(uint perfectCount = 2)
         {
-            CurNormalAudioSourceCount = (int) perfectCount;
-            mAllAvailableAudioSources = new Stack<AudioSource>((int) perfectCount);
+            CurNormalAudioSourceCount = (int)perfectCount;
+            mAllAvailableAudioSources = new Stack<AudioSource>((int)perfectCount);
             for (int index = 0; index < perfectCount; index++)
             {
                 AudioSource audioSource = InstantiateAudioSourceInstance(string.Format("NormalAudio_{0}", index));

@@ -8,8 +8,39 @@ namespace GameFramePro.ResourcesEx.Reference
     /// <summary>
     /// 资源引用管理器
     /// </summary>
-    public static class  ReferenceAssetManager 
+    public static class ReferenceAssetManager
     {
+        private class InstanceIDReferenceInfor
+        {
+            public int mReferenceAssetInstanceID { get; set; } = 0;//引用的资源的实例ID
+            public int mLoadRecordInstanceID { get; set; } = 0;  //加载的整个资源Instanceid 
+            public int mReferenceCount { get; set; } = 0;
+
+            public InstanceIDReferenceInfor() { }
+            public InstanceIDReferenceInfor(int referenceAsset, int loadRecord)
+            {
+                mReferenceAssetInstanceID = referenceAsset;
+                mLoadRecordInstanceID = loadRecord;
+            }
+
+            #region 对象池
+            private static NativeObjectPool<InstanceIDReferenceInfor> s_InstanceIDReferenceInfor;
+            static InstanceIDReferenceInfor()
+            {
+                s_InstanceIDReferenceInfor = new NativeObjectPool<InstanceIDReferenceInfor>(50, null, OnBeforeRecycleInstanceIDReferenceInfor);
+            }
+
+            private static void OnBeforeRecycleInstanceIDReferenceInfor(InstanceIDReferenceInfor record)
+            {
+                if (record == null) return;
+
+                record.mLoadRecordInstanceID = -1;
+                record.mLoadRecordInstanceID = -1;
+                record.mReferenceCount = 0;
+            }
+            #endregion
+        }
+
         private static float s_FullCheckTimeInterval { get { return 10; } } //全资源空引用检测时间间隔
         //一个资源 Object 中的某个子资源id 到整个资源Object 的映射关系，key =子资源Instanceid  value=加载的整个资源Instanceid 
         private static readonly Dictionary<int, int> s_InstanceIdMapRecord = new Dictionary<int, int>(100);
@@ -53,38 +84,46 @@ namespace GameFramePro.ResourcesEx.Reference
         private static int RecordInstanceIdDependence(Object subAsset, Object loadAsset)
         {
             if (subAsset == null || loadAsset == null)
+            {
+                Debug.LogError($"资源失败{subAsset == null }   =={loadAsset == null }  {Time.frameCount}");
                 return -1;
+            }
             int subInstanceID = subAsset.GetInstanceID();
             int loadAssetID = loadAsset.GetInstanceID();
 
-            if(s_InstanceIdMapRecord.TryGetValue(subInstanceID,out var recordID))
+            if (s_InstanceIdMapRecord.TryGetValue(subInstanceID, out var recordID))
             {
-                if(recordID!= loadAssetID)
+                if (recordID != loadAssetID)
                 {
-                    Debug.LogError($"异常 记录的值{recordID} 与新的值不一致{loadAssetID}");
+                    Debug.LogError($"异常 记录的值{recordID} 与新的值不一致{loadAssetID}   {Time.frameCount}");
                     s_InstanceIdMapRecord.Remove(subInstanceID);
                     s_InstanceIdMapRecord[subInstanceID] = loadAssetID;
                 }
+                //else
+                //{
+                //    Debug.Log($"已经记录了实例ID 映射关系{subInstanceID} =  {recordID}=》{subAsset.name}   {Time.frameCount}");
+                //}
             }
             else
             {
                 s_InstanceIdMapRecord[subInstanceID] = loadAssetID;
+                //     Debug.Log($"记录弱引用关系{subInstanceID}:{loadAssetID}  ==>{subAsset.name} : {loadAsset.name}  {Time.frameCount}");
             }
-          
+
             return loadAssetID;
         }
 
-        private static int GetInstanceIDFromRecord(Object subAssey)
+        private static int GetInstanceIDFromRecord(Object subAsset)
         {
-            if (subAssey == null)
+            if (subAsset == null)
                 return -1;
-            int subInstanceID = subAssey.GetInstanceID();
+            int subInstanceID = subAsset.GetInstanceID();
             if (s_InstanceIdMapRecord.TryGetValue(subInstanceID, out int InstanceID))
                 return InstanceID;
 
-            //#if UNITY_EDITOR
-            //            Debug.LogEditorError($"没有记录的资源信息{subAssey.name}  缺失是否是通过新接口加载的资源"); //可能不是通过制定接口加载的资源
-            //#endif
+#if UNITY_EDITOR
+            Debug.LogEditorError($"没有记录的资源信息{subAsset.name}   {subInstanceID}  缺失是否是通过新接口加载的资源  {Time.frameCount}"); //可能不是通过制定接口加载的资源
+#endif
             return -1;
         }
 
@@ -96,22 +135,27 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <param name="component"></param>
         /// <param name="directReferenceObject">直接引用的资源(可能是一个Object 中的某个组件资源)</param>
         /// <param name="loadAssetRecord"></param>
-        private static void AddStrongReference(Component component, Object directReferenceObject, ILoadAssetRecord loadAssetRecord, int InstanceID) 
+        private static void AddStrongReference(Component component, Object directReferenceObject, ILoadAssetRecord loadAssetRecord, int InstanceID)
         {
             if (component == null || directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false || InstanceID == -1)
                 return;
 
 #if UNITY_EDITOR
             AssetReferenceTag assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
-            assetReferenceTag.RecordReference(component,  directReferenceObject);
+            assetReferenceTag.RecordReference(component, directReferenceObject);
 #endif
             //2019/12/14 修改 增加 ReferenceAssetStateUsage 状态判断，避免在回收过程中被引用的错误
-            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset) == false || beferenceAsset == null )
+            if (s_AllComponentReferenceAssetInfors.TryGetValue(InstanceID, out var beferenceAsset) == false || beferenceAsset == null)
             {
                 beferenceAsset = ComponentReferenceAssetInfor.GetComponentReferenceAssetInforInstance();
                 s_AllComponentReferenceAssetInfors[InstanceID] = beferenceAsset;
+                //       Debug.Log($"更新引用计数信息");
+                beferenceAsset.AddReference(component, directReferenceObject, loadAssetRecord);
             }
-            beferenceAsset.AddReference(component, directReferenceObject, loadAssetRecord);
+            else
+            {
+                beferenceAsset.AddReference(component, directReferenceObject, loadAssetRecord);
+            }
         }
 
         /// <summary>
@@ -119,14 +163,14 @@ namespace GameFramePro.ResourcesEx.Reference
         /// </summary>
         /// <param name="component"></param>
         /// <param name="asset"></param>
-        public static void ReduceStrongReference(Component component, Object asset) 
+        public static void ReduceStrongReference(Component component, Object asset)
         {
             if (component == null || asset == null)
                 return;
 
 #if UNITY_EDITOR
             AssetReferenceTag assetReferenceTag = component.gameObject.GetAddComponentEx<AssetReferenceTag>();
-            assetReferenceTag.RomoveReference(component,  asset);
+            assetReferenceTag.RomoveReference(component, asset);
 #endif
 
             int InstanceID = GetInstanceIDFromRecord(asset);
@@ -158,7 +202,10 @@ namespace GameFramePro.ResourcesEx.Reference
         public static void AddWeakReference(Object directReferenceObject, ILoadAssetRecord loadAssetRecord)
         {
             if (directReferenceObject == null || loadAssetRecord == null || loadAssetRecord.IsRecordEnable == false)
+            {
+                Debug.LogError($"记录失败 {directReferenceObject == null}  {loadAssetRecord == null}  { loadAssetRecord.IsRecordEnable == false}   {Time.frameCount}");
                 return;
+            }
             int InstanceID = RecordInstanceIdDependence(directReferenceObject, loadAssetRecord.GetLoadAsset());
 
             if (InstanceID == -1)
@@ -171,21 +218,15 @@ namespace GameFramePro.ResourcesEx.Reference
                     return;
                 }
                 else
+                {
+                    //Debug.Log($"----AddWeakReference-->>>已经记录资源弱引用关系  {InstanceID}  ==>{loadAssetRecord.mAssetFullUri}   {Time.frameCount} ");
                     return;
+                }
             }
+            //   Debug.Log($"----AddWeakReference-->>>记录资源弱引用关系  {InstanceID}  ==>{loadAssetRecord.mAssetFullUri} ");
             s_AllWeakReferenceAssets[InstanceID] = loadAssetRecord;
         }
 
-        public static void ReduceWeakReference(Object directReferenceObject)
-        {
-            if (directReferenceObject == null)
-                return;
-            int InstanceID = GetInstanceIDFromRecord(directReferenceObject);
-
-            if (InstanceID == -1)
-                return;
-            s_AllWeakReferenceAssets.Remove(InstanceID);
-        }
 
         /// <summary>
         /// 强关联一个资源(可能之前是强引用或者弱引用)
@@ -193,7 +234,7 @@ namespace GameFramePro.ResourcesEx.Reference
         /// <typeparam name="T"></typeparam>
         /// <param name="directReferenceObject"></param>
         /// <param name="component"></param>
-        public static bool StrongReferenceWithComponent(Object directReferenceObject,Component component) 
+        public static bool StrongReferenceWithComponent(Object directReferenceObject, Component component)
         {
             if (directReferenceObject == null || component == null)
                 return false;
@@ -204,7 +245,8 @@ namespace GameFramePro.ResourcesEx.Reference
                 return true;
             }
 
-            Debug.LogError($"强引用资源失败{directReferenceObject}  {component},没有找到资源记录");
+
+            Debug.LogError($"强引用资源失败{directReferenceObject}  {component},没有找到资源记录    {Time.frameCount}");
             return false;
         }
 
@@ -235,7 +277,6 @@ namespace GameFramePro.ResourcesEx.Reference
             }
         }
 
-
         /// <summary>
         /// 当引用计数为0 时候需要移除加载记录
         /// </summary>
@@ -247,9 +288,10 @@ namespace GameFramePro.ResourcesEx.Reference
             int instanceID = componentReference.mILoadAssetRecord.GetLoadAsset().GetInstanceID();
 
             s_AllComponentReferenceAssetInfors.Remove(instanceID);
-            s_InstanceIdMapRecord.RemoveAll((item) => item.Value == instanceID);
+            //Debug.Log($"移除所有关于{instanceID} 的记录      {Time.frameCount}");
+            // ReduceWeakReference(componentReference.mILoadAssetRecord.GetLoadAsset());
+            s_AllWeakReferenceAssets.Remove(instanceID);
         }
-
 
         #endregion
     }

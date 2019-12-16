@@ -28,7 +28,7 @@ namespace GameFramePro
 
 
     /// <summary>/// 这里有ResourcesManger 提供的对外访问接口和实现/// </summary>
-    public static class ResourcesManagerUtility 
+    public static class ResourcesManagerUtility
     {
         #region 对象的创建和销毁逻辑（实例化对象 (这里对内部的GameObject.Instantiate<T> 做了一层封装，主要是想后期能够监控对象的创建TODO)）
 
@@ -156,8 +156,6 @@ namespace GameFramePro
                 UIPageManagerUtility.S_Instance.UnLoadInVisibleUI(Time.realtimeSinceStartup);
                 LocalResourcesManager.RemoveAllUnReferenceResourcesRecord(true);
                 AssetBundleManager.RemoveAllUnReferenceAssetBundleRecord(true);
-
-
                 Resources.UnloadUnusedAssets();
 
                 Debug.LogInfor($"主动清理所有没有引用的资源{DateTime.UtcNow}");
@@ -202,16 +200,25 @@ namespace GameFramePro
         /// <param name="ConnectAssetReferenceComponentAtc">得到资源后的操作，第一个参数标识是否加载成功，第三个参数标识是否需要引用这个资源</param>
         /// <param name="loadAssetChannel">加载的渠道</param>
         /// <returns></returns>
-        public static bool LoadAssetSync_Ex<T>(string assetBundleUri, Component targetComponent, System.Action<bool, T> ConnectAssetReferenceComponentAtc, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
+        public static LoadAssetResult<T> LoadAssetSync<T>(string assetBundleUri, Component targetComponent, System.Action<bool, T> ConnectAssetReferenceComponentAtc, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
         {
-            LoadAssetResult<T> result = LoadAssetSync<T>(assetBundleUri, loadAssetChannel);
+            var objectAssetRecord = LoadAssetRecordSync(assetBundleUri, loadAssetChannel);
+            if (objectAssetRecord == null)
+            {
+                Debug.LogError($"加载资源{assetBundleUri} 失败");
+                ConnectAssetReferenceComponentAtc?.Invoke(false, null);
+                return null;
+            }
+
+            LoadAssetResult<T> result = GetLoadAssetFromLoadAssetRecord<T>(objectAssetRecord);
             if (result == null)
             {
                 Debug.LogError($"加载资源{assetBundleUri} 失败");
                 ConnectAssetReferenceComponentAtc?.Invoke(false, null);
-                return false;
+                return null;
             }
-            return result.ReferenceWithComponent(targetComponent, resultAsset => ConnectAssetReferenceComponentAtc?.Invoke(true, resultAsset));
+            result.ReferenceWithComponent(targetComponent, resultAsset => ConnectAssetReferenceComponentAtc?.Invoke(true, resultAsset));
+            return result;
         }
 
 
@@ -222,7 +229,7 @@ namespace GameFramePro
         /// <param name="completeCallback"></param>
         /// <param name="isForceReload"></param>
         /// <typeparam name="T"></typeparam>
-        public static void LoadAssetAsync_Ex<T>(string assetBundleUri, Component targetComponent, System.Action<bool, T> ConnectAssetReferenceComponentAtc, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
+        public static void LoadAssetAsync<T>(string assetBundleUri, Component targetComponent, System.Action<bool, T> ConnectAssetReferenceComponentAtc, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
         {
             System.Action<LoadAssetResult<T>> completeCallback = (loadResult) =>
             {
@@ -248,62 +255,57 @@ namespace GameFramePro
                     result = GetSpriteAssetFromLoadAsset(assetRecord.GetLoadAsset()) as T;
                 else
                     result = assetRecord.GetLoadAsset() as T;
-                ReferenceAssetManager.AddWeakReference(result, assetRecord);
-                completeCallback?.Invoke(new LoadAssetResult<T>(result));
+                //    ReferenceAssetManager.AddWeakReference(result, assetRecord);
+                completeCallback?.Invoke(new LoadAssetResult<T>(result, assetRecord));
             }, loadAssetChannel);
 
         }
+        /// <summary>
+        ///  从加载的资源记录中获取加载的资源 
+        /// </summary>
+        /// <param name="loadAssetRecord"></param>
+        /// <returns></returns>
+        private static LoadAssetResult<T> GetLoadAssetFromLoadAssetRecord<T>(ILoadAssetRecord loadAssetRecord) where T : UnityEngine.Object
+        {
+            if (loadAssetRecord == null)
+                return null;
+            T loadAsset = null;
+            if (typeof(T) == typeof(Sprite))
+            {
+                loadAsset = GetSpriteAssetFromLoadAsset(loadAssetRecord.GetLoadAsset()) as T;
+                if (loadAsset == null)
+                    Debug.LogError($"資源加載失敗{loadAssetRecord}");
+            }
+            else
+                loadAsset = loadAssetRecord.GetLoadAsset() as T;
+
+            //Debug.Log($"记录资源弱引用关系{loadAssetRecord.mAssetFullUri}   =>{loadAsset.name}  {loadAsset.GetInstanceID()}  {Time.frameCount}");
+
+            return new LoadAssetResult<T>(loadAsset, loadAssetRecord);
+        }
+
+        /// <summary>
+        /// 从加载的资源中获取精灵对象
+        /// </summary>
+        /// <param name="objectAsset"></param>
+        /// <returns></returns>
+        private static Sprite GetSpriteAssetFromLoadAsset(Object objectAsset)
+        {
+            if (objectAsset == null)
+                return null;
+            GameObject go = objectAsset as GameObject;
+            if (go == null)
+                return null;
+            SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
+            if (renderer != null)
+                return renderer.sprite;
+            return null;
+        }
+
 
         #endregion
 
-        #region 资源加载接口
-
-        /// <summary>
-        /// 同步加载指定的资源 并且没有增加引用计数，如果需要使用这个资源需要调用 ReferenceWithComponent接口
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="assetPath"></param>
-        /// <param name="isForceReload"></param>
-        /// <returns></returns>
-        public static LoadAssetResult<T> LoadAssetSync<T>(string assetBundleUri, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
-        {
-            var objectAssetRecord = LoadAssetRecordSync(assetBundleUri, loadAssetChannel);
-            if (objectAssetRecord == null)
-                return null;
-
-            return GetLoadAssetFromLoadAssetRecord<T>(objectAssetRecord);
-        }
-
-
-        /// <summary>
-        /// 通用异步加载接口
-        /// </summary>
-        /// <param name="assetBundleUri"></param>
-        /// <param name="completeCallback"></param>
-        /// <param name="isForceReload"></param>
-        /// <typeparam name="T"></typeparam>
-        public static void LoadAssetAsync<T>(string assetBundleUri, System.Action<LoadAssetResult<T>> completeCallback, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UnityEngine.Object
-        {
-            if (completeCallback != null)
-            {
-                LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
-                {
-                    if (assetRecord == null)
-                    {
-                        completeCallback?.Invoke(null);
-                        return;
-                    }
-                    completeCallback?.Invoke(GetLoadAssetFromLoadAssetRecord<T>(assetRecord));
-                }, loadAssetChannel);
-            }
-            else
-            {
-                LoadAssetRecordAsync(assetBundleUri, null, loadAssetChannel);
-            }
-        }
-
-
-
+        #region 内部加载资源实现
 
         /// <summary>
         /// 实例化GameObject 专用接口 
@@ -316,27 +318,12 @@ namespace GameFramePro
         public static GameObject InstantiateAssetSync(string assetBundleUri, Transform parent, Vector3 localPositon, Quaternion rotation, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default)
         {
             var objectAssetRecord = LoadAssetRecordSync(assetBundleUri, loadAssetChannel);
-            if (objectAssetRecord == null)
-                return null;
-
-            GameObject go = InstantiateGameObjectFromAssetRecord(objectAssetRecord, (prefab) => Instantiate(prefab, localPositon, rotation, parent));
-
-            if (go == null)
-                Debug.LogError($"加载资源{assetBundleUri} 失败");
-
-            return go;
+            return InstantiateGameObjectFromAssetRecord(objectAssetRecord, (prefab) => Instantiate(prefab, localPositon, rotation, parent));
         }
         public static GameObject InstantiateAssetSync(string assetBundleUri, Transform parent, bool worldPositionStays, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default)
         {
             var objectAssetRecord = LoadAssetRecordSync(assetBundleUri, loadAssetChannel);
-            if (objectAssetRecord == null)
-                return null;
-            GameObject go = InstantiateGameObjectFromAssetRecord(objectAssetRecord, (prefab) => Instantiate(prefab, parent, worldPositionStays));
-
-            if (go == null)
-                Debug.LogError($"加载资源{assetBundleUri} 失败");
-
-            return go;
+            return InstantiateGameObjectFromAssetRecord(objectAssetRecord, (prefab) => Instantiate(prefab, parent, worldPositionStays));
         }
 
         /// <summary>
@@ -349,42 +336,20 @@ namespace GameFramePro
         /// <param name="rotation"></param>
         public static void InstantiateAssetAsync(string assetBundleUri, System.Action<GameObject> completeCallback, Transform parent, Vector3 localPositon, Quaternion rotation, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default)
         {
-            if (completeCallback != null)
+            LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
             {
-                LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
-                {
-                    GameObject go = InstantiateGameObjectFromAssetRecord(assetRecord, (prefab) => Instantiate(prefab, localPositon, rotation, parent));
-
-                    if (go == null)
-                        Debug.LogError($"加载资源{assetBundleUri} 失败");
-                    completeCallback.Invoke(go);
-                }, loadAssetChannel);
-            }
-            else
-            {
-                LoadAssetRecordAsync(assetBundleUri, null, loadAssetChannel);
-            }
+                GameObject go = InstantiateGameObjectFromAssetRecord(assetRecord, (prefab) => Instantiate(prefab, localPositon, rotation, parent));
+                completeCallback?.Invoke(go);
+            }, loadAssetChannel);
         }
-
         public static void InstantiateAssetAsync(string assetBundleUri, System.Action<GameObject> completeCallback, Transform parent, bool worldPositionStays, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default)
         {
-            if (completeCallback != null)
+            LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
             {
-                LoadAssetRecordAsync(assetBundleUri, (assetRecord) =>
-                {
-                    GameObject go = InstantiateGameObjectFromAssetRecord(assetRecord, (prefab) => Instantiate(prefab, parent, worldPositionStays));
-                    if (go == null)
-                        Debug.LogError($"加载资源{assetBundleUri} 失败");
-                    completeCallback.Invoke(go);
-                }, loadAssetChannel);
-            }
-            else
-            {
-                LoadAssetRecordAsync(assetBundleUri, null, loadAssetChannel);
-            }
+                GameObject go = InstantiateGameObjectFromAssetRecord(assetRecord, (prefab) => Instantiate(prefab, parent, worldPositionStays));
+                completeCallback.Invoke(go);
+            }, loadAssetChannel);
         }
-
-
 
 
         /// <summary>///
@@ -398,7 +363,7 @@ namespace GameFramePro
             {
                 case LoadAssetChannelUsage.Default:
                     #region 默认的加载规则
-#if UNITY_EDITOR && !UNITY_IPHONE && !UNITY_ANDROID
+#if UNITY_EDITOR // && !UNITY_IPHONE && !UNITY_ANDROID
 
                     if (AppEntryManager.S_Instance.mIsLoadResourcesAssetPriority)
                     {
@@ -455,7 +420,7 @@ namespace GameFramePro
                 case LoadAssetChannelUsage.Default:
 
                     #region 默认的规则
-#if UNITY_EDITOR && !UNITY_IPHONE && !UNITY_ANDROID
+#if UNITY_EDITOR //&& !UNITY_IPHONE && !UNITY_ANDROID
                     if (AppEntryManager.S_Instance.mIsLoadResourcesAssetPriority)
                     {
                         LocalResourcesManager.ResourcesLoadAssetAsync(assetBundleUri, (assetRecord) =>
@@ -551,56 +516,25 @@ namespace GameFramePro
 
             GameObject prefab = loadAssetRecord.GetLoadAsset() as GameObject;
             if (prefab == null)
+            {
+                Debug.LogError($"加载预制体资源失败 {loadAssetRecord.mAssetFullUri} ");
                 return null;
+            }
 
             GameObject go = InitialedAction?.Invoke(prefab);
             if (go == null)
+            {
+                Debug.LogError($"实例化对象失败 {loadAssetRecord.mAssetFullUri} ");
                 return null;
+            }
             ReferenceAssetManager.AddWeakReference(go, loadAssetRecord);
             ReferenceAssetManager.StrongReferenceWithComponent(go, go.transform);
             return go;
         }
 
 
-        /// <summary>
-        ///  从加载的资源记录中获取加载的资源 
-        /// </summary>
-        /// <param name="loadAssetRecord"></param>
-        /// <returns></returns>
-        private static LoadAssetResult<T> GetLoadAssetFromLoadAssetRecord<T>(ILoadAssetRecord loadAssetRecord) where T : UnityEngine.Object
-        {
-            if (loadAssetRecord == null)
-                return null;
-            T loadAsset = null;
-            if (typeof(T) == typeof(Sprite))
-                loadAsset = GetSpriteAssetFromLoadAsset(loadAssetRecord.GetLoadAsset()) as T;
-            else
-                loadAsset = loadAssetRecord.GetLoadAsset() as T;
-            ReferenceAssetManager.AddWeakReference(loadAsset, loadAssetRecord);
-            return new LoadAssetResult<T>(loadAsset);
-        }
-
-        /// <summary>
-        /// 从加载的资源中获取精灵对象
-        /// </summary>
-        /// <param name="objectAsset"></param>
-        /// <returns></returns>
-        private static Sprite GetSpriteAssetFromLoadAsset(Object objectAsset)
-        {
-            if (objectAsset == null)
-                return null;
-            GameObject go = objectAsset as GameObject;
-            if (go == null)
-                return null;
-            SpriteRenderer renderer = go.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-                return renderer.sprite;
-            return null;
-        }
 
         #endregion
-
-
 
 
         #region 引用关系处理

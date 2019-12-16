@@ -1,4 +1,5 @@
-﻿using GameFramePro.ResourcesEx.Reference;
+﻿using GameFramePro.ResourcesEx;
+using GameFramePro.ResourcesEx.Reference;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,12 +25,14 @@ namespace GameFramePro
         /// </summary>
         public bool IsLoadAssetEnable { get { return mLoadAssetInstance != null; } }
 
+        private ILoadAssetRecord mBaseLoadAssetRecord { get; set; }
 
         #region 构造函数
 
-        public LoadAssetResult(T loadAssetInstance)
+        public LoadAssetResult(T loadAssetInstance, ILoadAssetRecord assetRecord)
         {
             mLoadAssetInstance = loadAssetInstance;
+            mBaseLoadAssetRecord = assetRecord;
         }
 
         #endregion
@@ -43,14 +46,14 @@ namespace GameFramePro
         /// <returns>返回值标识是否成功的引用了资源 </returns>
         public bool ReferenceWithComponent(Component targetComponent, System.Action<T> ConnectAssetReferenceComponentAtc)
         {
-            if (ConnectAssetReferenceComponentAtc == null)
-                return false;
-            ConnectAssetReferenceComponentAtc(mLoadAssetInstance);
+            ConnectAssetReferenceComponentAtc?.Invoke(mLoadAssetInstance);
+            ReferenceAssetManager.AddWeakReference(mLoadAssetInstance, mBaseLoadAssetRecord);
 
             if (targetComponent == null)
                 return false;
             if (mLoadAssetInstance == null || IsLoadAssetEnable == false)
                 return false;
+
             return ReferenceAssetManager.StrongReferenceWithComponent(mLoadAssetInstance, targetComponent);
         }
 

@@ -180,20 +180,20 @@ namespace GameFramePro.Localization
         /// <summary>
         /// 加载多个语言版本的配置文件
         /// </summary>
-        private string LoadLocalizationConfig(Language language)
+        private void LoadLocalizationConfig(Language language)
         {
             string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(ApplicationManager.S_Instance.mLocalizationExportFormatType, language));
-            LoadAssetResult<TextAsset> assetResult = ResourcesManagerUtility.LoadAssetSync<TextAsset>(filePath.GetPathWithOutExtension());
             string content = string.Empty;
-            if(assetResult!=null&& assetResult.IsLoadAssetEnable)
+
+            ResourcesManagerUtility.LoadAssetSync<TextAsset>(filePath.GetPathWithOutExtension(), null, (isSuccess, textAsset) =>
             {
-                assetResult.ReferenceWithComponent(null, textAsset => content = textAsset != null ? textAsset.text : string.Empty);
-            }
-
+                if (isSuccess && textAsset != null && string.IsNullOrEmpty(textAsset.text) == false)
+                {
+                    content = textAsset.text;
+                }
+            });
             GetLocalizationConfigByFormat(content, language, ApplicationManager.S_Instance.mLocalizationExportFormatType);
-
             Debug.LogInfor(string.Format("完成加载语言 {0}的本地化配置", language));
-            return string.Empty;
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace GameFramePro.Localization
             Dictionary<string, string> languageLocalizationInfor = null;
             if (mAllSupportLanguageConfig.TryGetValue(language, out languageLocalizationInfor) == false)
             {
-                string content = LoadLocalizationConfig(language);
+                LoadLocalizationConfig(language);
                 Debug.LogError("TODO 转换配置配置");
             }
 

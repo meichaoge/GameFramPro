@@ -73,18 +73,17 @@ namespace GameFramePro
         /// <returns></returns>
         private byte[] CustomerLuaLoader(ref string filePath)
         {
-            Debug.LogError("TODO Customer loader");
-            LoadAssetResult<TextAsset> assetInfor = ResourcesManagerUtility.LoadAssetSync<TextAsset>(filePath);
-
-            if (assetInfor == null || assetInfor.IsLoadAssetEnable == false)
-                return new byte[0];
-            string luaAssetInfor = string.Empty;
-            assetInfor.ReferenceWithComponent(null, textAsset => luaAssetInfor = textAsset != null ? textAsset.text : string.Empty);
-
-            if (string.IsNullOrEmpty(luaAssetInfor) == false)
-                return new byte[0];
-
-            return Encoding.UTF8.GetBytes(luaAssetInfor);
+            byte[] result = null;
+            ResourcesManagerUtility.LoadAssetSync<TextAsset>(filePath, null, (isSuccess, textAsset) =>
+            {
+                if (isSuccess == false || textAsset == null || string.IsNullOrEmpty(textAsset.text))
+                {
+                    result = new byte[0];
+                    return;
+                }
+                result = Encoding.UTF8.GetBytes(textAsset.text);
+            });
+            return result;
         }
 
 
