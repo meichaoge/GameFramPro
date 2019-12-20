@@ -7,7 +7,7 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent","Queue"="Transparent" "IgnoreProjector"="true" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="true" }
         LOD 100
 
 		ZTest Always
@@ -15,7 +15,9 @@
 		Cull Off
 
 		CGINCLUDE
-		sampler2D _MainTex;
+		#include "UnityCG.cginc"
+
+			sampler2D _MainTex;
             float4 _MainTex_ST;
 			fixed _MotionAmount;
 
