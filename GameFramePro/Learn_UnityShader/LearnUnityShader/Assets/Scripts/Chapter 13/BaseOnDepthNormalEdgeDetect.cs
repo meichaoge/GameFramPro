@@ -20,26 +20,33 @@ public class BaseOnDepthNormalEdgeDetect : BasePostProcessEffect
     private Color mBackgroundColor = Color.black; //背景色
 
     [SerializeField]
-    [Range(0.1f, 3)]
+    [Range(0.001f, 1)]
     private float DepthSensity = 0.2f;
 
     [SerializeField]
-    [Range(0.1f, 3)]
+    [Range(0.001f, 1)]
     private float NormalSensity = 0.2f;
+
+    [SerializeField]
+    [Range(0.1f, 1)]
+    private float SampleDistance = 0.2f;
 
     private void OnEnable()
     {
         mTargetCamera.depthTextureMode |= DepthTextureMode.DepthNormals;
     }
-
-
+    //需要深度值大于一个阈值 并且法线大于阈值
+    [ImageEffectOpaque]
     protected override void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
         if (mTargetMaterial != null)
         {
             mTargetMaterial.SetFloat("_EdgeOnly", mEdgeWidth);
+            mTargetMaterial.SetFloat("_SampleDistance", SampleDistance);
+
             mTargetMaterial.SetColor("_EdgeColor", mEdgeColor);
             mTargetMaterial.SetColor("Background", mBackgroundColor);
+
 
             mTargetMaterial.SetVector("_Sensity", new Vector4(DepthSensity, NormalSensity, 0, 0));
             //mTargetMaterial.SetFloat("_EdgeOnly", mEdgeWidth);
