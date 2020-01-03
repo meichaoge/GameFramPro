@@ -141,7 +141,7 @@ namespace GameFramePro.UI
                             debugShowScript.Initialed(previouPage);
 #endif
                         }
-                    },LoadAssetChannelUsage.Default);
+                    }, LoadAssetChannelUsage.Default);
                 }
 
 
@@ -199,11 +199,6 @@ namespace GameFramePro.UI
             return null;
         }
 
-        ///// <summary>/// 只在弹窗被真正销毁时候调用 不能删除/// </summary>
-        //public static void RemoveUIChangePageFromCache(UIBaseChangePage pageName)
-        //{
-        //    s_AllAliveUIChangePages.Remove(pageName.PageName);
-        //}
         #endregion
 
 
@@ -220,12 +215,7 @@ namespace GameFramePro.UI
                 return null;
             }
 
-            T targetPage = null;
-            if (isCreateInstanceIfIsShowing)
-                targetPage = TryGetUIPopWindowFromCache(pageName, -1) as T; //获取隐藏的弹窗 如果没有则创建
-            else
-                targetPage = TryGetUIPopWindowFromCache(pageName, 0) as T;
-
+            T targetPage = TryGetUIPopWindowFromCache(pageName, isCreateInstanceIfIsShowing ? -1 : 0) as T; //获取隐藏的弹窗 如果没有则创建
 
             if (targetPage != null)
             {
@@ -408,7 +398,7 @@ namespace GameFramePro.UI
 
 
         /// <summary>/// 创建页面实例/// </summary>
-        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction, LoadAssetChannelUsage loadAssetChannel )
+        private static void CreateUIPageInstance(string pageName, string pagePath, Transform parent, Action<GameObject> afterInitialedInstanceAction, LoadAssetChannelUsage loadAssetChannel)
         {
             GameObject go = ResourcesManagerUtility.InstantiateAssetSync(pagePath, parent, false, loadAssetChannel);
             if (go != null)

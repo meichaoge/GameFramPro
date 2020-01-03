@@ -61,6 +61,12 @@ namespace GameFramePro.UI
                 mBelongChangePage = null;
             }
         }
+
+        protected override void OnAfterDestroyed()
+        {
+            UIPageManager.RemoveUIPopWindowFromCache(this);
+            base.OnAfterDestroyed();
+        }
         #endregion
 
     }

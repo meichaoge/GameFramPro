@@ -223,27 +223,65 @@ namespace GameFramePro
             return offset;
         }
 
+
         /// <summary>
-        /// 反向对数螺旋线 从半径distance 开始的泛型螺旋线
+        /// 逆向推导的对数螺旋线 指定了旋转路径的起点、最长的半径长度、旋转圈数
         /// </summary>
         /// <param name="t"></param>
-        /// <param name="center"></param>
-        /// <param name="distance"></param>
-        /// <param name="turns"></param>
+        /// <param name="endPoint">结束点位置</param>
+        /// <param name="distance">旋转结束时候终点到起点的距离</param>
+        /// <param name="turns">转动的圈数</param>
+        /// <param name="offsetRadiu">螺旋线偏移旋转角度</param>
+        /// <param name="isClockWise">是否是顺时针旋转</param>
         /// <returns></returns>
-        public static Vector2 OppositeLogarithmicSpiral(float t, Vector2 center, float distance = 10, float turns = 2.5f, bool isClockWise = false)
+        public static Vector2 OppositeLogarithmicSpiral(float t, Vector2 endPoint, float distance = 10, float turns = 1f, float offsetRadiu = 0, bool isClockWise = true)
         {
-            float angle = 2 * Mathf.PI * turns * t;  //旋转的角度
-            float radiu = distance * (Mathf.Exp(t) - 1) / (2.7182818f - 1);
+            float θ = 2 * Mathf.PI * turns * t; //转过的角度
+            float radiu = distance * (Mathf.Exp(t * turns) - 1) / (Mathf.Exp(turns) - 1);  //distance * Mathf.Exp(θ - 2 * Mathf.PI * turns);      // 
 
-            Vector2 offset;
+            float β = 0;
+            Vector2 position;
             if (isClockWise)
-                offset = new Vector2(radiu * Mathf.Cos(angle), -1 * radiu * Mathf.Sin(angle));
+            {
+                β = offsetRadiu - 2 * Mathf.PI * turns;
+                float δ = θ + β;
+                position = new Vector2(Mathf.Cos(δ), Mathf.Sin(δ)) * radiu;
+            }
             else
-                offset = new Vector2(radiu * Mathf.Cos(angle), radiu * Mathf.Sin(angle));
-            offset += center;
-            return offset;
+            {
+                β = 2 * Mathf.PI - offsetRadiu - 2 * Mathf.PI * turns;
+                float δ = θ + β;
+                position = new Vector2(Mathf.Cos(δ), Mathf.Sin(Mathf.PI + δ)) * radiu;
+            }
+
+            position += endPoint;
+            return position;
         }
+
+        /// <summary>
+        /// 逆向推导的对数螺旋线 指定了旋转路径的起点、终点、旋转圈数
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="endPoint"> 结束点位置</param>
+        /// <param name="startPoint">起点位置</param>
+        /// <param name="turns">转动的圈数</param>
+        /// <param name="isClockWise">是否是顺时针旋转</param>
+        /// <returns></returns>
+        public static Vector2 OppositeLogarithmicSpiral(float t, Vector2 endPoint, Vector2 startPoint, float turns = 1f, bool isClockWise = true)
+        {
+            float distance = (startPoint - endPoint).magnitude;
+
+            Vector2 relativePos = new Vector2(startPoint.x - endPoint.x, startPoint.y - endPoint.y).normalized;
+            float radiu = Mathf.Acos(Vector2.Dot(relativePos, Vector2.right));
+
+            float θ = Mathf.Rad2Deg * radiu;
+
+            if (startPoint.y < endPoint.y)
+                radiu = Mathf.PI * 2 - radiu;
+
+            return OppositeLogarithmicSpiral(t, endPoint, distance, turns, radiu, isClockWise);
+        }
+
         #endregion
 
     }
