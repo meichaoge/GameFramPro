@@ -62,8 +62,13 @@ Shader "Unlit/Common/ForwardBaseDiffuse_Specular"
 
 				fixed3 diffuseColor=_LightColor0.rgb*_Diffuse.rgb*saturate(dot(worldLightDir,worldNormal));
 
+				//第一种不计算反射方向 取视角方向和光线方向的和的一半然后与法线点乘积
 				fixed3 halfDir=normalize(woldViewDir+worldLightDir);
 				fixed3 specularColor=_LightColor0.rgb*_SpecularColor.rgb*pow(saturate(dot(halfDir,worldNormal)),_Gloss);  //高光颜色
+
+				//第二种 根据入射方向和法线计算反射方向然后与视角方向点乘    r=2(N*I)N-I;  //N为法线单位向量 I为入射光线向量
+			//	fixed3 refletDir=reflect(-1*worldLightDir,worldNormal);
+			//	fixed3 specularColor=_LightColor0.rgb*_SpecularColor.rgb*pow(saturate(dot(refletDir,woldViewDir)),_Gloss);  //高光颜色
 
 				return fixed4(ambientColor.rgb+diffuseColor.rgb+specularColor.rgb,1);
             }

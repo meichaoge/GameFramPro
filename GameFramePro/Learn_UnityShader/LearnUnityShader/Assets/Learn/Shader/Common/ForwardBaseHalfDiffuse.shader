@@ -10,7 +10,10 @@ Shader "Unlit/Common/ForwardBaseHalfDiffuse"
     }
     SubShader
     {
-        Tags {  "LightMode"="ForwardBase" "RenderType"="Opaque" }
+        Tags {  
+		"LightMode"="ForwardBase"
+		"RenderType"="Opaque" 
+		}
         LOD 100
 
         Pass
