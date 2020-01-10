@@ -1,8 +1,8 @@
-﻿Shader "Unlit/Common/AlphaBlend_MainTex_UnLight_DoubleSide"
+﻿Shader "Unlit/Common/AlphaBlend_MainTex_UnLight_ZWrite"
 {
 
-//适用于需要ALpha 混合的情况 无光照  双面渲染
-//原理 采用两个Pass 先渲染背面然后渲染正面
+//适用于需要ALpha 混合的情况 无光照  开启深度写入  透明物体本身不会有半透明效果
+//原理两个Pass  第一个Pass 写入深度单数不输出 颜色 第二个Pass 正常输出颜色不写入深度
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
@@ -49,39 +49,30 @@
 	ENDCG
 
 
-      Tags {
+        Tags {
 			"Queue"="Transparent"
 			"RenderType"="Transparent"
 			"IgnoreProjector"="true"
 		}//Alpha Blend 标准Tags
 
-
-
-		ZWrite Off  //必须关闭深度写入
-		Blend SrcAlpha OneMinusSrcAlpha
-
         LOD 100
+
+		pass 
+		{
+			ZWrite On
+			ColorMask 0  //不输出颜色
+		}
 
         Pass
         {
-			Cull Front 
+			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite Off  //必须关闭深度写入
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-         
-            ENDCG
-        } //渲染背面
 
-		   Pass
-        {
-			Cull Back 
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-		
-         
             ENDCG
-        } //渲染正面
+        }
     }
 	FallBack "Transparent/VertexLit"
 }

@@ -1,8 +1,7 @@
-﻿Shader "Unlit/Common/AlphaBlend_MainTex_UnLight_DoubleSide"
+﻿Shader "Unlit/Common/AlphaBlend_MainTex_UnLight"
 {
 
-//适用于需要ALpha 混合的情况 无光照  双面渲染
-//原理 采用两个Pass 先渲染背面然后渲染正面
+//适用于需要ALpha 混合的情况 无光照
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
@@ -22,6 +21,7 @@
 		struct v2f
             {
                 float2 uv : TEXCOORD0;
+                UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
             };
 
@@ -49,14 +49,12 @@
 	ENDCG
 
 
-      Tags {
+        Tags {
 			"Queue"="Transparent"
 			"RenderType"="Transparent"
 			"IgnoreProjector"="true"
 		}//Alpha Blend 标准Tags
-
-
-
+	Cull Off
 		ZWrite Off  //必须关闭深度写入
 		Blend SrcAlpha OneMinusSrcAlpha
 
@@ -64,24 +62,16 @@
 
         Pass
         {
-			Cull Front 
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-         
-            ENDCG
-        } //渲染背面
+            // make fog work
+            #pragma multi_compile_fog
 
-		   Pass
-        {
-			Cull Back 
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-		
+
          
             ENDCG
-        } //渲染正面
+        }
     }
 	FallBack "Transparent/VertexLit"
 }
