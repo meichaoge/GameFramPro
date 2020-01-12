@@ -60,7 +60,6 @@ Shader "UnityShaderBook/9/projectShadowAndLightShader"
 				o.worldPos=mul(unity_ObjectToWorld,v.vertex);
 
 				TRANSFER_SHADOW(o);    //计算阴影纹理坐标
-
                 return o;
             }
 
@@ -70,14 +69,11 @@ Shader "UnityShaderBook/9/projectShadowAndLightShader"
 				fixed3 lightDir=normalize(UnityWorldSpaceLightDir(i.worldPos));
 				fixed3 viewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
 
-
 				fixed3 ambedo=_ColorTint;//* col.rgb;
 				fixed3 ambientColor=UNITY_LIGHTMODEL_AMBIENT.rgb;
 
 				fixed3 diffuseColor= _LightColor0.rgb*ambedo.rgb*saturate(dot(worldNormal,lightDir));
-
 				fixed3 halfDir=normalize(viewDir+lightDir);
-
 				fixed3 specularColor=_LightColor0.rgb*_SpecularColor.rgb*pow(saturate( dot(halfDir, worldNormal)),_Glass);
 
 				//fixed attent=1;  //Base Pass 处理的是平行光 衰减为1
@@ -91,7 +87,7 @@ Shader "UnityShaderBook/9/projectShadowAndLightShader"
             ENDCG
         }
 
-		////Additionnal pass
+		//////Additionnal pass
 	   Pass
         {
 			Tags{"LightMode"="ForwardAdd"}

@@ -140,7 +140,6 @@ Shader "UnityShaderBook/9/projectShadowShader"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
            //     o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-
 				o.worldNormal=UnityObjectToWorldNormal(v.normalDir);
 				o.worldPos=mul(unity_ObjectToWorld,v.vertex);
 

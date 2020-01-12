@@ -6,7 +6,7 @@
     {
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color Tint",COLOR)=(1,1,1,1)
-		_CutOff("Alpha Cut off",Range(0,1.0))=0.5
+		_Cutoff("Alpha Cut off",Range(0,1.0))=0.5
     }
     SubShader
     {
@@ -32,7 +32,7 @@
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			fixed4 _Color;
-			fixed _CutOff;
+			fixed _Cutoff;
 
             v2f vert (appdata v)
             {
@@ -51,7 +51,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-				clip(col.a-_CutOff);
+				clip(col.a-_Cutoff);
 
 
 				fixed3 worldNormal=normalize(i.worldNormal);
@@ -88,14 +88,11 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
-
        
             ENDCG
         }
     }
 
-	FallBack "Transparent/Cutout/VertexLit"
+//	FallBack "Transparent/Cutout/VertexLit"
 
 }
