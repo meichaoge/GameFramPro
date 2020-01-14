@@ -22,6 +22,7 @@ namespace GameFramePro.UI
             MaxAliveAfterInActivte = 0;
         }
 
+
         public virtual void UIPageInitialed(string pageName, UIPageTypeEnum pageType, UIBasePage parent, GameObject baseBeReferenceInstance)
         {
             BaseUIPageInitialed(pageName, pageType, baseBeReferenceInstance);
@@ -30,18 +31,14 @@ namespace GameFramePro.UI
 
         public virtual void SetWidgetParent(UIBasePage parentPage)
         {
-            //            if (mParentUIPage != null)
-            //            {
-            //#if UNITY_EDITOR
-            //                Debug.LogError("组件 {0} 之前属于父级{1} 现在改成{2}  确认是否有问题 ", PageName, parentPage.PageName, mParentUIPage.PageName);
-            //#endif
-            //                mParentUIPage.RemoveWidget(PageName);
-            //            }
+            if (mParentUIPage == parentPage)
+                return;
 
+            if (mParentUIPage != null)
+                mParentUIPage.RemoveWidget(this);
             mParentUIPage = parentPage;
-
-            //if (mParentUIPage != null)
-            //    mParentUIPage.AddWidget(PageName, this);
+            if (parentPage != null)
+                parentPage.AddWidget(PageName, this);
         }
 
         #endregion
@@ -55,15 +52,7 @@ namespace GameFramePro.UI
         protected override void OnAfterInVisible(bool isForceDestroyed)
         {
             if (isForceDestroyed)
-            {
                 DestroyAndRelease();
-            }
-
-            //else
-            //{
-            //    RecordInvisibleRealTime = AppEntryManager.S_Instance.CurrentRealTime; //记录不可见的时间
-            //    UIPageManagerUtility.S_Instance.RegisterUIBasePageInvisible(this);
-            //}
         }
 
         protected override void OnBeforeDestroyed()
@@ -72,7 +61,6 @@ namespace GameFramePro.UI
                 mParentUIPage.RemoveWidget(this);
             base.OnBeforeDestroyed();
         }
-
 
         #endregion
     }

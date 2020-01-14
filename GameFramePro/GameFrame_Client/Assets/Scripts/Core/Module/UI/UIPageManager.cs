@@ -393,7 +393,33 @@ namespace GameFramePro.UI
             targetWidget.ShowPage();
             return targetWidget;
         }
+        //创建或者获取
+        public static T GetOrCreateWidgetInstance<T>(string pageName, string pagePath, UIBasePage parentPage, Transform parentTrans, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UIBaseWidget, new()
+        {
+            T widget = GetWidgetInstanceOfTargetParent<T>(pageName, parentPage);
+            if (widget != null)
+                return widget;
+            return CreateWidgetInstance<T>(pageName, pagePath, parentPage, parentTrans, loadAssetChannel);
+        }
 
+
+        //查找指定父页面中的指定名称和类型的组件
+        public static T GetWidgetInstanceOfTargetParent<T>(string pageName, UIBasePage parentPage) where T : UIBaseWidget, new()
+        {
+            if (parentPage == null)
+            {
+                Debug.LogError($"关联的参数为null");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(pageName))
+            {
+                Debug.LogError($"查找的组件名为null");
+                return null;
+            }
+
+            return parentPage.FindSpecialWidget<T>(pageName);
+        }
         #endregion
 
 

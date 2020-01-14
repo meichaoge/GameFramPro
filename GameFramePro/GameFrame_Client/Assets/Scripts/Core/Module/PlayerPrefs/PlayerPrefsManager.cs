@@ -77,9 +77,10 @@ namespace GameFramePro
 
 
 
-
-
-
+        public static string GetString(string key, string defaultValue = ConstDefine.S_StringEmpty)
+        {
+            return PlayerPrefs.GetString(key, defaultValue);
+        }
         public static float GetFloat(string key, float defaultValue = 0f)
         {
             return PlayerPrefs.GetFloat(key, defaultValue);
@@ -88,14 +89,35 @@ namespace GameFramePro
         {
             return PlayerPrefs.GetInt(key, defaultValue);
         }
-        public static string GetString(string key, string defaultValue = ConstDefine.S_StringEmpty)
+        public static uint GetUInt(string key, uint defaultValue = 0)
         {
-            return PlayerPrefs.GetString(key, defaultValue);
+            int result = PlayerPrefs.GetInt(key, (int)defaultValue);
+            return (uint)result;
+        }
+        public static long GetLong(string key, long defaultValue = 0)
+        {
+            string recordStr = PlayerPrefs.GetString(key, string.Empty);
+            if (string.IsNullOrEmpty(recordStr))
+                return defaultValue;
+
+            if (long.TryParse(recordStr, out var longValue))
+                return longValue;
+            return defaultValue;
         }
 
 
 
-
+        public static void SetString(string key, string value)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                Debug.LogError("SetString Fail,Parameter is null");
+                return;
+            }
+            if (mAllPlayerPrefsKeys.Contains(key) == false)
+                mAllPlayerPrefsKeys.Add(key);
+            PlayerPrefs.SetString(key, value);
+        }
         public static void SetFloat(string key, float value)
         {
             if (string.IsNullOrEmpty(key))
@@ -118,18 +140,23 @@ namespace GameFramePro
                 mAllPlayerPrefsKeys.Add(key);
             PlayerPrefs.SetInt(key, value);
         }
-        public static void SetString(string key, string value)
+
+        public static void SetUInt(string key, uint value)
+        {
+            SetInt(key, (int)value);
+        }
+
+        public static void SetLong(string key, long value)
         {
             if (string.IsNullOrEmpty(key))
             {
-                Debug.LogError("SetString Fail,Parameter is null");
+                Debug.LogError("SetLong Fail,Parameter is null");
                 return;
             }
             if (mAllPlayerPrefsKeys.Contains(key) == false)
                 mAllPlayerPrefsKeys.Add(key);
-            PlayerPrefs.SetString(key, value);
+            PlayerPrefs.SetString(key, value.ToString());
         }
-
         #endregion
 
 

@@ -84,6 +84,24 @@ public static class DateTime_Ex
         TimeSpan span = utcDateTime - TimestampBaseTime;
         return (long)(span.TotalMilliseconds);
     }
+
+    /// <summary>
+    ///    本地 UTC DateTime 转成 时间戳
+    /// </summary>
+    /// <param name="timeStamp">时间戳(单位毫秒)</param>
+    /// <returns></returns>
+    public static long LocalToTimestamp_Millisecond(this DateTime localDateTime)
+    {
+
+        if (localDateTime > MaxTimestampBaseTime || localDateTime < TimestampBaseTime)
+        {
+            Debug.LogError(string.Format("格林威治时间只能处理从 {0}  到 {1} 的UTC时间", TimestampBaseTime.ToString(), MaxTimestampBaseTime.ToString()));
+            return 0;
+        }
+
+        TimeSpan span = localDateTime - TimestampBaseTime;
+        return (long)(span.TotalMilliseconds);
+    }
     #endregion
 
 

@@ -20,7 +20,8 @@ namespace GameFramePro.UI
             public Component mReferenceComponent = null;
         }
 
-        [Header("序列化当前预制体中包含的组件，用于脚本访问")] [SerializeField]
+        [Header("序列化当前预制体中包含的组件，用于脚本访问")]
+        [SerializeField]
         private List<UGUIComponentSerializationInfor> mSerilizeUGUIComponents = new List<UGUIComponentSerializationInfor>();
 
         private Dictionary<string, Component> mAllSerilizeUGUIComponentMap = new Dictionary<string, Component>();
@@ -52,7 +53,7 @@ namespace GameFramePro.UI
             {
                 if (item == null || item.mReferenceComponent == false)
                 {
-                    Debug.LogError("TryMapUGUIComponent 包含无效的引用，请去除！");
+                    Debug.LogError($"TryMapUGUIComponent 包含无效的引用  {gameObject.name}，请去除！");
                     return false;
                 }
 
@@ -76,11 +77,13 @@ namespace GameFramePro.UI
 
 
     /// <summary>/// 关联的资源类型 名称也是对应的 Tag/// </summary>
+    ///  每次增加需要依次修改 AttachComponentByType/CheckReferenceComponentType/GetComponentReferenceByConfig 实现
+    ///  以及UIViewEditor 脚本中 TagObjs 定义
     [System.Serializable]
     public enum UGUIComponentTypeEnum
     {
-        Transform,
         GameObject,
+        Transform,
         RectTransform,
         UGUIText,
         UGUIImage,
@@ -90,6 +93,8 @@ namespace GameFramePro.UI
         CanvasGroup,
         UILoopScrollRect_Vertical,  //循环ScrollRect组件
         UILoopScrollRect_Horizontial,  //循环ScrollRect组件
+        ScrollRect,  //Unity 自带的 ScrollRect组件
+
     }
 
 
@@ -153,7 +158,7 @@ namespace GameFramePro.UI
             Transform[] allChildTrans = transform.GetComponentsInChildren<Transform>(true);
             foreach (var trans in allChildTrans)
             {
-                if (string.IsNullOrEmpty(trans.gameObject.tag)) continue;
+                if (string.IsNullOrEmpty(trans.gameObject.tag) || trans.gameObject.tag == "Untagged") continue;
                 UGUIComponentTypeEnum type;
                 if (System.Enum.TryParse(trans.gameObject.tag, out type) == false)
                     continue;
@@ -243,6 +248,9 @@ namespace GameFramePro.UI
             Component temp = null;
             switch (type)
             {
+                case UGUIComponentTypeEnum.GameObject:
+                    temp = target;
+                    break;
                 case UGUIComponentTypeEnum.Transform:
                     temp = target;
                     break;
@@ -267,6 +275,15 @@ namespace GameFramePro.UI
                 case UGUIComponentTypeEnum.CanvasGroup:
                     temp = target.GetComponent<CanvasGroup>();
                     break;
+                case UGUIComponentTypeEnum.UILoopScrollRect_Vertical:
+                    temp = target.GetComponent<LoopVerticalScrollRect>();
+                    break;
+                case UGUIComponentTypeEnum.UILoopScrollRect_Horizontial:
+                    temp = target.GetComponent<LoopHorizontalScrollRect>();
+                    break;
+                case UGUIComponentTypeEnum.ScrollRect:
+                    temp = target.GetComponent<ScrollRect>();
+                    break;
                 default:
                     Debug.LogError("没有定义的类型 " + type);
                     break;
@@ -274,7 +291,7 @@ namespace GameFramePro.UI
 
             if (temp == null)
             {
-                Debug.LogError($"组件 {targetComponent.name} 没有指定类型{type} 类型的组件可以关联 自动关联成 Transform 组件");
+                Debug.LogError($"组件 {targetComponent.name} 没有指定类型{type} 类型的组件 target={target.name}.可以关联 自动关联成 Transform 组件");
                 type = UGUIComponentTypeEnum.Transform;
                 temp = targetComponent.transform;
             }
@@ -289,6 +306,8 @@ namespace GameFramePro.UI
 
             switch (type)
             {
+                case UGUIComponentTypeEnum.GameObject:
+                    return targetComponent is Transform;
                 case UGUIComponentTypeEnum.Transform:
                     return targetComponent is Transform;
                 case UGUIComponentTypeEnum.RectTransform:
@@ -305,6 +324,12 @@ namespace GameFramePro.UI
                     return targetComponent is Dropdown;
                 case UGUIComponentTypeEnum.CanvasGroup:
                     return targetComponent is CanvasGroup;
+                case UGUIComponentTypeEnum.UILoopScrollRect_Vertical:
+                    return targetComponent is LoopVerticalScrollRect;
+                case UGUIComponentTypeEnum.UILoopScrollRect_Horizontial:
+                    return targetComponent is LoopHorizontalScrollRect;
+                case UGUIComponentTypeEnum.ScrollRect:
+                    return targetComponent is ScrollRect;
                 default:
                     Debug.LogError("没有定义的类型 " + type);
                     return false;
@@ -344,10 +369,20 @@ namespace GameFramePro.UI
 
             foreach (var serilizeUguiComponent in componentReference.mSerilizeUGUIComponents)
             {
+                if (serilizeUguiComponent == null || serilizeUguiComponent.mReferenceComponent == null)
+                {
+                    Debug.LogError($"引用空对象,标签 {serilizeUguiComponent.mComponentType}");
+                    continue;
+                }
+
                 string compionentName = serilizeUguiComponent.mReferenceComponent.name;
                 string uiDefineName = $"m_{compionentName}";
                 switch (serilizeUguiComponent.mComponentType)
                 {
+                    case UGUIComponentTypeEnum.GameObject:
+                        uiDefineBuilder.Append($"\t  private  GameObject {uiDefineName} ; \n \t");
+                        uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetGameObjectByName(\"{compionentName}\"); \n \t");
+                        break;
                     case UGUIComponentTypeEnum.Transform:
                         uiDefineBuilder.Append($"\t  private  Transform {uiDefineName} ; \n \t");
                         uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetComponentByName<Transform>(\"{compionentName}\"); \n \t");
@@ -380,6 +415,18 @@ namespace GameFramePro.UI
                         uiDefineBuilder.Append($"\t private  CanvasGroup {uiDefineName} ; \n \t");
                         uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetComponentByName<CanvasGroup>(\"{compionentName}\"); \n \t");
                         break;
+                    case UGUIComponentTypeEnum.UILoopScrollRect_Vertical:
+                        uiDefineBuilder.Append($"\t private  LoopVerticalScrollRect {uiDefineName} ; \n \t");
+                        uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetComponentByName<LoopVerticalScrollRect>(\"{compionentName}\"); \n \t");
+                        break;
+                    case UGUIComponentTypeEnum.UILoopScrollRect_Horizontial:
+                        uiDefineBuilder.Append($"\t private  LoopHorizontalScrollRect {uiDefineName} ; \n \t");
+                        uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetComponentByName<LoopHorizontalScrollRect>(\"{compionentName}\"); \n \t");
+                        break;
+                    case UGUIComponentTypeEnum.ScrollRect:
+                        uiDefineBuilder.Append($"\t private  ScrollRect {uiDefineName} ; \n \t");
+                        uiGetReferenceBuilder.Append($"\t  {uiDefineName} =GetComponentByName<ScrollRect>(\"{compionentName}\"); \n \t");
+                        break;
                     default:
                         Debug.LogError($"无法生成指定的组件类型{serilizeUguiComponent.mComponentType}  的声明方式");
                         break;
@@ -388,8 +435,7 @@ namespace GameFramePro.UI
 
 
             uiDefineBuilder.Append(System.Environment.NewLine);
-            uiGetReferenceBuilder.Append(System.Environment.NewLine);
-
+            //   uiGetReferenceBuilder.Append(System.Environment.NewLine);
 
             uiDefineString = uiDefineBuilder.ToString();
             getReferenceString = uiGetReferenceBuilder.ToString();
@@ -424,7 +470,9 @@ namespace GameFramePro.UI
             {
                 mUGUIComponentReference.AutoRecordReferenceWithTag();
                 mUGUIComponentReference.AutoSetSerializaComponentTag();
+                Undo.RegisterFullObjectHierarchyUndo(mUGUIComponentReference.gameObject, "SerializeTgs");
             }
+
 
             if (GUILayout.Button("检测是否有重名的对象", GUILayout.Height(25)))
                 mUGUIComponentReference.CheckIfContainSameNameComponent();

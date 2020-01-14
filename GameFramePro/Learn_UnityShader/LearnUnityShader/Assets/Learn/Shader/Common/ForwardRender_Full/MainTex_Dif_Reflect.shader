@@ -4,14 +4,17 @@
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
-Shader "Unlit/Common/MainTex_Dif"
+Shader "Unlit/Common/MainTex_Dif_Reflect"
 {
-//适用于使用前向渲染且处理各种逐像素的光源
+//适用于使用前向渲染且处理各种逐像素的光源  +反射立方体纹理
 //采用两个Pass 第一个ForwardBase 第二个ForwardAdd
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color Tint",COLOR)=(1,1,1,1)
+			_CubMap("Cub Map",Cube)="_skybox" {}
+		_RefectColor("Reflect Color",COLOR)=(1,1,1,1)
+		_ReflectAmount("Reflect Amout",Range(0,1.0))=0.5 //折射比例 用于混合颜色
     }
     SubShader
     {	
@@ -40,6 +43,10 @@ Shader "Unlit/Common/MainTex_Dif"
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			fixed4 _Color;
+				samplerCUBE _CubMap;
+			float4 _CubMap_ST;
+			fixed4 _RefectColor;
+			fixed _ReflectAmount;
 
             v2f vert (appdata v)
             {
@@ -84,16 +91,22 @@ Shader "Unlit/Common/MainTex_Dif"
             {
 				fixed3 worldNormalDir=normalize(i.worldNormalDir);
 				fixed3 worldLightDir=normalize(UnityWorldSpaceLightDir(i.worldPos));
+				fixed3 worldViewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
 
                 fixed4 col = tex2D(_MainTex, i.uv);
 				fixed3 aldedo=col.rgb*_Color.rgb;
 
 				fixed3 ambient=UNITY_LIGHTMODEL_AMBIENT.rgb*aldedo.rgb;
-
 				fixed3 diffuseColor=_LightColor0.rgb*aldedo.rgb*saturate(dot(worldNormalDir,worldLightDir));
 
+				
+				fixed3 reflectDir=(reflect(-1*worldViewDir,worldNormalDir));//反射方向
+				fixed3 reflectColor=texCUBE(_CubMap,reflectDir).rgb;//*_RefectColor.rgb;  //计算反射光线
+
+				fixed3 diffuse_Reflect=lerp(diffuseColor,reflectColor,_ReflectAmount);
+
 				fixed atten=getAttenOfLight(i.worldPos);
-                return fixed4(ambient+diffuseColor*atten,1.0);
+               return fixed4(ambient+diffuse_Reflect*atten,1.0);
             }
 
 		//适用于ForwardAdd 片元  不需要计算自发光
@@ -152,7 +165,7 @@ Shader "Unlit/Common/MainTex_Dif"
             #pragma vertex vert
             #pragma fragment frag_Forwardadd
 			#pragma multi_compile_fwdadd                 //标识使用ForwardAdd 处理
-         
+
             ENDCG
         }
 

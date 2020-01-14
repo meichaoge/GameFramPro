@@ -38,7 +38,7 @@ namespace GameFramePro.UI
         //标示是否正确的引用着预制体实例
         public bool IsPrefabInstanceEnable
         {
-            get { return ConnectGameObjectInstance != null ; }
+            get { return ConnectGameObjectInstance != null; }
         }
 
         #region UI 界面相关数据
@@ -47,6 +47,11 @@ namespace GameFramePro.UI
         public UIPageStateEnum mUIPageState { get; protected set; } = UIPageStateEnum.None; //页面的状态
         public UIPageTypeEnum mUIPageTypeEnum { get; protected set; } = UIPageTypeEnum.None; //界面类型 必须正确设置
         public GameObject ConnectGameObjectInstance { get; protected set; } //关联的预制体实例
+
+        public Transform transform { get { return ConnectGameObjectInstance != null ? ConnectGameObjectInstance.transform : null; } }
+
+        public RectTransform rectTransform { get { return transform as RectTransform; } }
+
 
         public List<UIBaseWidget> mAllContainWidgets; //所有关联属于这个页面的组件，关闭的时候会一起被关闭 可能包含多个同名组件
 
@@ -83,6 +88,7 @@ namespace GameFramePro.UI
                 mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectInstance, uguiComponentReference);
             else
                 mUGUIComponent.InitailedComponentReference(PageName, ConnectGameObjectInstance, null);
+
         }
 
         #endregion
@@ -118,7 +124,7 @@ namespace GameFramePro.UI
                     OnAfterVisible();
                     break;
                 case UIPageStateEnum.Showing:
-                    Debug.LogError("ShowPage Fail,正在显示中  {0}", PageName);
+                    //  Debug.LogError("ShowPage Fail,正在显示中  {0}", PageName);
                     break;
                 case UIPageStateEnum.Destroyed:
                     Debug.LogError("ShowPage Fail,已经被销毁了 {0}", PageName);
@@ -154,7 +160,7 @@ namespace GameFramePro.UI
                     OnAfterInVisible(isForceDestroyed);
                     break;
                 case UIPageStateEnum.Hide:
-                    Debug.LogError("ShowPage Fail,已经隐藏了 {0} ", PageName);
+                    //Debug.LogError("ShowPage Fail,已经隐藏了 {0} ", PageName);
                     break;
                 case UIPageStateEnum.Destroyed:
                     Debug.LogError("ShowPage Fail,已经被销毁了 {0}", PageName);
@@ -253,12 +259,13 @@ namespace GameFramePro.UI
         {
             //页面没有销毁UIBasePage 对象，其他的需要销毁
             mUGUIComponent.ReleaseReference(IsReleaseOnDestroyPageInstance);
-            if (mAllContainWidgets != null)
+            if (mAllContainWidgets != null && mAllContainWidgets.Count > 0)
             {
-                foreach (var widget in mAllContainWidgets)
+                List<UIBaseWidget> temp = new List<UIBaseWidget>(mAllContainWidgets);
+                foreach (var widget in temp)
                 {
                     if (widget == null) continue;
-                    if (widget.mParentUIPage != this) continue;
+                    //  if (widget.mParentUIPage != this) continue;
                     widget.DestroyAndRelease();
                 }
 
@@ -273,9 +280,7 @@ namespace GameFramePro.UI
         }
 
         /// <summary>/// 在被销毁后执行/// </summary>
-        protected virtual void OnAfterDestroyed()
-        {
-        }
+        protected virtual void OnAfterDestroyed() { }
 
         #endregion
 
@@ -286,7 +291,7 @@ namespace GameFramePro.UI
         {
             if (mAllContainWidgets == null)
                 mAllContainWidgets = new List<UIBaseWidget>();
-            widget.SetWidgetParent(this);
+            // widget.SetWidgetParent(this);
             mAllContainWidgets.Add(widget);
 
             //UIBaseWidget recordWidget = null;
@@ -333,6 +338,35 @@ namespace GameFramePro.UI
             //}
         }
 
+        public virtual UIBaseWidget FindWidget(string widgetName)
+        {
+            if (mAllContainWidgets == null || mAllContainWidgets.Count == 0)
+                return null;
+
+            for (int dex = mAllContainWidgets.Count - 1; dex >= 0; dex--)
+            {
+                var widget = mAllContainWidgets[dex];
+                if (widget.PageName == widgetName)
+                    return widget;
+            }
+            return null;
+        }
+
+        public virtual T FindSpecialWidget<T>(string widgetName) where T : UIBaseWidget
+        {
+            if (mAllContainWidgets == null || mAllContainWidgets.Count == 0)
+                return null;
+
+            for (int dex = mAllContainWidgets.Count - 1; dex >= 0; dex--)
+            {
+                var widget = mAllContainWidgets[dex];
+                if (widget.PageName == widgetName && widget.GetType() == typeof(T))
+                    return widget as T;
+            }
+            return null;
+        }
+
+
         #endregion
 
 
@@ -340,7 +374,7 @@ namespace GameFramePro.UI
 
         #region 根据对象名或者路径获取对象
 
-        protected T GetComponentByName<T>(string gameObjectName) where T : Component
+        public T GetComponentByName<T>(string gameObjectName) where T : Component
         {
             if (mUGUIComponent != null)
                 return mUGUIComponent.GetComponentByName<T>(gameObjectName);
@@ -348,7 +382,7 @@ namespace GameFramePro.UI
             return null;
         }
 
-        protected T GetComponentByPath<T>(string gameObjectName, string path) where T : Component
+        public T GetComponentByPath<T>(string gameObjectName, string path) where T : Component
         {
             if (mUGUIComponent != null)
                 return mUGUIComponent.GetComponentByPath<T>(gameObjectName, path);
@@ -356,7 +390,7 @@ namespace GameFramePro.UI
             return null;
         }
 
-        protected GameObject GetGameObjectByName(string gameObjectName)
+        public GameObject GetGameObjectByName(string gameObjectName)
         {
             Component target = GetComponentByName<Component>(gameObjectName);
             if (target != null)
@@ -365,7 +399,7 @@ namespace GameFramePro.UI
             return null;
         }
 
-        protected GameObject GetComponentByPath(string gameObjectName, string path)
+        public GameObject GetComponentByPath(string gameObjectName, string path)
         {
             Component target = GetComponentByPath<Component>(gameObjectName, path);
             if (target != null)
@@ -402,6 +436,10 @@ namespace GameFramePro.UI
 
         #endregion
 
+        public void SetUIAnchorPosition(Vector2 anchorPosition)
+        {
+            rectTransform.anchoredPosition = anchorPosition;
+        }
         #endregion
     }
 }

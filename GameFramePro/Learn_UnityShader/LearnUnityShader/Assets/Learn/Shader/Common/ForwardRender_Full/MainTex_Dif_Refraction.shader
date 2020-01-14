@@ -4,14 +4,18 @@
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
-Shader "Unlit/Common/MainTex_Dif"
+Shader "Unlit/Common/MainTex_Dif_Refraction"
 {
-//适用于使用前向渲染且处理各种逐像素的光源
+//适用于使用前向渲染且处理各种逐像素的光源 +立方体采样折射
 //采用两个Pass 第一个ForwardBase 第二个ForwardAdd
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color Tint",COLOR)=(1,1,1,1)
+		_CubMap("Cub Map",Cube)="" {}
+		_RefractionColor("Refraction Color",COLOR)=(1,1,1,1)
+		_RefractRadio("Refract Radiu",Range(0,1))=0.5 //相对折射率
+		_RefractionAmount("Refraction Amount",Range(0,1))=1.0
     }
     SubShader
     {	
@@ -40,6 +44,11 @@ Shader "Unlit/Common/MainTex_Dif"
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			fixed4 _Color;
+			samplerCUBE _CubMap;
+			float4 _CubMap_ST;
+			fixed4 _RefractionColor;
+			half _RefractRadio;
+			fixed _RefractionAmount;
 
             v2f vert (appdata v)
             {
@@ -84,6 +93,7 @@ Shader "Unlit/Common/MainTex_Dif"
             {
 				fixed3 worldNormalDir=normalize(i.worldNormalDir);
 				fixed3 worldLightDir=normalize(UnityWorldSpaceLightDir(i.worldPos));
+				fixed3 worldViewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
 
                 fixed4 col = tex2D(_MainTex, i.uv);
 				fixed3 aldedo=col.rgb*_Color.rgb;
@@ -92,8 +102,12 @@ Shader "Unlit/Common/MainTex_Dif"
 
 				fixed3 diffuseColor=_LightColor0.rgb*aldedo.rgb*saturate(dot(worldNormalDir,worldLightDir));
 
+				fixed3 refractionDir=refract(-1*worldViewDir,worldNormalDir,_RefractRadio);//折射方向
+				fixed3 refractionColor=texCUBE(_CubMap,refractionDir).rgb*_RefractionColor.rgb;
+
+
 				fixed atten=getAttenOfLight(i.worldPos);
-                return fixed4(ambient+diffuseColor*atten,1.0);
+                return fixed4(ambient+lerp(diffuseColor,refractionColor,_RefractionAmount)*atten,1.0);
             }
 
 		//适用于ForwardAdd 片元  不需要计算自发光

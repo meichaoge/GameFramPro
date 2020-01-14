@@ -4,18 +4,22 @@
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
-Shader "Unlit/Common/MainTex_Dif"
+Shader "Unlit/Common/MainTex_Dif_Spe_Reflect"
 {
-//适用于使用前向渲染且处理各种逐像素的光源
+//适用于使用前向渲染且处理各种逐像素的光源    漫反射+高光 +反射光
 //采用两个Pass 第一个ForwardBase 第二个ForwardAdd
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
 		_Color("Color Tint",COLOR)=(1,1,1,1)
+		_Specular("Specular Color",COLOR)=(1,1,1,1)
+		_Gloss("Gloss",Range(5,50))=10
+		_CubMap("Cub Map",Cube)="_skybox" {}
+		_RefectColor("Reflect Color",COLOR)=(1,1,1,1)
+		_ReflectAmount("Reflect Amout",Range(0,1.0))=0.5 //折射比例 用于混合颜色
     }
     SubShader
     {	
-
 		CGINCLUDE
 
 		#include "UnityCG.cginc"
@@ -40,6 +44,13 @@ Shader "Unlit/Common/MainTex_Dif"
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			fixed4 _Color;
+			fixed4 _Specular;
+			half _Gloss;
+			samplerCUBE _CubMap;
+			float4 _CubMap_ST;
+			fixed4 _RefectColor;
+			fixed _ReflectAmount;
+
 
             v2f vert (appdata v)
             {
@@ -71,7 +82,7 @@ Shader "Unlit/Common/MainTex_Dif"
 		// 与点光源不同，由于聚光灯有更多的角度等要求，因此为了得到衰减值，除了需要对衰减纹理采样外，还需要对聚光灯的范围、张角和方向进行判断
 		// 此时衰减纹理存储到了_LightTextureB0中，这张纹理和点光源中的_LightTexture0是等价的
 		// 聚光灯的_LightTexture0存储的不再是基于距离的衰减纹理，而是一张基于张角范围的衰减纹理
-		 atten = (lightCoord.z > 0) * tex2D(_LightTexture0, lightCoord.xy / lightCoord.w + 0..w * tex2D(_LightTextureB0, dot(lightCoord, lightCoord).rr).UNITY_ATTEN_CHANNEL;
+		 atten = (lightCoord.z > 0) * tex2D(_LightTexture0, lightCoord.xy / lightCoord.w + 0.5).w * tex2D(_LightTextureB0, dot(lightCoord, lightCoord).rr).UNITY_ATTEN_CHANNEL;
 	#else
 		 atten = 1.0;
 	#endif
@@ -84,16 +95,24 @@ Shader "Unlit/Common/MainTex_Dif"
             {
 				fixed3 worldNormalDir=normalize(i.worldNormalDir);
 				fixed3 worldLightDir=normalize(UnityWorldSpaceLightDir(i.worldPos));
+				fixed3 worldViewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
 
                 fixed4 col = tex2D(_MainTex, i.uv);
 				fixed3 aldedo=col.rgb*_Color.rgb;
 
 				fixed3 ambient=UNITY_LIGHTMODEL_AMBIENT.rgb*aldedo.rgb;
-
 				fixed3 diffuseColor=_LightColor0.rgb*aldedo.rgb*saturate(dot(worldNormalDir,worldLightDir));
+				fixed3 halfDir=normalize(worldViewDir+worldLightDir);
+				fixed3 specularColor=_LightColor0.rgb*aldedo.rgb*_Specular.rgb*pow(saturate(dot(halfDir,worldNormalDir)),_Gloss);
+
+				fixed3 reflectDir=normalize(reflect(-1*worldViewDir,worldNormalDir));//反射方向
+				fixed3 reflectColor=	texCUBE(_CubMap,reflectDir).rgb*_RefectColor.rgb;  //计算反射光线
+
+
+				fixed3 diffuse_Reflect=lerp(diffuseColor,reflectColor,_ReflectAmount);
 
 				fixed atten=getAttenOfLight(i.worldPos);
-                return fixed4(ambient+diffuseColor*atten,1.0);
+                return fixed4(ambient+(diffuse_Reflect+specularColor)*atten,1.0);
             }
 
 		//适用于ForwardAdd 片元  不需要计算自发光
@@ -101,6 +120,7 @@ Shader "Unlit/Common/MainTex_Dif"
             {
 				fixed3 worldNormalDir=normalize(i.worldNormalDir);
 				fixed3 worldLightDir=normalize(UnityWorldSpaceLightDir(i.worldPos));
+				fixed3 worldViewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
 
                 fixed4 col = tex2D(_MainTex, i.uv);
 				fixed3 aldedo=col.rgb*_Color.rgb;
@@ -109,12 +129,14 @@ Shader "Unlit/Common/MainTex_Dif"
 
 				fixed3 diffuseColor=_LightColor0.rgb*aldedo.rgb*saturate(dot(worldNormalDir,worldLightDir));
 				fixed atten=getAttenOfLight(i.worldPos);
-				
+				fixed3 halfDir=normalize(worldViewDir+worldLightDir);
+				fixed3 specularColor=_LightColor0.rgb*aldedo.rgb*_Specular.rgb*pow(saturate(dot(halfDir,worldNormalDir)),_Gloss);
 
-                return fixed4(diffuseColor*atten,1.0);
+                return fixed4((diffuseColor+specularColor)*atten,1.0);
             }
 
 		ENDCG
+
 
         Tags { 
 			"RenderType"="Opaque" 
@@ -152,7 +174,7 @@ Shader "Unlit/Common/MainTex_Dif"
             #pragma vertex vert
             #pragma fragment frag_Forwardadd
 			#pragma multi_compile_fwdadd                 //标识使用ForwardAdd 处理
-         
+
             ENDCG
         }
 

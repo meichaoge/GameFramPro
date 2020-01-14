@@ -74,7 +74,7 @@ public static class LayerAndTagManager
     {
         for (int i = 0; i < UnityEditorInternal.InternalEditorUtility.tags.Length; i++)
         {
-            if (UnityEditorInternal.InternalEditorUtility.tags[i].Contains(tag))
+            if (UnityEditorInternal.InternalEditorUtility.tags[i] == tag)
                 return true;
         }
         return false;
@@ -84,7 +84,7 @@ public static class LayerAndTagManager
     {
         for (int i = 0; i < UnityEditorInternal.InternalEditorUtility.layers.Length; i++)
         {
-            if (UnityEditorInternal.InternalEditorUtility.layers[i].Contains(layer))
+            if (UnityEditorInternal.InternalEditorUtility.layers[i] == layer)
                 return true;
         }
         return false;
