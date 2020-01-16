@@ -39,7 +39,7 @@ namespace GameFramePro.Localization
         /// <summary>/// 获取当前的多语言/// </summary>
         public static LocalizationLanguage GetCurLocalizationLanguage()
         {
-            Language language = LocalizationManager.S_Instance.CurLanguage;
+            Language language = LocalizationManager.CurLanguage;
             return TransformLanguage(language);
         }
     }

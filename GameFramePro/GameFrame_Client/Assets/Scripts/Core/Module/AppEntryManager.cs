@@ -61,7 +61,7 @@ namespace GameFramePro
             yield return null;
             Debug.LogInfor($"更新资源完成 ----进入游戏");
 
-            LocalizationManager.S_Instance.LoadDefaultLocalizationConfig();
+            LocalizationManager.LoadDefaultLocalizationConfig();
             UIPageManager.OpenChangePage<UILoginChangePage>(NameDefine.UILoginChangePageName, PathDefine.UILoginChangePagePath);
             //       SocketClientHelper.BaseLoginTcpClient.Connect(IPAddress.Parse("127.0.0.1"), 2500, 5000);
         }

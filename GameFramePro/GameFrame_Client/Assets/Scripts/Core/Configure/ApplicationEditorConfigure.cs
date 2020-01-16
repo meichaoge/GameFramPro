@@ -54,6 +54,12 @@ namespace GameFramePro.EditorEx
         {
             ScriptableObjectUtility.CreateUnityAsset<ApplicationEditorConfigure>(ApplicationEditorConfigure.S_ApplicationEditorConfigurePath);
         }
+
+        [MenuItem("工具和扩展/项目配置/移除不可用的Tags")]
+        private static void RemoveAllUnUsingTags()
+        {
+            LayerAndTagManager.RemoveUnExitTags();
+        }
     }
 }
 #endif

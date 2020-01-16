@@ -23,24 +23,65 @@ public static class LayerAndTagManager
             SerializedProperty it = tagManager.GetIterator();
             while (it.NextVisible(true))
             {
-                if (it.name == "tags")
+                if (it.name != "tags") continue;
+                for (int i = 0; i < it.arraySize; i++)
                 {
-                    for (int i = 0; i < it.arraySize; i++)
+                    SerializedProperty dataPoint = it.GetArrayElementAtIndex(i);
+                    if (string.IsNullOrEmpty(dataPoint.stringValue))
                     {
-                        SerializedProperty dataPoint = it.GetArrayElementAtIndex(i);
-                        if (string.IsNullOrEmpty(dataPoint.stringValue))
-                        {
-                            dataPoint.stringValue = tag;
-                            tagManager.ApplyModifiedProperties();
-                            return;
-                        }
+                        dataPoint.stringValue = tag;
+                        tagManager.ApplyModifiedProperties();
+                        return;
                     }
-                    it.InsertArrayElementAtIndex(it.arraySize);  //避免一开始不存在异常
-                    tagManager.ApplyModifiedProperties();
-                    it.GetArrayElementAtIndex(it.arraySize - 1).stringValue = tag;
+                }
+                it.InsertArrayElementAtIndex(it.arraySize);  //避免一开始不存在异常
+                tagManager.ApplyModifiedProperties();
+                it.GetArrayElementAtIndex(it.arraySize - 1).stringValue = tag;
+                tagManager.ApplyModifiedProperties();
+
+                break;
+            }
+        }
+    }
+
+    public static void RemoveUnExitTags()
+    {
+        SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        SerializedProperty property = tagManager.GetIterator();
+        while (property.NextVisible(true))
+        {
+            if (property.name != "tags") continue;
+            for (int dex = property.arraySize - 1; dex >= 0; dex--)
+            {
+                SerializedProperty dataPoint = property.GetArrayElementAtIndex(dex);
+                if (string.IsNullOrEmpty(dataPoint.stringValue))
+                {
+                    property.DeleteArrayElementAtIndex(dex);
                     tagManager.ApplyModifiedProperties();
                 }
             }
+            break;
+        }
+    }
+
+    //移除所有的未定义的Tags
+    public static void RemoveUnDefineTags(List<string> defineTags)
+    {
+        SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        SerializedProperty property = tagManager.GetIterator();
+        while (property.NextVisible(true))
+        {
+            if (property.name != "tags") continue;
+            for (int dex = property.arraySize - 1; dex >= 0; dex--)
+            {
+                SerializedProperty dataPoint = property.GetArrayElementAtIndex(dex);
+                if (string.IsNullOrEmpty(dataPoint.stringValue) || defineTags.Contains(dataPoint.stringValue) == false)
+                {
+                    property.DeleteArrayElementAtIndex(dex);
+                    tagManager.ApplyModifiedProperties();
+                }
+            }
+            break;
         }
     }
 

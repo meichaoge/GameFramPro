@@ -13,12 +13,11 @@ public static class DateTime_Ex
     public static readonly DateTime MaxTimestampBaseTime = TimestampBaseTime.AddSeconds(int.MaxValue); //基准的格林威治时间 最大标示时间
 
     public static readonly long TimestampBaseTimeTicks = TimestampBaseTime.Ticks; //基准的格林威治时间tickes (1秒=1000*10000 ticks)
-
-
+    public const uint DaySecondCount = 86400;  //每一天的秒数
 
     #region 时间戳处理
     /// <summary>
-    /// 时间戳(秒)转成 UTC DateTime
+    /// 时间戳(秒)转成  DateTime
     /// </summary>
     /// <param name="timestampSecond">时间戳(单位秒)</param>
     /// <returns></returns>
@@ -52,7 +51,30 @@ public static class DateTime_Ex
     }
 
     /// <summary>
-    /// 时间戳(毫秒)转成 UTC DateTime
+    ///  本地 DateTime 转成 时间戳
+    /// </summary>
+    /// <param name="timeStamp">时间戳(单位秒)</param>
+    /// <returns></returns>
+    public static int ToTimestampLocal_Second(this DateTime dateTime)
+    {
+        //if (utcDateTime.Kind != DateTimeKind.Utc)
+        //{
+        //    Debug.LogInfor("DateTimeToTimestamp_Second 传入的时间不是UTC 时间，已经自动转换成UTC时间计算");
+        //    utcDateTime = utcDateTime.ToUniversalTime();
+        //}
+
+        if (dateTime > MaxTimestampBaseTime || dateTime < TimestampBaseTime)
+        {
+            Debug.LogError(string.Format("格林威治时间只能处理从 {0}  到 {1} 的UTC时间", TimestampBaseTime.ToString(), MaxTimestampBaseTime.ToString()));
+            return 0;
+        }
+
+        TimeSpan span = dateTime - TimestampBaseTime;
+        return (int)(span.TotalSeconds);
+    }
+
+    /// <summary>
+    /// 时间戳(毫秒)转成  DateTime
     /// </summary>
     /// <param name="timestampSecond">时间戳(单位毫秒)</param>
     /// <returns></returns>
@@ -85,28 +107,28 @@ public static class DateTime_Ex
         return (long)(span.TotalMilliseconds);
     }
 
+
     /// <summary>
-    ///    本地 UTC DateTime 转成 时间戳
+    ///    本地  DateTime 转成 时间戳
     /// </summary>
     /// <param name="timeStamp">时间戳(单位毫秒)</param>
     /// <returns></returns>
-    public static long LocalToTimestamp_Millisecond(this DateTime localDateTime)
+    public static long ToTimestampLocal_Millisecond(this DateTime utcDateTime)
     {
 
-        if (localDateTime > MaxTimestampBaseTime || localDateTime < TimestampBaseTime)
+        if (utcDateTime > MaxTimestampBaseTime || utcDateTime < TimestampBaseTime)
         {
             Debug.LogError(string.Format("格林威治时间只能处理从 {0}  到 {1} 的UTC时间", TimestampBaseTime.ToString(), MaxTimestampBaseTime.ToString()));
             return 0;
         }
 
-        TimeSpan span = localDateTime - TimestampBaseTime;
+        TimeSpan span = utcDateTime - TimestampBaseTime;
         return (long)(span.TotalMilliseconds);
     }
     #endregion
 
 
-
-    #region 格式转换
+    #region DateTime 格式转换
     /// <summary>
     /// 参数DataTime 裁剪成指定格式(忽略秒以后的数据部分数据)
     /// </summary>
@@ -146,6 +168,60 @@ public static class DateTime_Ex
     {
         return new DateTime(targetDataTime.Year, targetDataTime.Month, targetDataTime.Day, 0, 0, 0, targetDataTime.Kind);
     }
+
+
     #endregion
+
+    #region 其他类型时间处理
+    /// <summary>
+    /// 时间秒数转换成分钟和秒
+    /// </summary>
+    /// <param name="isForeceTwo">是否强制显示两位</param>
+    /// <returns></returns>
+    public static string SecondFormat_MinusSecond(uint secondCount, bool isForeceTwo = false, string minuteSendSplit = ":")
+    {
+        if (secondCount >= 3600)
+            secondCount = secondCount % 3600; //避免超过1小时的时间
+
+        uint minute = secondCount / 60;
+        uint second = secondCount % 60;
+
+        if (isForeceTwo)
+            return string.Format("{0:D2}{1}{2:D2}", minute, minuteSendSplit, second);
+        return string.Format("{0}{1}{2}", minute, minuteSendSplit, second);
+    }
+
+    /// <summary>
+    /// 时间秒数转换成分钟和秒
+    /// </summary>
+    /// <param name="isForeceTwo">是否强制显示两位</param>
+    /// <returns></returns>
+    public static string SecondFormat_HourMinusSecond(uint secondCount, bool isAutoHideHour = false, bool isForeceTwo = false, string minuteSendSplit = ":")
+    {
+        if (secondCount >= DaySecondCount)
+            secondCount = secondCount % DaySecondCount; //避免超过1天的时间
+
+        uint hour = secondCount / 3600;
+        secondCount = secondCount % 3600;
+
+        uint minute = secondCount / 60;
+        uint second = secondCount % 60;
+
+        if (isAutoHideHour)
+        {
+            if (hour == 0)
+            {
+                if (isForeceTwo)
+                    return string.Format("{0:D2}{1}{2:D2}", minute, minuteSendSplit, second);
+                return string.Format("{0}{1}{2}", minute, minuteSendSplit, second);
+            }
+        }
+
+        if (isForeceTwo)
+            return string.Format("{0:D2} {1:D2}{2}{3:D2}", hour, minute, minuteSendSplit, second);
+        return string.Format("{0} {1}{2}{3}", hour, minute, minuteSendSplit, second);
+    }
+    #endregion
+
 
 }

@@ -99,6 +99,7 @@ namespace GameFramePro.UI
         public void InstantiatePage()
         {
             OnInitialed();
+            OnTranslationLocalizationComponent();
         }
 
         /// <summary>/// 显示界面/// </summary>
@@ -205,9 +206,28 @@ namespace GameFramePro.UI
         {
         }
 
+
+        /// <summary>
+        /// 在 OnInitialed() 之后  调用，用于更新需要本地化内容
+        /// </summary>
+        protected virtual void OnTranslationLocalizationComponent()
+        {
+            if (mUGUIComponent == null) return;
+            mUGUIComponent.TranslateLocalizationComponent();
+        }
+
         /// <summary>/// 调用SetActive(true )之前调用这个/// </summary>
         protected virtual void OnBeforeVisible()
         {
+            RegistEventMessage();
+        }
+
+        /// <summary>
+        /// 注册事件消息 在OnBeforeVisible（） 中执行
+        /// </summary>
+        protected virtual void RegistEventMessage()
+        {
+            EventManager.RegisterMessageHandler((int)UIEventUsage.NotifySwitchLanguage, OnNotifySwitchLanguage);
         }
 
         /// <summary>/// 调用SetActive(true )之后调用这个/// </summary>
@@ -218,6 +238,7 @@ namespace GameFramePro.UI
         /// <summary>/// 调用SetActive(false )之前调用这个/// </summary>
         protected virtual void OnBeforeInVisible()
         {
+            UnRegistEventMessage();
             if (mAudioController != null)
                 mAudioController.StopAllAudios(false); //背景音保留
             if (mAllContainWidgets != null && mAllContainWidgets.Count != 0)
@@ -238,6 +259,16 @@ namespace GameFramePro.UI
                     widget.HidePage(false); //这里需要传入参数 标示是否是由父节点关闭自身的
                 }
             }
+
+        }
+
+
+        /// <summary>
+        /// 取消注册事件消息 在OnBeforeVisible（） 中执行
+        /// </summary>
+        protected virtual void UnRegistEventMessage()
+        {
+            EventManager.UnRegisterMessageHandler((int)UIEventUsage.NotifySwitchLanguage, OnNotifySwitchLanguage);
         }
 
         /// <summary>/// 调用SetActive(false )之后调用这个/// </summary>
@@ -398,7 +429,6 @@ namespace GameFramePro.UI
             Debug.LogError("没有正确的初始化UGUI 组件索引系统");
             return null;
         }
-
         public GameObject GetComponentByPath(string gameObjectName, string path)
         {
             Component target = GetComponentByPath<Component>(gameObjectName, path);
@@ -439,6 +469,15 @@ namespace GameFramePro.UI
         public void SetUIAnchorPosition(Vector2 anchorPosition)
         {
             rectTransform.anchoredPosition = anchorPosition;
+        }
+
+        /// <summary>
+        /// 通知修改了语言
+        /// </summary>
+        /// <param name="messageID"></param>
+        protected virtual void OnNotifySwitchLanguage(int messageID)
+        {
+            OnTranslationLocalizationComponent();
         }
         #endregion
     }

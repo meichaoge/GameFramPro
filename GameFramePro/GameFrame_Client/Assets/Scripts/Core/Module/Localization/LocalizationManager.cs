@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Xml;
+using GameFramePro.Localization;
+using System.Text.RegularExpressions;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-namespace GameFramePro.Localization
+namespace GameFramePro
 {
-    public delegate void OnLanguageChangedHandler(Language curLanguage);
+    // public delegate void OnLanguageChangedHandler(Language curLanguage);
 
     /// <summary>/// 导出的配置文件格式/// </summary>
     [System.Flags]
@@ -19,129 +24,132 @@ namespace GameFramePro.Localization
 
 
     /// <summary>///本地化管理器/// </summary>
-    public class LocalizationManager : Single<LocalizationManager>
+    public static class LocalizationManager
     {
         #region 支持的本地化语言
 
-        private Language mCurLanguage = 0;
 
         /// <summary>
         /// 当前的语言
         /// </summary>
-        public Language CurLanguage
-        {
-            get { return mCurLanguage; }
-        }
+        public static Language CurLanguage { get; private set; } = Language.zh_CN;
 
+        ///// <summary>
+        ///// 本地化语言改变事件
+        ///// </summary>
+        //private static List<OnLanguageChangedHandler> mAllLanguageChangeHandlers = new List<OnLanguageChangedHandler>();
 
-        /// <summary>
-        /// 本地化语言改变事件
-        /// </summary>
-        private List<OnLanguageChangedHandler> mAllLanguageChangeHandlers = new List<OnLanguageChangedHandler>();
+        public static readonly string s_LocalizationKeyReg = @"^(@)+[A-Za-z0-9_]+$";
 
         #endregion
 
         #region 本地化语言配置文件
 
-        private Dictionary<Language, Dictionary<string, string>> mAllSupportLanguageConfig = new Dictionary<Language, Dictionary<string, string>>();
-        private bool mIsReadyGetLocalization = false; //标示是否加载完配置语言
+        private static Dictionary<Language, Dictionary<string, string>> mAllSupportLanguageConfig = new Dictionary<Language, Dictionary<string, string>>();
+        private static bool mIsReadyGetLocalization = false; //标示是否加载完配置语言
 
         #endregion
-
-
-        protected override void InitialSingleton()
-        {
-            base.InitialSingleton();
-            GetDefaultLanguage();
-        }
 
 
         #region 本地化语言的设置
 
         //获取默认的语言
-        private void GetDefaultLanguage()
+        private static void GetDefaultLanguage()
         {
             int lastSelectedLanguage = PlayerPrefsManager.GetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key);
             if (lastSelectedLanguage != 0)
             {
-                mCurLanguage = (Language)lastSelectedLanguage;
+                CurLanguage = (Language)lastSelectedLanguage;
                 return;
             }
 
             //TODO  
             Debug.LogError("需要获取各个平台系统语言环境");
 
-            mCurLanguage = Language.zh_CN;
-            PlayerPrefsManager.SetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key, (int)mCurLanguage);
+            CurLanguage = Language.zh_CN;
+            PlayerPrefsManager.SetInt(PlayerPrefsKeyDefine.LocalizationLanguage_Key, (int)CurLanguage);
         }
 
         /// <summary>
         /// 尝试切换到语言 language
         /// </summary>
         /// <param name="language"></param>
-        public void ChangeLanguage(Language language)
+        public static void ChangeLanguage(Language language)
         {
-            if (mCurLanguage == language)
+            if (CurLanguage == language)
                 return;
-            mCurLanguage = language;
-            foreach (var handler in mAllLanguageChangeHandlers)
-            {
-                if (handler != null)
-                    handler.Invoke(mCurLanguage);
-            }
+            CurLanguage = language;
+            EventManager.TriggerMessage((int)UIEventUsage.NotifySwitchLanguage);
+            //foreach (var handler in mAllLanguageChangeHandlers)
+            //{
+            //    if (handler != null)
+            //        handler.Invoke(CurLanguage);
+            //}
         }
+
+        //        /// <summary>
+        //        /// 监听切换语言
+        //        /// </summary>
+        //        /// <param name="handler"></param>
+        //        public static void RegisterLanguageChangeEvent(OnLanguageChangedHandler handler)
+        //        {
+        //            if (handler == null)
+        //            {
+        //                Debug.LogError("RegisterLanguageChangeEvent Fail,Parameter is null");
+        //                return;
+        //            }
+
+        //            foreach (var handlerItem in mAllLanguageChangeHandlers)
+        //            {
+        //                if (handlerItem.Equals(handler))
+        //                {
+        //#if UNITY_EDITOR
+        //                    Debug.LogError("RegisterLanguageChangeEvent Fail,重复注册切换语言事件" + handler.Method.Name);
+        //#endif
+        //                    return;
+        //                }
+        //            }
+
+        //            mAllLanguageChangeHandlers.Add(handler);
+        //        }
+
+        //        /// <summary>
+        //        ///  取消监听切换语言
+        //        /// </summary>
+        //        /// <param name="handler"></param>
+        //        public static void UnRegisterLanguageChangeEvent(OnLanguageChangedHandler handler)
+        //        {
+        //            if (handler == null)
+        //            {
+        //                Debug.LogError("UnRegisterLanguageChangeEvent Fail,Parameter is null");
+        //                return;
+        //            }
+
+        //            for (int dex = mAllLanguageChangeHandlers.Count - 1; dex >= 0; dex--)
+        //            {
+        //                if (mAllLanguageChangeHandlers[dex].Equals(handler))
+        //                {
+        //                    mAllLanguageChangeHandlers.RemoveAt(dex);
+        //                    return;
+        //                }
+        //            }
+        //#if UNITY_EDITOR
+        //            Debug.LogError("UnRegisterLanguageChangeEvent Fail,不存在正在监听的切换语言事件" + handler.Method.Name);
+        //#endif
+        //        }
 
         /// <summary>
-        /// 监听切换语言
+        /// 判断参数的key 是否合法
         /// </summary>
-        /// <param name="handler"></param>
-        public void RegisterLanguageChangeEvent(OnLanguageChangedHandler handler)
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool CheckIfMatchLocalizationKey(string key)
         {
-            if (handler == null)
-            {
-                Debug.LogError("RegisterLanguageChangeEvent Fail,Parameter is null");
-                return;
-            }
+            if (string.IsNullOrEmpty(key))
+                return false;
 
-            foreach (var handlerItem in mAllLanguageChangeHandlers)
-            {
-                if (handlerItem.Equals(handler))
-                {
-#if UNITY_EDITOR
-                    Debug.LogError("RegisterLanguageChangeEvent Fail,重复注册切换语言事件" + handler.Method.Name);
-#endif
-                    return;
-                }
-            }
-
-            mAllLanguageChangeHandlers.Add(handler);
+            return Regex.IsMatch(key, s_LocalizationKeyReg, RegexOptions.Singleline);
         }
-
-        /// <summary>
-        ///  取消监听切换语言
-        /// </summary>
-        /// <param name="handler"></param>
-        public void UnRegisterLanguageChangeEvent(OnLanguageChangedHandler handler)
-        {
-            if (handler == null)
-            {
-                Debug.LogError("UnRegisterLanguageChangeEvent Fail,Parameter is null");
-                return;
-            }
-
-            for (int dex = mAllLanguageChangeHandlers.Count - 1; dex >= 0; dex--)
-            {
-                if (mAllLanguageChangeHandlers[dex].Equals(handler))
-                {
-                    mAllLanguageChangeHandlers.RemoveAt(dex);
-                    return;
-                }
-            }
-#if UNITY_EDITOR
-            Debug.LogError("UnRegisterLanguageChangeEvent Fail,不存在正在监听的切换语言事件" + handler.Method.Name);
-#endif
-        }
-
         #endregion
 
 
@@ -172,7 +180,7 @@ namespace GameFramePro.Localization
         /// <summary>
         /// 加载默认的语言 本地化配置，信息不一定是最新的，只是保证一开始能正确显示
         /// </summary>
-        public void LoadDefaultLocalizationConfig()
+        public static void LoadDefaultLocalizationConfig()
         {
             LoadLocalizationConfig(CurLanguage);
         }
@@ -180,7 +188,7 @@ namespace GameFramePro.Localization
         /// <summary>
         /// 加载多个语言版本的配置文件
         /// </summary>
-        private void LoadLocalizationConfig(Language language)
+        private static void LoadLocalizationConfig(Language language)
         {
             string filePath = string.Format("{0}/{1}", ConstDefine.S_LocalizationDirectoryName, GetLocalizationConfigFileName(ApplicationManager.S_Instance.mLocalizationExportFormatType, language));
             string content = string.Empty;
@@ -199,7 +207,7 @@ namespace GameFramePro.Localization
         /// <summary>
         /// 根据key 获取 本地化的内容(默认是当前的语言)
         /// </summary>
-        public string GetLocalizationByKey(string key)
+        public static string GetLocalizationByKey(string key)
         {
             return GetLocalizationByKey(key, CurLanguage);
         }
@@ -210,7 +218,7 @@ namespace GameFramePro.Localization
         /// <param name="key"></param>
         /// <param name="language"></param>
         /// <returns></returns>
-        public string GetLocalizationByKey(string key, Language language)
+        public static string GetLocalizationByKey(string key, Language language)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -247,7 +255,7 @@ namespace GameFramePro.Localization
         /// <param name="content"></param>
         /// <param name="language"></param>
         /// <param name="exportFormat"></param>
-        private void GetLocalizationConfigByFormat(string content, Language language, ExportFormatEnum exportFormat)
+        private static void GetLocalizationConfigByFormat(string content, Language language, ExportFormatEnum exportFormat)
         {
             switch (exportFormat)
             {
@@ -266,7 +274,7 @@ namespace GameFramePro.Localization
             }
         }
 
-        private Dictionary<string, string> GetLocalizationConfigByCsv(string content)
+        private static Dictionary<string, string> GetLocalizationConfigByCsv(string content)
         {
             Dictionary<string, string> allConfig = new Dictionary<string, string>();
             string[] allLines = content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -284,13 +292,13 @@ namespace GameFramePro.Localization
             return allConfig;
         }
 
-        private Dictionary<string, string> GetLocalizationConfigByJson(string content)
+        private static Dictionary<string, string> GetLocalizationConfigByJson(string content)
         {
             Dictionary<string, string> allConfig = SerializeManager.DeserializeObject<Dictionary<string, string>>(content);
             return allConfig;
         }
 
-        private Dictionary<string, string> GetLocalizationConfigByXml(Language language, string content)
+        private static Dictionary<string, string> GetLocalizationConfigByXml(Language language, string content)
         {
             Dictionary<string, string> allConfig = new Dictionary<string, string>();
 
@@ -316,5 +324,41 @@ namespace GameFramePro.Localization
         }
 
         #endregion
+
+
+        #region 编辑器扩展
+#if UNITY_EDITOR
+        public static string LocalizationKeyAssetPath = "Assets/Editor/Core/Localization/localizationKey.txt";
+        public static string LocalizationKeyAssetDatePath = "Editor/Core/Localization/localizationKey.txt";
+
+        private static HashSet<string> s_AllLocalizationKeys = new HashSet<string>();
+        public static void LoadDefaultLocalizationKey(ref HashSet<string> dataContainer)
+        {
+            s_AllLocalizationKeys.Clear();
+            TextAsset textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(LocalizationManager.LocalizationKeyAssetPath);
+            if (textAsset == null)
+            {
+                Debug.LogError($"加载本地化key 失败{LocalizationKeyAssetPath}");
+                return;
+            }
+            dataContainer = SerializeManager.DeserializeObject_NewtonJson<HashSet<string>>(textAsset.text);
+        }
+
+        public static bool IsExitLocalizationKey(string key)
+        {
+            if (s_AllLocalizationKeys.Count == 0)
+                LoadDefaultLocalizationKey(ref s_AllLocalizationKeys);
+
+            if (s_AllLocalizationKeys.Count == 0)
+            {
+                Debug.LogError($"加载本地化key 失败");
+                return false;
+            }
+            return s_AllLocalizationKeys.Contains(key);
+        }
+
+#endif
+        #endregion
+
     }
 }

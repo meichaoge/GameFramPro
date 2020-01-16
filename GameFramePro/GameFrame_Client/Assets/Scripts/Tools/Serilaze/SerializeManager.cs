@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Newtonsoft;
+using Newtonsoft.Json;
 
 namespace GameFramePro
 {
@@ -26,9 +28,9 @@ namespace GameFramePro
             try
             {
                 if (S_AppJsonParserEnum == JsonParserEnum.NewtonJson)
-                    return Newtonsoft.Json.JsonConvert.DeserializeObject(value);
-                if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
-                    return LitJson.JsonMapper.ToObject(value);
+                    return JsonConvert.DeserializeObject(value);
+                //if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
+                //    return JsonMapper.ToObject(value);
                 Debug.LogError("Not Support " + S_AppJsonParserEnum);
                 throw new NotImplementedException();
             }
@@ -46,9 +48,9 @@ namespace GameFramePro
             try
             {
                 if (S_AppJsonParserEnum == JsonParserEnum.NewtonJson)
-                    return Newtonsoft.Json.JsonConvert.DeserializeObject(value, toType);
-                if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
-                    return LitJson.JsonMapper.ToObject(toType, value);
+                    return JsonConvert.DeserializeObject(value, toType);
+                //if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
+                //    return JsonMapper.ToObject(toType, value);
                 Debug.LogError("Not Support " + S_AppJsonParserEnum);
                 throw new NotImplementedException();
             }
@@ -64,9 +66,9 @@ namespace GameFramePro
             try
             {
                 if (S_AppJsonParserEnum == JsonParserEnum.NewtonJson)
-                    return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(value);
-                if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
-                    return LitJson.JsonMapper.ToObject<T>(value);
+                    return JsonConvert.DeserializeObject<T>(value);
+                //if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
+                //    return JsonMapper.ToObject<T>(value);
                 Debug.LogError("Not Support " + S_AppJsonParserEnum);
                 throw new NotImplementedException();
             }
@@ -77,6 +79,18 @@ namespace GameFramePro
             }
         }
 
+        public static T DeserializeObject_NewtonJson<T>(string value)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(value);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"反序列化指定的类型{typeof(T)}失败 {e}");
+                return default;
+            }
+        }
         #endregion
 
         #region 序列化
@@ -87,11 +101,25 @@ namespace GameFramePro
             try
             {
                 if (S_AppJsonParserEnum == JsonParserEnum.NewtonJson)
-                    return Newtonsoft.Json.JsonConvert.SerializeObject(value);
-                if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
-                    return LitJson.JsonMapper.ToJson(value);
+                    return JsonConvert.SerializeObject(value);
+                //if (S_AppJsonParserEnum == JsonParserEnum.LitJson)
+                //    return JsonMapper.ToJson(value);
                 Debug.LogError("Not Support " + S_AppJsonParserEnum);
                 throw new NotImplementedException();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"序列化失败 {e}");
+                return default;
+            }
+        }
+
+        /// <summary>/// 序列化/// </summary>
+        public static string SerializeObject_NewtonJson(object value)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(value);
             }
             catch (Exception e)
             {

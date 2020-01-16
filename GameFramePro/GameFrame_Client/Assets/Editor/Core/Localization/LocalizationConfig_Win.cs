@@ -37,6 +37,9 @@ namespace GameFramePro.EditorEx
         private static string mLocalizationConfigExcelExportPath;  //解析的本地化Excel 导出文件路径
         private static readonly string s_LocalizationKeyReg = @"^(_@)+[0-9A-Za-z_]+$";
 
+        private static int StartRow = 2; //从哪一行开始读取语言
+        private static int StartColumn = 1; //从哪一列开始读取语言
+
         private static Language mExportLanguageType = Language.zh_CN; //导出的语言类型
         private static ExportFormatEnum mExportFormatType = ExportFormatEnum.Csv; //导出的配置格式类型
 
@@ -218,7 +221,7 @@ namespace GameFramePro.EditorEx
             mIsFormatEnable = true;
             #region 获取一共有多少列数据
             int Column = 1;
-            for (int dex = 1; dex < dataTable.Rows[0].ItemArray.Length; dex++)
+            for (int dex = StartRow; dex < dataTable.Rows[0].ItemArray.Length; dex++)
             {
                 var column = dataTable.Rows[0].ItemArray[dex];
                 if (string.IsNullOrEmpty(column.ToString()))
@@ -247,7 +250,7 @@ namespace GameFramePro.EditorEx
                 if(allKeyRecords.ContainsKey(key))
                 {
                     mIsFormatEnable = false;
-                    stringBuilder.Append(string.Format("Row={0}  Key={1} 重复的key", row, key));
+                    stringBuilder.Append(string.Format("Row={0}  Key={1} 重复的key", row+(StartRow-1), key));
                     stringBuilder.Append(System.Environment.NewLine);
                     continue;
                 }
@@ -317,7 +320,7 @@ namespace GameFramePro.EditorEx
             List<int> exportColumn = new List<int>();
             exportColumn.Add(0);
             Dictionary<Language, int> excelLanguageColumn = new Dictionary<Language, int>();
-            for (int dex = 1; dex < mLocalizationExcelData.Tables[0].Rows[0].ItemArray.Length; dex++)
+            for (int dex = StartColumn; dex < mLocalizationExcelData.Tables[0].Rows[0].ItemArray.Length; dex++)
             {
                 string firstRowColumnValue = mLocalizationExcelData.Tables[0].Rows[0].ItemArray[dex].ToString();
                 Language curLanguage;

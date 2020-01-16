@@ -16,20 +16,9 @@ namespace GameFramePro.UI
         private bool mIsInitialed = false; //标示是否初始化了获取了名称和路径的映射
 
         public Dictionary<string, string> NamePathMapInfor { get; protected set; } //缓存映射关系
-    
+
         public GameObject ConnectTransBaseBeReference { get; private set; } //只有访问的权限 没有设置的权限
-        //{
-        //    get
-        //    {
-        //        if (mConnectTrans == null)
-        //        {
-        //            UIBasePage page = UIPageManager.TryGetUIPageFromCache(mConnectUIBasePageName);
-        //            if (page != null)
-        //                mConnectTrans = page.ConnectPageInstance.transform;
-        //        }
-        //        return mConnectTrans;
-        //    }
-        //}
+
 
         private UGUIComponentReference mUGUIComponentReference;
         private string mConnectUIBasePageName;
@@ -41,7 +30,6 @@ namespace GameFramePro.UI
         }
 
         #region 接口实现
-
 
         public T GetComponentByName<T>(string gameObjectName) where T : Component
         {
@@ -101,6 +89,16 @@ namespace GameFramePro.UI
 
             mUGUIComponentReference = null;
         }
+
+        //用于更新所有包含的本地化组件内容
+        public void TranslateLocalizationComponent()
+        {
+            if (mUGUIComponentReference == null) return;
+            foreach (var item in mUGUIComponentReference.AllLocalizationKeyComponents)
+            {
+                item.TranslateLocalization();
+            }
+        }
         #endregion
 
 
@@ -147,6 +145,4 @@ namespace GameFramePro.UI
 
 
     }
-
-
 }

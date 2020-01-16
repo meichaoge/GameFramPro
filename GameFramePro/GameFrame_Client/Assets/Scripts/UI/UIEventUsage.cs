@@ -12,12 +12,8 @@ namespace GameFramePro
     public enum UIEventUsage
     {
 
-
-        #region Login
         OnResponse_Login,                //点击登录事件
-        
+        NotifySwitchLanguage = 10, //通知修改了语言
 
-        #endregion
-        
     }
 }

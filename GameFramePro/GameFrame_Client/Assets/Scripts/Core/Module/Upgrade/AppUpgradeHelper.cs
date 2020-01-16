@@ -39,7 +39,7 @@ namespace GameFramePro.Upgrade
         /// <summary>/// 获取当前的多语言/// </summary>
         public static UpgradeLanguage GetCurUpgradeLanguage()
         {
-            var language = LocalizationManager.S_Instance.CurLanguage;
+            var language = LocalizationManager.CurLanguage;
             return TransformLanguage(language);
         }
     }

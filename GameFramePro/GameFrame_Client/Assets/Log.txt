@@ -1,4 +1,9 @@
 
+2020/1/16
+<1>扩展本地化工具 增加LocalizationKeyComponent 记录Key 并映射
+<2> 更新切换语言时候界面更新逻辑
+<3> 更新序列化、DateTime 转换、Tag 管理更新 接口
+
 2020/1/13
 <1> 修复Widget组件在页面关闭时候没有被正确的释放问题
 <2> 扩展PlayerPrefab 保存和取出数据的接口
