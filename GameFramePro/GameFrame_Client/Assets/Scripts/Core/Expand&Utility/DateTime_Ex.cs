@@ -72,7 +72,14 @@ public static class DateTime_Ex
         TimeSpan span = dateTime - TimestampBaseTime;
         return (int)(span.TotalSeconds);
     }
-
+    /// <summary>
+    /// 现在本地时间转成时间戳
+    /// </summary>
+    /// <returns></returns>
+    public static int NowToTimestampLocal_Second()
+    {
+        return ToTimestampLocal_Second(DateTime.Now);
+    }
     /// <summary>
     /// 时间戳(毫秒)转成  DateTime
     /// </summary>

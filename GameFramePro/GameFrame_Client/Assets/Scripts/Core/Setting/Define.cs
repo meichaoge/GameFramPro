@@ -75,5 +75,6 @@ namespace GameFramePro
         public static string LocalizationLanguage_Key => "LastLocalizationLanguage"; //上一次选择的本地化语言
 
         #endregion
+        public static string LastLoginTimeRecord { get; set; } = "LastLoginTimeRecord"; //上一次进入首页
     }
 }

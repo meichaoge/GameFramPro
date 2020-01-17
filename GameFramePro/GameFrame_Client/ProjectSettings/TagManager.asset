@@ -10,6 +10,18 @@ TagManager:
   - UGUIButton
   - UGUIInputField
   - UGUIDropDown
+  - GameObject
+  - RectTransform
+  - UICanvasGroup
+  - UILoopScrollRect_Vertical
+  - UILoopScrollRect_Horizontial
+  - UIScrollRect
+  - UGUIRawImage
+  - UGUIToggle
+  - UGUISlider
+  - UGUIScrollbar
+  - UICanvas
+  - AudioSource
   layers:
   - Default
   - TransparentFX

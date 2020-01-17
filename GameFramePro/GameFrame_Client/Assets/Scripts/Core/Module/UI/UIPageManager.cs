@@ -20,6 +20,8 @@ namespace GameFramePro.UI
             mUIPopWindow = GameObject.Find("UIPopWindow").transform;
             if (S_UICamera == null)
                 Debug.LogError("UI 相机初始化失败 确认是否指定了名为 UICamera 的UI相机");
+
+            UIHomeAutoPopupManager.RegisterUIEvent();
         }
 
 
@@ -41,10 +43,11 @@ namespace GameFramePro.UI
             if (CurUIBaseChangePage != null && (pageName == CurUIBaseChangePage.PageName))
             {
                 Debug.LogError("页面无法切换到自身 " + pageName);
-                return null;
+                return CurUIBaseChangePage as T;
             } //自己切换到自己
 
             T targetPage = TryGetUIChangePageFromCache(pageName) as T; //首先检测缓存中的数据
+
             //创建界面
             if (targetPage == null || targetPage.IsPrefabInstanceEnable == false)
             {
@@ -62,21 +65,19 @@ namespace GameFramePro.UI
                         targetPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                        var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
-                        debugShowScript.Initialed(targetPage);
+                        //var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
+                        //debugShowScript.Initialed(targetPage);
 #endif
                     }
                 }, loadAssetChannel);
             }
-
 
             if (targetPage == null || targetPage.IsPrefabInstanceEnable == false)
             {
                 Debug.LogError($"创建页面 pageName={pageName} pagePath={pagePath} ");
                 return null;
             }
-
-
+            string previousPageName = CurUIBaseChangePage != null ? CurUIBaseChangePage.PageName : string.Empty;
             if (CurUIBaseChangePage != null)
             {
                 CurUIBaseChangePage.HidePage(false);
@@ -85,7 +86,7 @@ namespace GameFramePro.UI
 
             CurUIBaseChangePage = targetPage;
             targetPage.ShowPage();
-
+            EventManager.TriggerMessage((int)UIEventUsage.NotifyChangePage, previousPageName, CurUIBaseChangePage.PageName);
             return targetPage;
         }
 
@@ -96,13 +97,18 @@ namespace GameFramePro.UI
         {
             if (CurUIBaseChangePage == null)
                 return;
-
+            string previousPageName = CurUIBaseChangePage != null ? CurUIBaseChangePage.PageName : string.Empty;
             CurUIBaseChangePage.HidePage(isForceDestroyed);
             CurUIBaseChangePage = null;
+
+            EventManager.TriggerMessage((int)UIEventUsage.NotifyChangePage, previousPageName, string.Empty);
         }
 
 
-        /// <summary>/// 返回到上一个界面/// </summary>
+
+        /// <summary>/// 
+        /// 返回到上一个界面
+        /// /// </summary>
         public static void BackPage()
         {
             string perviousPageName = string.Empty;
@@ -111,12 +117,12 @@ namespace GameFramePro.UI
             while (true)
             {
                 if (s_ChangePageRecord.Count == 0) return;
-
                 perviousPageName = s_ChangePageRecord.Pop();
                 if (string.IsNullOrEmpty(perviousPageName))
                     continue;
+
                 if (CurUIBaseChangePage != null && perviousPageName == CurUIBaseChangePage.PageName)
-                    continue; //避免回退到当前界面后无法继续回退
+                    continue;
 
                 previouPage = TryGetUIChangePageFromCache(perviousPageName);
                 if (previouPage == null)
@@ -137,8 +143,8 @@ namespace GameFramePro.UI
                             previouPage.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                            var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
-                            debugShowScript.Initialed(previouPage);
+                            //var debugShowScript = goInstance.GetAddComponentEx<Debug_ShowUIPageInfor>();
+                            //debugShowScript.Initialed(previouPage);
 #endif
                         }
                     }, LoadAssetChannelUsage.Default);
@@ -147,7 +153,7 @@ namespace GameFramePro.UI
 
                 if (previouPage.IsPrefabInstanceEnable == false)
                     continue; //说明上一个页面加载失败
-
+                string previousPageName = CurUIBaseChangePage != null ? CurUIBaseChangePage.PageName : string.Empty;
                 if (CurUIBaseChangePage != null)
                 {
                     CurUIBaseChangePage.HidePage(false);
@@ -156,12 +162,15 @@ namespace GameFramePro.UI
 
                 CurUIBaseChangePage = previouPage;
                 previouPage.ShowPage();
+                EventManager.TriggerMessage((int)UIEventUsage.NotifyChangePage, previousPageName, CurUIBaseChangePage.PageName);
                 return;
             }
         }
 
 
-        /// <summary>/// 这里后期可能会处理成值记录一次/// </summary>
+        /// <summary>///
+        /// 这里后期可能会处理成值记录一次
+        /// /// </summary>
         private static void RecordChangePage(string pageName)
         {
             s_ChangePageRecord.Push(pageName);
@@ -176,9 +185,9 @@ namespace GameFramePro.UI
                 return;
             }
 
-            if (s_AllAliveUIChangePages.TryGetValue(page.PageName, out var cachePage))
+            if (s_AllAliveUIChangePages.TryGetValue(page.PageName, out var cachePage) && cachePage != null && cachePage.IsPrefabInstanceEnable)
             {
-                Debug.LogError($"重复 缓存的页面 {page.PageName}");
+                //   Debug.LogError($"重复 缓存的页面 {page.PageName}");
                 return;
             }
 
@@ -199,6 +208,36 @@ namespace GameFramePro.UI
             return null;
         }
 
+
+        /// <summary>/// 只在弹窗被真正销毁时候调用/// </summary>
+        public static void RemoveUIChangePageFromCache(UIBaseChangePage pageName)
+        {
+            s_AllAliveUIChangePages.Remove(pageName.PageName);
+        }
+
+        /// <summary>
+        /// 根据名称查找对应的页面
+        /// </summary>
+        /// <returns>返回null 标识不在当前页面</returns>
+        public static T GetCurUIPageByName<T>(string uiName) where T : UIBaseChangePage
+        {
+            var uiPageKeys = s_AllAliveUIChangePages.Keys;
+            foreach (var item in uiPageKeys)
+            {
+                if ((uiName == item) && s_AllAliveUIChangePages.TryGetValue(item, out var uiPage))
+                    return uiPage as T;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 判断当前是否在某个指定名称的页面
+        /// </summary>
+        /// <param name="matchPageName"></param>
+        public static bool IsCurPageMatch(string matchPageName)
+        {
+            return CurUIBaseChangePage == null ? false : CurUIBaseChangePage.PageName == matchPageName;
+        }
         #endregion
 
 
@@ -206,7 +245,31 @@ namespace GameFramePro.UI
 
         private static Dictionary<string, List<UIBasePopWindow>> s_AllAcivityPopWIndows = new Dictionary<string, List<UIBasePopWindow>>(10); //所有还在内存的弹窗
 
-        /// <summary>/// 打开弹窗 isCreateInstanceIfIsShowing 标示已经有一个同名的弹窗存在并且现实中是否需要创建一个新的实例 默认不需要  /// </summary> 
+        /// <summary>
+        /// 标识是否有弹窗在显示中
+        /// </summary>
+        public static bool IsShowingPopWindow
+        {
+            get
+            {
+                if (s_AllAcivityPopWIndows == null || s_AllAcivityPopWIndows.Count == 0) return false;
+                foreach (var allNamePopwindows in s_AllAcivityPopWIndows.Values)
+                {
+                    if (allNamePopwindows.Count == 0) continue;
+                    foreach (var popWindow in allNamePopwindows)
+                    {
+                        if (popWindow == null) continue;
+                        if (popWindow.mIsActivite) return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+
+        /// <summary>/// 
+        /// 打开弹窗 isCreateInstanceIfIsShowing 标示已经有一个同名的弹窗存在并且现实中是否需要创建一个新的实例 默认不需要  
+        /// /// </summary> 
         public static T ShowPopWindow<T>(string pageName, string pagePath, bool isBelongCurPage, bool isCreateInstanceIfIsShowing = false, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UIBasePopWindow, new()
         {
             if (string.IsNullOrEmpty(pageName) || string.IsNullOrEmpty(pageName))
@@ -234,14 +297,16 @@ namespace GameFramePro.UI
                     TryCacheUIPopWindow(targetPage);
                     targetPage.InstantiatePage(); //初始化
                     targetPage.ShowPage();
+                    EventManager.TriggerMessage((int)UIEventUsage.NotifyShowPopWindow, targetPage.PageName);  //显示弹窗
 #if UNITY_EDITOR
-                    var debugShowScript = gameObjectReference.GetAddComponentEx<Debug_ShowUIPageInfor>();
-                    debugShowScript.Initialed(targetPage);
+                    //var debugShowScript = gameObjectReference.GetAddComponentEx<Debug_ShowUIPageInfor>();
+                    //debugShowScript.Initialed(targetPage);
 #endif
                 }
             }, loadAssetChannel);
             return targetPage;
         }
+
 
         /// <summary>/// 隐藏一个弹窗 有可能有多个同名的窗口 所以这里不提供关闭弹窗的接口 /// </summary>
         public static void HidePopwindow(string pageName, bool isForceDestroyed = false)
@@ -272,8 +337,9 @@ namespace GameFramePro.UI
 #endif
                 return;
             }
-
+            string previousPageName = popWindow.PageName;
             popWindow.HidePage(isForceDestroyed);
+            EventManager.TriggerMessage((int)UIEventUsage.NotifyHidePopWindow, popWindow);  //关闭弹窗
         }
 
         /// <summary>/// 关闭所有的弹窗/// </summary>
@@ -293,8 +359,8 @@ namespace GameFramePro.UI
             }
 
             s_AllAcivityPopWIndows.Clear();
+            EventManager.TriggerMessage((int)UIEventUsage.NotifyAllHidePopWindow);  //关闭弹窗
         }
-
 
         //保存创建的弹窗引用
         public static void TryCacheUIPopWindow(UIBasePopWindow popWindow)
@@ -358,6 +424,7 @@ namespace GameFramePro.UI
             }
         }
 
+
         #endregion
 
 
@@ -384,15 +451,16 @@ namespace GameFramePro.UI
                     targetWidget.InstantiatePage(); //初始化
 
 #if UNITY_EDITOR
-                    var debugShowScript = gameObjectReference.GetAddComponentEx<Debug_ShowUIPageInfor>();
-                    debugShowScript.Initialed(targetWidget);
+                    //var debugShowScript = gameObjectReference.GetAddComponentEx<Debug_ShowUIPageInfor>();
+                    //debugShowScript.Initialed(targetWidget);
 #endif
                 }
             }, loadAssetChannel);
 
-            targetWidget.ShowPage();
+            targetWidget?.ShowPage();
             return targetWidget;
         }
+
         //创建或者获取
         public static T GetOrCreateWidgetInstance<T>(string pageName, string pagePath, UIBasePage parentPage, Transform parentTrans, LoadAssetChannelUsage loadAssetChannel = LoadAssetChannelUsage.Default) where T : UIBaseWidget, new()
         {
@@ -401,7 +469,6 @@ namespace GameFramePro.UI
                 return widget;
             return CreateWidgetInstance<T>(pageName, pagePath, parentPage, parentTrans, loadAssetChannel);
         }
-
 
         //查找指定父页面中的指定名称和类型的组件
         public static T GetWidgetInstanceOfTargetParent<T>(string pageName, UIBasePage parentPage) where T : UIBaseWidget, new()
@@ -420,6 +487,8 @@ namespace GameFramePro.UI
 
             return parentPage.FindSpecialWidget<T>(pageName);
         }
+
+
         #endregion
 
 

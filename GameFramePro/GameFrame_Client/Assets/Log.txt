@@ -1,3 +1,7 @@
+2020/1/17
+<1> 添加吊炸天UI循环列表插件 EnhancedScroller v2 后续功能待优化
+<2> 修改DebugLog 修复部分情况报错问题
+<3> 增加自动弹窗管理组件并扩展UI 接口
 
 2020/1/16
 <1>扩展本地化工具 增加LocalizationKeyComponent 记录Key 并映射

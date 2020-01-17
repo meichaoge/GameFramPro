@@ -38,7 +38,8 @@
             {
                 float2 uv : TEXCOORD0;
                 float3 worldNormal:TEXCOORD1;
-				float3 worldPos:TEXCOORD2;
+				float3 worldPos : TEXCOORD2;
+				float4 screenPos : TEXCOORD3;
                 float4 pos : SV_POSITION;
             };
 
@@ -58,7 +59,7 @@
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				o.worldPos=mul(unity_ObjectToWorld,v.vertex);
-
+				o.screenPos=ComputeGrabScreenPos(  o.pos);
 				o.worldNormal=UnityObjectToWorldNormal(	o.worldPos);
 
                 return o;
@@ -67,7 +68,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
 				fixed3 worldNormal=normalize(i.worldNormal);
-				fixed3 worldViewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
+				//fixed3 worldViewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
 				fixed3 worldLightDir=normalize(UnityWorldSpaceLightDir(i.worldPos));
 
 
@@ -77,22 +78,9 @@
 				fixed3 ambient=UNITY_LIGHTMODEL_AMBIENT.rgb*albedo;
 				fixed3 diffuseColor=_LightColor0.rgb*albedo*saturate(dot(worldNormal,worldLightDir));
 
-				//fixed3 refractDir=refract(-1*worldViewDir,worldNormal,)
-			//	fixed4 screenpos=ComputeScreenPos(fixed4(i.worldPos,1));
-			//	screenpos.xy+=_RefractionTex_TexelSize.xy*_SampleAmount;
+				fixed3 grabPassColor=tex2D(_RefractionTex,  i.screenPos.xy/i.screenPos.w +_RefractionTex_TexelSize.xy* _SampleAmount).rgb;
 
-				float2 uv2= i.uv;
-				#ifdef UNITY_UV_STARTS_AT_TOP
-					if(_RefractionTex_ST.y<0)
-						uv2.y=1-uv2.y;
-				#endif
-
-				return fixed4(tex2D(_RefractionTex, i.uv).rgb,1.0);
-				//fixed3 refractColor=tex2D(_RefractionTex,screenpos.xy/screenpos.w).rgb;
-
-				//fixed3 finalColor=lerp(diffuseColor,refractColor,_RefractionAmount);
-
-    //            return fixed4(ambient+finalColor,1);
+				return fixed4(ambient+lerp(diffuseColor,grabPassColor,_RefractionAmount),1.0);
             }
             ENDCG
         }
