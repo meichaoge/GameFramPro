@@ -3,16 +3,22 @@
 //广告牌
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+       [NoScaleOffset] _MainTex ("Texture", 2D) = "white" {}
 		_NormalFrezze("Freeze Normal",Range(0,1))=1 //是否冻结法线
-		_CenterPoint("Center",vector)=(0,0,0)  //中心点
+		//_CenterPoint("Center",vector)=(0,0,0)  //中心点
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "DisableBatch"="true" "IgnoreProjector"="true"}
+        Tags { 
+		"RenderType"="Transparent" 
+		"DisableBatch"="true" 
+		"IgnoreProjector"="true" 
+		"Queue"="Transparent"
+		}
         LOD 100
 		Cull Off
-
+		ZWrite Off
+		Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
@@ -42,29 +48,26 @@
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			int _NormalFrezze;
-			float3 _CenterPoint;
 
             v2f vert (appdata v)
             {
-			//	float3 worldPos=mul(unity_ObjectToWorld,v.vertex);
-				fixed3 viewDir=normalize(ObjSpaceLightDir(v.vertex));
+				float3 _CenterPoint=(0,0,0);
+				fixed3 viewDir= normalize( mul(unity_WorldToObject,_WorldSpaceCameraPos)-_CenterPoint);
 
 				fixed3 upDir=fixed3(0,1,0);
 					if(viewDir.y>=0.99)
-						upDir=fixed3(1,0,0); //避免法线和向上方向重合
-				fixed	rightDir=normalize(cross(viewDir,upDir));
+						upDir=fixed3(0,0,1); //避免法线和向上方向重合
+				fixed3 rightDir=normalize(cross(upDir,viewDir));
 
-				if(_NormalFrezze==1){
-					upDir=normalize(cross(rightDir,viewDir));
+				if(_NormalFrezze>=0.99){
+					upDir=normalize(cross(viewDir,rightDir));
 				}//法线固定为朝向摄像机
 				else	{
-					viewDir=normalize(cross(upDir,rightDir));
+					viewDir=normalize(cross(rightDir,upDir));
 				}//向上方向固定
 
-
 				float3 vertexOffset=v.vertex.xyz-_CenterPoint;
-
-				float3 newPos=_CenterPoint+float3(vertexOffset.x*rightDir+vertexOffset.y*upDir+vertexOffset.z*viewDir);
+				float3 newPos=_CenterPoint+vertexOffset.x*rightDir+vertexOffset.y*upDir+vertexOffset.z*viewDir;
 
                 v2f o;
 				 o.vertex = UnityObjectToClipPos(fixed4(newPos,1.0));
