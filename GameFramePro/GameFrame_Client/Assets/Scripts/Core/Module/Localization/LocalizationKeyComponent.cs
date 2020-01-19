@@ -15,11 +15,9 @@ namespace GameFramePro.Localization
     public class LocalizationKeyComponent : MonoBehaviour
     {
         [SerializeField]
-        [ReadOnly]
         private Text mTargetText;
 
         [SerializeField]
-        [ReadOnly]
         private string mConnectLocalizationKey = string.Empty;
 
         private void Awake()
@@ -34,7 +32,7 @@ namespace GameFramePro.Localization
                     if (LocalizationManager.IsExitLocalizationKey(key))
                         mConnectLocalizationKey = key;
                     else
-                        Debug.LogError($"检测到没有记录的key{key}  关联对象{gameObject.name}");
+                        Debug.LogError($"检测到没有记录的key{key}  关联对象{gameObject.name}  请检查是否有大小写问题");
                 }
                 else
                 {
@@ -50,10 +48,10 @@ namespace GameFramePro.Localization
                 mTargetText = GetComponent<Text>();
         }
 
-        public void UpdateConnectLocalizationKey(string localizationKey, bool isUpdateText = false)
+        public void UpdateConnectLocalizationKey(string localizationKey, bool isIgnoreCase = false, bool isUpdateText = false)
         {
 #if UNITY_EDITOR
-            if (LocalizationManager.IsExitLocalizationKey(localizationKey) == false)
+            if (LocalizationManager.IsExitLocalizationKey(localizationKey, isIgnoreCase) == false)
             {
                 Debug.LogError($"检测到没有记录的key{localizationKey}  关联对象{gameObject.name}");
                 return;
@@ -64,10 +62,17 @@ namespace GameFramePro.Localization
                 mTargetText.text = LocalizationManager.GetLocalizationByKey(localizationKey);
         }
 
-        public void UpdateConnectLocalizationKey( bool isUpdateText = false)
+        public void UpdateConnectLocalizationKey(bool isIgnoreCase, bool isUpdateText = false)
         {
             if (mTargetText == null) return;
-            UpdateConnectLocalizationKey(mTargetText.text, isUpdateText);
+            UpdateConnectLocalizationKey(mTargetText.text, isIgnoreCase, isUpdateText);
+        }
+
+        //检测指定的Key 是否存在
+        public void CheckIsExitTargetLocalizationKey(bool isIgnoreCase = false)
+        {
+            if (mTargetText == null) return;
+            Debug.Log($"检测是否存在key{  mTargetText.text }  =>{LocalizationManager.IsExitLocalizationKey(mTargetText.text, isIgnoreCase)}");
         }
 
         /// <summary>

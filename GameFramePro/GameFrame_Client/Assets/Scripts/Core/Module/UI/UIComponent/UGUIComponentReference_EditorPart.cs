@@ -419,11 +419,121 @@ namespace GameFramePro.UI
             }
         }
 
-        //关联记录本地化组件
-        public void AutoRecordLocalizationKeyComponent(LocalizationKeyComponent localizationKey)
+
+
+        /// <summary>
+        /// 重新映射Tags
+        /// </summary>
+        public void AutoReMapTags()
         {
-            if (mAllLocalizationKeyComponents.Contains(localizationKey) == false)
-                mAllLocalizationKeyComponents.Add(localizationKey);
+            Transform[] allChilds = transform.GetComponentsInChildren<Transform>(true);
+            foreach (var child in allChilds)
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(child.tag)) continue;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"异常节点{child.name} : {e}");
+                }
+
+                #region 重新映射Tags
+                bool isNeedUpdate = false;
+                string old = child.tag;
+                if (child.tag == "UI.Text")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIText.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.Image")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIImage.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.RawImage")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIRawImage.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.Button")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIButton.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.Toggle")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIToggle.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.Slider")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUISlider.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.Scrollbar")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIScrollbar.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.Dropdown")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIDropDown.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.InputField")
+                {
+                    child.tag = UGUIComponentTypeEnum.UGUIInputField.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UI.Canvas")
+                {
+                    child.tag = UGUIComponentTypeEnum.UICanvas.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UnityEngine.GameObject")
+                {
+                    child.tag = UGUIComponentTypeEnum.GameObject.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UnityEngine.Transform")
+                {
+                    child.tag = UGUIComponentTypeEnum.Transform.ToString(); isNeedUpdate = true;
+                }
+                else if (child.tag == "UnityEngine.RectTransform")
+                {
+                    child.tag = UGUIComponentTypeEnum.RectTransform.ToString(); isNeedUpdate = true;
+                }
+
+                if (isNeedUpdate)
+                {
+                    Debug.Log($"更新节点{child.name} OldTag={old} 为新的{child.tag }");
+                }
+                #endregion
+
+            }
+            RemoveAllUnDefineComponentTag();
+        }
+
+        public void AutoConnectLocalizationKeyComponent()
+        {
+            Text[] allChilds = transform.GetComponentsInChildren<Text>(true);
+            foreach (var child in allChilds)
+            {
+                if (string.IsNullOrEmpty(child.text)) continue;
+                if (LocalizationManager.CheckIfMatchLocalizationKey(child.text) == false) continue;
+                LocalizationKeyComponent localizationKey = child.transform.GetComponent<LocalizationKeyComponent>();
+
+                if (localizationKey == null)
+                {
+                    localizationKey = child.transform.GetAddComponent<LocalizationKeyComponent>();
+                    Debug.Log($"-->>节点 {child.name} 添加本地化多语言组件");
+
+                    localizationKey.BindTargetText();
+                    localizationKey.UpdateConnectLocalizationKey(child.text, true, false);
+                }
+            }
+        }
+
+        //关联记录本地化组件
+        public void AutoRecordLocalizationKeyComponent( )
+        {
+            mAllLocalizationKeyComponents.Clear();
+            LocalizationKeyComponent[] localizationKeys = transform.GetComponentsInChildren<LocalizationKeyComponent>(true);
+            foreach (var localizationKey in localizationKeys)
+            {
+                if (mAllLocalizationKeyComponents.Contains(localizationKey) == false)
+                    mAllLocalizationKeyComponents.Add(localizationKey);
+            }
         }
 
 

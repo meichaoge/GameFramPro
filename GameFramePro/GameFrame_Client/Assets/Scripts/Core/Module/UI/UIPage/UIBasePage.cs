@@ -308,10 +308,67 @@ namespace GameFramePro.UI
                 StopAllCoroutine();
                 mAllRuningCoroutine.Clear();
             }
+            UnRegisterAllUpdateCallback();
         }
 
         /// <summary>/// 在被销毁后执行/// </summary>
         protected virtual void OnAfterDestroyed() { }
+
+        #endregion
+
+        #region Update和 其他Update 回调
+
+        internal UpdateCallbackComponent mUpdateCallbackComponent { get; private set; } = null;
+        internal UpdateCallbackUsage CurUpdateCallbackUsage { get; private set; } = UpdateCallbackUsage.None;
+
+        //注册或者Update回调
+        internal virtual void RegisterUpdateCallback(UpdateCallbackUsage updateCallback, bool isAppend = false)
+        {
+            if (isAppend == false)
+                CurUpdateCallbackUsage = updateCallback;
+            else
+                CurUpdateCallbackUsage = CurUpdateCallbackUsage | CurUpdateCallbackUsage;
+
+            if (CurUpdateCallbackUsage == UpdateCallbackUsage.None)
+                return;
+
+            if (mUpdateCallbackComponent == null)
+                mUpdateCallbackComponent = ConnectGameObjectInstance.AddComponent<UpdateCallbackComponent>();
+
+            if ((updateCallback & UpdateCallbackUsage.Update) == UpdateCallbackUsage.Update)
+                mUpdateCallbackComponent.AddUpdateCallback(OnRegisterUpdateCallback);
+            if ((updateCallback & UpdateCallbackUsage.LateUpdate) == UpdateCallbackUsage.LateUpdate)
+                mUpdateCallbackComponent.AddLateUpdateCallback(OnRegisterLateUpdateCallback);
+            if ((updateCallback & UpdateCallbackUsage.FixedUpdate) == UpdateCallbackUsage.FixedUpdate)
+                mUpdateCallbackComponent.AddFixedUpdateCallback(OnRegisterFixedCallback);
+        }
+        internal virtual void UnRegisterUpdateCallback(UpdateCallbackUsage updateCallback)
+        {
+            CurUpdateCallbackUsage = CurUpdateCallbackUsage & (~updateCallback);
+            if (mUpdateCallbackComponent == null)
+                return;
+
+
+            if ((updateCallback & UpdateCallbackUsage.Update) == UpdateCallbackUsage.Update)
+                mUpdateCallbackComponent.RemoveUpdateCallback();
+            if ((updateCallback & UpdateCallbackUsage.LateUpdate) == UpdateCallbackUsage.LateUpdate)
+                mUpdateCallbackComponent.RemoveLateUpdateCallback();
+            if ((updateCallback & UpdateCallbackUsage.FixedUpdate) == UpdateCallbackUsage.FixedUpdate)
+                mUpdateCallbackComponent.RemoveFixedUpdateCallback();
+        }
+        internal virtual void UnRegisterAllUpdateCallback()
+        {
+            CurUpdateCallbackUsage = UpdateCallbackUsage.None;
+            if (mUpdateCallbackComponent == null)
+                return;
+
+            mUpdateCallbackComponent.RemoveAllUpdateCallback();
+        }
+
+        protected virtual void OnRegisterUpdateCallback() { }
+        protected virtual void OnRegisterLateUpdateCallback() { }
+        //fixed Update 回调
+        protected virtual void OnRegisterFixedCallback() { }
 
         #endregion
 

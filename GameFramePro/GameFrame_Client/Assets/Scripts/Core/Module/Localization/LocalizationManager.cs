@@ -232,7 +232,8 @@ namespace GameFramePro
             if (mAllSupportLanguageConfig.TryGetValue(language, out languageLocalizationInfor) == false)
             {
                 LoadLocalizationConfig(language);
-                Debug.LogError("TODO 转换配置配置");
+                if (mAllSupportLanguageConfig.TryGetValue(language, out languageLocalizationInfor) == false)
+                    Debug.LogError($"TODO 转换配置配置 {language}");
             }
 
             if (languageLocalizationInfor != null)
@@ -344,7 +345,7 @@ namespace GameFramePro
             dataContainer = SerializeManager.DeserializeObject_NewtonJson<HashSet<string>>(textAsset.text);
         }
 
-        public static bool IsExitLocalizationKey(string key)
+        public static bool IsExitLocalizationKey(string key, bool isIgnoreCase = false)
         {
             if (s_AllLocalizationKeys.Count == 0)
                 LoadDefaultLocalizationKey(ref s_AllLocalizationKeys);
@@ -354,9 +355,24 @@ namespace GameFramePro
                 Debug.LogError($"加载本地化key 失败");
                 return false;
             }
-            return s_AllLocalizationKeys.Contains(key);
-        }
 
+            if (isIgnoreCase == false)
+            {
+                return s_AllLocalizationKeys.Contains(key);
+            }
+            else
+            {
+                foreach (var item in s_AllLocalizationKeys)
+                {
+                    if (item.Equals(key, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Debug.Log($"存在Key{item} 匹配{key}");
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
 #endif
         #endregion
 

@@ -1,3 +1,7 @@
+2020/1/19
+<1> 修复多语言LocalizaitonKeyComponent 自动序列化后无法保存的问题
+<2> UIBasepage 添加update回调接口和调用
+
 2020/1/17
 <1> 添加吊炸天UI循环列表插件 EnhancedScroller v2 后续功能待优化
 <2> 修改DebugLog 修复部分情况报错问题
