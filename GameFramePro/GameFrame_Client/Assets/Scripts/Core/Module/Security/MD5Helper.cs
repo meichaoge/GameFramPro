@@ -14,6 +14,8 @@ namespace GameFramePro
         /// <summary>/// 获取指定绝对路径下文件的MD5 /// </summary>
         public static string GetFileMD5(string filePath)
         {
+            if (System.IO.File.Exists(filePath) == false)
+                return string.Empty;
             FileStream fileStream = null;
             StringBuilder builder = null;
             try
@@ -43,9 +45,11 @@ namespace GameFramePro
         /// <summary>/// 获取指定绝对路径下文件的MD5 /// </summary>
         public static string GetFileMD5OutLength(string filePath, out long fileSize)
         {
+            fileSize = 0;
+            if (System.IO.File.Exists(filePath) == false)
+                return string.Empty;
             FileStream fileStream = null;
             StringBuilder builder = null;
-            fileSize = 0;
             try
             {
                 fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -74,9 +78,11 @@ namespace GameFramePro
         /// <summary>/// 获取指定绝对路径下文件的MD5 /// </summary>
         public static string GetFileMD5OutData(string filePath, out byte[] fileData)
         {
+            fileData = null;
+            if (System.IO.File.Exists(filePath) == false)
+                return string.Empty;
             FileStream fileStream = null;
             StringBuilder builder = null;
-            fileData = null;
             try
             {
                 fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);

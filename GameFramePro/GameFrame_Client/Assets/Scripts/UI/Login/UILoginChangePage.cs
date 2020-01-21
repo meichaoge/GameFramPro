@@ -70,7 +70,7 @@ namespace GameFramePro.UI
         }
 
         /// <summary>/// 根据挂载的 UGUIComponentReference 脚本生成对应的引用配置/// </summary>
-        private void GetUIComponentReference()
+        protected override void GetUIComponentReference()
         {
             m_BasicInforContent = GetComponentByName<Transform>("BasicInforContent");
             m_AppVersionText = GetComponentByName<Text>("AppVersionText");
@@ -84,26 +84,32 @@ namespace GameFramePro.UI
             m_SelectLanguageDropdown = GetComponentByName<Dropdown>("SelectLanguageDropdown");
 
             //**
+        
+        }
+        protected override void RegisterButtonEvent()
+        {
+            base.RegisterButtonEvent();
             m_NameInputField.onValueChanged.AddListener(OnUserNameInputCallback);
             m_PasswordInputField.onValueChanged.AddListener(OnUserPasswordInputCallback);
             m_SelectLanguageDropdown.onValueChanged.AddListener(OnSelectLanguageClick);
             m_LoginButton.onClick.AddListener(OnLoginButtonClick);
-            
+
             GetComponentByName<Button>("FacebookButton").onClick.AddListener(OnFacebookButtonClick);
             GetComponentByName<Button>("WetChatButton").onClick.AddListener(OnWetChatButtonClick);
-
-            
         }
 
 
-        private void RegistEventMessage()
+        protected override void RegistEventMessage()
         {
+            base.RegistEventMessage();
             EventManager.RegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
             EventManager.RegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
         }
 
-        private void UnRegistEventMessage()
+        protected override void UnRegistEventMessage()
         {
+            base.UnRegistEventMessage();
+
             EventManager.UnRegisterMessageHandler<LoginResponse>((int) UIEventUsage.OnResponse_Login, OnLoginCallback);
             EventManager.UnRegisterMessageHandler((int) UIEventUsage.OnResponse_Login, OnLoginCallback2);
         }

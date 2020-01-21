@@ -14,10 +14,9 @@ namespace GameFramePro
     /// <summary>
     /// 需要自己手动挂在 第一个执行的脚本(作为程序执行的入口) 需要尽可能少的脚本直接依赖Mono.
     /// </summary>
-    public class AppEntryManager : SingleMono<AppEntryManager>
+    [RequireComponent(typeof(AppModuleTickManager))]
+    public partial class AppEntryManager : SingleMono<AppEntryManager>
     {
-         private static HashSet<IUpdateTick> sAllControllUpdateTicks = new HashSet<IUpdateTick>();
-
 #if UNITY_EDITOR
         [ReadOnly]
         public int ReadOnlyInt = 10;
@@ -67,10 +66,13 @@ namespace GameFramePro
         }
 
 
+        private void OnDisable()
+        {
+            NetWorkManager.S_Instance.CloseAllSocketClient();
+        }
+
         private void Update()
         {
-            UpdateTick(Time.realtimeSinceStartup);
-
 #if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.D))
             {
@@ -85,61 +87,7 @@ namespace GameFramePro
         }
 
 
-        private void OnDisable()
-        {
-            NetWorkManager.S_Instance.CloseAllSocketClient();
-        }
-
         #region 更新流程控制
-
-        #endregion
-
-
-        #region 总的刷新控制
-
-        private void UpdateTick(float realtimeSinceStartup)
-        {
-            foreach (var updateTick in sAllControllUpdateTicks)
-            {
-                updateTick.UpdateTick(realtimeSinceStartup);
-            }
-        }
-
-
-        ////注册需要定时刷新的模块
-        public static void RegisterUpdateTick(IUpdateTick ticker)
-        {
-            if (sAllControllUpdateTicks.Contains(ticker))
-            {
-                Debug.LogError("RegisterUpdateTick Fail!! Already Exit " + ticker.GetType());
-                return;
-            }
-            sAllControllUpdateTicks.Add(ticker);
-        }
-        public static void UnRegisterUpdateTick(IUpdateTick ticker)
-        {
-            if (sAllControllUpdateTicks.Contains(ticker))
-            {
-                sAllControllUpdateTicks.Remove(ticker);
-                return;
-            }
-            Debug.LogError("UnRegisterUpdateTick Fail!! Not Exit " + ticker.GetType());
-        }
-
-        //private void GetAllNeedControllUpdateInstance()
-        //{
-        //    var assembly = Assembly.Load("Assembly-CSharp");
-        //    var types = assembly.GetTypes();
-
-        //    foreach (var type in types)
-        //    {
-        //        if (type.GetInterfaces().Contains(typeof(IUpdateTick)))
-        //        {
-
-        //            continue;
-        //        }
-        //    }
-        //}
 
         #endregion
 
@@ -148,4 +96,6 @@ namespace GameFramePro
 
         #endregion
     }
+
+
 }

@@ -1,3 +1,10 @@
+
+2020/1/21
+<1> 新增全局update tick模块 AppModuleTickManager。并整合UI update 回调方式
+<2> 增加运行时CDN 下载图片并缓存的模块 RealtimeImageDownloadHelper
+<3> 更新UIBasePage 基类，增加获取UI节点和按钮注册的虚方法
+<4> 增加全局共享的LoadigMask 模块
+
 2020/1/19
 <1> 修复多语言LocalizaitonKeyComponent 自动序列化后无法保存的问题
 <2> UIBasepage 添加update回调接口和调用

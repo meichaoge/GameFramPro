@@ -24,13 +24,6 @@ namespace GameFramePro.UI
             ShowTipView(message);
         }
 
-
-        protected override void OnInitialed()
-        {
-            base.OnInitialed();
-            GetUIComponentReference();
-        }
-
         protected override void OnBeforeVisible()
         {
             base.OnBeforeVisible();
@@ -44,7 +37,7 @@ namespace GameFramePro.UI
         }
 
         /// <summary>/// 根据挂载的 UGUIComponentReference 脚本生成对应的引用配置/// </summary>
-        private void GetUIComponentReference()
+        protected override void GetUIComponentReference()
         {
             m_TipText = GetComponentByName<Text>("TipText");
             m_Content = GetComponentByName<CanvasGroup>("Content");

@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using GameFramePro;
+using GameFramePro.UI;
 
 namespace GameFramePro.UI
 {
@@ -13,18 +15,29 @@ namespace GameFramePro.UI
 
 
 	   #region 基类重写
-        protected override void OnInitialed()
-        {
-            base.OnInitialed();
-            GetUIComponentReference();
-           //TODO
-        }
         
       /// <summary>/// 根据挂载的 UGUIComponentReference 脚本生成对应的引用配置/// </summary>
-      private void GetUIComponentReference()
+        protected override void GetUIComponentReference()
       {
             #UICOMPONENTREFERENCE#
        }
+
+	   	//注册按钮点击事件
+		protected override void RegisterButtonEvent()
+		{
+        }
+
+		//注册回调事件
+	    protected override void RegistEventMessage()
+        {
+            base.RegistEventMessage(); //不要注释掉  必须调用
+        }
+
+		//取消注册回调事件
+        protected override void UnRegistEventMessage()
+        {
+            base.UnRegistEventMessage(); //不要注释掉  必须调用
+        }
         #endregion
 
 		#region  创建视图
@@ -35,5 +48,8 @@ namespace GameFramePro.UI
         //TODO
         #endregion
    
+		#region  网络、事件回调
+        //TODO
+        #endregion
   }
 }

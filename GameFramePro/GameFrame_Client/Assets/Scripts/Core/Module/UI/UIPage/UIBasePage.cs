@@ -204,7 +204,16 @@ namespace GameFramePro.UI
         /// <summary>/// 每次界面关联的的预制体被创建时候调用/// </summary>
         protected virtual void OnInitialed()
         {
+            GetUIComponentReference();
+            RegisterButtonEvent();
         }
+        /// <summary>
+        /// 获取UI 节点
+        /// </summary>
+        protected virtual void GetUIComponentReference() { }
+
+        //注册button 点击事件
+        protected virtual void RegisterButtonEvent() { }
 
 
         /// <summary>
@@ -318,12 +327,14 @@ namespace GameFramePro.UI
 
         #region Update和 其他Update 回调
 
-        internal UpdateCallbackComponent mUpdateCallbackComponent { get; private set; } = null;
         internal UpdateCallbackUsage CurUpdateCallbackUsage { get; private set; } = UpdateCallbackUsage.None;
 
         //注册或者Update回调
         internal virtual void RegisterUpdateCallback(UpdateCallbackUsage updateCallback, bool isAppend = false)
         {
+            if ((CurUpdateCallbackUsage & updateCallback) == updateCallback)
+                return;  //已经注册了回调
+
             if (isAppend == false)
                 CurUpdateCallbackUsage = updateCallback;
             else
@@ -332,43 +343,45 @@ namespace GameFramePro.UI
             if (CurUpdateCallbackUsage == UpdateCallbackUsage.None)
                 return;
 
-            if (mUpdateCallbackComponent == null)
-                mUpdateCallbackComponent = ConnectGameObjectInstance.AddComponent<UpdateCallbackComponent>();
-
             if ((updateCallback & UpdateCallbackUsage.Update) == UpdateCallbackUsage.Update)
-                mUpdateCallbackComponent.AddUpdateCallback(OnRegisterUpdateCallback);
+                AppModuleTickManager.AddUpdateCallback(OnRegisterUpdateCallback);
             if ((updateCallback & UpdateCallbackUsage.LateUpdate) == UpdateCallbackUsage.LateUpdate)
-                mUpdateCallbackComponent.AddLateUpdateCallback(OnRegisterLateUpdateCallback);
+                AppModuleTickManager.AddLateUpdateCallback(OnRegisterLateUpdateCallback);
             if ((updateCallback & UpdateCallbackUsage.FixedUpdate) == UpdateCallbackUsage.FixedUpdate)
-                mUpdateCallbackComponent.AddFixedUpdateCallback(OnRegisterFixedCallback);
+                AppModuleTickManager.AddFixedUpdateCallback(OnRegisterFixedCallback);
         }
         internal virtual void UnRegisterUpdateCallback(UpdateCallbackUsage updateCallback)
         {
             CurUpdateCallbackUsage = CurUpdateCallbackUsage & (~updateCallback);
-            if (mUpdateCallbackComponent == null)
-                return;
-
 
             if ((updateCallback & UpdateCallbackUsage.Update) == UpdateCallbackUsage.Update)
-                mUpdateCallbackComponent.RemoveUpdateCallback();
+                AppModuleTickManager.RemoveUpdateCallback(OnRegisterUpdateCallback);
             if ((updateCallback & UpdateCallbackUsage.LateUpdate) == UpdateCallbackUsage.LateUpdate)
-                mUpdateCallbackComponent.RemoveLateUpdateCallback();
+                AppModuleTickManager.RemoveLateUpdateCallback(OnRegisterLateUpdateCallback);
             if ((updateCallback & UpdateCallbackUsage.FixedUpdate) == UpdateCallbackUsage.FixedUpdate)
-                mUpdateCallbackComponent.RemoveFixedUpdateCallback();
+                AppModuleTickManager.RemoveFixedUpdateCallback(OnRegisterFixedCallback);
         }
         internal virtual void UnRegisterAllUpdateCallback()
         {
             CurUpdateCallbackUsage = UpdateCallbackUsage.None;
-            if (mUpdateCallbackComponent == null)
-                return;
-
-            mUpdateCallbackComponent.RemoveAllUpdateCallback();
+            AppModuleTickManager.RemoveUpdateCallback(OnRegisterUpdateCallback);
+            AppModuleTickManager.RemoveLateUpdateCallback(OnRegisterLateUpdateCallback);
+            AppModuleTickManager.RemoveFixedUpdateCallback(OnRegisterFixedCallback);
         }
 
-        protected virtual void OnRegisterUpdateCallback() { }
-        protected virtual void OnRegisterLateUpdateCallback() { }
+        protected virtual void OnRegisterUpdateCallback()
+        {
+            if (mIsActivite == false) return;
+        }
+        protected virtual void OnRegisterLateUpdateCallback()
+        {
+            if (mIsActivite == false) return;
+        }
         //fixed Update 回调
-        protected virtual void OnRegisterFixedCallback() { }
+        protected virtual void OnRegisterFixedCallback()
+        {
+            if (mIsActivite == false) return;
+        }
 
         #endregion
 

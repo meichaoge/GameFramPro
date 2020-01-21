@@ -9,7 +9,7 @@ namespace GameFramePro
     /// <summary>
     /// 管理Xlua ，提供bug修复的入口
     /// </summary>
-    public class XluaManager : Single<XluaManager>, IUpdateCountTick
+    public class XluaManager : Single<XluaManager>
     {
         public LuaEnv LuaEngine { get; private set; } //lua 虚拟机
 
@@ -20,7 +20,7 @@ namespace GameFramePro
                 LuaEngine = new LuaEnv();
                 ResourcesTracker.RegistTraceNativeobject(LuaEngine, TraceNativeobjectStateEnum.Singtion);
                 LuaEngine.AddLoader(CustomerLuaLoader);  //注册自定义的加载器
-                AppEntryManager.RegisterUpdateTick(this);
+                AppModuleTickManager.AddUpdateCallback(UpdateTick);
             }
             base.InitialSingleton();
         }
@@ -54,7 +54,7 @@ namespace GameFramePro
         }
 
 
-        public void UpdateTick(float currentTime)
+        public void UpdateTick()
         {
             if (CheckIfNeedUpdateTick() == false) return;
 

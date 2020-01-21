@@ -18,7 +18,7 @@ namespace GameFramePro.NetWorkEx
                 if (s_Instance == null)
                 {
                     s_Instance = new AssetBundleDownloadManager();
-                    DownloadManager.S_Instance.RegisterDownloadManager(s_Instance);
+                    DownloadManager.RegisterDownloadManager(s_Instance);
                 }
                 return s_Instance;
             }

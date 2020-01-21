@@ -11,7 +11,7 @@ using System.Text;
 namespace GameFramePro
 {
     /// <summary>/// 负责对内网络状态的控制对外提供网络回调/// </summary>
-    public class NetWorkManager : Single<NetWorkManager>, IUpdateCountTick
+    public class NetWorkManager : Single<NetWorkManager>
     {
         /// <summary>/// 监听的事件回调信息/// </summary>
         protected class NetResponseCallbackInfor
@@ -161,7 +161,7 @@ namespace GameFramePro
         protected override void InitialSingleton()
         {
             base.InitialSingleton();
-            AppEntryManager.RegisterUpdateTick(this);
+            AppModuleTickManager.AddUpdateCallback(UpdateTick);
         }
 
         #region 数据
@@ -184,7 +184,7 @@ namespace GameFramePro
         public uint TickPerUpdateCount { get; private set; } = 1;
 
         /// <summary>/// 主线程更新分发收到的数据/// </summary>
-        public void UpdateTick(float currentTime)
+        public void UpdateTick( )
         {
             try
             {

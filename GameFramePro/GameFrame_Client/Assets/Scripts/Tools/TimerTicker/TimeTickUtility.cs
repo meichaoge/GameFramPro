@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameFramePro
 {
     /// <summary>/// 全局的计时器/// </summary>
-    public class TimeTickUtility : Single<TimeTickUtility>, IUpdateCountTick
+    public class TimeTickUtility : Single<TimeTickUtility>
     {
         private Dictionary<int, BaseTimeTicker> m_AllTimerCallback = new Dictionary<int, BaseTimeTicker>();
         private List<BaseTimeTicker> m_AllDeadTimers = new List<BaseTimeTicker>(); //需要被注销的计时器
@@ -17,20 +17,8 @@ namespace GameFramePro
         protected override void InitialSingleton()
         {
             base.InitialSingleton();
-            AppEntryManager.RegisterUpdateTick(this);
+            AppModuleTickManager.AddUpdateCallback(UpdateAllTickers);
         }
-
-        #region IUpdateTick 接口
-
-        public uint TickPerUpdateCount { get; protected set; } = 1;
-
-        public void UpdateTick(float currentTime)
-        {
-            UpdateAllTickers();
-        }
-
-        #endregion
-
 
         private void UpdateAllTickers()
         {

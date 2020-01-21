@@ -26,13 +26,6 @@ namespace GameFramePro.UI
             ShowProgressView(message, progress, tips);
         }
 
-        protected override void OnInitialed()
-        {
-            base.OnInitialed();
-            GetUIComponentReference();
-            //TODO
-        }
-
         protected override void OnBeforeVisible()
         {
             base.OnBeforeVisible();
@@ -40,7 +33,7 @@ namespace GameFramePro.UI
         }
 
         /// <summary>/// 根据挂载的 UGUIComponentReference 脚本生成对应的引用配置/// </summary>
-        private void GetUIComponentReference()
+        protected override void GetUIComponentReference()
         {
             m_ProgressBar = GetComponentByName<Image>("ProgressBar");
             m_ProgressText = GetComponentByName<Text>("ProgressText");

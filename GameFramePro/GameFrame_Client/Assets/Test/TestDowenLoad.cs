@@ -42,7 +42,7 @@ public class TestDowenLoad : MonoBehaviour
                 if (isSuccess == false)
                     return;
                 Debug.Log($"开始下载 {begin}   {length}");
-                DownloadManager.S_Instance.GetByteDataFromUrl(urlInfor, begin, length,  (webRequest, isSucces, url) =>
+                DownloadManager.GetByteDataFromUrl(urlInfor, begin, length,  (webRequest, isSucces, url) =>
                 {
                     Debug.Log("url=" + url);
                     DownloadHandlerBuffer handle = webRequest.downloadHandler as DownloadHandlerBuffer;

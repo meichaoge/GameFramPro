@@ -282,7 +282,7 @@ namespace GameFramePro.Upgrade
 
             while (mServerBundleAssetConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
-                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(ServerAssetBundleConfigUrl,0,0, null, TaskPriorityEnum.Immediately);
+                var downloadTask = DownloadManager.GetByteDataFromUrl(ServerAssetBundleConfigUrl,0,0, null, TaskPriorityEnum.Immediately);
                 if (downloadTask == null)
                 {
                     Debug.LogError("获取服务器配置的下载任务创建失败");
@@ -447,7 +447,7 @@ namespace GameFramePro.Upgrade
                 Debug.LogEditorInfor($"开始下载AssetBundle  url={updateAssetBundleUrl}");
 #endif
 
-                DownloadManager.S_Instance.GetByteDataFromUrl(updateAssetBundleUrl, assetBundleRecord.Value.mLocalAssetLength, assetBundleRecord.Value.mExpectAsssetLength,  OnDownloadAssetBundleCallback, TaskPriorityEnum.Immediately);
+                DownloadManager.GetByteDataFromUrl(updateAssetBundleUrl, assetBundleRecord.Value.mLocalAssetLength, assetBundleRecord.Value.mExpectAsssetLength,  OnDownloadAssetBundleCallback, TaskPriorityEnum.Immediately);
             }
         }
 

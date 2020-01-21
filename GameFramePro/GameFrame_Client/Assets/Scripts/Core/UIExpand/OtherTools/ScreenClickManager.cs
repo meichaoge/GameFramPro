@@ -8,24 +8,24 @@ using UnityEngine.UI;
 namespace GameFramePro
 {
     /// <summary>/// 屏幕点击特效管理  确保AppSetting.S_IsClickEffectEnable=true 这个脚本才能有效 /// </summary>
-    public class ScreenClickManager : Single<ScreenClickManager>, IUpdateCountTick
+    public class ScreenClickManager : Single<ScreenClickManager>
     {
         //屏幕特效的信息
         private class ScreenEffectInfor
         {
-        //    private BaseBeReferenceGameObjectInformation EffectItem;
-        private GameObject mEffectItem;
+            //    private BaseBeReferenceGameObjectInformation EffectItem;
+            private GameObject mEffectItem;
             public float RemainTime { get; private set; } //剩余可以显示的时间
             public bool IsShowing { get; private set; } = false;
 
             private ParticleSystem[] mAllParticleSystems;
 
-//            public void SetEffetctItem(BaseBeReferenceGameObjectInformation information)
-//            {
-//               // EffectItem = information;
-//                mAllParticleSystems = information.GetComponentsInChildren<ParticleSystem>(true);
-//            }
-            
+            //            public void SetEffetctItem(BaseBeReferenceGameObjectInformation information)
+            //            {
+            //               // EffectItem = information;
+            //                mAllParticleSystems = information.GetComponentsInChildren<ParticleSystem>(true);
+            //            }
+
             public void SetEffetctItem(GameObject information)
             {
                 mEffectItem = information;
@@ -50,7 +50,7 @@ namespace GameFramePro
                 if (IsShowing) return;
                 IsShowing = true;
                 if (mEffectItem != null)
-                    mEffectItem.transform.localPosition=localPos;
+                    mEffectItem.transform.localPosition = localPos;
                 RemainTime = maxAliveTime;
 
                 if (mAllParticleSystems == null) return;
@@ -108,7 +108,7 @@ namespace GameFramePro
         {
             base.InitialSingleton();
             GetTargetScreenEffectCanvasTrans();
-            AppEntryManager.RegisterUpdateTick(this);
+            AppModuleTickManager.AddUpdateCallback(UpdateAction);
         }
 
 
@@ -120,40 +120,19 @@ namespace GameFramePro
             {
                 Debug.LogError($"屏幕特效管理器初始化失败，需要一个名为 ['TopScreenEffect'] 的屏幕特效层来显示屏幕点击特效 ");
                 return; //**下面为应该的设置
-//                go = ResourcesManager.Instantiate("TopScreenEffect");
-//                Canvas canvas=    go.AddComponent<Canvas>();
-//                canvas.sortingLayerName = "TopScreenEffect";
-//                canvas.renderMode = RenderMode.ScreenSpaceCamera;
-//                canvas.worldCamera = UIPageManager.S_UICamera;
-//                
-//                go.AddComponent<GraphicRaycaster>();
-//                CanvasScaler canvasScaler=        go.AddComponent<CanvasScaler>();
-//                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-//                canvasScaler.referenceResolution = AppSetting.S_ReferenceResolution;
+                        //                go = ResourcesManager.Instantiate("TopScreenEffect");
+                        //                Canvas canvas=    go.AddComponent<Canvas>();
+                        //                canvas.sortingLayerName = "TopScreenEffect";
+                        //                canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                        //                canvas.worldCamera = UIPageManager.S_UICamera;
+                        //                
+                        //                go.AddComponent<GraphicRaycaster>();
+                        //                CanvasScaler canvasScaler=        go.AddComponent<CanvasScaler>();
+                        //                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                        //                canvasScaler.referenceResolution = AppSetting.S_ReferenceResolution;
             }
 
             mScreenEffectCanvasTrans = go.transform;
-        }
-
-        #endregion
-
-        #region IUpdateTick 接口
-
-        protected int curUpdateCount = 0; //当前的帧基数
-        public uint TickPerUpdateCount { get; protected set; } = 1;
-
-        public bool CheckIfNeedUpdateTick()
-        {
-            if (AppEntryManager.S_Instance.mIsClickEffectEnable == false)
-                return false;
-            return true;
-        }
-
-
-        public void UpdateTick(float currentTime)
-        {
-            if (CheckIfNeedUpdateTick() == false) return;
-            UpdateAction();
         }
 
         #endregion
@@ -198,19 +177,19 @@ namespace GameFramePro
                         Debug.LogError("获取资源为null ");
                         return;
                     }
-                    
-//                    BaseBeReferenceGameObjectInformation information = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath, true);
-//                    if (information == null)
-//                    {
-//                        Debug.LogError("获取资源为null ");
-//                        return;
-//                    }
-//
-//                    if (information.IsReferenceAssetEnable == false)
-//                    {
-//                        information.ReduceReference();
-//                        return;
-//                    }
+
+                    //                    BaseBeReferenceGameObjectInformation information = ResourcesManager.InstantiateGameObjectByPathSync(mScreenEffectCanvasTrans, EffectDefine.S_ScreenClickEffectPath, true);
+                    //                    if (information == null)
+                    //                    {
+                    //                        Debug.LogError("获取资源为null ");
+                    //                        return;
+                    //                    }
+                    //
+                    //                    if (information.IsReferenceAssetEnable == false)
+                    //                    {
+                    //                        information.ReduceReference();
+                    //                        return;
+                    //                    }
 
                     ScreenEffectInfor effectInfor = new ScreenEffectInfor();
 

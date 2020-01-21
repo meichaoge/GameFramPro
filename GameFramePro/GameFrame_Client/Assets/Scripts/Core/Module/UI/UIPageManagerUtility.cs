@@ -7,7 +7,7 @@ using System;
 namespace GameFramePro.UI
 {
     /// <summary>/// 辅助 UIPageManager ，用于定时清理长时间不被引用的界面/// </summary>
-    public class UIPageManagerUtility : Single<UIPageManagerUtility>, IUpdateTimeTick
+    public class UIPageManagerUtility : Single<UIPageManagerUtility>
     {
         private LinkedList<UIBasePage> mAllInVisiblePage = new LinkedList<UIBasePage>();
         private List<UIBasePage> mTempInVisiblePage = new List<UIBasePage>(); //用于记录那些页面不可见了
@@ -15,7 +15,7 @@ namespace GameFramePro.UI
         protected override void InitialSingleton()
         {
             base.InitialSingleton();
-            AppEntryManager.RegisterUpdateTick(this);
+            TimeTickUtility.S_Instance.RegisterTimer(TickPerTimeInterval, UpdateTick);
         }
 
         #region IUpdateTick 接口实现
@@ -23,24 +23,15 @@ namespace GameFramePro.UI
         protected float lastRecordTime = 0; //上一次记录的时间
         public float TickPerTimeInterval { get; private set; } = 10; //约等于1分钟检测一次
 
-        protected bool CheckIfNeedUpdateTick(float curTime)
+        public void UpdateTick(float currentTime,int  hashCode)
         {
             if (lastRecordTime == 0f)
+                lastRecordTime = currentTime;
+            else
             {
-                lastRecordTime = curTime;
-                return true;
+                if (currentTime - lastRecordTime < TickPerTimeInterval)
+                    return;
             }
-
-            if (curTime - lastRecordTime >= TickPerTimeInterval)
-                return true;
-
-            return false;
-        }
-
-        public void UpdateTick(float currentTime)
-        {
-            if (CheckIfNeedUpdateTick(currentTime) == false)
-                return;
 
             UnLoadInVisibleUI(currentTime);
         }

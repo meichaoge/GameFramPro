@@ -22,18 +22,25 @@ namespace GameFramePro.UI
         protected override void OnInitialed()
         {
             base.OnInitialed();
-            mNameText = GetComponentByName<Text>("NameText");
-            mContent = GetComponentByPath<Transform>("Content", "Content");
-            mTestButton = GetComponentByName<Button>("TestButton");
-            mTestButton.onClick.AddListener(OnTestButtonClick);
-            mCloseWidgetButton = GetComponentByName<Button>("CloseWidgetButton");
-            mCloseWidgetButton.onClick.AddListener(OnCloseWidgetButtonClick);
-
             if (mUITipInforWidget1 != null)
                 mUITipInforWidget1.HidePage(true);
 
             mUITipInforWidget1 = UIPageManager.CreateWidgetInstance<UITipInforWidget>(NameDefine.UITipInforWidgetName,PathDefine.UITipInforWidgetPath,
                 this, mContent);
+        }
+        protected override void GetUIComponentReference()
+        {
+            //  base.GetUIComponentReference();
+            mNameText = GetComponentByName<Text>("NameText");
+            mContent = GetComponentByPath<Transform>("Content", "Content");
+            mTestButton = GetComponentByName<Button>("TestButton");
+        }
+        protected override void RegisterButtonEvent()
+        {
+        //    base.RegisterButtonEvent();
+            mTestButton.onClick.AddListener(OnTestButtonClick);
+            mCloseWidgetButton = GetComponentByName<Button>("CloseWidgetButton");
+            mCloseWidgetButton.onClick.AddListener(OnCloseWidgetButtonClick);
         }
 
         private void OnTestButtonClick()

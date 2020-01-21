@@ -218,7 +218,7 @@ namespace GameFramePro.Upgrade
             while (ServerPreloadImgConfigInfor == null && mCurDownloadCount <= S_MaxDownloadTimes)
             {
                 var url = PreloadTextureServerUrl.CombinePathEx(ConstDefine.S_PreloadImgConfiFileName);
-                var downloadTask = DownloadManager.S_Instance.GetByteDataFromUrl(url,0,0,  null, TaskPriorityEnum.Immediately);
+                var downloadTask = DownloadManager.GetByteDataFromUrl(url,0,0,  null, TaskPriorityEnum.Immediately);
                 if (downloadTask == null)
                 {
                     Debug.LogError($"获取服务器配置的下载任务创建失败 第{mCurDownloadCount} 次 url={PreloadTextureServerUrl}");
@@ -394,7 +394,7 @@ namespace GameFramePro.Upgrade
                 Debug.LogEditorInfor($"开始下载 预加载图片  url={updatePreloadTextureUrl}");
 #endif
 
-                DownloadManager.S_Instance.GetTextureDataFromUrl(updatePreloadTextureUrl,  OnDownloadPreloadTextureCallback,TaskPriorityEnum.Immediately);
+                DownloadManager.GetTextureDataFromUrl(updatePreloadTextureUrl,  OnDownloadPreloadTextureCallback,TaskPriorityEnum.Immediately);
             }
         }
 
