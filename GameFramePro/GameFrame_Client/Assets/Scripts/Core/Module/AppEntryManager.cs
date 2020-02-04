@@ -38,7 +38,7 @@ namespace GameFramePro
         private IEnumerator Start()
         {
             Debug.Log("AppEntryManager--->>>>");
-       
+
 
 #if UNITY_EDITOR
             Debug.LogInfor($"Application.persistentDataPath={Application.persistentDataPath}");
@@ -46,7 +46,7 @@ namespace GameFramePro
 
 
             UIPageManager.InitialedPageManager();
-        
+
             NetWorkManager.S_Instance.InitialedNetWork();
 
             var appUpgradeCoroutineEx = new SuperCoroutine(AppUpgradeManager.S_Instance.OnBeginUpgrade());
